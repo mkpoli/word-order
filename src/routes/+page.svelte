@@ -122,71 +122,7 @@
 
 	// LINE_COORDINATES
 
-	let output: HTMLOutputElement;
-
 	let lines: Line[] = [];
-
-	function updateLines() {
-		lines = drawLines(word_spans, verticalGap, lineGap, center);
-	}
-
-	$: if (mounted)
-		tick().then(() => {
-			updateLines();
-		});
-
-	function drawLines(word_spans: HTMLSpanElement[][], verticalGap: number, lineGap: number, center: boolean): Line[] {
-		const rectOutput = output.getBoundingClientRect();
-
-		const lines = [];
-
-		if (sentences.length < 2) return [];
-
-		for (let [i, entry] of equivalency.entries()) {
-			if (!entry) continue;
-			if (entry.length < 1) break;
-
-			for (let [j, A] of entry.entries()) {
-				if (j == entry.length - 1) break;
-				const B = entry[j + 1];
-				if (!A || !B) continue;
-
-				// console.log(`(${WORDS[j][0]}) ${WORDS[j][1][A[0]]} → (${WORDS[j + 1][0]}) ${WORDS[j + 1][1][B[0]]}`);
-
-				const spanA = word_spans[j][A[0]];
-				const spanB = word_spans[j + 1][B[0]];
-
-				if (!spanA || !spanB) continue;
-
-				const rectA = spanA.getBoundingClientRect();
-				const rectB = spanB.getBoundingClientRect();
-
-				const centerA = {
-					x: rectA.left - rectOutput.left + rectA.width / 2,
-					y: rectA.top - rectOutput.top + rectA.height / 2
-				};
-
-				const centerB = {
-					x: rectB.left - rectOutput.left + rectB.width / 2,
-					y: rectB.top - rectOutput.top + rectB.height / 2
-				};
-
-				lines.push([
-					rectA.left - rectOutput.left + rectA.width / 2,
-					rectA.bottom - rectOutput.top + lineGap,
-					rectB.left - rectOutput.left + rectB.width / 2,
-					rectB.top - rectOutput.top - lineGap,
-					colors[i]
-				] as Line);
-			}
-			// break;
-			// for (let [l, r] of entry) {
-			// }
-
-			// [ [0, 0], // 'I ' [0, 0], // '我' [0, 0], // '我' [0, 1] // '私'， 'は' ],
-		}
-		return lines;
-	}
 
 	async function onadd({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
 		sentences.push([lang, words] as [string, string[]]);
@@ -201,19 +137,9 @@
 		equivalency = equivalency;
 
 		await tick();
-
-		updateLines();
-
 		console.log(equivalency);
 	}
 </script>
-
-<svelte:window
-	on:resize={async () => {
-		await tick();
-		updateLines();
-	}}
-/>
 
 <main>
 	<div class="panel">
@@ -230,11 +156,9 @@
 		</div>
 	</div>
 
-	<output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
-		{#if mounted}
-			<Output {sentences} {color_map} {equivalency} {center} {lines} {colors} bind:word_spans />
-		{/if}
-	</output>
+	{#if mounted}
+		<Output {sentences} {color_map} {equivalency} {center} bind:lines {colors} {verticalGap} {lineGap} bind:word_spans />
+	{/if}
 </main>
 
 <style>
@@ -257,17 +181,5 @@
 
 		display: flex;
 		flex-direction: column;
-	}
-
-	output {
-		position: relative;
-
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: 1em;
-	}
-
-	.tag {
-		font-weight: bold;
 	}
 </style>
