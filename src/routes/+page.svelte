@@ -185,32 +185,58 @@
 	}}
 />
 
-<label for="vertical-gap">Vertical Gap: ({verticalGap}px)</label>
-<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
-<label for="line-gap">Line Gap: ({lineGap}px)</label>
-<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
-<label for="center">Centering</label>
-<input type="checkbox" bind:checked={center} id="center" name="center" />
+<main>
+	<div class="panel">
+		<div class="params">
+			<label for="vertical-gap">Vertical Gap: ({verticalGap}px)</label>
+			<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
+			<label for="line-gap">Line Gap: ({lineGap}px)</label>
+			<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
+			<label for="center">Centering</label>
+			<input type="checkbox" bind:checked={center} id="center" name="center" />
+		</div>
+	</div>
 
-<output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
-	{#each WORDS as [lang, words], i}
-		<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
-		<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
-			{#each words as word, j}
-				<span style={`color: ${reversed_map[i][j] >= 0 ? colors[reversed_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
-			{/each}
-		</span>
-	{/each}
-	<svg style="position: absolute;" width="100%" height="100%">
-		{#each LINES as [x1, y1, x2, y2, color]}
-			<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
+	<output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
+		{#each WORDS as [lang, words], i}
+			<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
+			<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
+				{#each words as word, j}
+					<span style={`color: ${reversed_map[i][j] >= 0 ? colors[reversed_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
+				{/each}
+			</span>
 		{/each}
-	</svg></output
->
+		<svg style="position: absolute;" width="100%" height="100%">
+			{#each LINES as [x1, y1, x2, y2, color]}
+				<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
+			{/each}
+		</svg>
+	</output>
+</main>
 
 <div class="sentences" />
 
 <style>
+	main {
+		padding: 1em;
+		display: flex;
+		flex-direction: column;
+		gap: 2em;
+	}
+
+	.panel {
+		display: flex;
+	}
+
+	.params {
+		padding: 1.5em 1em;
+		border-radius: 5px;
+		box-shadow: 1px 1px 5px 0 #ccc;
+
+		display: flex;
+		flex-direction: column;
+	}
+
 	output {
 		position: relative;
 
