@@ -181,6 +181,13 @@
 	}
 </script>
 
+<svelte:window
+	on:resize={async () => {
+		await tick();
+		LINES = drawLines(word_spans, verticalGap, lineGap, center);
+	}}
+/>
+
 <label for="vertical-gap">Vertical Gap: ({verticalGap}px)</label>
 <input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
 <label for="line-gap">Line Gap: ({lineGap}px)</label>
