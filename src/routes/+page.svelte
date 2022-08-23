@@ -118,7 +118,6 @@
 	let output: HTMLOutputElement;
 	type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
 	let LINES: Line[] = [];
-	$: console.log('LINES', LINES);
 
 	$: if (mounted)
 		tick().then(() => {
@@ -141,14 +140,12 @@
 				const B = entry[j + 1];
 				if (!A || !B) continue;
 
-				console.log(`(${WORDS[j][0]}) ${WORDS[j][1][A[0]]} → (${WORDS[j + 1][0]}) ${WORDS[j + 1][1][B[0]]}`);
+				// console.log(`(${WORDS[j][0]}) ${WORDS[j][1][A[0]]} → (${WORDS[j + 1][0]}) ${WORDS[j + 1][1][B[0]]}`);
 
 				const spanA = word_spans[j][A[0]];
 				const spanB = word_spans[j + 1][B[0]];
 
 				if (!spanA || !spanB) continue;
-
-				console.log(spanA, spanB);
 
 				const rectA = spanA.getBoundingClientRect();
 				const rectB = spanB.getBoundingClientRect();
