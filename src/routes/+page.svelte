@@ -86,9 +86,16 @@
 	const reversed_map = WORDS.map(([, words]) => new Array(words.length).fill(-1));
 	const word_spans = WORDS.map(([, words]) => new Array(words.length).fill(null));
 
+	// Parameters
+	let verticalGap = 30;
+	let lineGap = 5;
+	let center = true;
+
 	let mounted = false;
 	onMount(() => {
-		parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+		const rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+		verticalGap = Math.round(2 * rem);
+		lineGap = Math.round(0.3 * rem);
 
 		mounted = true;
 	});
@@ -107,11 +114,6 @@
 	$: colors = pickNColors(EQUIVALENCY.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
 
 	// LINE_COORDINATES
-
-	// Parameters
-	let verticalGap = 15;
-	let lineGap = 5;
-	let center = true;
 
 	let output: HTMLOutputElement;
 	type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
