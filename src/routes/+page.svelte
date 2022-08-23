@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { pickNColors } from '../lib/color';
 	import * as d3 from 'd3-color';
-	import { onMount, tick } from 'svelte';
+	import { onMount, setContext, tick } from 'svelte';
+	import SentenceInput from '../lib/SentenceInput.svelte';
 
 	const LANGUAGE_NAMES = new Intl.DisplayNames(['en'], {
 		type: 'language'
 	});
+
+	setContext('LANGUAGE_NAMES', LANGUAGE_NAMES);
 
 	// const SENTENCES = [
 	// 	['en', "I can eat glass and it doesn't hurt me."],
@@ -13,14 +16,14 @@
 	// 	['ja', '私はガラスを食べられます。それは私を傷つけません。']
 	// ];
 
-	const WORDS: [string, string[]][] = [
+	let sentences: [string, string[]][] = [
 		['en', ['I ', 'can ', 'eat ', 'glass ', 'and ', 'it ', "doesn't ", 'hurt ', 'me']],
 		['zh', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体']],
 		['zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體']],
 		['ja', ['私', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。']]
 	];
 
-	const EQUIVALENCY: ([start: number, end: number] | null)[][] = [
+	let equivalency: ([start: number, end: number] | null)[][] = [
 		[
 			[0, 0], // 'I '
 			[0, 0], // '我'
@@ -83,8 +86,8 @@
 		]
 	];
 
-	const reversed_map = WORDS.map(([, words]) => new Array(words.length).fill(-1));
-	const word_spans = WORDS.map(([, words]) => new Array(words.length).fill(null));
+	let color_map: number[][] = sentences.map(([, words]) => new Array(words.length).fill(-1));
+	let word_spans: HTMLSpanElement[][] = sentences.map(([, words]) => new Array(words.length).fill(null));
 
 	// Parameters
 	let verticalGap = 30;
@@ -100,18 +103,22 @@
 		mounted = true;
 	});
 
-	EQUIVALENCY.forEach((row, i) => {
-		row.forEach((entry, j) => {
-			if (!entry) return;
-			const [a, b] = entry;
-			for (let k = a; k <= b; k++) {
-				reversed_map[j][k] = i;
-			}
+	$: if (mounted) calculate_color_map(equivalency);
+
+	function calculate_color_map(equivalency: ([start: number, end: number] | null)[][]) {
+		equivalency.forEach((row, i) => {
+			row.forEach((entry, j) => {
+				if (!entry) return;
+				const [a, b] = entry;
+				for (let k = a; k <= b; k++) {
+					color_map[j][k] = i;
+				}
+			});
 		});
-	});
+	}
 
 	// const max_words = Math.max(...WORDS.map((w) => w[1].length));
-	$: colors = pickNColors(EQUIVALENCY.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
+	$: colors = pickNColors(equivalency.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
 
 	// LINE_COORDINATES
 
@@ -119,9 +126,13 @@
 	type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
 	let LINES: Line[] = [];
 
+	function updateLines() {
+		LINES = drawLines(word_spans, verticalGap, lineGap, center);
+	}
+
 	$: if (mounted)
 		tick().then(() => {
-			LINES = drawLines(word_spans, verticalGap, lineGap, center);
+			updateLines();
 		});
 
 	function drawLines(word_spans: HTMLSpanElement[][], verticalGap: number, lineGap: number, center: boolean): Line[] {
@@ -129,9 +140,9 @@
 
 		const lines = [];
 
-		if (WORDS.length < 2) return [];
+		if (sentences.length < 2) return [];
 
-		for (let [i, entry] of EQUIVALENCY.entries()) {
+		for (let [i, entry] of equivalency.entries()) {
 			if (!entry) continue;
 			if (entry.length < 1) break;
 
@@ -176,12 +187,31 @@
 		}
 		return lines;
 	}
+
+	async function onadd({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
+		sentences.push([lang, words] as [string, string[]]);
+		sentences = sentences;
+
+		color_map = [...color_map, new Array(words.length).fill(-1)];
+		word_spans = [...word_spans, new Array(words.length).fill(null)];
+
+		equivalency.forEach((row, i) => {
+			equivalency[i] = [...row, null];
+		});
+		equivalency = equivalency;
+
+		await tick();
+
+		updateLines();
+
+		console.log(equivalency);
+	}
 </script>
 
 <svelte:window
 	on:resize={async () => {
 		await tick();
-		LINES = drawLines(word_spans, verticalGap, lineGap, center);
+		updateLines();
 	}}
 />
 
@@ -195,26 +225,29 @@
 			<label for="center">Centering</label>
 			<input type="checkbox" bind:checked={center} id="center" name="center" />
 		</div>
+		<div class="input">
+			<SentenceInput on:add={onadd} />
+		</div>
 	</div>
 
 	<output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
-		{#each WORDS as [lang, words], i}
-			<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
-			<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
-				{#each words as word, j}
-					<span style={`color: ${reversed_map[i][j] >= 0 ? colors[reversed_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
-				{/each}
-			</span>
-		{/each}
-		<svg style="position: absolute;" width="100%" height="100%">
-			{#each LINES as [x1, y1, x2, y2, color]}
-				<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
+		{#if mounted}
+			{#each sentences as [lang, words], i}
+				<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
+				<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
+					{#each words as word, j}
+						<span style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
+					{/each}
+				</span>
 			{/each}
-		</svg>
+			<svg style="position: absolute;" width="100%" height="100%">
+				{#each LINES as [x1, y1, x2, y2, color]}
+					<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
+				{/each}
+			</svg>
+		{/if}
 	</output>
 </main>
-
-<div class="sentences" />
 
 <style>
 	main {
@@ -226,6 +259,7 @@
 
 	.panel {
 		display: flex;
+		gap: 1em;
 	}
 
 	.params {
