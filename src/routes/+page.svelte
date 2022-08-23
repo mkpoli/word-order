@@ -4,6 +4,8 @@
 	import { onMount, setContext, tick } from 'svelte';
 	import SentenceInput from '../lib/SentenceInput.svelte';
 
+	import Output, { type Line } from '../lib/Output.svelte';
+
 	const LANGUAGE_NAMES = new Intl.DisplayNames(['en'], {
 		type: 'language'
 	});
@@ -87,7 +89,7 @@
 	];
 
 	let color_map: number[][] = sentences.map(([, words]) => new Array(words.length).fill(-1));
-	let word_spans: HTMLSpanElement[][] = sentences.map(([, words]) => new Array(words.length).fill(null));
+	let word_spans: HTMLSpanElement[][];
 
 	// Parameters
 	let verticalGap = 30;
@@ -116,18 +118,16 @@
 			});
 		});
 	}
-
-	// const max_words = Math.max(...WORDS.map((w) => w[1].length));
 	$: colors = pickNColors(equivalency.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
 
 	// LINE_COORDINATES
 
 	let output: HTMLOutputElement;
-	type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
-	let LINES: Line[] = [];
+
+	let lines: Line[] = [];
 
 	function updateLines() {
-		LINES = drawLines(word_spans, verticalGap, lineGap, center);
+		lines = drawLines(word_spans, verticalGap, lineGap, center);
 	}
 
 	$: if (mounted)
@@ -232,19 +232,7 @@
 
 	<output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
 		{#if mounted}
-			{#each sentences as [lang, words], i}
-				<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
-				<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
-					{#each words as word, j}
-						<span style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
-					{/each}
-				</span>
-			{/each}
-			<svg style="position: absolute;" width="100%" height="100%">
-				{#each LINES as [x1, y1, x2, y2, color]}
-					<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
-				{/each}
-			</svg>
+			<Output {sentences} {color_map} {equivalency} {center} {lines} {colors} bind:word_spans />
 		{/if}
 	</output>
 </main>
