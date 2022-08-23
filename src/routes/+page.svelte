@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { pickNColors } from '../lib/color';
 	import * as d3 from 'd3-color';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	const LANGUAGE_NAMES = new Intl.DisplayNames(['en'], {
 		type: 'language'
@@ -108,16 +108,22 @@
 
 	// LINE_COORDINATES
 
+	// Parameters
 	let verticalGap = 15;
 	let lineGap = 5;
+	let center = true;
+
 	let output: HTMLOutputElement;
 	type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
 	let LINES: Line[] = [];
 	$: console.log('LINES', LINES);
 
-	$: if (mounted) LINES = drawLines(word_spans, verticalGap, lineGap);
+	$: if (mounted)
+		tick().then(() => {
+			LINES = drawLines(word_spans, verticalGap, lineGap, center);
+		});
 
-	function drawLines(word_spans: HTMLSpanElement[][], verticalGap: number, lineGap: number): Line[] {
+	function drawLines(word_spans: HTMLSpanElement[][], verticalGap: number, lineGap: number, center: boolean): Line[] {
 		const rectOutput = output.getBoundingClientRect();
 
 		const lines = [];
@@ -177,11 +183,13 @@
 <input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
 <label for="line-gap">Line Gap: ({lineGap}px)</label>
 <input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
+<label for="center">Centering</label>
+<input type="checkbox" bind:checked={center} id="center" name="center" />
 
 <output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
 	{#each WORDS as [lang, words], i}
 		<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
-		<span class="sentence" {lang}>
+		<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
 			{#each words as word, j}
 				<span style={`color: ${reversed_map[i][j] >= 0 ? colors[reversed_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
 			{/each}
