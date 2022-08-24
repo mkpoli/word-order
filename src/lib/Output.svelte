@@ -146,33 +146,35 @@
 			<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
 		{/each}
 	</svg>
-</output>
 
-{#if mode === 'edit'}
-	<div class="edit-dialog">
-		<div>Editing</div>
-		<button
-			class="confirm"
-			on:click={() => {
-				dispatch('connect', { connected: [...connecting], connectedIndex });
-				connecting = [];
-				connectedIndex = -1;
-				mode = 'view';
-			}}
-		>
-			Confirm
-		</button>
-		<button
-			class="cancel"
-			on:click={() => {
-				connecting = [];
-				mode = 'view';
-			}}
-		>
-			Cancel
-		</button>
-	</div>
-{/if}
+	<Draggable top={50} left={150}>
+		{#if mode === 'edit'}
+			<div class="edit-dialog">
+				<div>Editing</div>
+				<button
+					class="confirm"
+					on:click={() => {
+						dispatch('connect', { connected: [...connecting], connectedIndex });
+						connecting = [];
+						connectedIndex = -1;
+						mode = 'view';
+					}}
+				>
+					Confirm
+				</button>
+				<button
+					class="cancel"
+					on:click={() => {
+						connecting = [];
+						mode = 'view';
+					}}
+				>
+					Cancel
+				</button>
+			</div>
+		{/if}
+	</Draggable>
+</output>
 
 <style>
 	.tag {
@@ -209,7 +211,7 @@
 			't t'
 			'y n';
 
-		width: 20em;
+		width: 8em;
 		margin: 0 auto;
 		text-align: center;
 
@@ -219,12 +221,11 @@
 
 		box-shadow: 1px 1px 5px 0 #ccc;
 
-		background-color: white;
-		right: 0;
-		top: 0;
+		background-color: rgba(242, 239, 255, 0.5);
+		backdrop-filter: blur(4px);
 		margin: 1em;
 
-		position: fixed;
+		position: absolute;
 	}
 
 	.edit-dialog > div {
