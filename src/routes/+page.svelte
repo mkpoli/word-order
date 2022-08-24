@@ -174,8 +174,9 @@
 	}
 
 	.panel {
-		display: flex;
+		display: grid;
 		gap: 1em;
+		grid-template-columns: auto 1fr auto;
 	}
 
 	.params {
