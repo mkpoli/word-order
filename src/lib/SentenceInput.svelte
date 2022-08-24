@@ -22,7 +22,8 @@
 
 <div class="input-form">
 	<div>
-		Please input the sentence with each word separated by either <code>&nbsp;</code> (U+0020, SPACE) or <code>|</code> (U+007C, VERTICAL LINE).
+		Please input the sentence here. Each word are separated automatically by space and punctuations. For further separtion (especially for
+		CJK/Thai/Tibetan/etc. whose words are not separated by spaces), use the <code>|</code> (U+007C, VERTICAL LINE) instead.
 	</div>
 	<textarea placeholder="Input new sentence here..." bind:value={text} />
 	<div>
@@ -30,7 +31,7 @@
 		<label for="lang">{displayName}</label>
 		<button
 			on:click={() => {
-				dispatch('add', { lang, words: text.split(/(\s+)|[|]/).filter(Boolean) });
+				dispatch('add', { lang, words: text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean) });
 			}}>Add</button
 		>
 	</div>
