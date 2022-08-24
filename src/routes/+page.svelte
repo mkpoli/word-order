@@ -25,67 +25,17 @@
 		['ja', ['私', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。']]
 	];
 
-	let equivalency: ([start: number, end: number] | null)[][] = [
-		[
-			[0, 0], // 'I '
-			[0, 0], // '我'
-			[0, 0], // '我'
-			[0, 1] // '私'， 'は'
-		],
-		[
-			[1, 1], // 'can '
-			[1, 1], // '能'
-			[1, 1], // '能'
-			[5, 5] // 'れます'
-		],
-		[
-			[2, 2], // 'eat '
-			[2, 2], // '吞下'
-			[2, 2], // '吞下'
-			[4, 4] // '食べ'
-		],
-		[
-			[3, 3], // 'glass '
-			[3, 3], // '玻璃'
-			[3, 3], // '玻璃'
-			[2, 3] // 'ガラスを'
-		],
-		[
-			[4, 4], // 'and '
-			[4, 4], // '而'
-			[4, 4], // '而'
-			null //
-		],
-		[
-			[5, 5], // 'it '
-			null,
-			null,
-			[7, 8] // 'それは'
-		],
-		[
-			[6, 6], // 'doesn't '
-			[5, 5], // '不'
-			[5, 5], // '不'
-			[12, 12] // 'ません'
-		],
-		[
-			[7, 7], // 'hurt '
-			[6, 6], // '伤'
-			[6, 6], // '傷'
-			[11, 11] // '傷つけ'
-		],
-		[
-			[8, 8], // 'me'
-			null,
-			null,
-			[9, 10] // '私', 'を'
-		],
-		[
-			null,
-			[7, 7], // '身體'
-			[7, 7], // '身體'
-			null
-		]
+	let equivalency: number[][][] = [
+		[[0], [0], [0], [0, 1]],
+		[[2], [1], [1], [5]],
+		[[4], [2], [2], [4]],
+		[[6], [3], [3], [2, 3]],
+		[[8], [4], [4], []],
+		[[10], [], [], [7, 8]],
+		[[12], [5], [5], [12]],
+		[[14], [6], [6], [11]],
+		[[16], [], [], [9, 10]],
+		[[], [7], [7], []]
 	];
 
 	let color_map: number[][] = sentences.map(([, words]) => new Array(words.length).fill(-1));
@@ -107,16 +57,16 @@
 
 	$: if (mounted) calculate_color_map(equivalency);
 
-	function calculate_color_map(equivalency: ([start: number, end: number] | null)[][]) {
-		equivalency.forEach((row, i) => {
-			row.forEach((entry, j) => {
-				if (!entry) return;
-				const [a, b] = entry;
-				for (let k = a; k <= b; k++) {
-					color_map[j][k] = i;
+	function calculate_color_map(equivalency: number[][][]) {
+		for (let [i, entry] of equivalency.entries()) {
+			for (let [j, words] of entry.entries()) {
+				for (let word of words) {
+					// i -> index of equivalency entries (color_id)
+					// j -> index of language sentences (lang_id)
+					color_map[j][word] = i;
 				}
-			});
-		});
+			}
+		}
 	}
 	$: colors = pickNColors(equivalency.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
 
@@ -131,9 +81,9 @@
 		color_map = [...color_map, new Array(words.length).fill(-1)];
 		word_spans = [...word_spans, new Array(words.length).fill(null)];
 
-		equivalency.forEach((row, i) => {
-			equivalency[i] = [...row, null];
-		});
+		for (const [i, entry] of equivalency.entries()) {
+			equivalency[i] = [...entry, []];
+		}
 		equivalency = equivalency;
 
 		await tick();
