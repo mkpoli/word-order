@@ -3,13 +3,13 @@
 </script>
 
 <script lang="ts">
-	import { getContext, onMount, tick } from 'svelte';
+	import { cartesian, segmentate } from './array';
 
 	type Sentence = [lang: string, words: string[]];
 	const LANGUAGE_NAMES = getContext<Intl.DisplayNames>('LANGUAGE_NAMES');
 	export let sentences: Sentence[];
 	export let color_map: number[][];
-	export let equivalency: ([start: number, end: number] | null)[][];
+	export let equivalency: number[][][];
 	export let word_spans: HTMLSpanElement[][] = sentences.map(([, words]) => new Array(words.length).fill(null));
 	export let center: boolean;
 	export let lines: Line[];
@@ -25,57 +25,46 @@
 		mounted = true;
 	});
 
-	$: if (mounted) lines = drawLines(word_spans, verticalGap, lineGap, center);
+	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, center);
 
-	function drawLines(word_spans: HTMLSpanElement[][], verticalGap: number, lineGap: number, center: boolean): Line[] {
+	function drawLines(word_spans: HTMLSpanElement[][], equivalency: number[][][], verticalGap: number, lineGap: number, center: boolean): Line[] {
 		const rectOutput = output.getBoundingClientRect();
 
-		const lines = [];
+		const lines: Line[] = [];
 
 		if (sentences.length < 2) return [];
 
 		for (let [i, entry] of equivalency.entries()) {
-			if (!entry) continue;
-			if (entry.length < 1) break;
+			for (let j = 0; j < entry.length - 1; j++) {
+				const k = j + 1; // k = index of next sentence
 
-			for (let [j, A] of entry.entries()) {
-				if (j == entry.length - 1) break;
-				const B = entry[j + 1];
+				const [A, B] = [entry[j], entry[k]];
 				if (!A || !B) continue;
 
-				// console.log(`(${WORDS[j][0]}) ${WORDS[j][1][A[0]]} → (${WORDS[j + 1][0]}) ${WORDS[j + 1][1][B[0]]}`);
+				// A = [10]
+				// B = [1, 2, 5]
 
-				const spanA = word_spans[j][A[0]];
-				const spanB = word_spans[j + 1][B[0]];
+				// segA = [[10, 10]]
+				// segB = [[1, 2], [5, 5]]
 
-				if (!spanA || !spanB) continue;
+				// carteA = [[[10, 10], [1, 2]], [[10, 10], [5, 5]]
 
-				const rectA = spanA.getBoundingClientRect();
-				const rectB = spanB.getBoundingClientRect();
+				for (let [[a1, a2], [b1, b2]] of cartesian(segmentate(A), segmentate(B))) {
+					const [spanA1, spanA2, spanB1, spanB2] = [word_spans[j][a1], word_spans[j][a2], word_spans[k][b1], word_spans[k][b2]];
+					if (!spanA1 || !spanA2 || !spanB1 || !spanB2) continue;
+					const rectA1 = spanA1.getBoundingClientRect();
+					const rectA2 = spanA2.getBoundingClientRect();
+					const rectB1 = spanB1.getBoundingClientRect();
+					const rectB2 = spanB2.getBoundingClientRect();
 
-				const centerA = {
-					x: rectA.left - rectOutput.left + rectA.width / 2,
-					y: rectA.top - rectOutput.top + rectA.height / 2
-				};
-
-				const centerB = {
-					x: rectB.left - rectOutput.left + rectB.width / 2,
-					y: rectB.top - rectOutput.top + rectB.height / 2
-				};
-
-				lines.push([
-					rectA.left - rectOutput.left + rectA.width / 2,
-					rectA.bottom - rectOutput.top + lineGap,
-					rectB.left - rectOutput.left + rectB.width / 2,
-					rectB.top - rectOutput.top - lineGap,
-					colors[i]
-				] as Line);
+					const x1 = (rectA1.left + rectA2.left - rectOutput.left) / 2;
+					const y1 = rectA1.bottom - rectOutput.top + lineGap;
+					const x2 = (rectB1.left + rectB2.left - rectOutput.left) / 2;
+					const y2 = rectB1.top - rectOutput.top - lineGap;
+					const color = colors[i];
+					lines.push([x1, y1, x2, y2, color] as Line);
+				}
 			}
-			// break;
-			// for (let [l, r] of entry) {
-			// }
-
-			// [ [0, 0], // 'I ' [0, 0], // '我' [0, 0], // '我' [0, 1] // '私'， 'は' ],
 		}
 		return lines;
 	}
