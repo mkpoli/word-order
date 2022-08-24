@@ -3,7 +3,15 @@
 </script>
 
 <script lang="ts">
+	import { getContext, onMount, tick, createEventDispatcher } from 'svelte';
+	import type { Mode } from '../lib/types';
 	import { cartesian, segmentate } from './array';
+
+	const dispatch = createEventDispatcher<{
+		connect: {
+			connected: [number, number][];
+		};
+	}>();
 
 	type Sentence = [lang: string, words: string[]];
 	const LANGUAGE_NAMES = getContext<Intl.DisplayNames>('LANGUAGE_NAMES');
@@ -16,6 +24,7 @@
 	export let colors: string[];
 	export let verticalGap: number;
 	export let lineGap: number;
+	export let mode: Mode = 'view';
 
 	let output: HTMLOutputElement;
 
@@ -68,12 +77,18 @@
 		}
 		return lines;
 	}
+
+	let connecting: [l: number, w: number][] = [];
+
+	function isContent(word: string) {
+		return !word.match(/^\s|\p{P}+$/u);
+	}
 </script>
 
 <svelte:window
 	on:resize={async () => {
 		await tick();
-		lines = drawLines(word_spans, verticalGap, lineGap, center);
+		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, center);
 	}}
 />
 
@@ -82,7 +97,25 @@
 		<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
 		<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
 			{#each words as word, j}
-				<span style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`} bind:this={word_spans[i][j]}>{word}</span>
+				<span
+					class="word"
+					class:content={isContent(word)}
+					class:editing={mode === 'edit'}
+					class:connected={connecting.some(([l, w]) => l == i && w == j)}
+					style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`}
+					on:click={() => {
+						if (!isContent(word)) return;
+
+						if (mode == 'view') mode = 'edit';
+
+						if (connecting.some(([l, w]) => l == i && w == j)) {
+							connecting = connecting.filter(([l, w]) => l != i || w != j);
+						} else {
+							connecting = [...connecting, [i, j]];
+						}
+					}}
+					bind:this={word_spans[i][j]}>{word}</span
+				>
 			{/each}
 		</span>
 	{/each}
@@ -93,10 +126,46 @@
 	</svg>
 </output>
 
+{#if mode === 'edit'}
+	<div class="edit-dialog">
+		<div>Editing</div>
+		<button
+			class="confirm"
+			on:click={() => {
+				dispatch('connect', { connected: [...connecting] });
+				connecting = [];
+				mode = 'view';
+			}}
+		>
+			Confirm
+		</button>
+		<button
+			class="cancel"
+			on:click={() => {
+				connecting = [];
+				mode = 'view';
+			}}
+		>
+			Cancel
+		</button>
+	</div>
+{/if}
+
 <style>
 	.tag {
 		font-weight: bold;
 		text-align: center;
+	}
+
+	.word.content:hover {
+		background-color: #eee;
+	}
+
+	.word.editing:not(.connected) {
+		background-color: #ccc;
+	}
+	.word.editing.connected {
+		outline: 1px solid #e00000;
 	}
 
 	output {
@@ -105,5 +174,45 @@
 		display: grid;
 		grid-template-columns: auto 1fr;
 		gap: 1em;
+	}
+
+	svg {
+		pointer-events: none;
+	}
+
+	.edit-dialog {
+		display: grid;
+		grid-template-areas:
+			't t'
+			'y n';
+
+		width: 20em;
+		margin: 0 auto;
+		text-align: center;
+
+		gap: 1em;
+
+		padding: 1em 2em;
+
+		box-shadow: 1px 1px 5px 0 #ccc;
+
+		background-color: white;
+		right: 0;
+		top: 0;
+		margin: 1em;
+
+		position: fixed;
+	}
+
+	.edit-dialog > div {
+		grid-area: t;
+	}
+
+	.edit-dialog > .confirm {
+		grid-area: y;
+	}
+
+	.edit-dialog > .cancel {
+		grid-area: n;
 	}
 </style>

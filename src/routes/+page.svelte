@@ -5,6 +5,7 @@
 	import SentenceInput from '../lib/SentenceInput.svelte';
 
 	import Output, { type Line } from '../lib/Output.svelte';
+	import type { Mode } from '$lib/types';
 
 	const LANGUAGE_NAMES = new Intl.DisplayNames(['en'], {
 		type: 'language'
@@ -37,6 +38,8 @@
 		[[16], [], [], [9, 10]],
 		[[], [7], [7], []]
 	];
+
+	let mode: Mode = 'view';
 
 	let color_map: number[][] = sentences.map(([, words]) => new Array(words.length).fill(-1));
 	let word_spans: HTMLSpanElement[][];
@@ -89,6 +92,14 @@
 		await tick();
 		console.log(equivalency);
 	}
+
+	function onconnect({ detail: { connected } }: CustomEvent<{ connected: [number, number][] }>) {
+		const grouped: number[][] = sentences.map(([, words]) => []);
+		connected.forEach(([a, b]) => {
+			grouped[a].push(b);
+		});
+		equivalency = [...equivalency, grouped];
+	}
 </script>
 
 <main>
@@ -107,7 +118,19 @@
 	</div>
 
 	{#if mounted}
-		<Output {sentences} {color_map} {equivalency} {center} bind:lines {colors} {verticalGap} {lineGap} bind:word_spans />
+		<Output
+			{sentences}
+			{color_map}
+			{equivalency}
+			{center}
+			bind:lines
+			{colors}
+			{verticalGap}
+			{lineGap}
+			bind:word_spans
+			bind:mode
+			on:connect={onconnect}
+		/>
 	{/if}
 </main>
 
