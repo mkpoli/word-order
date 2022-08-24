@@ -6,6 +6,7 @@
 	import { getContext, onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Mode } from '../lib/types';
 	import { cartesian, segmentate } from './array';
+	import Draggable from './Draggable.svelte';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -110,30 +111,29 @@
 					on:click={() => {
 						if (!isContent(word)) return;
 
-						if (mode == 'view') mode = 'edit';
+						const entryIndex = color_map[i][j];
 
-						connected = [];
-						if (connecting.length === 0) {
-							let entryIndex = color_map[i][j];
+						if (mode === 'view') {
+							mode = 'edit';
 
-							for (let [i, words] of equivalency[entryIndex].entries()) {
-								for (let word of words) {
-									connected.push([i, word]);
+							if (entryIndex !== -1) {
+								connected = [];
+								for (let [i, words] of equivalency[entryIndex].entries()) {
+									for (let word of words) {
+										connected.push([i, word]);
+									}
 								}
-							}
 
-							if (connected.length > 0) {
-								connecting = connected;
+								connecting = connected.map(([l, w]) => [l, w]);
 								connectedIndex = entryIndex;
-							} else {
-								connecting = [[i, j]];
+								return;
 							}
+						}
+
+						if (connecting.some(([l, w]) => l == i && w == j)) {
+							connecting = connecting.filter(([l, w]) => l != i || w != j);
 						} else {
-							if (connecting.some(([l, w]) => l == i && w == j)) {
-								connecting = connecting.filter(([l, w]) => l != i || w != j);
-							} else {
-								connecting = [...connecting, [i, j]];
-							}
+							connecting = [...connecting, [i, j]];
 						}
 					}}
 					bind:this={word_spans[i][j]}>{word}</span
