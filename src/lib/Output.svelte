@@ -10,6 +10,7 @@
 	const dispatch = createEventDispatcher<{
 		connect: {
 			connected: [number, number][];
+			connectedIndex: number;
 		};
 	}>();
 
@@ -83,6 +84,9 @@
 	function isContent(word: string) {
 		return !word.match(/^\s|\p{P}+$/u);
 	}
+
+	let connected: [l: number, w: number][] = [];
+	let connectedIndex = -1;
 </script>
 
 <svelte:window
@@ -108,10 +112,28 @@
 
 						if (mode == 'view') mode = 'edit';
 
-						if (connecting.some(([l, w]) => l == i && w == j)) {
-							connecting = connecting.filter(([l, w]) => l != i || w != j);
+						connected = [];
+						if (connecting.length === 0) {
+							let entryIndex = color_map[i][j];
+
+							for (let [i, words] of equivalency[entryIndex].entries()) {
+								for (let word of words) {
+									connected.push([i, word]);
+								}
+							}
+
+							if (connected.length > 0) {
+								connecting = connected;
+								connectedIndex = entryIndex;
+							} else {
+								connecting = [[i, j]];
+							}
 						} else {
-							connecting = [...connecting, [i, j]];
+							if (connecting.some(([l, w]) => l == i && w == j)) {
+								connecting = connecting.filter(([l, w]) => l != i || w != j);
+							} else {
+								connecting = [...connecting, [i, j]];
+							}
 						}
 					}}
 					bind:this={word_spans[i][j]}>{word}</span
@@ -132,8 +154,9 @@
 		<button
 			class="confirm"
 			on:click={() => {
-				dispatch('connect', { connected: [...connecting] });
+				dispatch('connect', { connected: [...connecting], connectedIndex });
 				connecting = [];
+				connectedIndex = -1;
 				mode = 'view';
 			}}
 		>
