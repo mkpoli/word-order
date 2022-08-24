@@ -41,7 +41,7 @@
 
 	let mode: Mode = 'view';
 
-	let color_map: number[][] = sentences.map(([, words]) => new Array(words.length).fill(-1));
+	let color_map: number[][] = [];
 	let word_spans: HTMLSpanElement[][];
 
 	// Parameters
@@ -59,8 +59,8 @@
 	});
 
 	$: if (mounted) calculate_color_map(equivalency);
-
 	function calculate_color_map(equivalency: number[][][]) {
+		color_map = sentences.map(([, words]) => new Array(words.length).fill(-1));
 		for (let [i, entry] of equivalency.entries()) {
 			for (let [j, words] of entry.entries()) {
 				for (let word of words) {
@@ -70,7 +70,9 @@
 				}
 			}
 		}
+		color_map = color_map;
 	}
+
 	$: colors = pickNColors(equivalency.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
 
 	// LINE_COORDINATES
@@ -90,15 +92,27 @@
 		equivalency = equivalency;
 
 		await tick();
-		console.log(equivalency);
 	}
 
-	function onconnect({ detail: { connected } }: CustomEvent<{ connected: [number, number][] }>) {
-		const grouped: number[][] = sentences.map(([, words]) => []);
+	function onconnect({ detail: { connected, connectedIndex } }: CustomEvent<{ connected: [number, number][]; connectedIndex: number }>) {
+		const grouped: number[][] = sentences.map(() => []);
 		connected.forEach(([a, b]) => {
 			grouped[a].push(b);
 		});
-		equivalency = [...equivalency, grouped];
+
+		if (grouped.every((entry) => entry.length === 0)) {
+			equivalency.splice(connectedIndex, 1);
+		} else {
+			if (connectedIndex === -1) {
+				if (grouped.length !== 0) {
+					equivalency.push(grouped);
+				}
+			} else {
+				equivalency[connectedIndex] = grouped;
+			}
+		}
+
+		equivalency = equivalency;
 	}
 </script>
 
