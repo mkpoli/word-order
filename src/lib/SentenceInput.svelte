@@ -1,16 +1,12 @@
 <script lang="ts">
-	import { getContext, createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { getLanguageName } from './lang';
 
-	const LANGUAGE_NAMES = getContext<Intl.DisplayNames>('LANGUAGE_NAMES');
 	let lang = 'en';
 	let displayName = 'English';
 	let text = '';
 
-	$: try {
-		displayName = LANGUAGE_NAMES.of(lang)!;
-	} catch (e) {
-		displayName = lang;
-	}
+	$: displayName = getLanguageName(lang);
 
 	const dispatch = createEventDispatcher<{
 		add: {
