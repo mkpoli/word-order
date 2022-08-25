@@ -1,12 +1,12 @@
 <script lang="ts" context="module">
 	export type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
+	import { draggable } from '@neodrag/svelte';
 </script>
 
 <script lang="ts">
 	import { onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Alignment, Mode } from '../lib/types';
 	import { cartesian, segmentate } from './array';
-	import Draggable from './Draggable.svelte';
 	import { getLanguageName } from './lang';
 	import { locale } from '$i18n/i18n-svelte';
 
@@ -229,33 +229,31 @@
 		{/each}
 	</svg>
 
-	<Draggable top={50} left={150}>
-		{#if mode === 'edit'}
-			<div class="edit-dialog">
-				<div>Editing</div>
-				<button
-					class="confirm"
-					on:click={() => {
-						dispatch('connect', { connected: [...connecting], connectedIndex });
-						connecting = [];
-						connectedIndex = -1;
-						mode = 'view';
-					}}
-				>
-					Confirm
-				</button>
-				<button
-					class="cancel"
-					on:click={() => {
-						connecting = [];
-						mode = 'view';
-					}}
-				>
-					Cancel
-				</button>
-			</div>
-		{/if}
-	</Draggable>
+	{#if mode === 'edit'}
+		<div class="edit-dialog" use:draggable>
+			<div>Editing</div>
+			<button
+				class="confirm"
+				on:click={() => {
+					dispatch('connect', { connected: [...connecting], connectedIndex });
+					connecting = [];
+					connectedIndex = -1;
+					mode = 'view';
+				}}
+			>
+				Confirm
+			</button>
+			<button
+				class="cancel"
+				on:click={() => {
+					connecting = [];
+					mode = 'view';
+				}}
+			>
+				Cancel
+			</button>
+		</div>
+	{/if}
 </output>
 
 <style>
@@ -306,6 +304,8 @@
 		background-color: rgba(242, 239, 255, 0.5);
 		backdrop-filter: blur(4px);
 		margin: 1em;
+
+		cursor: move;
 
 		position: absolute;
 	}
