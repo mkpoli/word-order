@@ -13,6 +13,8 @@
 
 		// select locale
 		setLocale(newLocale);
+
+		window.localStorage.setItem('locale', newLocale);
 	};
 
 	let selected = $locale;
