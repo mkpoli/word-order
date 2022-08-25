@@ -118,76 +118,78 @@
 </script>
 
 <main>
-	<div class="panel">
-		<div class="params">
-			<label for="vertical-gap">Vertical Gap: ({verticalGap}px)</label>
-			<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
-			<label for="line-gap">Line Gap: ({lineGap}px)</label>
-			<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
-			<label for="center">Centering</label>
-			<input type="checkbox" bind:checked={center} id="center" name="center" />
-		</div>
-		<div class="input">
-			<SentenceInput on:add={onadd} />
-		</div>
-		<div>
-			{#each equivalency as entry, i}
-				<div class="equivalency" style={`color: ${colors[i]}`}>
-					{#each entry as words, j}
-						<span class="words">
-							{#if words.length === 0}
-								<span class="word">❌</span>
-							{:else}
-								{#each words as k}
-									<span class="word">{sentences[j][1][k]}</span>
-								{/each}
-							{/if}
-						</span>
-					{/each}
-				</div>
-			{/each}
-		</div>
+	<div class="params">
+		<label for="vertical-gap">Vertical Gap: ({verticalGap}px)</label>
+		<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
+		<label for="line-gap">Line Gap: ({lineGap}px)</label>
+		<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
+		<label for="center">Centering</label>
+		<input type="checkbox" bind:checked={center} id="center" name="center" />
 	</div>
 
-	{#if mounted}
-		<Output
-			{sentences}
-			{color_map}
-			{equivalency}
-			{center}
-			bind:lines
-			{colors}
-			{verticalGap}
-			{lineGap}
-			bind:word_spans
-			bind:mode
-			on:connect={onconnect}
-			on:reorder={({ detail: { from, to } }) => {
-				const [lang, words] = sentences[from];
-				sentences.splice(from, 1);
-				sentences.splice(to, 0, [lang, words]);
-				sentences = sentences;
+	<div class="input">
+		<SentenceInput on:add={onadd} />
+	</div>
 
-				for (const [i, entry] of equivalency.entries()) {
-					const value = entry[from];
-					entry.splice(from, 1);
-					entry.splice(to, 0, value);
-					equivalency[i] = entry;
-				}
-				equivalency = equivalency;
-			}}
-			on:delete={({ detail: { sentence } }) => {
-				sentences.splice(sentence, 1);
-				sentences = sentences;
+	<div class="equivalency">
+		{#each equivalency as entry, i}
+			<div class="equivalency" style={`color: ${colors[i]}`}>
+				{#each entry as words, j}
+					<span class="words">
+						{#if words.length === 0}
+							<span class="word">❌</span>
+						{:else}
+							{#each words as k}
+								<span class="word">{sentences[j][1][k]}</span>
+							{/each}
+						{/if}
+					</span>
+				{/each}
+			</div>
+		{/each}
+	</div>
 
-				for (const [i, entry] of equivalency.entries()) {
-					entry.splice(sentence, 1);
-					equivalency[i] = entry;
-				}
-				equivalency = equivalency;
-			}}
-		/>
-	{/if}
+	<div class="output">
+		{#if mounted}
+			<Output
+				{sentences}
+				{color_map}
+				{equivalency}
+				{center}
+				bind:lines
+				{colors}
+				{verticalGap}
+				{lineGap}
+				bind:word_spans
+				bind:mode
+				on:connect={onconnect}
+				on:reorder={({ detail: { from, to } }) => {
+					const [lang, words] = sentences[from];
+					sentences.splice(from, 1);
+					sentences.splice(to, 0, [lang, words]);
+					sentences = sentences;
+
+					for (const [i, entry] of equivalency.entries()) {
+						const value = entry[from];
+						entry.splice(from, 1);
+						entry.splice(to, 0, value);
+						equivalency[i] = entry;
+					}
+					equivalency = equivalency;
+				}}
+				on:delete={({ detail: { sentence } }) => {
+					sentences.splice(sentence, 1);
+					sentences = sentences;
+
+					for (const [i, entry] of equivalency.entries()) {
+						entry.splice(sentence, 1);
+						equivalency[i] = entry;
+					}
+					equivalency = equivalency;
+				}}
+			/>
+		{/if}
+	</div>
 </main>
 
 <style>
@@ -195,13 +197,59 @@
 		padding: 1em;
 		display: flex;
 		flex-direction: column;
-		gap: 2em;
+		gap: 2em 1em;
+		display: grid;
+		grid-template: auto auto / auto auto auto;
 	}
 
-	.panel {
-		display: grid;
-		gap: 1em;
-		grid-template-columns: auto 1fr auto;
+	.params {
+		max-width: 10em;
+
+		grid-column: 1;
+		grid-row: 3;
+	}
+
+	.input {
+		grid-column: 2;
+		grid-row: 3;
+	}
+
+	.output {
+		grid-column: 1 / 3;
+		grid-row: 1;
+
+		padding: 1em;
+	}
+
+	.equivalency {
+		grid-column: 3;
+		grid-row: 1 / -1;
+	}
+
+	@media (max-width: 720px) {
+		main {
+			grid-template: auto auto auto / auto 1fr;
+		}
+
+		.output {
+			grid-column: 1 / 3;
+			grid-row: 1;
+		}
+
+		.input {
+			grid-column: 1 / 3;
+			grid-row: 2;
+		}
+
+		.params {
+			grid-column: 1;
+			grid-row: 3;
+		}
+
+		.equivalency {
+			grid-column: 2;
+			grid-row: 3;
+		}
 	}
 
 	.params {
