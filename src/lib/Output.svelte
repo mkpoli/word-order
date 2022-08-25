@@ -5,7 +5,7 @@
 
 <script lang="ts">
 	import { onMount, tick, createEventDispatcher } from 'svelte';
-	import type { Alignment, Mode } from '../lib/types';
+	import type { Alignment, Mode } from '$lib/types';
 	import { cartesian, segmentate } from './array';
 	import { getLanguageName } from './lang';
 	import { locale } from '$i18n/i18n-svelte';
