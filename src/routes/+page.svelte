@@ -119,11 +119,20 @@
 
 <main>
 	<div class="params">
-		<label for="vertical-gap">Vertical Gap: ({verticalGap}px)</label>
+		<label for="vertical-gap">
+			<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
+			Vertical Gap ({verticalGap}px)
+		</label>
 		<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
-		<label for="line-gap">Line Gap: ({lineGap}px)</label>
+		<label for="line-gap">
+			<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
+			Line Gap ({lineGap}px)
+		</label>
 		<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
-		<label for="center">Centering</label>
+		<label for="center">
+			<iconify-icon icon="majesticons:text-align-center-line" inline="true" />
+			Centering
+		</label>
 		<input type="checkbox" bind:checked={center} id="center" name="center" />
 	</div>
 
@@ -203,7 +212,7 @@
 	}
 
 	.params {
-		max-width: 10em;
+		max-width: 12em;
 
 		grid-column: 1;
 		grid-row: 3;
