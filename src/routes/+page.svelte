@@ -6,7 +6,7 @@
 	import 'iconify-icon';
 
 	import Output, { type Line } from '../lib/Output.svelte';
-	import type { Mode } from '$lib/types';
+	import type { Alignment, Mode } from '$lib/types';
 
 	const LANGUAGE_NAMES = new Intl.DisplayNames(['en'], {
 		type: 'language'
@@ -48,7 +48,7 @@
 	// Parameters
 	let verticalGap = 30;
 	let lineGap = 5;
-	let center = true;
+	let alignment: Alignment = 'center';
 
 	let mounted = false;
 	onMount(() => {
@@ -129,11 +129,16 @@
 			Line Gap ({lineGap}px)
 		</label>
 		<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
-		<label for="center">
-			<iconify-icon icon="majesticons:text-align-center-line" inline="true" />
-			Centering
-		</label>
-		<input type="checkbox" bind:checked={center} id="center" name="center" />
+
+		<label for="alignment">Text Alignment</label>
+		<div class="alignment">
+			<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
+			<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left" /></label>
+			<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" />
+			<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center" /></label>
+			<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
+			<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right" /></label>
+		</div>
 	</div>
 
 	<div class="input">
@@ -164,7 +169,7 @@
 				{sentences}
 				{color_map}
 				{equivalency}
-				{center}
+				{alignment}
 				bind:lines
 				{colors}
 				{verticalGap}
@@ -202,6 +207,11 @@
 </main>
 
 <style>
+	:root {
+		--color-accent: rgb(44 71 255);
+		accent-color: var(--color-accent);
+	}
+
 	main {
 		padding: 1em;
 		display: flex;
@@ -216,6 +226,14 @@
 
 		grid-column: 1;
 		grid-row: 3;
+
+		padding: 1.5em 1.2em;
+		border-radius: 5px;
+		box-shadow: 1px 1px 5px 0 #ccc;
+
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
 	}
 
 	.input {
@@ -261,20 +279,64 @@
 		}
 	}
 
-	.params {
-		padding: 1.5em 1em;
-		border-radius: 5px;
-		box-shadow: 1px 1px 5px 0 #ccc;
-
-		display: flex;
-		flex-direction: column;
-	}
-
 	.words:not(:last-of-type)::after {
 		content: '＝';
 	}
 
 	.word:not(:last-of-type)::after {
 		content: '|';
+	}
+
+	.params > input {
+		margin: 0 0.5em;
+	}
+
+	.alignment {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		justify-content: center;
+		align-items: center;
+
+		padding: 0;
+
+		font-size: 1.2em;
+		border-radius: 0.2em;
+		border: 1px solid transparent;
+
+		color: var(--color-accent);
+
+		overflow: hidden;
+		position: relative;
+	}
+
+	.alignment:hover {
+		border-color: var(--color-accent);
+	}
+
+	.alignment > label {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.1em;
+		margin: 0;
+	}
+
+	input[type='radio'][name='alignment']:checked + label {
+		color: white;
+		background-color: var(--color-accent);
+		border: 1px solid var(--color-accent);
+	}
+
+	input[type='radio'][name='alignment'] {
+		position: absolute;
+		opacity: 0;
+		cursor: pointer;
+		height: 0;
+		width: 0;
+		display: none;
+	}
+
+	input[type='radio'][name='alignment'] + label {
+		cursor: pointer;
 	}
 </style>

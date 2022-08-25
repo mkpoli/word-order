@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { getContext, onMount, tick, createEventDispatcher } from 'svelte';
-	import type { Mode } from '../lib/types';
+	import type { Alignment, Mode } from '../lib/types';
 	import { cartesian, segmentate } from './array';
 	import Draggable from './Draggable.svelte';
 
@@ -28,7 +28,7 @@
 	export let color_map: number[][];
 	export let equivalency: number[][][];
 	export let word_spans: HTMLSpanElement[][] = sentences.map(([, words]) => new Array(words.length).fill(null));
-	export let center: boolean;
+	export let alignment: Alignment = 'center';
 	export let lines: Line[];
 	export let colors: string[];
 	export let verticalGap: number;
@@ -43,9 +43,14 @@
 		mounted = true;
 	});
 
-	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, center);
+	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
 
-	function drawLines(word_spans: HTMLSpanElement[][], equivalency: number[][][], verticalGap: number, lineGap: number, center: boolean): Line[] {
+	$: if (alignment)
+		tick().then(() => {
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
+		});
+
+	function drawLines(word_spans: HTMLSpanElement[][], equivalency: number[][][], verticalGap: number, lineGap: number): Line[] {
 		const rectOutput = output.getBoundingClientRect();
 
 		const lines: Line[] = [];
@@ -149,7 +154,7 @@
 <svelte:window
 	on:resize={async () => {
 		await tick();
-		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, center);
+		lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
 	}}
 	on:pointermove={onpointermove}
 	on:pointerup={dragend}
@@ -162,7 +167,7 @@
 				<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
 			</div>
 			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{LANGUAGE_NAMES.of(lang)}</span>
-			<span class="words" {lang} style={`text-align: ${center ? 'center' : 'start'}`} style:transform={getTransform(i, draggingOffset)}>
+			<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
 				{#each words as word, j}
 					<span
 						class="word"
