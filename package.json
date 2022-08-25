@@ -10,7 +10,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"typesafe-i18n": "typesafe-i18n"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.25.0",
@@ -34,6 +35,7 @@
 	"type": "module",
 	"dependencies": {
 		"d3-color": "^3.1.0",
-		"iconify-icon": "^1.0.0-beta.3"
+		"iconify-icon": "^1.0.0-beta.3",
+		"typesafe-i18n": "^5.12.0"
 	}
 }

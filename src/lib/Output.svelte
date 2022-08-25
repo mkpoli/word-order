@@ -8,6 +8,7 @@
 	import { cartesian, segmentate } from './array';
 	import Draggable from './Draggable.svelte';
 	import { getLanguageName } from './lang';
+	import { locale } from '$i18n/i18n-svelte';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -166,7 +167,7 @@
 			<div class="dragger" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 				<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
 			</div>
-			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang)}</span>
+			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
 			<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
 				{#each words as word, j}
 					<span
