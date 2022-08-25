@@ -206,6 +206,25 @@
 	</div>
 </main>
 
+<svelte:head>
+	<title>Word Order Illustrator</title>
+</svelte:head>
+
+<footer>
+	<p>
+		Word Order Illustrator (
+		<a href="https://github.com/mkpoli/word-order/" title="Github Repository"><iconify-icon icon="logos:github-icon" inline="true" /></a>,
+		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title="Anounce Tweet"><iconify-icon icon="logos:twitter" inline="true" /></a>) by
+		@mkpoli (
+		<a href="https://twitter.com/mkpoli/"><iconify-icon icon="logos:twitter" inline="true" /></a>,
+		<a href="https://mkpo.li/"><iconify-icon icon="mdi:home" inline="true" /></a>
+		)
+	</p>
+	<p>
+		{@html $LL.footer.info({ license: '<iconify-icon icon="ri:creative-commons-zero-line" inline="true"></iconify-icon> (CC0) ' })}
+	</p>
+</footer>
+
 <style>
 	:root {
 		--color-accent: rgb(44 71 255);
@@ -219,6 +238,15 @@
 		gap: 2em 1em;
 		display: grid;
 		grid-template: auto auto / auto auto auto;
+	}
+
+	footer {
+		text-align: center;
+		padding: 1em;
+
+		color: #444;
+		max-width: 1024px;
+		margin: 0 auto;
 	}
 
 	.params {
