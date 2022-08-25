@@ -34,6 +34,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@neodrag/svelte": "^1.2.3",
 		"d3-color": "^3.1.0",
 		"iconify-icon": "^1.0.0-beta.3",
 		"typesafe-i18n": "^5.12.0"
