@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { pickNColors } from '../lib/color';
+	import { pickNColors } from '$lib/color';
 	import * as d3 from 'd3-color';
 	import { onMount, tick } from 'svelte';
-	import SentenceInput from '../lib/SentenceInput.svelte';
+	import SentenceInput from '$lib/SentenceInput.svelte';
 	import 'iconify-icon';
 
 	import { LL } from '../i18n/i18n-svelte';
 
-	import Output, { type Line } from '../lib/Output.svelte';
+	import Output, { type Line } from '$lib/Output.svelte';
 	import type { Alignment, Mode } from '$lib/types';
-	import LocaleSelect from '$lib/LocaleSelect.svelte';
+
 
 	// const SENTENCES = [
 	// 	['en', "I can eat glass and it doesn't hurt me."],
