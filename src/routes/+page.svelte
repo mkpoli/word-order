@@ -1,18 +1,12 @@
 <script lang="ts">
 	import { pickNColors } from '../lib/color';
 	import * as d3 from 'd3-color';
-	import { onMount, setContext, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import SentenceInput from '../lib/SentenceInput.svelte';
 	import 'iconify-icon';
 
 	import Output, { type Line } from '../lib/Output.svelte';
 	import type { Alignment, Mode } from '$lib/types';
-
-	const LANGUAGE_NAMES = new Intl.DisplayNames(['en'], {
-		type: 'language'
-	});
-
-	setContext('LANGUAGE_NAMES', LANGUAGE_NAMES);
 
 	// const SENTENCES = [
 	// 	['en', "I can eat glass and it doesn't hurt me."],

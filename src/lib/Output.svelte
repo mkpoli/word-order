@@ -3,10 +3,11 @@
 </script>
 
 <script lang="ts">
-	import { getContext, onMount, tick, createEventDispatcher } from 'svelte';
+	import { onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Alignment, Mode } from '../lib/types';
 	import { cartesian, segmentate } from './array';
 	import Draggable from './Draggable.svelte';
+	import { getLanguageName } from './lang';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -23,7 +24,6 @@
 	}>();
 
 	type Sentence = [lang: string, words: string[]];
-	const LANGUAGE_NAMES = getContext<Intl.DisplayNames>('LANGUAGE_NAMES');
 	export let sentences: Sentence[];
 	export let color_map: number[][];
 	export let equivalency: number[][][];
@@ -166,7 +166,7 @@
 			<div class="dragger" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 				<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
 			</div>
-			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{LANGUAGE_NAMES.of(lang)}</span>
+			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang)}</span>
 			<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
 				{#each words as word, j}
 					<span
