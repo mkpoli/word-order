@@ -3,6 +3,7 @@
 	import * as d3 from 'd3-color';
 	import { onMount, setContext, tick } from 'svelte';
 	import SentenceInput from '../lib/SentenceInput.svelte';
+	import 'iconify-icon';
 
 	import Output, { type Line } from '../lib/Output.svelte';
 	import type { Mode } from '$lib/types';
@@ -161,6 +162,20 @@
 			bind:word_spans
 			bind:mode
 			on:connect={onconnect}
+			on:reorder={({ detail: { from, to } }) => {
+				const [lang, words] = sentences[from];
+				sentences.splice(from, 1);
+				sentences.splice(to, 0, [lang, words]);
+				sentences = sentences;
+
+				for (const [i, entry] of equivalency.entries()) {
+					const value = entry[from];
+					entry.splice(from, 1);
+					entry.splice(to, 0, value);
+					equivalency[i] = entry;
+				}
+				equivalency = equivalency;
+			}}
 		/>
 	{/if}
 </main>
