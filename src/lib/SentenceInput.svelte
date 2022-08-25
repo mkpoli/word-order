@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { getLanguageName } from './lang';
+	import { LL, locale } from '$i18n/i18n-svelte';
 
 	let lang = 'en';
 	let displayName = 'English';
 	let text = '';
 
-	$: displayName = getLanguageName(lang);
+	$: displayName = getLanguageName(lang, $locale);
 
 	const dispatch = createEventDispatcher<{
 		add: {
@@ -27,22 +28,25 @@
 			}}
 		>
 			<iconify-icon icon="ic:round-plus" width="1.3em" height="1.3em" />
-			Add
+			{$LL.input.add()}
 		</button>
 	</div>
 	<div class="guidance">
 		<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
 		<p>
-			Each word are separated automatically by space and punctuations. Use <code title="(U+007C, VERTICAL LINE)">|</code> for further separation or
-			non-space separated script, such as CJK / Thai / Tibetan / etc., e.g.
-			<code>我|愛|你。</code>
-			→
-			<span style="display:inline-flex">
-				<span style="color:orange">我</span>
-				<span style="color:crimson">愛</span>
-				<span style="color:hotpink">你</span>
-				<span>。</span>
-			</span>
+			{@html $LL.input.guidance({
+				delimiter: '<code title="(U+007C, VERTICAL LINE)">|</code>',
+				example: `
+<code>我|愛|你。</code>
+→
+<span style="display:inline-flex; font-family: sans-serif;" lang="zh-HanT">
+	<span style="color:orange">我</span>
+	<span style="color:crimson">愛</span>
+	<span style="color:hotpink">你</span>
+	<span>。</span>
+</span>
+`
+			})}
 		</p>
 	</div>
 </div>
@@ -55,7 +59,7 @@
 		gap: 1em;
 	}
 
-	code {
+	:global(code) {
 		display: inline-block;
 		margin: 0 0.2em;
 		background: rgba(255, 255, 255, 0.7);

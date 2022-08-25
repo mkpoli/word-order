@@ -5,8 +5,11 @@
 	import SentenceInput from '../lib/SentenceInput.svelte';
 	import 'iconify-icon';
 
+	import { LL } from '../i18n/i18n-svelte';
+
 	import Output, { type Line } from '../lib/Output.svelte';
 	import type { Alignment, Mode } from '$lib/types';
+	import LocaleSelect from '$lib/LocaleSelect.svelte';
 
 	// const SENTENCES = [
 	// 	['en', "I can eat glass and it doesn't hurt me."],
@@ -115,16 +118,16 @@
 	<div class="params">
 		<label for="vertical-gap">
 			<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
-			Vertical Gap ({verticalGap}px)
+			{$LL.params.verticalGap()} ({verticalGap}px)
 		</label>
 		<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
 		<label for="line-gap">
 			<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
-			Line Gap ({lineGap}px)
+			{$LL.params.lineGap()} ({lineGap}px)
 		</label>
 		<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
 
-		<label for="alignment">Text Alignment</label>
+		<label for="alignment">{$LL.params.textAlignment()}</label>
 		<div class="alignment">
 			<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
 			<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left" /></label>
@@ -133,6 +136,9 @@
 			<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
 			<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right" /></label>
 		</div>
+
+		<label for="locale">{$LL.params.displayLanguage()}</label>
+		<LocaleSelect />
 	</div>
 
 	<div class="input">
@@ -282,6 +288,10 @@
 	}
 
 	.params > input {
+		margin: 0 0.5em;
+	}
+
+	:global(.params > select) {
 		margin: 0 0.5em;
 	}
 
