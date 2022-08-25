@@ -13,6 +13,10 @@
 			connected: [number, number][];
 			connectedIndex: number;
 		};
+		reorder: {
+			from: number;
+			to: number;
+		};
 	}>();
 
 	type Sentence = [lang: string, words: string[]];
@@ -88,6 +92,55 @@
 
 	let connected: [l: number, w: number][] = [];
 	let connectedIndex = -1;
+
+	// Dragging to reorder
+	let draggingIndex = -1;
+	let draggingPosition = { x: 0, y: 0 };
+	let draggingOffset = { x: 0, y: 0 };
+	let draggers: HTMLDivElement[] = [];
+
+	function dragstart(l: number, e: PointerEvent) {
+		draggingIndex = l;
+		draggers[draggingIndex]?.setPointerCapture(e.pointerId);
+		draggingPosition = { x: e.clientX, y: e.clientY };
+	}
+
+	function dragend(e: PointerEvent) {
+		if (draggingIndex < 0) return;
+
+		draggers[draggingIndex]?.releasePointerCapture(e.pointerId);
+
+		let lastBottom = -1;
+		for (const [i, dragger] of draggers.entries()) {
+			const rect = dragger.getBoundingClientRect();
+			const centerBetween = (rect.top - lastBottom) / 2;
+
+			if (i !== draggingIndex && (i === 0 ? rect.top : centerBetween) <= e.clientY && rect.bottom >= e.clientY) {
+				dispatch('reorder', {
+					from: draggingIndex,
+					to: i
+				});
+				break;
+			}
+
+			lastBottom = rect.bottom;
+		}
+
+		draggingIndex = -1;
+		draggingOffset = { x: 0, y: 0 };
+	}
+
+	function onpointermove(e: PointerEvent) {
+		if (draggingIndex >= 0) {
+			draggingOffset.x = e.clientX - draggingPosition.x;
+			draggingOffset.y = e.clientY - draggingPosition.y;
+		}
+	}
+
+	function getTransform(l: number, draggingOffset: { x: number; y: number }) {
+		if (draggingIndex !== l) return 'none';
+		return `translate(${draggingOffset.x}px, ${draggingOffset.y}px)`;
+	}
 </script>
 
 <svelte:window
@@ -95,51 +148,58 @@
 		await tick();
 		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, center);
 	}}
+	on:pointermove={onpointermove}
+	on:pointerup={dragend}
 />
 
-<output bind:this={output} style={`gap: ${verticalGap}px 1em;`}>
+<output bind:this={output} style={`gap: ${verticalGap}px 1em;`} class:dragging={draggingIndex !== -1}>
 	{#each sentences as [lang, words], i}
-		<span class="tag">{LANGUAGE_NAMES.of(lang)}</span>
-		<span class="sentence" {lang} style={`text-align: ${center ? 'center' : 'start'}`}>
-			{#each words as word, j}
-				<span
-					class="word"
-					class:content={isContent(word)}
-					class:editing={mode === 'edit'}
-					class:connected={connecting.some(([l, w]) => l == i && w == j)}
-					style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`}
-					on:click={() => {
-						if (!isContent(word)) return;
+		<div class="sentence" class:dragged={draggingIndex === i}>
+			<div class="dragger" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+				<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
+			</div>
+			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{LANGUAGE_NAMES.of(lang)}</span>
+			<span class="words" {lang} style={`text-align: ${center ? 'center' : 'start'}`} style:transform={getTransform(i, draggingOffset)}>
+				{#each words as word, j}
+					<span
+						class="word"
+						class:content={isContent(word)}
+						class:editing={mode === 'edit'}
+						class:connected={connecting.some(([l, w]) => l == i && w == j)}
+						style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`}
+						on:click={() => {
+							if (!isContent(word)) return;
 
-						const entryIndex = color_map[i][j];
+							const entryIndex = color_map[i][j];
 
-						if (mode === 'view') {
-							mode = 'edit';
+							if (mode === 'view') {
+								mode = 'edit';
 
-							if (entryIndex !== -1) {
-								connected = [];
-								for (let [i, words] of equivalency[entryIndex].entries()) {
-									for (let word of words) {
-										connected.push([i, word]);
+								if (entryIndex !== -1) {
+									connected = [];
+									for (let [i, words] of equivalency[entryIndex].entries()) {
+										for (let word of words) {
+											connected.push([i, word]);
+										}
 									}
+
+									connecting = connected.map(([l, w]) => [l, w]);
+									connectedIndex = entryIndex;
+									return;
 								}
-
-								connecting = connected.map(([l, w]) => [l, w]);
-								connectedIndex = entryIndex;
-								return;
 							}
-						}
 
-						if (connecting.some(([l, w]) => l == i && w == j)) {
-							connecting = connecting.filter(([l, w]) => l != i || w != j);
-						} else {
-							connecting = [...connecting, [i, j]];
-						}
-					}}
-					bind:this={word_spans[i][j]}>{word}</span
-				>
-			{/each}
-		</span>
+							if (connecting.some(([l, w]) => l == i && w == j)) {
+								connecting = connecting.filter(([l, w]) => l != i || w != j);
+							} else {
+								connecting = [...connecting, [i, j]];
+							}
+						}}
+						bind:this={word_spans[i][j]}>{word}</span
+					>
+				{/each}
+			</span>
+		</div>
 	{/each}
 	<svg style="position: absolute;" width="100%" height="100%">
 		{#each lines as [x1, y1, x2, y2, color]}
@@ -197,7 +257,7 @@
 		position: relative;
 
 		display: grid;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: auto auto 1fr;
 		gap: 1em;
 	}
 
@@ -238,5 +298,38 @@
 
 	.edit-dialog > .cancel {
 		grid-area: n;
+	}
+
+	.sentence {
+		display: contents;
+	}
+
+	.dragger {
+		opacity: 0;
+		cursor: move;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.1em;
+	}
+
+	.sentence:hover > .dragger {
+		opacity: 1;
+	}
+
+	.dragger:hover {
+		background-color: #eee;
+	}
+
+	output.dragging {
+		user-select: none;
+	}
+
+	output.dragging > svg {
+		opacity: 0.5;
+	}
+
+	output.dragging > .sentence:not(.dragged) > * {
+		opacity: 0.5;
 	}
 </style>
