@@ -176,6 +176,16 @@
 				}
 				equivalency = equivalency;
 			}}
+			on:delete={({ detail: { sentence } }) => {
+				sentences.splice(sentence, 1);
+				sentences = sentences;
+
+				for (const [i, entry] of equivalency.entries()) {
+					entry.splice(sentence, 1);
+					equivalency[i] = entry;
+				}
+				equivalency = equivalency;
+			}}
 		/>
 	{/if}
 </main>

@@ -17,6 +17,9 @@
 			from: number;
 			to: number;
 		};
+		delete: {
+			sentence: number;
+		};
 	}>();
 
 	type Sentence = [lang: string, words: string[]];
@@ -199,6 +202,19 @@
 					>
 				{/each}
 			</span>
+			<div class="delete">
+				<iconify-icon
+					icon="ic:baseline-delete-forever"
+					width="1.2em"
+					height="1.2em"
+					on:click={() => {
+						if (!confirm('Are you sure you want to delete this sentence?')) return;
+						dispatch('delete', {
+							sentence: i
+						});
+					}}
+				/>
+			</div>
 		</div>
 	{/each}
 	<svg style="position: absolute;" width="100%" height="100%">
@@ -257,7 +273,7 @@
 		position: relative;
 
 		display: grid;
-		grid-template-columns: auto auto 1fr;
+		grid-template-columns: auto auto 1fr auto;
 		gap: 1em;
 	}
 
@@ -304,17 +320,27 @@
 		display: contents;
 	}
 
-	.dragger {
+	.dragger,
+	.delete {
 		opacity: 0;
-		cursor: move;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		border-radius: 0.1em;
 	}
 
-	.sentence:hover > .dragger {
+	.sentence:hover > .dragger,
+	.sentence:hover > .delete {
 		opacity: 1;
+	}
+
+	.dragger {
+		cursor: move;
+	}
+
+	.delete {
+		cursor: pointer;
+		color: #e00020;
 	}
 
 	.dragger:hover {
