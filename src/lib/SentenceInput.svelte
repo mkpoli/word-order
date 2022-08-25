@@ -21,12 +21,8 @@
 </script>
 
 <div class="input-form">
-	<div>
-		Please input the sentence here. Each word are separated automatically by space and punctuations. For further separtion (especially for
-		CJK/Thai/Tibetan/etc. whose words are not separated by spaces), use the <code>|</code> (U+007C, VERTICAL LINE) instead.
-	</div>
 	<textarea placeholder="Input new sentence here..." bind:value={text} />
-	<div>
+	<div class="buttons">
 		<input type="text" bind:value={lang} id="lang" />
 		<label for="lang">{displayName}</label>
 		<button
@@ -34,6 +30,18 @@
 				dispatch('add', { lang, words: text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean) });
 			}}>Add</button
 		>
+	</div>
+	<div>
+		Each word are separated automatically by space and punctuations. Use <code title="(U+007C, VERTICAL LINE)">|</code> for further separation or
+		non-space separated script, such as CJK / Thai / Tibetan / etc., e.g.
+		<code>我|愛|你。</code>
+		→
+		<span style="display:inline-flex">
+			<span style="color:orange">我</span>
+			<span style="color:crimson">愛</span>
+			<span style="color:hotpink">你</span>
+			<span>。</span>
+		</span>
 	</div>
 </div>
 
@@ -47,13 +55,23 @@
 
 	code {
 		display: inline-block;
-		margin: 0 0.5em;
+		margin: 0 0.2em;
 		background: lightgrey;
-		padding: 0.5em;
+		padding: 0.3em 0.5em;
 		box-shadow: 1px 1px 5px 0 #ccc;
 	}
 
 	textarea {
 		resize: none;
+	}
+
+	.buttons {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+	}
+
+	button {
+		width: 100%;
 	}
 </style>
