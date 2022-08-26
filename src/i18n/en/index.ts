@@ -3,10 +3,12 @@ import type { BaseTranslation } from '../i18n-types'
 const en: BaseTranslation = {
 	// TODO: your translations go here
 	params: {
+		'options': 'Options',
 		'verticalGap': 'Vertical Gap',
 		'lineGap': 'Line Gap',
 		'textAlignment': 'Text Alignment',
 		'displayLanguage': 'Display Language',
+		'text': 'Text',
 		'fontFamily': 'Font Family',
 		'default': 'Default',
 		'serif': 'Serif',

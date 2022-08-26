@@ -2,10 +2,12 @@ import type { Translation } from '../i18n-types'
 
 const zh: Translation = {
   params: {
+    'options': '選項',
     'verticalGap': '行距',
     'lineGap': '線距',
     'textAlignment': '文字配置',
     'displayLanguage': '顯示語言',
+    'text': '文本',
     'fontFamily': '字體',
     'default': '預設',
     'serif': '襯線體',

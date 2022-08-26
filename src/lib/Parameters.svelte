@@ -14,7 +14,7 @@
 <fieldset>
 	<legend>
 		<iconify-icon icon="gg:options" inline="true" />
-		Options
+		{$LL.params.options()}
 	</legend>
 
 	<label for="vertical-gap">
@@ -38,7 +38,7 @@
 <fieldset>
 	<legend>
 		<iconify-icon icon="mdi:format-font" inline="true" />
-		Text
+		{$LL.params.text()}
 	</legend>
 
 	<label for="alignment">
