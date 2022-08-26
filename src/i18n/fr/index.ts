@@ -2,10 +2,12 @@ import type { Translation } from '../i18n-types'
 
 const fr: Translation = {
   params: {
+    'options': 'Options',
     'verticalGap': 'Espacement vertical',
     'lineGap': 'Espacement des lignes',
     'textAlignment': 'Alignement du texte',
     'displayLanguage': 'Langue d’affichage',
+    'text': 'Texte',
     'fontFamily': 'Police',
     'default': 'Défaut',
     'serif': 'Serif',

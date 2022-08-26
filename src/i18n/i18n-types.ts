@@ -20,6 +20,10 @@ export type Translations = RootTranslation
 type RootTranslation = {
 	params: {
 		/**
+		 * Options
+		 */
+		options: string
+		/**
 		 * Vertical Gap
 		 */
 		verticalGap: string
@@ -35,6 +39,10 @@ type RootTranslation = {
 		 * Display Language
 		 */
 		displayLanguage: string
+		/**
+		 * Text
+		 */
+		text: string
 		/**
 		 * Font Family
 		 */
@@ -108,6 +116,10 @@ type RootTranslation = {
 export type TranslationFunctions = {
 	params: {
 		/**
+		 * Options
+		 */
+		options: () => LocalizedString
+		/**
 		 * Vertical Gap
 		 */
 		verticalGap: () => LocalizedString
@@ -123,6 +135,10 @@ export type TranslationFunctions = {
 		 * Display Language
 		 */
 		displayLanguage: () => LocalizedString
+		/**
+		 * Text
+		 */
+		text: () => LocalizedString
 		/**
 		 * Font Family
 		 */

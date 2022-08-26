@@ -2,10 +2,12 @@ import type { Translation } from '../i18n-types'
 
 const ja: Translation = {
   params: {
+    'options': 'オプション',
     'verticalGap': '行間隔',
     'lineGap': '直線隙間',
     'textAlignment': 'テキスト配置',
     'displayLanguage': '表示言語',
+    'text': 'テキスト',
     'fontFamily': 'フォント',
     'default': 'デフォルト',
     'serif': '明朝体',
