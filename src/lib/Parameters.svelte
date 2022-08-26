@@ -11,48 +11,56 @@
 	export let fontSize = 15;
 </script>
 
-<label for="vertical-gap">
-	<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
-	{$LL.params.verticalGap()} ({verticalGap}px)
-</label>
-<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
-<label for="line-gap">
-	<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
-	{$LL.params.lineGap()} ({lineGap}px)
-</label>
-<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
+<fieldset>
+	<legend>Options</legend>
 
-<label for="alignment">{$LL.params.textAlignment()}</label>
-<div class="alignment">
-	<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
-	<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left" /></label>
-	<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" />
-	<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center" /></label>
-	<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
-	<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right" /></label>
-</div>
+	<label for="vertical-gap">
+		<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
+		{$LL.params.verticalGap()} ({verticalGap}px)
+	</label>
+	<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
+	<label for="line-gap">
+		<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
+		{$LL.params.lineGap()} ({lineGap}px)
+	</label>
+	<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
 
-<label for="font-family">{$LL.params.fontFamily()}</label>
-<select bind:value={fontFamily} id="font" name="font">
-	<option value="default">{$LL.params.default()}</option>
-	<option value="serif">{$LL.params.serif()}</option>
-	<option value="sans-serif">{$LL.params.sansSerif()}</option>
-	<option value="monospace">{$LL.params.monospace()}</option>
-</select>
+	<label for="locale">{$LL.params.displayLanguage()}</label>
+	<LocaleSelect />
+</fieldset>
 
-<label for="font-style">{$LL.params.fontStyle()}</label>
-<select bind:value={fontStyle} id="font-style" name="font-style">
-	<option value="normal">{$LL.params.normal()}</option>
-	<option value="italic">{$LL.params.italic()}</option>
-	<option value="bold">{$LL.params.bold()}</option>
-	<option value="bold-italic">{$LL.params.boldItalic()}</option>
-</select>
+<fieldset>
+	<legend>Text</legend>
 
-<label for="font-size">{$LL.params.fontSize()} ({fontSize}px)</label>
-<input type="range" bind:value={fontSize} id="font-size" name="font-size" min="10" max="30" />
+	<label for="alignment">{$LL.params.textAlignment()}</label>
+	<div class="alignment">
+		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
+		<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left" /></label>
+		<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" />
+		<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center" /></label>
+		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
+		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right" /></label>
+	</div>
 
-<label for="locale">{$LL.params.displayLanguage()}</label>
-<LocaleSelect />
+	<label for="font-family">{$LL.params.fontFamily()}</label>
+	<select bind:value={fontFamily} id="font" name="font">
+		<option value="default">{$LL.params.default()}</option>
+		<option value="serif">{$LL.params.serif()}</option>
+		<option value="sans-serif">{$LL.params.sansSerif()}</option>
+		<option value="monospace">{$LL.params.monospace()}</option>
+	</select>
+
+	<label for="font-style">{$LL.params.fontStyle()}</label>
+	<select bind:value={fontStyle} id="font-style" name="font-style">
+		<option value="normal">{$LL.params.normal()}</option>
+		<option value="italic">{$LL.params.italic()}</option>
+		<option value="bold">{$LL.params.bold()}</option>
+		<option value="bold-italic">{$LL.params.boldItalic()}</option>
+	</select>
+
+	<label for="font-size">{$LL.params.fontSize()} ({fontSize}px)</label>
+	<input type="range" bind:value={fontSize} id="font-size" name="font-size" min="10" max="30" />
+</fieldset>
 
 <style>
 	.alignment {
@@ -102,5 +110,33 @@
 
 	input[type='radio'][name='alignment'] + label {
 		cursor: pointer;
+	}
+
+	input:not[type='radio'],
+	select {
+		margin: 0 0.5em;
+	}
+
+	fieldset {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
+
+		padding: 1em 1.5em;
+		border-radius: 0.5em;
+		border: none;
+		box-shadow: 1px 1px 5px 0 #ccc;
+	}
+
+	legend {
+		background: white;
+		padding: 0.2em 0.8em;
+		border-radius: 0.3em;
+		box-shadow: 1px 1px 5px 0 #ccc;
+		font-weight: bold;
+	}
+
+	:global(fieldset > select) {
+		padding: 0.2em 0.5em;
 	}
 </style>

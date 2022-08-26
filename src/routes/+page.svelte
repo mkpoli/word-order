@@ -119,32 +119,6 @@
 </script>
 
 <main>
-	<div class="params">
-		<Parameters bind:verticalGap bind:lineGap bind:alignment bind:fontFamily bind:fontStyle bind:fontSize />
-	</div>
-
-	<div class="input">
-		<SentenceInput on:add={onadd} />
-	</div>
-
-	<div class="equivalency">
-		{#each equivalency as entry, i}
-			<div class="equivalency" style={`color: ${colors[i]}`}>
-				{#each entry as words, j}
-					<span class="words">
-						{#if words.length === 0}
-							<span class="word">❌</span>
-						{:else}
-							{#each words as k}
-								<span class="word">{sentences[j][1][k]}</span>
-							{/each}
-						{/if}
-					</span>
-				{/each}
-			</div>
-		{/each}
-	</div>
-
 	<div class="output">
 		{#if mounted}
 			<Output
@@ -189,6 +163,32 @@
 			/>
 		{/if}
 	</div>
+
+	<div class="input">
+		<SentenceInput on:add={onadd} />
+	</div>
+
+	<div class="params">
+		<Parameters bind:verticalGap bind:lineGap bind:alignment bind:fontFamily bind:fontStyle bind:fontSize />
+	</div>
+
+	<div class="equivalency">
+		{#each equivalency as entry, i}
+			<div class="equivalency" style={`color: ${colors[i]}`}>
+				{#each entry as words, j}
+					<span class="words">
+						{#if words.length === 0}
+							<span class="word">❌</span>
+						{:else}
+							{#each words as k}
+								<span class="word">{sentences[j][1][k]}</span>
+							{/each}
+						{/if}
+					</span>
+				{/each}
+			</div>
+		{/each}
+	</div>
 </main>
 
 <svelte:head>
@@ -222,7 +222,7 @@
 		flex-direction: column;
 		gap: 2em 1em;
 		display: grid;
-		grid-template: auto auto / auto auto auto;
+		grid-template-columns: auto;
 	}
 
 	footer {
@@ -235,50 +235,16 @@
 	}
 
 	.params {
-		max-width: 12em;
-
-		grid-column: 1;
-		grid-row: 3;
-
-		padding: 1.5em 1.2em;
-		border-radius: 5px;
-		box-shadow: 1px 1px 5px 0 #ccc;
-
-		display: flex;
-		flex-direction: column;
-		gap: 0.4em;
+		display: grid;
+		grid-template-columns: auto auto;
+		gap: 1em;
 	}
 
-	.input {
-		grid-column: 2;
-		grid-row: 3;
-	}
+	/* Layout */
 
-	.output {
-		grid-column: 1 / 3;
-		grid-row: 1;
-
-		padding: 1em;
-	}
-
-	.equivalency {
-		grid-column: 3;
-		grid-row: 1 / -1;
-	}
-
-	@media (max-width: 720px) {
+	@media (min-width: 1024px) {
 		main {
-			grid-template: auto auto auto / auto 1fr;
-		}
-
-		.output {
-			grid-column: 1 / 3;
-			grid-row: 1;
-		}
-
-		.input {
-			grid-column: 1 / 3;
-			grid-row: 2;
+			grid-template: auto auto / auto auto auto;
 		}
 
 		.params {
@@ -286,9 +252,19 @@
 			grid-row: 3;
 		}
 
-		.equivalency {
+		.input {
 			grid-column: 2;
 			grid-row: 3;
+		}
+
+		.output {
+			grid-column: 1 / 3;
+			grid-row: 1;
+		}
+
+		.equivalency {
+			grid-column: 3;
+			grid-row: 1 / -1;
 		}
 	}
 
@@ -298,13 +274,5 @@
 
 	.word:not(:last-of-type)::after {
 		content: '|';
-	}
-
-	.params > input {
-		margin: 0 0.5em;
-	}
-
-	:global(.params > select) {
-		margin: 0 0.5em;
 	}
 </style>
