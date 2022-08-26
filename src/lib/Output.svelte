@@ -84,9 +84,9 @@
 					const rectB1 = spanB1.getBoundingClientRect();
 					const rectB2 = spanB2.getBoundingClientRect();
 
-					const x1 = (rectA1.left + rectA2.left - rectOutput.left) / 2;
+					const x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
 					const y1 = rectA1.bottom - rectOutput.top + lineGap;
-					const x2 = (rectB1.left + rectB2.left - rectOutput.left) / 2;
+					const x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
 					const y2 = rectB1.top - rectOutput.top - lineGap;
 					const color = colors[i];
 					lines.push([x1, y1, x2, y2, color] as Line);
