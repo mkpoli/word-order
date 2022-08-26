@@ -1,8 +1,7 @@
 import type { Locales } from '$i18n/i18n-types'
-import { detectLocale } from '$i18n/i18n-util'
 import { initAcceptLanguageHeaderDetector } from 'typesafe-i18n/detectors'
 import type { LayoutServerLoad } from './$types'
-
+import { detectLocaleAliased } from '$i18n/alias'
 
 function getHeaders(request: Request) {
   const headers: Record<string, string> = {}
@@ -13,9 +12,7 @@ function getHeaders(request: Request) {
 export const load: LayoutServerLoad<{ locale: Locales }> = ({ request }) => {
   const headers = getHeaders(request)
   const acceptLanguageDetector = initAcceptLanguageHeaderDetector({ headers })
-  const locale = detectLocale(acceptLanguageDetector)
-
-  console.log('+layout.server.ts: locale', locale)
+  const locale = detectLocaleAliased(acceptLanguageDetector)
 
   return {
     locale
