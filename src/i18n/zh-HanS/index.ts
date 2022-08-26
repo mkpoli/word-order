@@ -5,6 +5,7 @@ const zh: Translation = {
     'options': '选项',
     'verticalGap': '行距',
     'lineGap': '线距',
+    'straightLength': '直线长度',
     'textAlignment': '文字配置',
     'displayLanguage': '显示语言',
     'text': '文本',

@@ -5,6 +5,7 @@
 
 	export let verticalGap = 30;
 	export let lineGap = 5;
+	export let straightLength = 0;
 	export let alignment: Alignment = 'center';
 	export let fontFamily: FontFamily = 'default';
 	export let fontStyle: FontStyle = 'normal';
@@ -14,7 +15,7 @@
 <fieldset>
 	<legend>
 		<iconify-icon icon="gg:options" inline="true" />
-		{$LL.params.options()}
+		{$LL.params.options}
 	</legend>
 
 	<label for="vertical-gap">
@@ -22,11 +23,18 @@
 		{$LL.params.verticalGap()} ({verticalGap}px)
 	</label>
 	<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
+
 	<label for="line-gap">
 		<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
 		{$LL.params.lineGap()} ({lineGap}px)
 	</label>
 	<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
+
+	<label for="straight-length">
+		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true" />
+		{$LL.params.straightLength()} ({straightLength}px)
+	</label>
+	<input type="range" bind:value={straightLength} id="straight-length" name="straight-length" min="0" max={verticalGap / 2} />
 
 	<label for="locale">
 		<iconify-icon icon="mdi:earth" inline="true" />

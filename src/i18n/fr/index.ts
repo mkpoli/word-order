@@ -3,8 +3,9 @@ import type { Translation } from '../i18n-types'
 const fr: Translation = {
   params: {
     'options': 'Options',
-    'verticalGap': 'Espacement vertical',
-    'lineGap': 'Espacement des lignes',
+    'verticalGap': 'Espace vertical',
+    'lineGap': 'Espace des lignes',
+    'straightLength': 'La part droite',
     'textAlignment': 'Alignement du texte',
     'displayLanguage': 'Langue d’affichage',
     'text': 'Texte',

@@ -5,6 +5,7 @@ const ja: Translation = {
     'options': 'オプション',
     'verticalGap': '行間隔',
     'lineGap': '直線隙間',
+    'straightLength': '直線部分',
     'textAlignment': 'テキスト配置',
     'displayLanguage': '表示言語',
     'text': 'テキスト',
