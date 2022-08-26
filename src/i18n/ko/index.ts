@@ -5,6 +5,7 @@ const ko: Translation = {
     'options': '옵션',
     'verticalGap': '줄 간격',
     'lineGap': '직선 틈',
+    'straightLength': '직선 길이',
     'textAlignment': '문자 정렬',
     'displayLanguage': '표시 언어',
     'text': '문자',

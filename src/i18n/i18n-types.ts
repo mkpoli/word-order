@@ -32,6 +32,10 @@ type RootTranslation = {
 		 */
 		lineGap: string
 		/**
+		 * Straight Part
+		 */
+		straightLength: string
+		/**
 		 * Text Alignment
 		 */
 		textAlignment: string
@@ -127,6 +131,10 @@ export type TranslationFunctions = {
 		 * Line Gap
 		 */
 		lineGap: () => LocalizedString
+		/**
+		 * Straight Part
+		 */
+		straightLength: () => LocalizedString
 		/**
 		 * Text Alignment
 		 */

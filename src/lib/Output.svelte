@@ -32,8 +32,11 @@
 	export let alignment: Alignment = 'center';
 	export let lines: Line[];
 	export let colors: string[];
+
+	// Parameters
 	export let verticalGap: number;
 	export let lineGap: number;
+	export let straightLength: number;
 	export let fontFamily: FontFamily;
 	export let fontStyle: FontStyle;
 	export let fontSize: number;
@@ -47,14 +50,20 @@
 		mounted = true;
 	});
 
-	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
+	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
 
 	$: if (alignment && fontFamily && fontStyle && fontSize !== undefined && $locale)
 		tick().then(() => {
-			lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
 		});
 
-	function drawLines(word_spans: HTMLSpanElement[][], equivalency: number[][][], verticalGap: number, lineGap: number): Line[] {
+	function drawLines(
+		word_spans: HTMLSpanElement[][],
+		equivalency: number[][][],
+		verticalGap: number,
+		lineGap: number,
+		straightLength: number
+	): Line[] {
 		const rectOutput = output.getBoundingClientRect();
 
 		const lines: Line[] = [];
@@ -89,7 +98,12 @@
 					const x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
 					const y2 = rectB1.top - rectOutput.top - lineGap;
 					const color = colors[i];
-					lines.push([x1, y1, x2, y2, color] as Line);
+					lines.push([x1, y1 + straightLength, x2, y2 - straightLength, color] as Line);
+
+					if (straightLength !== 0) {
+						lines.push([x1, y1, x1, y1 + straightLength, color] as Line);
+						lines.push([x2, y2, x2, y2 - straightLength, color] as Line);
+					}
 				}
 			}
 		}
@@ -158,7 +172,7 @@
 <svelte:window
 	on:resize={async () => {
 		await tick();
-		lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
+		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
 	}}
 	on:pointermove={onpointermove}
 	on:pointerup={dragend}

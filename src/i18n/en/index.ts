@@ -6,6 +6,7 @@ const en: BaseTranslation = {
 		'options': 'Options',
 		'verticalGap': 'Vertical Gap',
 		'lineGap': 'Line Gap',
+		'straightLength': 'Straight Part',
 		'textAlignment': 'Text Alignment',
 		'displayLanguage': 'Display Language',
 		'text': 'Text',

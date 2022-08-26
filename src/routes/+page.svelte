@@ -46,6 +46,7 @@
 	// Parameters
 	let verticalGap: number;
 	let lineGap: number;
+	let straightLength: number;
 	let alignment: Alignment;
 	let fontFamily: FontFamily;
 	let fontStyle: FontStyle;
@@ -130,6 +131,7 @@
 				{colors}
 				{verticalGap}
 				{lineGap}
+				{straightLength}
 				{fontFamily}
 				{fontStyle}
 				{fontSize}
@@ -169,7 +171,7 @@
 	</div>
 
 	<div class="params">
-		<Parameters bind:verticalGap bind:lineGap bind:alignment bind:fontFamily bind:fontStyle bind:fontSize />
+		<Parameters bind:verticalGap bind:lineGap bind:straightLength bind:alignment bind:fontFamily bind:fontStyle bind:fontSize />
 	</div>
 
 	<div class="equivalency">
