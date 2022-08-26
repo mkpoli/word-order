@@ -15,7 +15,7 @@
 <fieldset>
 	<legend>
 		<iconify-icon icon="gg:options" inline="true" />
-		{$LL.params.options}
+		{$LL.params.options()}
 	</legend>
 
 	<label for="vertical-gap">
