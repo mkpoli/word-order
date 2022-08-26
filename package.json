@@ -14,12 +14,12 @@
 		"typesafe-i18n": "typesafe-i18n"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.25.0",
+		"@playwright/test": "^1.25.1",
 		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/kit": "next",
+		"@sveltejs/kit": "^1.0.0-next.442",
 		"@types/d3-color": "^3.1.0",
-		"@typescript-eslint/eslint-plugin": "^5.27.0",
-		"@typescript-eslint/parser": "^5.27.0",
+		"@typescript-eslint/eslint-plugin": "^5.35.1",
+		"@typescript-eslint/parser": "^5.35.1",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",
@@ -29,7 +29,7 @@
 		"svelte-check": "^2.7.1",
 		"svelte-preprocess": "^4.10.6",
 		"tslib": "^2.3.1",
-		"typescript": "^4.7.4",
+		"typescript": "^4.8.2",
 		"vite": "^3.0.4"
 	},
 	"type": "module",
