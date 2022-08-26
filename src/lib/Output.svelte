@@ -5,7 +5,7 @@
 
 <script lang="ts">
 	import { onMount, tick, createEventDispatcher } from 'svelte';
-	import type { Alignment, Mode } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
 	import { cartesian, segmentate } from './array';
 	import { getLanguageName } from './lang';
 	import { locale } from '$i18n/i18n-svelte';
@@ -34,6 +34,9 @@
 	export let colors: string[];
 	export let verticalGap: number;
 	export let lineGap: number;
+	export let fontFamily: FontFamily;
+	export let fontStyle: FontStyle;
+	export let fontSize: number;
 	export let mode: Mode = 'view';
 
 	let output: HTMLOutputElement;
@@ -46,7 +49,7 @@
 
 	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
 
-	$: if (alignment)
+	$: if (alignment && fontFamily && fontStyle && fontSize !== undefined && $locale)
 		tick().then(() => {
 			lines = drawLines(word_spans, equivalency, verticalGap, lineGap);
 		});
@@ -161,7 +164,17 @@
 	on:pointerup={dragend}
 />
 
-<output bind:this={output} style={`gap: ${verticalGap}px 1em;`} class:dragging={draggingIndex !== -1}>
+<output
+	bind:this={output}
+	class:dragging={draggingIndex !== -1}
+	class:serif={fontFamily === 'serif'}
+	class:sans-serif={fontFamily === 'sans-serif'}
+	class:monospace={fontFamily === 'monospace'}
+	class:italic={fontStyle === 'italic' || fontStyle === 'bold-italic'}
+	class:bold={fontStyle === 'bold' || fontStyle === 'bold-italic'}
+	style:gap={`${verticalGap}px 1em`}
+	style:font-size={`${fontSize}px`}
+>
 	{#each sentences as [lang, words], i}
 		<div class="sentence" class:dragged={draggingIndex === i}>
 			<div class="dragger" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
@@ -363,5 +376,25 @@
 
 	output.dragging > .sentence:not(.dragged) > * {
 		opacity: 0.5;
+	}
+
+	.serif {
+		font-family: serif;
+	}
+
+	.sans-serif {
+		font-family: sans-serif;
+	}
+
+	.monospace {
+		font-family: monospace;
+	}
+
+	.italic {
+		font-style: italic;
+	}
+
+	.bold {
+		font-weight: bold;
 	}
 </style>
