@@ -18,7 +18,7 @@
 </script>
 
 <div class="input-form">
-	<textarea placeholder="Input new sentence here..." bind:value={text} />
+	<textarea placeholder={$LL.input.placeholder()} bind:value={text} />
 	<div class="buttons">
 		<input type="text" bind:value={lang} id="lang" />
 		<label for="lang">{displayName}</label>
