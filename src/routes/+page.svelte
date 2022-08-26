@@ -8,7 +8,7 @@
 	import { LL } from '../i18n/i18n-svelte';
 
 	import Output, { type Line } from '../lib/Output.svelte';
-	import type { Alignment, Mode } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
 
 	import Parameters from '$lib/Parameters.svelte';
 
@@ -46,7 +46,10 @@
 	// Parameters
 	let verticalGap: number;
 	let lineGap: number;
-	let alignment: Alignment = 'center';
+	let alignment: Alignment;
+	let fontFamily: FontFamily;
+	let fontStyle: FontStyle;
+	let fontSize: number;
 
 	let mounted = false;
 	onMount(() => {
@@ -117,7 +120,7 @@
 
 <main>
 	<div class="params">
-		<Parameters bind:verticalGap bind:lineGap bind:alignment />
+		<Parameters bind:verticalGap bind:lineGap bind:alignment bind:fontFamily bind:fontStyle bind:fontSize />
 	</div>
 
 	<div class="input">
@@ -153,6 +156,9 @@
 				{colors}
 				{verticalGap}
 				{lineGap}
+				{fontFamily}
+				{fontStyle}
+				{fontSize}
 				bind:word_spans
 				bind:mode
 				on:connect={onconnect}
@@ -300,54 +306,5 @@
 
 	:global(.params > select) {
 		margin: 0 0.5em;
-	}
-
-	.alignment {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		justify-content: center;
-		align-items: center;
-
-		padding: 0;
-
-		font-size: 1.2em;
-		border-radius: 0.2em;
-		border: 1px solid transparent;
-
-		color: var(--color-accent);
-
-		overflow: hidden;
-		position: relative;
-	}
-
-	.alignment:hover {
-		border-color: var(--color-accent);
-	}
-
-	.alignment > label {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.1em;
-		margin: 0;
-	}
-
-	input[type='radio'][name='alignment']:checked + label {
-		color: white;
-		background-color: var(--color-accent);
-		border: 1px solid var(--color-accent);
-	}
-
-	input[type='radio'][name='alignment'] {
-		position: absolute;
-		opacity: 0;
-		cursor: pointer;
-		height: 0;
-		width: 0;
-		display: none;
-	}
-
-	input[type='radio'][name='alignment'] + label {
-		cursor: pointer;
 	}
 </style>

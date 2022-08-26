@@ -32,6 +32,50 @@ type RootTranslation = {
 		 * Display Language
 		 */
 		displayLanguage: string
+		/**
+		 * Font Family
+		 */
+		fontFamily: string
+		/**
+		 * Default
+		 */
+		'default': string
+		/**
+		 * Serif
+		 */
+		serif: string
+		/**
+		 * Sans Serif
+		 */
+		sansSerif: string
+		/**
+		 * Monospace
+		 */
+		monospace: string
+		/**
+		 * Font Style
+		 */
+		fontStyle: string
+		/**
+		 * Normal
+		 */
+		normal: string
+		/**
+		 * Italic
+		 */
+		italic: string
+		/**
+		 * Bold
+		 */
+		bold: string
+		/**
+		 * Bold Italic
+		 */
+		boldItalic: string
+		/**
+		 * Font Size
+		 */
+		fontSize: string
 	}
 	input: {
 		/**
@@ -76,6 +120,50 @@ export type TranslationFunctions = {
 		 * Display Language
 		 */
 		displayLanguage: () => LocalizedString
+		/**
+		 * Font Family
+		 */
+		fontFamily: () => LocalizedString
+		/**
+		 * Default
+		 */
+		'default': () => LocalizedString
+		/**
+		 * Serif
+		 */
+		serif: () => LocalizedString
+		/**
+		 * Sans Serif
+		 */
+		sansSerif: () => LocalizedString
+		/**
+		 * Monospace
+		 */
+		monospace: () => LocalizedString
+		/**
+		 * Font Style
+		 */
+		fontStyle: () => LocalizedString
+		/**
+		 * Normal
+		 */
+		normal: () => LocalizedString
+		/**
+		 * Italic
+		 */
+		italic: () => LocalizedString
+		/**
+		 * Bold
+		 */
+		bold: () => LocalizedString
+		/**
+		 * Bold Italic
+		 */
+		boldItalic: () => LocalizedString
+		/**
+		 * Font Size
+		 */
+		fontSize: () => LocalizedString
 	}
 	input: {
 		/**
