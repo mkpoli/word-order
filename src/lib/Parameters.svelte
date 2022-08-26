@@ -12,7 +12,10 @@
 </script>
 
 <fieldset>
-	<legend>Options</legend>
+	<legend>
+		<iconify-icon icon="gg:options" inline="true" />
+		Options
+	</legend>
 
 	<label for="vertical-gap">
 		<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
@@ -25,14 +28,23 @@
 	</label>
 	<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
 
-	<label for="locale">{$LL.params.displayLanguage()}</label>
+	<label for="locale">
+		<iconify-icon icon="mdi:earth" inline="true" />
+		{$LL.params.displayLanguage()}
+	</label>
 	<LocaleSelect />
 </fieldset>
 
 <fieldset>
-	<legend>Text</legend>
+	<legend>
+		<iconify-icon icon="mdi:format-font" inline="true" />
+		Text
+	</legend>
 
-	<label for="alignment">{$LL.params.textAlignment()}</label>
+	<label for="alignment">
+		<iconify-icon icon="mdi:format-align-justify" inline="true" />
+		{$LL.params.textAlignment()}
+	</label>
 	<div class="alignment">
 		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
 		<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left" /></label>
@@ -42,7 +54,10 @@
 		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right" /></label>
 	</div>
 
-	<label for="font-family">{$LL.params.fontFamily()}</label>
+	<label for="font-family">
+		<iconify-icon icon="fluent:text-font-16-regular" inline="true" />
+		{$LL.params.fontFamily()}
+	</label>
 	<select bind:value={fontFamily} id="font" name="font">
 		<option value="default">{$LL.params.default()}</option>
 		<option value="serif">{$LL.params.serif()}</option>
@@ -50,7 +65,10 @@
 		<option value="monospace">{$LL.params.monospace()}</option>
 	</select>
 
-	<label for="font-style">{$LL.params.fontStyle()}</label>
+	<label for="font-style">
+		<iconify-icon icon="radix-icons:font-family" inline="true" />
+		{$LL.params.fontStyle()}
+	</label>
 	<select bind:value={fontStyle} id="font-style" name="font-style">
 		<option value="normal">{$LL.params.normal()}</option>
 		<option value="italic">{$LL.params.italic()}</option>
@@ -58,7 +76,10 @@
 		<option value="bold-italic">{$LL.params.boldItalic()}</option>
 	</select>
 
-	<label for="font-size">{$LL.params.fontSize()} ({fontSize}px)</label>
+	<label for="font-size">
+		<iconify-icon icon="ant-design:font-size-outlined" inline="true" />
+		{$LL.params.fontSize()} ({fontSize}px)
+	</label>
 	<input type="range" bind:value={fontSize} id="font-size" name="font-size" min="10" max="30" />
 </fieldset>
 
