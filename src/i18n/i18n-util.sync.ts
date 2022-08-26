@@ -6,13 +6,17 @@ import type { Locales, Translations } from './i18n-types'
 import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
 import en from './en'
+import fr from './fr'
 import ja from './ja'
+import ko from './ko'
 import zh_HanS from './zh-HanS'
 import zh_HanT from './zh-HanT'
 
 const localeTranslations = {
 	en,
+	fr,
 	ja,
+	ko,
 	'zh-HanS': zh_HanS,
 	'zh-HanT': zh_HanT,
 }
