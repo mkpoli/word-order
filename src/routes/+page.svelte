@@ -223,8 +223,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2em 1em;
-		display: grid;
-		grid-template-columns: auto;
+		/* display: grid;
+		grid-template-columns: auto; */
 	}
 
 	footer {
@@ -246,27 +246,26 @@
 
 	@media (min-width: 1024px) {
 		main {
-			grid-template: auto auto / auto auto auto;
+			display: grid;
+			grid-template-areas:
+				'o o e'
+				'p i e';
 		}
 
 		.params {
-			grid-column: 1;
-			grid-row: 3;
+			grid-area: p;
 		}
 
 		.input {
-			grid-column: 2;
-			grid-row: 3;
+			grid-area: i;
 		}
 
 		.output {
-			grid-column: 1 / 3;
-			grid-row: 1;
+			grid-area: o;
 		}
 
 		.equivalency {
-			grid-column: 3;
-			grid-row: 1 / -1;
+			grid-area: e;
 		}
 	}
 
