@@ -15,6 +15,17 @@
 			words: string[];
 		};
 	}>();
+
+	let empty = false;
+
+	function onadd() {
+		const words = text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean);
+		if (words.length === 0) {
+			empty = true;
+			return;
+		}
+		dispatch('add', { lang, words });
+	}
 </script>
 
 <fieldset>
@@ -24,15 +35,18 @@
 	</legend>
 
 	<div class="input-form">
-		<textarea placeholder={$LL.input.placeholder()} bind:value={text} />
+		<textarea
+			placeholder={$LL.input.placeholder()}
+			class:empty
+			bind:value={text}
+			on:change={() => {
+				empty = false;
+			}}
+		/>
 		<div class="buttons">
 			<input type="text" bind:value={lang} id="lang" />
 			<label for="lang">{displayName}</label>
-			<button
-				on:click={() => {
-					dispatch('add', { lang, words: text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean) });
-				}}
-			>
+			<button on:click={onadd}>
 				<iconify-icon icon="ic:round-plus" width="1.3em" height="1.3em" />
 				{$LL.input.add()}
 			</button>
@@ -150,5 +164,9 @@
 
 	button:hover {
 		opacity: 0.8;
+	}
+
+	.empty {
+		border-color: var(--color-error);
 	}
 </style>
