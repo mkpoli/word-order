@@ -106,6 +106,10 @@ type RootTranslation = {
 		 */
 		add: string
 		/**
+		 * Modify
+		 */
+		modify: string
+		/**
 		 * Each word are separated automatically by space and punctuations. Use {delimiter} for further separation or non-space separated script, such as Chinese / Japanese / Thai / Tibetan / etc., e.g. {example}
 		 * @param {string} delimiter
 		 * @param {string} example
@@ -209,6 +213,10 @@ export type TranslationFunctions = {
 		 * Add
 		 */
 		add: () => LocalizedString
+		/**
+		 * Modify
+		 */
+		modify: () => LocalizedString
 		/**
 		 * Each word are separated automatically by space and punctuations. Use {delimiter} for further separation or non-space separated script, such as Chinese / Japanese / Thai / Tibetan / etc., e.g. {example}
 		 */

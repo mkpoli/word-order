@@ -3,29 +3,44 @@
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 
+	export let modifying: number;
+	export let sentences: [string, string[]][];
+
 	let lang = 'en';
 	let displayName = 'English';
 	let text = '';
 
 	$: displayName = getLanguageName(lang, $locale);
 
+	let previousLang = 'en';
+	let previousText = '';
+
+	let textArea: HTMLTextAreaElement;
+
+	$: onmodifyingchange(modifying);
+
+	function onmodifyingchange(modifying: number) {
+		if (modifying !== -1) {
+			previousLang = lang;
+			previousText = text;
+			lang = sentences[modifying][0];
+			text = sentences[modifying][1].join('|');
+			textArea.focus();
+		} else {
+			lang = previousLang;
+			text = previousText;
+			previousText = '';
+		}
+	}
+
 	const dispatch = createEventDispatcher<{
-		add: {
+		submit: {
 			lang: string;
 			words: string[];
 		};
 	}>();
 
 	let empty = false;
-
-	function onadd() {
-		const words = text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean);
-		if (words.length === 0) {
-			empty = true;
-			return;
-		}
-		dispatch('add', { lang, words });
-	}
 </script>
 
 <fieldset>
@@ -39,6 +54,7 @@
 			placeholder={$LL.input.placeholder()}
 			class:empty
 			bind:value={text}
+			bind:this={textArea}
 			on:change={() => {
 				empty = false;
 			}}
@@ -46,9 +62,19 @@
 		<div class="buttons">
 			<input type="text" bind:value={lang} id="lang" />
 			<label for="lang">{displayName}</label>
-			<button on:click={onadd}>
-				<iconify-icon icon="ic:round-plus" width="1.3em" height="1.3em" />
-				{$LL.input.add()}
+			<button
+				on:click={() => {
+					const words = text.split(modifying === -1 ? /([\s\p{P}]+)|[|]/u : /[|]/u).filter(Boolean);
+					if (words.length === 0) {
+						empty = true;
+						return;
+					}
+					text = '';
+					dispatch('submit', { lang, words });
+				}}
+			>
+				<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
+				{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
 			</button>
 		</div>
 		<div class="guidance">

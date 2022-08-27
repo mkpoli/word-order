@@ -26,6 +26,7 @@ const en: BaseTranslation = {
 		'input': 'Input',
 		'placeholder': 'Input new sentence here...',
 		'add': 'Add',
+		'modify': 'Modify',
 		'guidance': 'Each word are separated automatically by space and punctuations. Use {delimiter:string} for further separation or non-space separated script, such as Chinese / Japanese / Thai / Tibetan / etc., e.g. {example:string}',
 	},
 	footer: {

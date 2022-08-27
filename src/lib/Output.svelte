@@ -22,6 +22,9 @@
 		delete: {
 			sentence: number;
 		};
+		modify: {
+			sentence: number;
+		};
 	}>();
 
 	type Sentence = [lang: string, words: string[]];
@@ -29,14 +32,15 @@
 	export let color_map: number[][];
 	export let equivalency: number[][][];
 	export let word_spans: HTMLSpanElement[][] = sentences.map(([, words]) => new Array(words.length).fill(null));
-	export let alignment: Alignment = 'center';
 	export let lines: Line[];
 	export let colors: string[];
+	export let modifying: number;
 
 	// Parameters
 	export let verticalGap: number;
 	export let lineGap: number;
 	export let straightLength: number;
+	export let alignment: Alignment = 'center';
 	export let fontFamily: FontFamily;
 	export let fontStyle: FontStyle;
 	export let fontSize: number;
@@ -179,6 +183,7 @@
 />
 
 <output
+	inert={modifying === -1 ? undefined : true}
 	bind:this={output}
 	class:dragging={draggingIndex !== -1}
 	class:serif={fontFamily === 'serif'}
@@ -190,8 +195,8 @@
 	style:font-size={`${fontSize}px`}
 >
 	{#each sentences as [lang, words], i}
-		<div class="sentence" class:dragged={draggingIndex === i}>
-			<div class="dragger" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+		<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+			<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 				<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
 			</div>
 			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
@@ -235,7 +240,17 @@
 					>
 				{/each}
 			</span>
-			<div class="delete">
+			<div class="modify action">
+				<iconify-icon
+					icon="material-symbols:edit-rounded"
+					on:click={() => {
+						dispatch('modify', {
+							sentence: i
+						});
+					}}
+				/>
+			</div>
+			<div class="delete action">
 				<iconify-icon
 					icon="ic:baseline-delete-forever"
 					width="1.2em"
@@ -304,7 +319,7 @@
 		position: relative;
 
 		display: grid;
-		grid-template-columns: auto auto 1fr auto;
+		grid-template-columns: auto auto 1fr auto auto;
 		gap: 1em;
 	}
 
@@ -353,8 +368,7 @@
 		display: contents;
 	}
 
-	.dragger,
-	.delete {
+	.action {
 		opacity: 0;
 		display: flex;
 		align-items: center;
@@ -362,8 +376,7 @@
 		border-radius: 0.1em;
 	}
 
-	.sentence:hover > .dragger,
-	.sentence:hover > .delete {
+	.sentence:hover > .action {
 		opacity: 1;
 	}
 
@@ -378,6 +391,16 @@
 
 	.dragger:hover {
 		background-color: #eee;
+	}
+
+	output[inert] {
+		background-color: #eee;
+	}
+
+	output[inert] .sentence:not(.modifying) > .tag,
+	output[inert] .sentence:not(.modifying) > .words,
+	output[inert] svg {
+		opacity: 0.3;
 	}
 
 	output.dragging {
