@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { pickNColors } from '../lib/color';
+	import { pickNColors } from '$lib/color';
 	import * as d3 from 'd3-color';
 	import { onMount, tick } from 'svelte';
-	import SentenceInput from '../lib/SentenceInput.svelte';
+
 	import 'iconify-icon';
 
 	import { LL } from '../i18n/i18n-svelte';
 
-	import Output, { type Line } from '../lib/Output.svelte';
 	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
 
+	// Components
+	import Equivalency from '$lib/Equivalency.svelte';
+	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
+	import SentenceInput from '$lib/SentenceInput.svelte';
 
 	// const SENTENCES = [
 	// 	['en', "I can eat glass and it doesn't hurt me."],
@@ -220,21 +223,7 @@
 	</div>
 
 	<div class="equivalency">
-		{#each equivalency as entry, i}
-			<div class="equivalency" style={`color: ${colors[i]}`}>
-				{#each entry as words, j}
-					<span class="words">
-						{#if words.length === 0}
-							<span class="word">❌</span>
-						{:else}
-							{#each words as k}
-								<span class="word">{sentences[j][1][k]}</span>
-							{/each}
-						{/if}
-					</span>
-				{/each}
-			</div>
-		{/each}
+		<Equivalency {sentences} {equivalency} {colors} />
 	</div>
 </main>
 
