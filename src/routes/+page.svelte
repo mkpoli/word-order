@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { pickNColors } from '$lib/color';
-	import * as d3 from 'd3-color';
+	import { lch2rgb, pickNColors } from '$lib/color';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -82,7 +81,7 @@
 		color_map = color_map;
 	}
 
-	$: colors = pickNColors(equivalency.length).map(([l, c, h]) => d3.lch(l, c, h).formatRgb());
+	$: colors = pickNColors(equivalency.length).map(lch2rgb);
 
 	// LINE_COORDINATES
 
@@ -271,6 +270,12 @@
 		gap: 1em;
 	}
 
+	.equivalency {
+		display: flex;
+		gap: 0.7em;
+		height: fit-content;
+	}
+
 	/* Layout */
 
 	@media (min-width: 1024px) {
@@ -296,13 +301,5 @@
 		.equivalency {
 			grid-area: e;
 		}
-	}
-
-	.words:not(:last-of-type)::after {
-		content: '＝';
-	}
-
-	.word:not(:last-of-type)::after {
-		content: '|';
 	}
 </style>
