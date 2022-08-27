@@ -117,7 +117,7 @@
 	let connecting: [l: number, w: number][] = [];
 
 	function isContent(word: string) {
-		return !word.match(/^\s|\p{P}+$/u);
+		return !word.match(/^(\s|\p{P}+)$/u);
 	}
 
 	let connected: [l: number, w: number][] = [];
