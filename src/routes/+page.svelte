@@ -274,6 +274,11 @@
 		display: flex;
 		gap: 0.7em;
 		height: fit-content;
+		padding: 1em;
+	}
+
+	.output {
+		padding: 2em;
 	}
 
 	/* Layout */
@@ -282,7 +287,7 @@
 		main {
 			display: grid;
 			grid-template-areas:
-				'o o e'
+				'o o o'
 				'p i e';
 		}
 
