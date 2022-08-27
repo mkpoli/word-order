@@ -30,7 +30,12 @@ const zh: Translation = {
   },
   footer: {
     'info': '使用本应用生成的图像于{license}释出，意即公开于公用领域的，完全自由使用。不过也欢迎分享并在使用时标注出处。',
-  }
+  },
+  dialog: {
+    'editing': '正在编辑',
+    'confirm': '确认',
+    'cancel': '取消',
+  },
 }
 
 export default zh

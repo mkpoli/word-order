@@ -8,7 +8,7 @@
 	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
 	import { cartesian, segmentate } from './array';
 	import { getLanguageName } from './lang';
-	import { locale } from '$i18n/i18n-svelte';
+	import { LL, locale } from '$i18n/i18n-svelte';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -271,31 +271,33 @@
 		{/each}
 	</svg>
 
-	{#if mode === 'edit'}
-		<div class="edit-dialog" use:draggable>
-			<div>Editing</div>
-			<button
-				class="confirm"
-				on:click={() => {
-					dispatch('connect', { connected: [...connecting], connectedIndex });
-					connecting = [];
-					connectedIndex = -1;
-					mode = 'view';
-				}}
-			>
-				Confirm
-			</button>
-			<button
-				class="cancel"
-				on:click={() => {
-					connecting = [];
-					mode = 'view';
-				}}
-			>
-				Cancel
-			</button>
-		</div>
-	{/if}
+	<div class="edit-dialog" use:draggable class:visible={mode === 'edit'}>
+		<h2>{$LL.dialog.editing()}</h2>
+		<button
+			class="confirm fill"
+			on:click={() => {
+				dispatch('connect', { connected: [...connecting], connectedIndex });
+				connecting = [];
+				connectedIndex = -1;
+				mode = 'view';
+			}}
+		>
+			<iconify-icon icon="material-symbols:check" inline="true" />
+			{$LL.dialog.confirm()}
+		</button>
+		<button
+			class="cancel text"
+			on:click={() => {
+				connecting = [];
+				mode = 'view';
+			}}
+		>
+			<span>
+				<iconify-icon icon="material-symbols:cancel" inline="true" />
+				{$LL.dialog.cancel()}
+			</span>
+		</button>
+	</div>
 </output>
 
 <style>
@@ -333,8 +335,7 @@
 			't t'
 			'y n';
 
-		width: 8em;
-		margin: 0 auto;
+		width: auto;
 		text-align: center;
 
 		gap: 1em;
@@ -343,17 +344,30 @@
 
 		box-shadow: 1px 1px 5px 0 #ccc;
 
-		background-color: rgba(242, 239, 255, 0.5);
-		backdrop-filter: blur(4px);
+		background-color: rgb(44 71 255 / 3%);
+		backdrop-filter: blur(5px);
 		margin: 1em;
 
 		cursor: move;
 
 		position: absolute;
+
+		visibility: hidden;
 	}
 
-	.edit-dialog > div {
+	.edit-dialog.visible {
+		visibility: visible;
+	}
+
+	.edit-dialog > h2 {
 		grid-area: t;
+
+		margin: 0;
+		padding: 0.5em 0;
+		text-align: center;
+		width: 100%;
+
+		font-size: 1.3em;
 	}
 
 	.edit-dialog > .confirm {

@@ -26,6 +26,13 @@
 <slot />
 
 <style global>
+	:root {
+		--color-accent-light: rgb(73 132 255);
+		--color-accent: rgb(44 71 255);
+		--color-error: rgb(255 0 50);
+		accent-color: var(--color-accent);
+	}
+
 	* {
 		box-sizing: border-box;
 	}
@@ -59,5 +66,46 @@
 	input[type='text']:hover,
 	textarea:hover {
 		border: 1px solid #4f4f4f;
+	}
+
+	button.fill {
+		appearance: none;
+		background: linear-gradient(to bottom, var(--color-accent-light), var(--color-accent));
+
+		border-radius: 0.3em;
+		padding: 0.5em 1em;
+
+		border: 1px solid var(--color-accent);
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5em;
+
+		font-weight: bold;
+		color: white;
+	}
+
+	button.text {
+		appearance: none;
+		background: transparent;
+		border: 1px solid var(--color-accent);
+		border-radius: 0.3em;
+		padding: 0.5em 1em;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5em;
+
+		font-weight: bold;
+		color: var(--color-accent);
+	}
+
+	button.text > span {
+		background: var(--color-accent);
+		background: linear-gradient(to bottom, var(--color-accent-light), var(--color-accent));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
 	}
 </style>
