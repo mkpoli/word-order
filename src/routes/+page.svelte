@@ -38,6 +38,9 @@
 		[[], [7], [7], []]
 	];
 
+	// Prevent empty entry from existing
+	$: equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
+
 	let mode: Mode = 'view';
 
 	let color_map: number[][] = [];
@@ -82,16 +85,31 @@
 
 	let lines: Line[] = [];
 
-	async function onadd({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
-		sentences.push([lang, words] as [string, string[]]);
-		sentences = sentences;
+	async function onsubmit({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
+		if (modifying !== -1) {
+			// Modifying existing sentence
+			sentences[modifying] = [lang, words];
 
-		color_map = [...color_map, new Array(words.length).fill(-1)];
-		word_spans = [...word_spans, new Array(words.length).fill(null)];
+			if (!words.every((word, i) => word === wordsBeforeModify[i])) {
+				// If modified words, clear the equivalency
+				for (const [i, entry] of equivalency.entries()) {
+					entry[modifying] = [];
+				}
+			}
 
-		for (const [i, entry] of equivalency.entries()) {
-			equivalency[i] = [...entry, []];
+			modifying = -1;
+			wordsBeforeModify = [];
+		} else {
+			// Adding new sentence
+			sentences.push([lang, words]);
+			color_map = [...color_map, new Array(words.length).fill(-1)];
+			word_spans = [...word_spans, new Array(words.length).fill(null)];
+
+			for (const [i, entry] of equivalency.entries()) {
+				equivalency[i] = [...entry, []];
+			}
 		}
+		sentences = sentences;
 		equivalency = equivalency;
 
 		await tick();
@@ -136,6 +154,9 @@
 
 		equivalency = equivalency;
 	}
+
+	let modifying = -1;
+	let wordsBeforeModify: string[] = [];
 </script>
 
 <main>
@@ -154,6 +175,7 @@
 				{fontFamily}
 				{fontStyle}
 				{fontSize}
+				{modifying}
 				bind:word_spans
 				bind:mode
 				on:connect={onconnect}
@@ -179,14 +201,18 @@
 						entry.splice(sentence, 1);
 						equivalency[i] = entry;
 					}
-					equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
+					equivalency = equivalency;
+				}}
+				on:modify={({ detail: { sentence } }) => {
+					modifying = sentence;
+					wordsBeforeModify = sentences[sentence][1];
 				}}
 			/>
 		{/if}
 	</div>
 
 	<div class="input">
-		<SentenceInput on:add={onadd} />
+		<SentenceInput on:submit={onsubmit} {modifying} {sentences} />
 	</div>
 
 	<div class="params">

@@ -25,6 +25,7 @@ const zh: Translation = {
     'input': '输入',
     'placeholder': '请在此输入新的句子...',
     'add': '添加',
+    'modify': '修改',
     'guidance': '空格和标点符号自动分词。使用{delimiter}来进一步分隔或用于中日韩泰藏等不使用空格分词的文本，例如{example}',
   },
   footer: {

@@ -25,6 +25,7 @@ const fr: Translation = {
     'input': 'Entrée',
     'placeholder': 'Saisissez une nouvelle phrase...',
     'add': 'Ajouter',
+    'modify': 'Modifier',
     'guidance': 'Les mots sont automatiquement découpés par des espaces et les caractères de ponctuation. Utilisez {delimiter} pour découper ou pour utiliser les textes qui ne sont pas séparés par des espaces pour les langues chinoises, japonais, thaï, tibétain et celtique. Exemple : {example}',
   },
   footer: {
