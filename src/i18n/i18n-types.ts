@@ -94,6 +94,10 @@ type RootTranslation = {
 	}
 	input: {
 		/**
+		 * Input
+		 */
+		input: string
+		/**
 		 * Input new sentence here...
 		 */
 		placeholder: string
@@ -193,6 +197,10 @@ export type TranslationFunctions = {
 		fontSize: () => LocalizedString
 	}
 	input: {
+		/**
+		 * Input
+		 */
+		input: () => LocalizedString
 		/**
 		 * Input new sentence here...
 		 */

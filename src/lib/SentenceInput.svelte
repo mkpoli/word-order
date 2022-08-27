@@ -17,46 +17,71 @@
 	}>();
 </script>
 
-<div class="input-form">
-	<textarea placeholder={$LL.input.placeholder()} bind:value={text} />
-	<div class="buttons">
-		<input type="text" bind:value={lang} id="lang" />
-		<label for="lang">{displayName}</label>
-		<button
-			on:click={() => {
-				dispatch('add', { lang, words: text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean) });
-			}}
-		>
-			<iconify-icon icon="ic:round-plus" width="1.3em" height="1.3em" />
-			{$LL.input.add()}
-		</button>
+<fieldset>
+	<legend>
+		<iconify-icon icon="ri:input-cursor-move" inline="true" />
+		{$LL.input.input()}
+	</legend>
+
+	<div class="input-form">
+		<textarea placeholder={$LL.input.placeholder()} bind:value={text} />
+		<div class="buttons">
+			<input type="text" bind:value={lang} id="lang" />
+			<label for="lang">{displayName}</label>
+			<button
+				on:click={() => {
+					dispatch('add', { lang, words: text.split(/([\s\p{P}]+)|[|]/u).filter(Boolean) });
+				}}
+			>
+				<iconify-icon icon="ic:round-plus" width="1.3em" height="1.3em" />
+				{$LL.input.add()}
+			</button>
+		</div>
+		<div class="guidance">
+			<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
+			<p>
+				{@html $LL.input.guidance({
+					delimiter: '<code title="(U+007C, VERTICAL LINE)">|</code>',
+					example: `
+	<code>我|愛|你。</code>
+	→
+	<span style="display:inline-flex; font-family: sans-serif;" lang="zh-HanT">
+		<span style="color:orange">我</span>
+		<span style="color:crimson">愛</span>
+		<span style="color:hotpink">你</span>
+		<span>。</span>
+	</span>
+	`
+				})}
+			</p>
+		</div>
 	</div>
-	<div class="guidance">
-		<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
-		<p>
-			{@html $LL.input.guidance({
-				delimiter: '<code title="(U+007C, VERTICAL LINE)">|</code>',
-				example: `
-<code>我|愛|你。</code>
-→
-<span style="display:inline-flex; font-family: sans-serif;" lang="zh-HanT">
-	<span style="color:orange">我</span>
-	<span style="color:crimson">愛</span>
-	<span style="color:hotpink">你</span>
-	<span>。</span>
-</span>
-`
-			})}
-		</p>
-	</div>
-</div>
+</fieldset>
 
 <style>
+	fieldset {
+		height: 100%;
+		padding: 1.5em;
+	}
+
 	.input-form {
 		display: grid;
 
-		padding: 1em;
+		grid-template-areas:
+			't t t'
+			'l n b'
+			'i i i';
+
+		grid-template-rows: 1fr auto auto;
+
 		gap: 1em;
+
+		/* height: 100%; */
+		min-height: 100%;
+		height: 0;
+
+		justify-self: stretch;
+		align-items: center;
 	}
 
 	:global(code) {
@@ -70,16 +95,22 @@
 
 	textarea {
 		resize: none;
+		height: 100%;
+
+		grid-area: t;
 	}
 
 	.buttons {
-		display: flex;
-		align-items: center;
+		display: contents;
+		/* align-items: center;
 		gap: 1em;
+
+		 */
 	}
 
 	button {
 		width: 100%;
+		grid-area: b;
 	}
 
 	.guidance {
@@ -94,6 +125,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 1em;
+		grid-area: i;
 	}
 
 	.guidance > p {

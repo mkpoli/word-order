@@ -146,25 +146,6 @@
 		margin: 0 0.5em;
 	}
 
-	fieldset {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4em;
-
-		padding: 1em 1.5em;
-		border-radius: 0.5em;
-		border: none;
-		box-shadow: 1px 1px 5px 0 #ccc;
-	}
-
-	legend {
-		background: white;
-		padding: 0.2em 0.8em;
-		border-radius: 0.3em;
-		box-shadow: 1px 1px 5px 0 #ccc;
-		font-weight: bold;
-	}
-
 	:global(fieldset > select) {
 		padding: 0.2em 0.5em;
 	}
