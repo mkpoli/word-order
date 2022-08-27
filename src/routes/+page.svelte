@@ -98,20 +98,39 @@
 	}
 
 	function onconnect({ detail: { connected, connectedIndex } }: CustomEvent<{ connected: [number, number][]; connectedIndex: number }>) {
+		// grouped[sentence_id][word_id]
 		const grouped: number[][] = sentences.map(() => []);
 		connected.forEach(([a, b]) => {
 			grouped[a].push(b);
 		});
 
 		if (grouped.every((entry) => entry.length === 0)) {
+			// Remove entry if all words in that are removed
 			equivalency.splice(connectedIndex, 1);
 		} else {
-			if (connectedIndex === -1) {
-				if (grouped.length !== 0) {
+			if (connectedIndex !== -1) {
+				// If connectedFrom an existing entry, replace it with [...connected, ...new]
+				equivalency[connectedIndex] = grouped;
+			} else {
+				// If starting from a new entry, find all existing entries of all connected words
+				const entries = [...new Set(grouped.flatMap((words, i) => words.map((word) => color_map[i][word])).filter((word) => word !== -1))];
+
+				if (entries.length === 1) {
+					// Found only 1, add new one to old one
+					equivalency[entries[0]] = equivalency[entries[0]].map((words, i) => [...words, ...grouped[i]]);
+				} else {
+					// Remove duplicate words in previous entries
+					for (const [i, entry] of equivalency.entries()) {
+						for (const [j, words] of entry.entries()) {
+							for (const word of grouped[j]) {
+								equivalency[i][j] = words.filter((w) => w !== word);
+							}
+						}
+					}
+
+					// Add new entry
 					equivalency.push(grouped);
 				}
-			} else {
-				equivalency[connectedIndex] = grouped;
 			}
 		}
 
