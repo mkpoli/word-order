@@ -258,12 +258,6 @@
 </footer>
 
 <style>
-	:root {
-		--color-accent: rgb(44 71 255);
-		--color-error: rgb(255 0 50);
-		accent-color: var(--color-accent);
-	}
-
 	main {
 		padding: 1em;
 		display: flex;

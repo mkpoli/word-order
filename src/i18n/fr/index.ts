@@ -30,6 +30,11 @@ const fr: Translation = {
   },
   footer: {
     'info': 'L’illustration générée par cette application est distribuée sous la licence {license}, ce qui signifie qu’elle sera dans le domaine public et totalement libre d’utilisation. Il n’est pas obligatoire, mais bienvenu de partager et de créditer',
+  },
+  dialog: {
+    'editing': 'Édition',
+    'confirm': 'Confirmer',
+    'cancel': 'Annuler',
   }
 }
 

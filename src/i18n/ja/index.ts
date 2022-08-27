@@ -30,7 +30,12 @@ const ja: Translation = {
   },
   footer: {
     'info': 'このツールにて生成されたイラストは、{license} ライセンスにて公開されています。即ち完全著作権フリーであり、自由に使用することができます。また、強制ではないが、利用する際にシェアや引用リツイートすると製作者は歓びます。',
-  }
+  },
+  dialog: {
+    'editing': '編集中',
+    'confirm': '確認',
+    'cancel': 'キャンセル',
+  },
 }
 
 export default ja
