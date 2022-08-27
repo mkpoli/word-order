@@ -160,7 +160,7 @@
 						entry.splice(sentence, 1);
 						equivalency[i] = entry;
 					}
-					equivalency = equivalency;
+					equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
 				}}
 			/>
 		{/if}
