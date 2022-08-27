@@ -10,6 +10,7 @@ export function getLanguageNames(locale: string): Intl.DisplayNames {
 
 export function getLanguageName(code: string, locale: string): string {
   if (!locale) return code
+  if (!code) return ''
   const languageNames = getLanguageNames(locale)
   try {
     return languageNames.of(code) ?? code;
