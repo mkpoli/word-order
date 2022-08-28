@@ -1,5 +1,8 @@
 <script lang="ts">
+	// Components
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
+	import RangeSlider from '$lib/ui/RangeSlider.svelte';
+
 	import { LL } from '$i18n/i18n-svelte';
 	import type { Alignment, FontFamily, FontStyle } from '$lib/types';
 
@@ -20,21 +23,22 @@
 
 	<label for="vertical-gap">
 		<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
-		{$LL.params.verticalGap()} ({verticalGap}px)
+		{$LL.params.verticalGap()}
 	</label>
-	<input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" />
+	<RangeSlider id="vertical-gap" min={0} max={100} bind:value={verticalGap} suffix=" px" />
+	<!-- <input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" /> -->
 
 	<label for="line-gap">
 		<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
-		{$LL.params.lineGap()} ({lineGap}px)
+		{$LL.params.lineGap()}
 	</label>
-	<input type="range" bind:value={lineGap} id="line-gap" name="line-gap" min="-5" max={verticalGap / 2} />
+	<RangeSlider id="line-gap" min={-5} max={verticalGap / 2} bind:value={lineGap} suffix=" px" />
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true" />
-		{$LL.params.straightLength()} ({straightLength}px)
+		{$LL.params.straightLength()}
 	</label>
-	<input type="range" bind:value={straightLength} id="straight-length" name="straight-length" min="0" max={verticalGap / 2} />
+	<RangeSlider id="straight-length" min={0} max={verticalGap / 2} bind:value={straightLength} suffix=" px" />
 
 	<label for="locale">
 		<iconify-icon icon="mdi:earth" inline="true" />
@@ -86,9 +90,9 @@
 
 	<label for="font-size">
 		<iconify-icon icon="ant-design:font-size-outlined" inline="true" />
-		{$LL.params.fontSize()} ({fontSize}px)
+		{$LL.params.fontSize()}
 	</label>
-	<input type="range" bind:value={fontSize} id="font-size" name="font-size" min="10" max="30" />
+	<RangeSlider bind:value={fontSize} id="font-size" min={10} max={30} suffix=" px" />
 </fieldset>
 
 <style>
