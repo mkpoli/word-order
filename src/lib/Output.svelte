@@ -355,6 +355,8 @@
 		position: absolute;
 
 		visibility: hidden;
+
+		z-index: 999;
 	}
 
 	.edit-dialog.visible {
