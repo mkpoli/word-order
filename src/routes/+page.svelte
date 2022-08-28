@@ -362,9 +362,11 @@
 	.menu button {
 		appearance: none;
 		padding: 0.5em 1em;
-		font-size: 1.2rem;
 		border: none;
 		border-radius: 0.2em;
+
+		font-weight: bold;
+		font-size: 1.02em;
 
 		background-color: white;
 
