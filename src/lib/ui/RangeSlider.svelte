@@ -346,7 +346,7 @@
 
 		--color-range: var(--color-handle-focus);
 
-		--color-handle-inactive: #99a2a2;
+		--color-handle-inactive: var(--color-inactive);
 		--color-range-inactive: var(--color-handle-inactive);
 
 		--color-float-inactive: var(--color-handle-inactive);
