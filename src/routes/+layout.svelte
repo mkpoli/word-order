@@ -18,6 +18,7 @@
 			}
 			window.localStorage.setItem('locale', lang);
 		}
+		document.documentElement.lang = locale;
 	}
 
 	setLocale(locale);
