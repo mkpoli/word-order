@@ -14,6 +14,7 @@
 		// select locale
 		setLocale(newLocale);
 
+		if (document) document.documentElement.lang = newLocale;
 		window.localStorage.setItem('locale', newLocale);
 	};
 
