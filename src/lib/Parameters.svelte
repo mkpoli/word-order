@@ -108,13 +108,18 @@
 		border-radius: 0.2em;
 		border: 1px solid transparent;
 
-		color: var(--color-accent);
+		color: var(--color-inactive);
 
 		overflow: hidden;
 		position: relative;
 	}
 
 	.alignment:hover {
+		border-color: var(--color-inactive);
+	}
+
+	.alignment:focus-within {
+		color: var(--color-accent);
 		border-color: var(--color-accent);
 	}
 
@@ -128,8 +133,13 @@
 
 	input[type='radio'][name='alignment']:checked + label {
 		color: white;
+		background-color: var(--color-inactive);
+		border: 1px solid var(--color-inactive);
+	}
+
+	.alignment:focus-within > input[type='radio'][name='alignment']:checked + label {
 		background-color: var(--color-accent);
-		border: 1px solid var(--color-accent);
+		border-color: var(--color-accent);
 	}
 
 	input[type='radio'][name='alignment'] {
@@ -138,7 +148,6 @@
 		cursor: pointer;
 		height: 0;
 		width: 0;
-		display: none;
 	}
 
 	input[type='radio'][name='alignment'] + label {
