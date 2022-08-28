@@ -4,13 +4,6 @@
 	export let sentences: [string, string[]][];
 	export let equivalency: number[][][];
 	export let colors: string[];
-
-	console.log(
-		`linear-gradient(to bottom, ${pickNColors(20)
-			.map(lch2rgb)
-			.map((c, i) => `${c} ${((i * 1) / 20) * 100}%`)
-			.join(', ')})`
-	);
 </script>
 
 <div
