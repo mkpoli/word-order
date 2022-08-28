@@ -222,7 +222,17 @@
 	</div>
 
 	<div class="equivalency">
-		<Equivalency {sentences} {equivalency} {colors} />
+		<Equivalency
+			{sentences}
+			{equivalency}
+			{colors}
+			on:reorder={({ detail: { from, to } }) => {
+				const entry = equivalency[from];
+				equivalency.splice(from, 1);
+				equivalency.splice(to, 0, entry);
+				equivalency = equivalency;
+			}}
+		/>
 	</div>
 </main>
 
@@ -275,6 +285,7 @@
 		gap: 0.7em;
 		height: fit-content;
 		padding: 1em;
+		justify-content: center;
 	}
 
 	.output {
