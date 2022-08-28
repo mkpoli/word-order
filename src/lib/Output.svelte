@@ -388,6 +388,12 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 0.1em;
+		width: 1.5em;
+		height: 1.5em;
+	}
+
+	.action:hover {
+		background-color: #eee;
 	}
 
 	.sentence:hover > .action {
@@ -401,10 +407,6 @@
 	.delete {
 		cursor: pointer;
 		color: #e00020;
-	}
-
-	.dragger:hover {
-		background-color: #eee;
 	}
 
 	output[inert] {
