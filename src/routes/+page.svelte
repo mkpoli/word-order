@@ -174,8 +174,11 @@
 
 			sentences = [];
 			equivalency = [];
-		}}>{$LL.menu.new()}</button
+		}}
 	>
+		<iconify-icon icon="eos-icons:content-new" />
+		{$LL.menu.new()}
+	</button>
 	<button
 		on:click={() => {
 			const data = {
@@ -183,12 +186,18 @@
 				equivalency: equivalency
 			};
 			save(data);
-		}}>{$LL.menu.export()}</button
+		}}
+	>
+		<iconify-icon icon="uil:export" />
+		{$LL.menu.export()}</button
 	>
 	<button
 		on:click={() => {
 			open(load);
-		}}>{$LL.menu.import()}</button
+		}}
+	>
+		<iconify-icon icon="uil:import" />
+		{$LL.menu.import()}</button
 	>
 </header>
 
@@ -371,6 +380,11 @@
 		background-color: white;
 
 		box-shadow: 1px 1px 5px 0 #ccc;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5em;
 	}
 
 	.menu button:hover {
