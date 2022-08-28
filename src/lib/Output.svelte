@@ -256,7 +256,7 @@
 					width="1.2em"
 					height="1.2em"
 					on:click={() => {
-						if (!confirm('Are you sure you want to delete this sentence?')) return;
+						if (!confirm($LL.confirm.deleteSentence())) return;
 						dispatch('delete', {
 							sentence: i
 						});

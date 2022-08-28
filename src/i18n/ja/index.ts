@@ -36,6 +36,15 @@ const ja: Translation = {
     'confirm': '確認',
     'cancel': 'キャンセル',
   },
+  confirm: {
+    'deleteSentence': 'この文を削除してもよろしいですか？',
+    'new': '新しいイラストを作成しますか？この操作は全てを削除します!!!',
+  },
+  menu: {
+    'new': '新規',
+    'import': 'インポート',
+    'export': 'エクスポート',
+  }
 }
 
 export default ja

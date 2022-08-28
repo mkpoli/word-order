@@ -36,6 +36,15 @@ const zh: Translation = {
     'confirm': '确认',
     'cancel': '取消',
   },
+  confirm: {
+    'deleteSentence': '确定要删除这个句子吗？',
+    'new': '确定要创建一个新的图像吗？这将删除所有内容！',
+  },
+  menu: {
+    'new': '新建',
+    'import': '导入',
+    'export': '导出',
+  }
 }
 
 export default zh

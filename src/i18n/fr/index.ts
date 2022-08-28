@@ -35,6 +35,15 @@ const fr: Translation = {
     'editing': 'Édition',
     'confirm': 'Confirmer',
     'cancel': 'Annuler',
+  },
+  confirm: {
+    'deleteSentence': 'Êtes-vous sûr de vouloir supprimer cette phrase?',
+    'new': 'Êtes-vous sûr de vouloir créer une nouvelle illustration? Cela supprimera TOUTES les phrases!',
+  },
+  menu: {
+    'new': 'Nouvelle',
+    'import': 'Importer',
+    'export': 'Exporter',
   }
 }
 
