@@ -36,6 +36,15 @@ const en: BaseTranslation = {
 		'editing': 'Editing',
 		'confirm': 'Confirm',
 		'cancel': 'Cancel',
+	},
+	confirm: {
+		'deleteSentence': 'Are you sure you want to delete this sentence?',
+		'new': 'Are you sure you want to create a new illustration? This will DELETE everything!!!',
+	},
+	menu: {
+		'new': 'New',
+		'import': 'Import',
+		'export': 'Export',
 	}
 }
 export default en

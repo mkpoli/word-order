@@ -30,7 +30,6 @@
 	:root {
 		--color-accent-light: rgb(73 132 255);
 		--color-accent: rgb(44 71 255);
-		--color-inactive: #99a2a2;
 		--color-inactive: rgb(61, 66, 66);
 		--color-error: rgb(255 0 50);
 		accent-color: var(--color-accent);

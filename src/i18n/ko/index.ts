@@ -35,7 +35,16 @@ const ko: Translation = {
     'editing': '편집',
     'confirm': '확인',
     'cancel': '취소',
-  }
+  },
+  confirm: {
+    'deleteSentence': '이 문장을 삭제하시겠습니까?',
+    'new': '새로운 삽화를 만드시겠습니까? 이 기능은 모든 데이터를 삭제합니다!',
+  },
+  menu: {
+    'new': '새로 만들기',
+    'import': '가져오기',
+    'export': '내보내기',
+  },
 }
 
 export default ko

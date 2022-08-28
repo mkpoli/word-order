@@ -13,6 +13,7 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
+	import { save, open } from '$lib/file';
 
 	// const SENTENCES = [
 	// 	['en', "I can eat glass and it doesn't hurt me."],
@@ -159,7 +160,37 @@
 
 	let modifying = -1;
 	let wordsBeforeModify: string[] = [];
+
+	async function load(data: { equivalency: number[][][]; sentences: [string, string[]][] }) {
+		sentences = data.sentences;
+		equivalency = data.equivalency;
+	}
 </script>
+
+<header class="menu">
+	<button
+		on:click={() => {
+			if (!confirm($LL.confirm.new())) return;
+
+			sentences = [];
+			equivalency = [];
+		}}>{$LL.menu.new()}</button
+	>
+	<button
+		on:click={() => {
+			const data = {
+				sentences: sentences,
+				equivalency: equivalency
+			};
+			save(data);
+		}}>{$LL.menu.export()}</button
+	>
+	<button
+		on:click={() => {
+			open(load);
+		}}>{$LL.menu.import()}</button
+	>
+</header>
 
 <main>
 	<div class="output">
@@ -317,5 +348,28 @@
 		.equivalency {
 			grid-area: e;
 		}
+	}
+
+	.menu {
+		display: flex;
+		gap: 1em;
+		padding: 1em;
+		justify-content: center;
+	}
+
+	.menu button {
+		appearance: none;
+		padding: 0.5em 1em;
+		font-size: 1.2rem;
+		border: none;
+		border-radius: 0.2em;
+
+		background-color: white;
+
+		box-shadow: 1px 1px 5px 0 #ccc;
+	}
+
+	.menu button:hover {
+		background-color: #eee;
 	}
 </style>

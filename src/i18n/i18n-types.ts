@@ -137,6 +137,30 @@ type RootTranslation = {
 		 */
 		cancel: string
 	}
+	confirm: {
+		/**
+		 * Are you sure you want to delete this sentence?
+		 */
+		deleteSentence: string
+		/**
+		 * Are you sure you want to create a new illustration? This will DELETE everything!!!
+		 */
+		'new': string
+	}
+	menu: {
+		/**
+		 * New
+		 */
+		'new': string
+		/**
+		 * Import
+		 */
+		'import': string
+		/**
+		 * Export
+		 */
+		'export': string
+	}
 }
 
 export type TranslationFunctions = {
@@ -255,6 +279,30 @@ export type TranslationFunctions = {
 		 * Cancel
 		 */
 		cancel: () => LocalizedString
+	}
+	confirm: {
+		/**
+		 * Are you sure you want to delete this sentence?
+		 */
+		deleteSentence: () => LocalizedString
+		/**
+		 * Are you sure you want to create a new illustration? This will DELETE everything!!!
+		 */
+		'new': () => LocalizedString
+	}
+	menu: {
+		/**
+		 * New
+		 */
+		'new': () => LocalizedString
+		/**
+		 * Import
+		 */
+		'import': () => LocalizedString
+		/**
+		 * Export
+		 */
+		'export': () => LocalizedString
 	}
 }
 
