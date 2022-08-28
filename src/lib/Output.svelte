@@ -304,6 +304,7 @@
 	.tag {
 		font-weight: bold;
 		text-align: center;
+		margin-right: 2em;
 	}
 
 	.word.content:hover {
@@ -323,6 +324,7 @@
 		display: grid;
 		grid-template-columns: auto auto 1fr auto auto;
 		gap: 1em;
+		width: fit-content;
 	}
 
 	svg {
