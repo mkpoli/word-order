@@ -62,7 +62,7 @@
 	}
 </script>
 
-<svelte:window on:pointerup={dragend} />
+<svelte:window on:pointerup={dragend} on:pointermove={onpointermove} />
 
 <div
 	class="color-bar"
@@ -78,7 +78,6 @@
 			style={`color: ${colors[i]}`}
 			on:pointerdown={(e) => dragstart(i, e)}
 			on:pointerup={dragend}
-			on:pointermove={onpointermove}
 			bind:this={equivalencyDivs[i]}
 			style:transform={getTransform(i, draggingOffset)}
 		>
