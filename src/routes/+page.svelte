@@ -161,9 +161,15 @@
 	let modifying = -1;
 	let wordsBeforeModify: string[] = [];
 
+	let loading = false;
+
 	async function load(data: { equivalency: number[][][]; sentences: [string, string[]][] }) {
+		loading = true;
 		sentences = data.sentences;
 		equivalency = data.equivalency;
+		await tick();
+		word_spans = sentences.map(() => []);
+		loading = false;
 	}
 </script>
 
@@ -217,6 +223,7 @@
 				{fontFamily}
 				{fontStyle}
 				{fontSize}
+				{loading}
 				{modifying}
 				bind:word_spans
 				bind:mode
