@@ -28,13 +28,18 @@
 	}>();
 
 	type Sentence = [lang: string, words: string[]];
+
+	// Data
 	export let sentences: Sentence[];
 	export let color_map: number[][];
 	export let equivalency: number[][][];
-	export let word_spans: HTMLSpanElement[][] = sentences.map(([, words]) => new Array(words.length).fill(null));
+	export let word_spans: HTMLSpanElement[][] = sentences.map(() => []);
 	export let lines: Line[];
 	export let colors: string[];
+
+	// States
 	export let modifying: number;
+	export let loading: boolean;
 
 	// Parameters
 	export let verticalGap: number;
@@ -54,9 +59,9 @@
 		mounted = true;
 	});
 
-	$: if (mounted && equivalency) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
+	$: if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
 
-	$: if (alignment && fontFamily && fontStyle && fontSize !== undefined && $locale)
+	$: if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && $locale)
 		tick().then(() => {
 			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
 		});
@@ -194,110 +199,112 @@
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
 >
-	{#each sentences as [lang, words], i}
-		<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
-			<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
-				<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
-			</div>
-			<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
-			<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
-				{#each words as word, j}
-					<span
-						class="word"
-						class:content={isContent(word)}
-						class:editing={mode === 'edit'}
-						class:connected={connecting.some(([l, w]) => l == i && w == j)}
-						style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`}
-						on:click={() => {
-							if (!isContent(word)) return;
+	{#if !loading}
+		{#each sentences as [lang, words], i}
+			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
+				</div>
+				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
+				<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
+					{#each words as word, j}
+						<span
+							class="word"
+							class:content={isContent(word)}
+							class:editing={mode === 'edit'}
+							class:connected={connecting.some(([l, w]) => l == i && w == j)}
+							style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`}
+							on:click={() => {
+								if (!isContent(word)) return;
 
-							const entryIndex = color_map[i][j];
+								const entryIndex = color_map[i][j];
 
-							if (mode === 'view') {
-								mode = 'edit';
+								if (mode === 'view') {
+									mode = 'edit';
 
-								if (entryIndex !== -1) {
-									connected = [];
-									for (let [i, words] of equivalency[entryIndex].entries()) {
-										for (let word of words) {
-											connected.push([i, word]);
+									if (entryIndex !== -1) {
+										connected = [];
+										for (let [i, words] of equivalency[entryIndex].entries()) {
+											for (let word of words) {
+												connected.push([i, word]);
+											}
 										}
+
+										connecting = connected.map(([l, w]) => [l, w]);
+										connectedIndex = entryIndex;
+										return;
 									}
-
-									connecting = connected.map(([l, w]) => [l, w]);
-									connectedIndex = entryIndex;
-									return;
 								}
-							}
 
-							if (connecting.some(([l, w]) => l == i && w == j)) {
-								connecting = connecting.filter(([l, w]) => l != i || w != j);
-							} else {
-								connecting = [...connecting, [i, j]];
-							}
+								if (connecting.some(([l, w]) => l == i && w == j)) {
+									connecting = connecting.filter(([l, w]) => l != i || w != j);
+								} else {
+									connecting = [...connecting, [i, j]];
+								}
+							}}
+							bind:this={word_spans[i][j]}>{word}</span
+						>
+					{/each}
+				</span>
+				<div class="modify action">
+					<iconify-icon
+						icon="material-symbols:edit-rounded"
+						on:click={() => {
+							dispatch('modify', {
+								sentence: i
+							});
 						}}
-						bind:this={word_spans[i][j]}>{word}</span
-					>
-				{/each}
-			</span>
-			<div class="modify action">
-				<iconify-icon
-					icon="material-symbols:edit-rounded"
-					on:click={() => {
-						dispatch('modify', {
-							sentence: i
-						});
-					}}
-				/>
+					/>
+				</div>
+				<div class="delete action">
+					<iconify-icon
+						icon="ic:baseline-delete-forever"
+						width="1.2em"
+						height="1.2em"
+						on:click={() => {
+							if (!confirm($LL.confirm.deleteSentence())) return;
+							dispatch('delete', {
+								sentence: i
+							});
+						}}
+					/>
+				</div>
 			</div>
-			<div class="delete action">
-				<iconify-icon
-					icon="ic:baseline-delete-forever"
-					width="1.2em"
-					height="1.2em"
-					on:click={() => {
-						if (!confirm($LL.confirm.deleteSentence())) return;
-						dispatch('delete', {
-							sentence: i
-						});
-					}}
-				/>
-			</div>
-		</div>
-	{/each}
-	<svg style="position: absolute;" width="100%" height="100%">
-		{#each lines as [x1, y1, x2, y2, color]}
-			<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
 		{/each}
-	</svg>
+		<svg style="position: absolute;" width="100%" height="100%">
+			{#each lines as [x1, y1, x2, y2, color]}
+				<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
+			{/each}
+		</svg>
 
-	<div class="edit-dialog" use:draggable class:visible={mode === 'edit'}>
-		<h2>{$LL.dialog.editing()}</h2>
-		<button
-			class="confirm fill"
-			on:click={() => {
-				dispatch('connect', { connected: [...connecting], connectedIndex });
-				connecting = [];
-				connectedIndex = -1;
-				mode = 'view';
-			}}
-		>
-			<iconify-icon icon="material-symbols:check" inline="true" />
-			{$LL.dialog.confirm()}
-		</button>
-		<button
-			class="cancel text"
-			on:click={() => {
-				connecting = [];
-				mode = 'view';
-			}}
-		>
-			<span>
-				<iconify-icon icon="material-symbols:cancel" inline="true" />
-				{$LL.dialog.cancel()}
-			</span>
-		</button>
-	</div>
+		<div class="edit-dialog" use:draggable class:visible={mode === 'edit'}>
+			<h2>{$LL.dialog.editing()}</h2>
+			<button
+				class="confirm fill"
+				on:click={() => {
+					dispatch('connect', { connected: [...connecting], connectedIndex });
+					connecting = [];
+					connectedIndex = -1;
+					mode = 'view';
+				}}
+			>
+				<iconify-icon icon="material-symbols:check" inline="true" />
+				{$LL.dialog.confirm()}
+			</button>
+			<button
+				class="cancel text"
+				on:click={() => {
+					connecting = [];
+					mode = 'view';
+				}}
+			>
+				<span>
+					<iconify-icon icon="material-symbols:cancel" inline="true" />
+					{$LL.dialog.cancel()}
+				</span>
+			</button>
+		</div>
+	{/if}
 </output>
 
 <style>
