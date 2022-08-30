@@ -191,6 +191,7 @@
 	inert={modifying === -1 ? undefined : true}
 	bind:this={output}
 	class:dragging={draggingIndex !== -1}
+	class:editing={mode === 'edit'}
 	class:serif={fontFamily === 'serif'}
 	class:sans-serif={fontFamily === 'sans-serif'}
 	class:monospace={fontFamily === 'monospace'}
@@ -409,6 +410,10 @@
 
 	.sentence:hover > .action {
 		opacity: 1;
+	}
+
+	.editing .action {
+		visibility: hidden;
 	}
 
 	.dragger {
