@@ -64,7 +64,7 @@
 			<label for="lang">{displayName}</label>
 			<button
 				on:click={() => {
-					const words = text.split(modifying === -1 ? /([\s\p{P}]+)|[|]/u : /[|]/u).filter(Boolean);
+					const words = text.split(modifying === -1 ? /(<ruby>.*?<\/ruby>)|([\s\p{P}]+)|[|]/u : /[|]/u).filter(Boolean);
 					if (words.length === 0) {
 						empty = true;
 						return;

@@ -9,6 +9,7 @@
 	import { cartesian, segmentate } from './array';
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
+	import { parseRuby, rubyRule } from './ruby';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -243,7 +244,10 @@
 									connecting = [...connecting, [i, j]];
 								}
 							}}
-							bind:this={word_spans[i][j]}>{word}</span
+							bind:this={word_spans[i][j]}
+						>
+							{#each word.split(rubyRule) as part}
+								{#if part.match(rubyRule)}{@const { rb, rt } = parseRuby(part)}<ruby>{rb}<rt>{rt}</rt></ruby>{:else}{part}{/if}{/each}</span
 						>
 					{/each}
 				</span>
