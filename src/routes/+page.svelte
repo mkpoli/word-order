@@ -178,6 +178,7 @@
 
 <header class="menu">
 	<button
+		disabled={mode === 'edit'}
 		on:click={() => {
 			if (!confirm($LL.confirm.new())) return;
 
@@ -189,6 +190,7 @@
 		{$LL.menu.new()}
 	</button>
 	<button
+		disabled={mode === 'edit'}
 		on:click={() => {
 			const data = {
 				sentences: sentences,
@@ -201,6 +203,7 @@
 		{$LL.menu.export()}</button
 	>
 	<button
+		disabled={mode === 'edit'}
 		on:click={() => {
 			open(load);
 		}}
@@ -209,6 +212,7 @@
 		{$LL.menu.import()}</button
 	>
 	<button
+		disabled={mode === 'edit'}
 		on:click={() => {
 			if (output) {
 				const serializer = new XMLSerializer();
@@ -411,7 +415,7 @@
 		gap: 0.5em;
 	}
 
-	.menu button:hover {
+	.menu button:not(:disabled):hover {
 		background-color: #eee;
 	}
 </style>
