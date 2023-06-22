@@ -52,7 +52,7 @@
 	export let fontSize: number;
 	export let mode: Mode = 'view';
 
-	let output: HTMLOutputElement;
+	export let output: HTMLOutputElement;
 
 	let mounted = false;
 

@@ -3,6 +3,7 @@
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
+	import { elementToSVG } from 'dom-to-svg';
 
 	import { LL } from '../i18n/i18n-svelte';
 
@@ -171,6 +172,8 @@
 		word_spans = sentences.map(() => []);
 		loading = false;
 	}
+
+	let output: HTMLOutputElement;
 </script>
 
 <header class="menu">
@@ -191,7 +194,7 @@
 				sentences: sentences,
 				equivalency: equivalency
 			};
-			save(data);
+			save(JSON.stringify(data), 'application/json', 'data.json');
 		}}
 	>
 		<iconify-icon icon="uil:export" />
@@ -205,6 +208,19 @@
 		<iconify-icon icon="uil:import" />
 		{$LL.menu.import()}</button
 	>
+	<button
+		on:click={() => {
+			if (output) {
+				const serializer = new XMLSerializer();
+				const svgDocument = elementToSVG(output);
+				const svgString = serializer.serializeToString(svgDocument);
+				save(svgString, 'image/svg+xml', 'output.svg');
+			}
+		}}
+	>
+		<iconify-icon icon="teenyicons:svg-outline" />
+		{$LL.menu.svg()}
+	</button>
 </header>
 
 <main>
@@ -227,6 +243,7 @@
 				{modifying}
 				bind:word_spans
 				bind:mode
+				bind:output
 				on:connect={onconnect}
 				on:reorder={({ detail: { from, to } }) => {
 					const [lang, words] = sentences[from];
