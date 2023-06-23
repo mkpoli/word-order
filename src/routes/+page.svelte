@@ -4,6 +4,7 @@
 
 	import 'iconify-icon';
 	import { elementToSVG } from 'dom-to-svg';
+	import domToImage from 'dom-to-image';
 
 	import { LL } from '../i18n/i18n-svelte';
 
@@ -224,6 +225,31 @@
 	>
 		<iconify-icon icon="teenyicons:svg-outline" />
 		{$LL.menu.svg()}
+	</button>
+	<button
+		disabled={mode === 'edit'}
+		on:click={async () => {
+			if (output) {
+				const scale = 2;
+				const png = await domToImage.toBlob(output, {
+					width: output.clientWidth * scale,
+					height: output.clientHeight * scale,
+					style: {
+						transform: `scale(${scale})`, // `translate(${em}px, ${em}px)
+						transformOrigin: 'top left',
+						'background-color': (
+							document.body.computedStyleMap().get('background-color') ||
+							document.body.style.backgroundColor ||
+							'white'
+						).toString()
+					}
+				});
+				save(png, 'image/png', 'output.png');
+			}
+		}}
+	>
+		<iconify-icon icon="teenyicons:png-outline" />
+		{$LL.menu.png()}
 	</button>
 </header>
 

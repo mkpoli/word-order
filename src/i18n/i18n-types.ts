@@ -164,6 +164,10 @@ type RootTranslation = {
 		 * E​x​p​o​r​t​ ​S​V​G
 		 */
 		svg: string
+		/**
+		 * E​x​p​o​r​t​ ​P​N​G
+		 */
+		png: string
 	}
 }
 
@@ -311,6 +315,10 @@ export type TranslationFunctions = {
 		 * Export SVG
 		 */
 		svg: () => LocalizedString
+		/**
+		 * Export PNG
+		 */
+		png: () => LocalizedString
 	}
 }
 

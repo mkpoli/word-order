@@ -45,7 +45,8 @@ const fr: Translation = {
 		new: 'Nouvelle',
 		import: 'Importer',
 		export: 'Exporter',
-		svg: 'Exporter SVG'
+		svg: 'Exporter SVG',
+		png: 'Exporter PNG'
 	}
 };
 

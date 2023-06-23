@@ -45,7 +45,8 @@ const ja: Translation = {
 		new: '新規',
 		import: 'インポート',
 		export: 'エクスポート',
-		svg: 'SVG出力'
+		svg: 'SVG出力',
+		png: 'PNG出力'
 	}
 };
 

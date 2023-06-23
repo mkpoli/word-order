@@ -46,7 +46,8 @@ const en: BaseTranslation = {
 		new: 'New',
 		import: 'Import',
 		export: 'Export',
-		svg: 'Export SVG'
+		svg: 'Export SVG',
+		png: 'Export PNG'
 	}
 };
 export default en;
