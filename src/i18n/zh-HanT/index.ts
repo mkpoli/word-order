@@ -44,7 +44,8 @@ const zh: Translation = {
 		new: '新建',
 		import: '導入',
 		export: '導出',
-		svg: '導出SVG'
+		svg: '導出SVG',
+		png: '導出PNG'
 	}
 };
 
