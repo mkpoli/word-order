@@ -1,8 +1,9 @@
-import * as d3 from 'd3-color';
+import Color from 'colorjs.io';
 
 function* generateEvenlySpacedNumbers(start: number, end: number, n: number): Generator<number> {
   const distance = end - start;
-  const step = distance / n;
+  const coprimeN = (n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2);
+  const step = (distance / n) * coprimeN;
 
   for (let i = 0; i < n; i++) {
     yield start + i * step;
@@ -12,10 +13,9 @@ function* generateEvenlySpacedNumbers(start: number, end: number, n: number): Ge
 type LCh = [l: number, c: number, h: number];
 
 export function pickNColors(n: number): LCh[] {
-  return [...generateEvenlySpacedNumbers(0, 360, n)].map(degrees => [40, 100, degrees]) as LCh[];
+  return [...generateEvenlySpacedNumbers(0, 360, n)].map(degrees => [0.6, 0.25, degrees]) as LCh[];
 }
 
 export function lch2rgb(lch: LCh): string {
-  const [l, c, h] = lch
-  return d3.lch(l, c, h).formatRgb();
+  return new Color('oklch', lch).to('srgb') + '';
 }
