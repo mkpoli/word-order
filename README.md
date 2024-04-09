@@ -3,6 +3,6 @@
 ## Developing
 
 ```bash
-pnpm install
-pnpm dev
+bun install
+bun dev
 ```
