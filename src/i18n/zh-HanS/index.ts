@@ -6,11 +6,11 @@ const zh: Translation = {
 		verticalGap: '行距',
 		lineGap: '线距',
 		straightLength: '直线长度',
-		textAlignment: '文字配置',
+		textAlignment: '文本对齐方式',
 		displayLanguage: '显示语言',
 		text: '文本',
 		fontFamily: '字体',
-		default: '预设',
+		default: '默认',
 		serif: '衬线体',
 		sansSerif: '非衬线体',
 		monospace: '等宽字体',
@@ -23,13 +23,13 @@ const zh: Translation = {
 	},
 	input: {
 		input: '输入',
-		placeholder: '请在此输入新的句子...',
+		placeholder: '在此输入新的句子……',
 		add: '添加',
 		modify: '修改',
-		guidance: '空格和标点符号自动分词。使用{delimiter}来进一步分隔或用于中日韩泰藏等不使用空格分词的文本，例如{example}'
+		guidance: '空格和标点符号自动分词。使用{delimiter}来进一步分隔或用于中日韩泰藏等不使用空格分词的语言，例如{example}'
 	},
 	footer: {
-		info: '使用本应用生成的图像于{license}释出，意即公开于公用领域的，完全自由使用。不过也欢迎分享并在使用时标注出处。'
+		info: '使用本应用生成的图像以 {license} 释出，意即于公有领域公开，完全自由使用。不过也欢迎分享并在使用时标注出处。'
 	},
 	dialog: {
 		editing: '正在编辑',
@@ -44,8 +44,8 @@ const zh: Translation = {
 		new: '新建',
 		import: '导入',
 		export: '导出',
-		svg: '导出SVG',
-		png: '导出PNG'
+		svg: '导出 SVG',
+		png: '导出 PNG'
 	}
 };
 

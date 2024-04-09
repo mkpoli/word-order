@@ -23,7 +23,7 @@ const ja: Translation = {
 	},
 	input: {
 		input: '入力',
-		placeholder: '新しい文章を入力してください...',
+		placeholder: '新しい文章を入力してください……',
 		add: '追加',
 		modify: '修正',
 		guidance:
@@ -45,8 +45,8 @@ const ja: Translation = {
 		new: '新規',
 		import: 'インポート',
 		export: 'エクスポート',
-		svg: 'SVG出力',
-		png: 'PNG出力'
+		svg: 'SVG 出力',
+		png: 'PNG 出力'
 	}
 };
 
