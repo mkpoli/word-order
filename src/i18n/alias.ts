@@ -19,6 +19,6 @@ export function getAllLocales(): string[] {
 }
 
 export function detectLocaleAliased(detector: LocaleDetector): Locales {
-	const locale = detectLocale<Locales>(baseLocale, getAllLocales() as Locales[], detector);
+	const locale = detectLocale(baseLocale, getAllLocales(), detector);
 	return getAliasedLocale(locale);
 }

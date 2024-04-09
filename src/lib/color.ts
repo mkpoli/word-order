@@ -13,7 +13,7 @@ function* generateEvenlySpacedNumbers(start: number, end: number, n: number): Ge
 type LCh = [l: number, c: number, h: number];
 
 export function pickNColors(n: number): LCh[] {
-	return [...generateEvenlySpacedNumbers(0, 360, n)].map((degrees) => [0.6, 0.25, degrees]) as LCh[];
+	return [...generateEvenlySpacedNumbers(0, 360, n)].map((degrees) => [0.6, 0.25, degrees]);
 }
 
 export function lch2rgb(lch: LCh): string {
