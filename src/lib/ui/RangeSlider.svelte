@@ -254,7 +254,6 @@
 		aria-valuetext="{prefix}{formatter(value, percentOf(value))}{suffix}"
 		aria-orientation="horizontal"
 		aria-disabled={disabled}
-		{disabled}
 		tabindex={disabled ? -1 : 0}
 	>
 		<span class="rangeNub" />

@@ -210,6 +210,7 @@
 				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
 				<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
 					{#each words as word, j}
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<span
 							class="word"
 							class:content={isContent(word)}
@@ -252,6 +253,7 @@
 					{/each}
 				</span>
 				<div class="modify action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<iconify-icon
 						icon="material-symbols:edit-rounded"
 						on:click={() => {
@@ -262,6 +264,7 @@
 					/>
 				</div>
 				<div class="delete action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<iconify-icon
 						icon="ic:baseline-delete-forever"
 						width="1.2em"
