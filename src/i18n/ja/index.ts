@@ -6,6 +6,7 @@ const ja: Translation = {
 		verticalGap: '行間隔',
 		lineGap: '直線隙間',
 		straightLength: '直線部分',
+		endpointCorrection: '終点補正',
 		textAlignment: 'テキスト配置',
 		displayLanguage: '表示言語',
 		text: 'テキスト',
