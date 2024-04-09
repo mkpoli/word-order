@@ -23,11 +23,11 @@ const fr: Translation = {
 	},
 	input: {
 		input: 'Entrée',
-		placeholder: 'Saisissez une nouvelle phrase...',
+		placeholder: 'Saisissez une nouvelle phrase…',
 		add: 'Ajouter',
 		modify: 'Modifier',
 		guidance:
-			'Les mots sont automatiquement découpés par des espaces et les caractères de ponctuation. Utilisez {delimiter} pour découper ou pour utiliser les textes qui ne sont pas séparés par des espaces pour les langues chinoises, japonais, thaï, tibétain et celtique. Exemple : {example}'
+			'Les mots sont automatiquement découpés par des espaces et les caractères de ponctuation. Utilisez {delimiter} pour découper ou pour utiliser les textes qui ne sont pas séparés par des espaces pour les langues chinoises, japonais, thaï, tibétain et celtique. Exemple: {example}'
 	},
 	footer: {
 		info: 'L’illustration générée par cette application est distribuée sous la licence {license}, ce qui signifie qu’elle sera dans le domaine public et totalement libre d’utilisation. Il n’est pas obligatoire, mais bienvenu de partager et de créditer'
