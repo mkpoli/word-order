@@ -1,8 +1,8 @@
 const languageNames: Record<string, Intl.DisplayNames> = {};
 
-const options = {
+const options: Intl.DisplayNamesOptions = {
 	type: 'language'
-} as Intl.DisplayNamesOptions;
+};
 
 export function getLanguageNames(locale: string): Intl.DisplayNames {
 	return languageNames[locale] ?? (languageNames[locale] = new Intl.DisplayNames([locale], options));

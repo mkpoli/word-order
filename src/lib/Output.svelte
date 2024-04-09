@@ -108,11 +108,11 @@
 					const x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
 					const y2 = rectB1.top - rectOutput.top - lineGap;
 					const color = colors[i];
-					lines.push([x1, y1 + straightLength, x2, y2 - straightLength, color] as Line);
+					lines.push([x1, y1 + straightLength, x2, y2 - straightLength, color]);
 
 					if (straightLength !== 0) {
-						lines.push([x1, y1, x1, y1 + straightLength, color] as Line);
-						lines.push([x2, y2, x2, y2 - straightLength, color] as Line);
+						lines.push([x1, y1, x1, y1 + straightLength, color]);
+						lines.push([x2, y2, x2, y2 - straightLength, color]);
 					}
 				}
 			}
