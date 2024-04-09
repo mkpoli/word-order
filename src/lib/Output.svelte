@@ -46,6 +46,7 @@
 	export let verticalGap: number;
 	export let lineGap: number;
 	export let straightLength: number;
+	export let endpointCorrection: number;
 	export let alignment: Alignment = 'center';
 	export let fontFamily: FontFamily;
 	export let fontStyle: FontStyle;
@@ -60,11 +61,11 @@
 		mounted = true;
 	});
 
-	$: if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
+	$: if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 
 	$: if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && $locale)
 		tick().then(() => {
-			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 		});
 
 	function drawLines(
@@ -72,7 +73,8 @@
 		equivalency: number[][][],
 		verticalGap: number,
 		lineGap: number,
-		straightLength: number
+		straightLength: number,
+		endpointCorrection: number
 	): Line[] {
 		const rectOutput = output.getBoundingClientRect();
 
@@ -103,10 +105,17 @@
 					const rectB1 = spanB1.getBoundingClientRect();
 					const rectB2 = spanB2.getBoundingClientRect();
 
-					const x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
-					const y1 = rectA1.bottom - rectOutput.top + lineGap;
-					const x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
-					const y2 = rectB1.top - rectOutput.top - lineGap;
+					let x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
+					let y1 = Math.max(rectA1.bottom, rectA2.bottom) - rectOutput.top;
+					let x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
+					let y2 = Math.min(rectB1.top, rectB2.top) - rectOutput.top;
+
+					const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
+					x1 += correction;
+					y1 += lineGap;
+					x2 -= correction;
+					y2 -= lineGap;
+
 					const color = colors[i];
 					lines.push([x1, y1 + straightLength, x2, y2 - straightLength, color] as Line);
 
@@ -182,7 +191,7 @@
 <svelte:window
 	on:resize={async () => {
 		await tick();
-		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength);
+		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	}}
 	on:pointermove={onpointermove}
 	on:pointerup={dragend}
