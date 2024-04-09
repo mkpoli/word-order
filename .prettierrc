@@ -3,9 +3,7 @@
 	"singleQuote": true,
 	"trailingComma": "none",
 	"printWidth": 150,
-	"pluginSearchDirs": [
-		"."
-	],
+	"pluginSearchDirs": ["."],
 	"overrides": [
 		{
 			"files": "*.svelte",
