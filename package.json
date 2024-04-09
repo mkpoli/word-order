@@ -2,6 +2,7 @@
 	"name": "word-order",
 	"version": "0.0.1",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -17,7 +18,6 @@
 		"@playwright/test": "^1.35.1",
 		"@sveltejs/adapter-auto": "^2.1.0",
 		"@sveltejs/kit": "^1.20.4",
-		"@types/d3-color": "^3.1.0",
 		"@types/dom-to-image": "^2.6.4",
 		"@typescript-eslint/eslint-plugin": "^5.60.0",
 		"@typescript-eslint/parser": "^5.60.0",
@@ -35,10 +35,9 @@
 		"typescript": "^5.1.3",
 		"vite": "^4.3.9"
 	},
-	"type": "module",
 	"dependencies": {
 		"@neodrag/svelte": "^2.0.3",
-		"d3-color": "^3.1.0",
+		"colorjs.io": "^0.5.0",
 		"iconify-icon": "^1.0.8",
 		"typesafe-i18n": "^5.24.3"
 	}
