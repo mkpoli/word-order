@@ -24,7 +24,7 @@ const fr: Translation = {
 	},
 	input: {
 		input: 'Entrée',
-		placeholder: 'Saisissez une nouvelle phrase...',
+		placeholder: 'Saisissez une nouvelle phrase…',
 		add: 'Ajouter',
 		modify: 'Modifier',
 		guidance:
