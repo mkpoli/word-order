@@ -4,8 +4,10 @@ import { detectLocale, type LocaleDetector } from 'typesafe-i18n/detectors';
 
 export const LOCALE_ALIAS = new Map<string, Locales>([
   ['zh-CN', 'zh-HanS'],
+  ['zh-SG', 'zh-HanS'],
   ['zh-TW', 'zh-HanT'],
   ['zh-HK', 'zh-HanT'],
+  ['zh-MO', 'zh-HanT'],
   ['zh', 'zh-HanS'],
 ])
 

@@ -18,14 +18,14 @@
 	import { save, open } from '$lib/file';
 
 	// const SENTENCES = [
-	// 	['en', "I can eat glass and it doesn't hurt me."],
+	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
 	// 	['zh', '我能吞下玻璃而不傷身體。'],
 	// 	['ja', '私はガラスを食べられます。それは私を傷つけません。']
 	// ];
 
 	let sentences: [string, string[]][] = [
-		['en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', "doesn't", ' ', 'hurt', ' ', 'me', '.']],
-		['zh', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']],
+		['en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']],
+		['zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']],
 		['zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']],
 		['ja', ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。']]
 	];
