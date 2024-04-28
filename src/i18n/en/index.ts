@@ -1,7 +1,6 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en: BaseTranslation = {
-	// TODO: your translations go here
 	params: {
 		options: 'Options',
 		verticalGap: 'Vertical Gap',
@@ -24,7 +23,7 @@ const en: BaseTranslation = {
 	},
 	input: {
 		input: 'Input',
-		placeholder: 'Input new sentence here...',
+		placeholder: 'Input new sentence here…',
 		add: 'Add',
 		modify: 'Modify',
 		guidance:
@@ -50,4 +49,5 @@ const en: BaseTranslation = {
 		png: 'Export PNG'
 	}
 };
+
 export default en;
