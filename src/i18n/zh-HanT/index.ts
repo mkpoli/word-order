@@ -6,9 +6,9 @@ const zh: Translation = {
 		verticalGap: '行距',
 		lineGap: '線距',
 		straightLength: '直線長度',
-		textAlignment: '文字配置',
+		textAlignment: '文字對齊方式',
 		displayLanguage: '顯示語言',
-		text: '文本',
+		text: '文字',
 		fontFamily: '字體',
 		default: '預設',
 		serif: '襯線體',
@@ -23,13 +23,13 @@ const zh: Translation = {
 	},
 	input: {
 		input: '輸入',
-		placeholder: '請在此輸入新的句子...',
-		add: '添加',
+		placeholder: '在此輸入新的句子……',
+		add: '加入',
 		modify: '修改',
-		guidance: '空格和標點符號自動分詞。使用{delimiter}來進一步分隔或用於中日韓泰藏等不使用空格分詞的文本，例如{example}'
+		guidance: '空格和標點符號自動分詞。使用{delimiter}來進一步分隔或用於中日韓泰藏等不使用空格分詞的語言，例如{example}'
 	},
 	footer: {
-		info: '使用本應用生成的圖像於{license}釋出，意即公開於公用領域的，完全自由使用。不過也歡迎分享並在使用時標註出處。'
+		info: '使用本程式產生的圖像以{license}釋出，意即於公有領域公開，完全自由使用。不過也歡迎分享並在使用時標註出處。'
 	},
 	dialog: {
 		editing: '正在編輯',
@@ -38,14 +38,14 @@ const zh: Translation = {
 	},
 	confirm: {
 		deleteSentence: '確定要刪除這個句子嗎？',
-		new: '確定要創建一個新的圖像嗎？這將會刪除所有的資料！'
+		new: '確定要新增一個新的圖像嗎？這將刪除所有資料！'
 	},
 	menu: {
-		new: '新建',
-		import: '導入',
-		export: '導出',
-		svg: '導出SVG',
-		png: '導出PNG'
+		new: '新增',
+		import: '匯入',
+		export: '匯出',
+		svg: '匯出SVG',
+		png: '匯出PNG'
 	}
 };
 
