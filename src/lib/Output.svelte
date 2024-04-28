@@ -9,7 +9,7 @@
 	import { cartesian, segmentate } from './array';
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
-	import { parseRuby, rubyRule } from './ruby';
+	import Word from './Word.svelte';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -224,7 +224,7 @@
 							class:content={isContent(word)}
 							class:editing={mode === 'edit'}
 							class:connected={connecting.some(([l, w]) => l == i && w == j)}
-							style={`color: ${color_map[i][j] >= 0 ? colors[color_map[i][j]] : 'none'}`}
+							style:color={colors[color_map[i][j]]}
 							on:click={() => {
 								if (!isContent(word)) return;
 
@@ -255,8 +255,7 @@
 							}}
 							bind:this={word_spans[i][j]}
 						>
-							{#each word.split(rubyRule) as part}
-								{#if part.match(rubyRule)}{@const { rb, rt } = parseRuby(part)}<ruby>{rb}<rt>{rt}</rt></ruby>{:else}{part}{/if}{/each}</span
+							<Word {word} /></span
 						>
 					{/each}
 				</span>

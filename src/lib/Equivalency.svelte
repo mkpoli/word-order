@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { pickNColors, lch2rgb } from '$lib/color';
 	import { createEventDispatcher } from 'svelte';
+	import Word from './Word.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -75,7 +76,7 @@
 	{#each equivalency as entry, i}
 		<div
 			class="equivalency"
-			style={`color: ${colors[i]}`}
+			style:color={colors[i]}
 			on:pointerdown={(e) => dragstart(i, e)}
 			on:pointerup={dragend}
 			bind:this={equivalencyDivs[i]}
@@ -87,7 +88,7 @@
 						<span class="word">❌</span>
 					{:else}
 						{#each words as k}
-							<span class="word">{sentences[j][1][k]}</span>
+							<span lang={sentences[j][0]} class="word"><Word word={sentences[j][1][k]} /></span>
 						{/each}
 					{/if}
 				</span>
