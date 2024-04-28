@@ -55,6 +55,7 @@
 	let verticalGap: number;
 	let lineGap: number;
 	let straightLength: number;
+	let endpointCorrection: number;
 	let alignment: Alignment;
 	let fontFamily: FontFamily;
 	let fontStyle: FontStyle;
@@ -266,6 +267,7 @@
 				{verticalGap}
 				{lineGap}
 				{straightLength}
+				{endpointCorrection}
 				{fontFamily}
 				{fontStyle}
 				{fontSize}
@@ -312,7 +314,16 @@
 	</div>
 
 	<div class="params">
-		<Parameters bind:verticalGap bind:lineGap bind:straightLength bind:alignment bind:fontFamily bind:fontStyle bind:fontSize />
+		<Parameters
+			bind:verticalGap
+			bind:lineGap
+			bind:straightLength
+			bind:endpointCorrection
+			bind:alignment
+			bind:fontFamily
+			bind:fontStyle
+			bind:fontSize
+		/>
 	</div>
 
 	<div class="equivalency">

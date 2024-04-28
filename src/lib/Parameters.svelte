@@ -9,10 +9,15 @@
 	export let verticalGap = 30;
 	export let lineGap = 5;
 	export let straightLength = 0;
+	export let endpointCorrection = 0;
 	export let alignment: Alignment = 'center';
 	export let fontFamily: FontFamily = 'default';
 	export let fontStyle: FontStyle = 'normal';
 	export let fontSize = 15;
+
+	$: lineGap = Math.min(lineGap, verticalGap / 2);
+	$: straightLength = Math.min(straightLength, verticalGap / 2);
+	$: endpointCorrection = lineGap <= 0 || straightLength > 0 ? 0 : Math.min(endpointCorrection, lineGap);
 </script>
 
 <fieldset>
@@ -39,6 +44,20 @@
 		{$LL.params.straightLength()}
 	</label>
 	<RangeSlider id="straight-length" min={0} max={verticalGap / 2} bind:value={straightLength} suffix=" px" />
+
+	<label for="endpoint-correction">
+		<iconify-icon icon="lets-icons:line" inline="true" />
+		{$LL.params.endpointCorrection()}
+	</label>
+	<RangeSlider
+		id="endpoint-correction"
+		min={0}
+		max={lineGap}
+		step={0.1}
+		bind:value={endpointCorrection}
+		suffix=" px"
+		disabled={lineGap <= 0 || straightLength > 0}
+	/>
 
 	<label for="locale">
 		<iconify-icon icon="mdi:earth" inline="true" />

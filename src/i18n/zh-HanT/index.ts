@@ -7,6 +7,7 @@ const zh: Translation = {
 		lineGap: '線距',
 		straightLength: '直線長度',
 		textAlignment: '文字對齊方式',
+		endpointCorrection: '端點校正',
 		displayLanguage: '顯示語言',
 		text: '文字',
 		fontFamily: '字體',

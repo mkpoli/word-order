@@ -6,6 +6,7 @@ const fr: Translation = {
 		verticalGap: 'Espace vertical',
 		lineGap: 'Espace des lignes',
 		straightLength: 'La part droite',
+		endpointCorrection: 'Correction du point final',
 		textAlignment: 'Alignement du texte',
 		displayLanguage: 'Langue d’affichage',
 		text: 'Texte',
