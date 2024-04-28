@@ -29,7 +29,7 @@ const zh: Translation = {
 		guidance: '空格和标点符号自动分词。使用{delimiter}来进一步分隔或用于中日韩泰藏等不使用空格分词的语言，例如{example}'
 	},
 	footer: {
-		info: '使用本应用生成的图像以 {license} 释出，意即于公有领域公开，完全自由使用。不过也欢迎分享并在使用时标注出处。'
+		info: '使用本应用生成的图像以{license}释出，意即于公有领域公开，完全自由使用。不过也欢迎分享并在使用时标注出处。'
 	},
 	dialog: {
 		editing: '正在编辑',
@@ -44,8 +44,8 @@ const zh: Translation = {
 		new: '新建',
 		import: '导入',
 		export: '导出',
-		svg: '导出 SVG',
-		png: '导出 PNG'
+		svg: '导出SVG',
+		png: '导出PNG'
 	}
 };
 
