@@ -192,6 +192,15 @@
 
 	let loading = false;
 
+	function getBodyBackgroundColor(): string {
+		if (typeof document === 'undefined') return 'white';
+
+		const typedStyle = document.body.computedStyleMap?.().get('background-color');
+		if (typedStyle) return typedStyle.toString();
+
+		return window.getComputedStyle(document.body).backgroundColor || document.body.style.backgroundColor || 'white';
+	}
+
 	async function load(data: { equivalency: number[][][]; sentences: [string, string[]][] }) {
 		loading = true;
 		sentences = data.sentences;
@@ -264,11 +273,7 @@
 					style: {
 						transform: `scale(${scale})`, // `translate(${em}px, ${em}px)
 						transformOrigin: 'top left',
-						'background-color': (
-							document.body.computedStyleMap().get('background-color') ||
-							document.body.style.backgroundColor ||
-							'white'
-						).toString()
+						'background-color': getBodyBackgroundColor()
 					}
 				});
 				save(png, 'image/png', 'output.png');
