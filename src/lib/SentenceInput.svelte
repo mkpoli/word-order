@@ -44,7 +44,7 @@
 	let empty = false;
 </script>
 
-<fieldset>
+<fieldset class:editing={modifying !== -1}>
 	<legend>
 		<iconify-icon icon="ri:input-cursor-move" inline="true" />
 		{$LL.input.input()}
@@ -103,6 +103,16 @@
 	fieldset {
 		height: 100%;
 		padding: 1.5em;
+		margin: 0;
+		border: 1px solid transparent;
+		border-radius: 0.4em;
+		min-width: 0;
+		transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+	}
+
+	fieldset.editing {
+		border-color: rgb(46 91 255 / 0.22);
+		box-shadow: 0 0 0 0.22rem rgb(46 91 255 / 0.08);
 	}
 
 	.input-form {

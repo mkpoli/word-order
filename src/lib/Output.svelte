@@ -799,7 +799,7 @@
 	}
 
 	output.modifying-sentence {
-		background-color: #eee;
+		background-color: transparent;
 	}
 
 	output.modifying-sentence .sentence:not(.modifying) > .tag,
