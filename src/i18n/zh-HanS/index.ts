@@ -46,7 +46,8 @@ const zh: Translation = {
 		import: '导入',
 		export: '导出',
 		svg: '导出SVG',
-		png: '导出PNG'
+		png: '导出PNG',
+		scramble: '打乱颜色顺序'
 	}
 };
 

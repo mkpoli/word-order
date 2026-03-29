@@ -4,7 +4,7 @@
 	import type { Locales } from '$i18n/i18n-types';
 	import { loadLocale } from '$i18n/i18n-util.sync';
 
-	export let data;
+	export let data: { locale: Locales };
 
 	let { locale } = data;
 
@@ -107,6 +107,7 @@
 	button.text > span {
 		background: var(--color-accent);
 		background: linear-gradient(to bottom, var(--color-accent-light), var(--color-accent));
+		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 	}

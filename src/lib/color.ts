@@ -1,21 +1,29 @@
-import * as d3 from 'd3-color';
+import Color from 'colorjs.io';
 
-function* generateEvenlySpacedNumbers(start: number, end: number, n: number): Generator<number> {
-  const distance = end - start;
-  const step = distance / (n - 1);
+function* generateEvenlySpacedNumbers(start: number, end: number, n: number, scramble = false): Generator<number> {
+	if (n <= 0) return;
+	if (n === 1) {
+		yield start;
+		return;
+	}
 
-  for (let i = 0; i < n; i++) {
-    yield start + i * step;
-  }
+	const distance = end - start;
+	const step = scramble ? (distance / n) * ((n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2)) : distance / n;
+
+	for (let i = 0; i < n; i++) {
+		yield ((((start + i * step - start) % distance) + distance) % distance) + start;
+	}
 }
 
-type LCh = [l: number, c: number, h: number];
+type OklchTuple = [l: number, c: number, h: number];
 
-export function pickNColors(n: number): LCh[] {
-  return [...generateEvenlySpacedNumbers(0, 360, n + 1)].map(degrees => [40, 100, degrees]).slice(0, -1) as LCh[];
+export function pickNColors(n: number, scramble = true): OklchTuple[] {
+	return [...generateEvenlySpacedNumbers(0, 360, n, scramble)].map((degrees) => [0.6, 0.25, degrees]);
 }
 
-export function lch2rgb(lch: LCh): string {
-  const [l, c, h] = lch
-  return d3.lch(l, c, h).formatRgb();
+/**
+ * Converts an OKLCH tuple to a hex string.
+ */
+export function oklchToHex(oklch: OklchTuple): string {
+	return new Color('oklch', oklch).to('srgb').toString({ format: 'hex' });
 }

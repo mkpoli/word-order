@@ -47,7 +47,8 @@ const ja: Translation = {
 		import: 'インポート',
 		export: 'エクスポート',
 		svg: 'SVG出力',
-		png: 'PNG出力'
+		png: 'PNG出力',
+		scramble: '色を並べ替え'
 	}
 };
 

@@ -36,7 +36,7 @@ type RootTranslation = {
 		 */
 		straightLength: string
 		/**
-		 * Endpoint Correction
+		 * E​n​d​p​o​i​n​t​ ​C​o​r​r​e​c​t​i​o​n
 		 */
 		endpointCorrection: string
 		/**
@@ -102,7 +102,7 @@ type RootTranslation = {
 		 */
 		input: string
 		/**
-		 * I​n​p​u​t​ ​n​e​w​ ​s​e​n​t​e​n​c​e​ ​h​e​r​e​.​.​.
+		 * I​n​p​u​t​ ​n​e​w​ ​s​e​n​t​e​n​c​e​ ​h​e​r​e​…
 		 */
 		placeholder: string
 		/**
@@ -172,6 +172,10 @@ type RootTranslation = {
 		 * E​x​p​o​r​t​ ​P​N​G
 		 */
 		png: string
+		/**
+		 * S​c​r​a​m​b​l​e​ ​c​o​l​o​r​s
+		 */
+		scramble: string
 	}
 }
 
@@ -260,7 +264,7 @@ export type TranslationFunctions = {
 		 */
 		input: () => LocalizedString
 		/**
-		 * Input new sentence here...
+		 * Input new sentence here…
 		 */
 		placeholder: () => LocalizedString
 		/**
@@ -327,6 +331,10 @@ export type TranslationFunctions = {
 		 * Export PNG
 		 */
 		png: () => LocalizedString
+		/**
+		 * Scramble colors
+		 */
+		scramble: () => LocalizedString
 	}
 }
 

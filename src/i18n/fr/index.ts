@@ -47,7 +47,8 @@ const fr: Translation = {
 		import: 'Importer',
 		export: 'Exporter',
 		svg: 'Exporter SVG',
-		png: 'Exporter PNG'
+		png: 'Exporter PNG',
+		scramble: 'Mélanger les couleurs'
 	}
 };
 
