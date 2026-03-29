@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
+	import { LL } from '../i18n/i18n-svelte';
 	import Word from './Word.svelte';
 
 	const dispatch = createEventDispatcher();
