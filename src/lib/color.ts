@@ -17,5 +17,5 @@ export function pickNColors(n: number): LCh[] {
 }
 
 export function lch2rgb(lch: LCh): string {
-	return new Color('oklch', lch).to('srgb') + '';
+	return new Color('oklch', lch).to('srgb').toString({ format: 'hex' });
 }
