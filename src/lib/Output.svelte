@@ -503,31 +503,33 @@
 		</svg>
 
 		<div class="edit-dialog" use:draggable class:visible={mode === 'edit'}>
-			<h2>{$LL.dialog.editing()}</h2>
-			<button
-				class="confirm fill"
-				on:click={() => {
-					dispatch('connect', { connected: [...connecting], connectedIndex });
-					connecting = [];
-					connectedIndex = -1;
-					mode = 'view';
-				}}
-			>
-				<iconify-icon icon="material-symbols:check" inline="true" />
-				{$LL.dialog.confirm()}
-			</button>
-			<button
-				class="cancel text"
-				on:click={() => {
-					connecting = [];
-					mode = 'view';
-				}}
-			>
-				<span>
+			<div class="edit-dialog-topbar">
+				<span class="edit-dialog-badge">{$LL.dialog.editing()}</span>
+			</div>
+			<div class="edit-dialog-actions">
+				<button
+					class="confirm"
+					on:click={() => {
+						dispatch('connect', { connected: [...connecting], connectedIndex });
+						connecting = [];
+						connectedIndex = -1;
+						mode = 'view';
+					}}
+				>
+					<iconify-icon icon="material-symbols:check" inline="true" />
+					{$LL.dialog.confirm()}
+				</button>
+				<button
+					class="cancel"
+					on:click={() => {
+						connecting = [];
+						mode = 'view';
+					}}
+				>
 					<iconify-icon icon="material-symbols:cancel" inline="true" />
 					{$LL.dialog.cancel()}
-				</span>
-			</button>
+				</button>
+			</div>
 		</div>
 	{/if}
 </output>
@@ -572,21 +574,13 @@
 
 	.edit-dialog {
 		display: grid;
-		grid-template-areas:
-			't t'
-			'y n';
-
-		width: auto;
-		text-align: center;
-
-		gap: 1em;
-
-		padding: 1em 2em;
-
-		box-shadow: 1px 1px 5px 0 #ccc;
-
-		background-color: rgb(44 71 255 / 3%);
-		backdrop-filter: blur(5px);
+		gap: 0.65em;
+		padding: 0.7em 0.8em;
+		border: 1px solid rgb(44 71 255 / 12%);
+		border-radius: 0.9em;
+		box-shadow: 0 14px 34px rgb(23 36 78 / 14%);
+		background: linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(246 249 255 / 92%));
+		backdrop-filter: blur(10px);
 		margin: 1em;
 
 		cursor: move;
@@ -739,23 +733,70 @@
 		visibility: visible;
 	}
 
-	.edit-dialog > h2 {
-		grid-area: t;
-
-		margin: 0;
-		padding: 0.5em 0;
-		text-align: center;
-		width: 100%;
-
-		font-size: 1.3em;
+	.edit-dialog-topbar {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
 	}
 
-	.edit-dialog > .confirm {
-		grid-area: y;
+	.edit-dialog-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2em;
+		padding: 0 0.7em;
+		border-radius: 999px;
+		font-size: 0.82em;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		background: rgb(44 71 255 / 10%);
+		color: rgb(33 56 199);
 	}
 
-	.edit-dialog > .cancel {
-		grid-area: n;
+	.edit-dialog-actions {
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: wrap;
+	}
+
+	.edit-dialog .confirm,
+	.edit-dialog .cancel {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4em;
+		padding: 0.35em 0.75em;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 0.9em;
+		font-weight: 600;
+	}
+
+	.edit-dialog .confirm {
+		border: 1px solid rgb(44 71 255 / 18%);
+		background: white;
+		color: rgb(33 56 199);
+	}
+
+	.edit-dialog .cancel {
+		border: 1px solid rgb(24 33 61 / 12%);
+		background: rgb(255 255 255 / 0.78);
+		color: rgb(74 82 112);
+	}
+
+	.edit-dialog .confirm:hover,
+	.edit-dialog .cancel:hover {
+		background: rgb(44 71 255 / 8%);
+	}
+
+	@media (max-width: 700px) {
+		.edit-dialog {
+			left: 0.75em;
+			right: 0.75em;
+			max-width: none;
+		}
 	}
 
 	.sentence {
