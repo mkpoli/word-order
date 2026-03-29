@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
 	import Word from './Word.svelte';
 
 	const dispatch = createEventDispatcher();
@@ -8,20 +8,22 @@
 	export let equivalency: number[][][];
 	export let colors: string[];
 
-	function buildStripeGradient(colors: string[]): string {
+	function buildStripeGradient(colors: string[], positions: number[]): string {
 		if (colors.length === 0) return 'none';
 		if (colors.length === 1) return `linear-gradient(to bottom, ${colors[0]}, ${colors[0]})`;
+		if (positions.length !== colors.length) return `linear-gradient(to bottom, ${colors.join(', ')})`;
 
 		const stops: string[] = [];
 		for (const [index, color] of colors.entries()) {
-			const position = (index / (colors.length - 1)) * 100;
+			const position = positions[index];
 			stops.push(`${color} ${position}%`);
 
 			if (index < colors.length - 1) {
 				const nextColor = colors[index + 1];
-				const quarter = ((index + 0.25) / (colors.length - 1)) * 100;
-				const midpoint = ((index + 0.5) / (colors.length - 1)) * 100;
-				const threeQuarter = ((index + 0.75) / (colors.length - 1)) * 100;
+				const nextPosition = positions[index + 1];
+				const quarter = position + (nextPosition - position) * 0.25;
+				const midpoint = position + (nextPosition - position) * 0.5;
+				const threeQuarter = position + (nextPosition - position) * 0.75;
 
 				stops.push(`color-mix(in oklch, ${color} 75%, ${nextColor}) ${quarter}%`);
 				stops.push(`color-mix(in oklch, ${color} 50%, ${nextColor}) ${midpoint}%`);
@@ -32,7 +34,47 @@
 		return `linear-gradient(to bottom, ${stops.join(', ')})`;
 	}
 
-	$: stripeGradient = buildStripeGradient(colors);
+	let stripePositions: number[] = [];
+	let entriesContainer: HTMLDivElement;
+
+	function updateStripePositions() {
+		if (!entriesContainer || colors.length === 0) {
+			stripePositions = [];
+			return;
+		}
+
+		const containerHeight = entriesContainer.offsetHeight;
+		const divs = equivalencyDivs.slice(0, colors.length);
+		if (containerHeight <= 0 || divs.length !== colors.length || divs.some((div) => !div)) {
+			stripePositions = [];
+			return;
+		}
+
+		stripePositions = divs.map((div) => ((div.offsetTop + div.offsetHeight / 2) / containerHeight) * 100);
+	}
+
+	onMount(() => {
+		updateStripePositions();
+
+		const resizeObserver = new ResizeObserver(() => {
+			updateStripePositions();
+		});
+
+		if (entriesContainer) resizeObserver.observe(entriesContainer);
+		for (const div of equivalencyDivs) {
+			if (div) resizeObserver.observe(div);
+		}
+
+		return () => {
+			resizeObserver.disconnect();
+		};
+	});
+
+	afterUpdate(() => {
+		updateStripePositions();
+	});
+
+	$: stripeGradient = buildStripeGradient(colors, stripePositions);
 
 	let draggingIndex = -1;
 	let draggingPosition = { x: 0, y: 0 };
@@ -91,7 +133,7 @@
 <svelte:window on:pointerup={dragend} on:pointermove={onpointermove} />
 
 <div class="color-bar" style:background-image={stripeGradient} />
-<div class="entries">
+<div class="entries" bind:this={entriesContainer}>
 	{#each equivalency as entry, i}
 		<div
 			class="equivalency"
