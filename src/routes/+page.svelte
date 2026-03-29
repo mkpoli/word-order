@@ -15,6 +15,7 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
+	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 
 	// const SENTENCES = [
@@ -121,10 +122,7 @@
 			sentences[modifying] = [lang, words];
 
 			if (!words.every((word, i) => word === wordsBeforeModify[i])) {
-				// If modified words, clear the equivalency
-				for (const [i, entry] of equivalency.entries()) {
-					entry[modifying] = [];
-				}
+				equivalency = remapSentenceConnections(equivalency, modifying, wordsBeforeModify, words);
 			}
 
 			modifying = -1;
