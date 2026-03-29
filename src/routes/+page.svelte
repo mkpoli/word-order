@@ -250,7 +250,7 @@
 	}}
 />
 
-<header class="menu">
+<header class="menu" class:editing-context={modifying !== -1}>
 	<button
 		disabled={mode === 'edit'}
 		on:click={() => {
@@ -323,7 +323,7 @@
 </header>
 
 <main>
-	<div class="output" bind:this={outputContainer}>
+	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
 		{#if mounted}
 			<Output
 				sentences={previewSentences}
@@ -396,11 +396,11 @@
 		{/if}
 	</div>
 
-	<div class="input" bind:this={inputContainer}>
+	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
 		<SentenceInput on:submit={onsubmit} {modifying} {sentences} bind:text={editingText} />
 	</div>
 
-	<div class="params">
+	<div class="params" class:editing-muted={modifying !== -1}>
 		<Parameters
 			bind:verticalGap
 			bind:lineGap
@@ -413,7 +413,7 @@
 		/>
 	</div>
 
-	<div class="equivalency">
+	<div class="equivalency" class:editing-muted={modifying !== -1}>
 		<Equivalency
 			{sentences}
 			{equivalency}
@@ -448,7 +448,7 @@
 	<title>Word Order Illustrator</title>
 </svelte:head>
 
-<footer>
+<footer class:editing-muted={modifying !== -1}>
 	<p>
 		Word Order Illustrator (
 		<a href="https://github.com/mkpoli/word-order/" title="Github Repository" class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
@@ -473,6 +473,23 @@
 		gap: 2em 1em;
 		/* display: grid;
 		grid-template-columns: auto; */
+		position: relative;
+		isolation: isolate;
+	}
+
+	main::before {
+		content: '';
+		position: absolute;
+		inset: -0.5rem;
+		border-radius: 2.2rem;
+		background: rgb(255 255 255 / 0.96);
+		z-index: -2;
+		opacity: 0;
+		transition: opacity 180ms ease;
+	}
+
+	main:has(.output.editing-active)::before {
+		opacity: 1;
 	}
 
 	footer {
@@ -519,6 +536,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 1em;
+		transition: opacity 180ms ease, filter 180ms ease, transform 180ms ease;
 	}
 
 	.equivalency {
@@ -527,12 +545,77 @@
 		height: fit-content;
 		padding: 1em;
 		justify-content: center;
+		transition: opacity 180ms ease, filter 180ms ease, transform 180ms ease;
 	}
 
 	.output {
 		padding: 0;
 		display: flex;
 		justify-content: center;
+		position: relative;
+		z-index: 1;
+		transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease, opacity 180ms ease, filter 180ms ease;
+	}
+
+	.output::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		bottom: -1.7rem;
+		width: 2px;
+		height: 1.7rem;
+		background: linear-gradient(180deg, rgb(46 91 255 / 0.45), rgb(46 91 255 / 0));
+		opacity: 0;
+		transform: translateX(-50%);
+		transition: opacity 180ms ease;
+	}
+
+	.input {
+		position: relative;
+		padding: 0;
+		z-index: 1;
+		transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease, opacity 180ms ease, filter 180ms ease,
+			background-color 180ms ease;
+	}
+
+	.output.editing-active,
+	.input.editing-active {
+		background: transparent;
+	}
+
+	.output.editing-active {
+		padding: 1rem;
+		border-radius: 1.4rem;
+		border: 1px solid rgb(46 91 255 / 0.2);
+		box-shadow: 0 18px 42px rgb(31 44 84 / 0.12), 0 0 0 0.35rem rgb(46 91 255 / 0.08);
+	}
+
+	.input.editing-active {
+		transform: none;
+	}
+
+	.output.editing-active {
+		transform: translateY(-0.15rem);
+	}
+
+	.output.editing-active::after {
+		opacity: 1;
+	}
+
+	.editing-muted {
+		opacity: 0.4;
+		filter: saturate(0.8) blur(0.2px);
+		transform: scale(0.985);
+		pointer-events: none;
+	}
+
+	.editing-context {
+		transition: opacity 180ms ease, filter 180ms ease;
+	}
+
+	.editing-context {
+		opacity: 0.5;
+		filter: saturate(0.85);
 	}
 
 	/* Layout */
@@ -559,6 +642,20 @@
 
 		.equivalency {
 			grid-area: e;
+		}
+
+		main:has(.output.editing-active) {
+			grid-template-areas:
+				'o o o'
+				'p i e';
+		}
+	}
+
+	@media (max-width: 1023px) {
+		.output::after {
+			top: auto;
+			bottom: -1.4rem;
+			height: 1.4rem;
 		}
 	}
 
