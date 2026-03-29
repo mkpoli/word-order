@@ -36,6 +36,10 @@ type RootTranslation = {
 		 */
 		straightLength: string
 		/**
+		 * Endpoint Correction
+		 */
+		endpointCorrection: string
+		/**
 		 * T​e​x​t​ ​A​l​i​g​n​m​e​n​t
 		 */
 		textAlignment: string
@@ -189,6 +193,10 @@ export type TranslationFunctions = {
 		 * Straight Part
 		 */
 		straightLength: () => LocalizedString
+		/**
+		 * Endpoint Correction
+		 */
+		endpointCorrection: () => LocalizedString
 		/**
 		 * Text Alignment
 		 */

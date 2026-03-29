@@ -6,6 +6,7 @@ const ko: Translation = {
 		verticalGap: '줄 간격',
 		lineGap: '직선 틈',
 		straightLength: '직선 길이',
+		endpointCorrection: '종점 보정',
 		textAlignment: '문자 정렬',
 		displayLanguage: '표시 언어',
 		text: '문자',
@@ -23,7 +24,7 @@ const ko: Translation = {
 	},
 	input: {
 		input: '입력',
-		placeholder: '새로운 문장을 여기에 입력하세요...',
+		placeholder: '새로운 문장을 여기에 입력하세요…',
 		add: '추가',
 		modify: '수정',
 		guidance:
@@ -33,7 +34,7 @@ const ko: Translation = {
 		info: '이 툴은의해 생성된 삽화는 {license} 라이선스에 따라 제공됩니다. 즉 완전 저작권 무료이며, 자유롭게 사용할 수 있습니다. 또, 강제는 아니지만, 이용할 때에 쉐어나 출처 밝히는 환영합니다.'
 	},
 	dialog: {
-		editing: '편집',
+		editing: '편집 중',
 		confirm: '확인',
 		cancel: '취소'
 	},
