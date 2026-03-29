@@ -6,10 +6,10 @@
 
 	export let modifying: number;
 	export let sentences: [string, string[]][];
+	export let text = '';
 
 	let lang = 'en';
 	let displayName = 'English';
-	let text = '';
 
 	$: displayName = getLanguageName(lang, $locale);
 
@@ -191,6 +191,21 @@
 
 	button:hover {
 		opacity: 0.8;
+	}
+
+	@media (max-width: 700px) {
+		.input-form {
+			grid-template-areas:
+				't t t'
+				'n n n'
+				'l l l'
+				'b b b'
+				'i i i';
+		}
+
+		button {
+			width: 100%;
+		}
 	}
 
 	.empty {

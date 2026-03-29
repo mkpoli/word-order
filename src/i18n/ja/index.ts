@@ -30,6 +30,12 @@ const ja: Translation = {
 		guidance:
 			'単語は対応している環境では言語に応じて自動分割され、利用できない場合は空白や約物で分割されます。さらに細かく区切りたい場合は、{delimiter}を使用してください。例えば、{example}'
 	},
+	tokenEditor: {
+		tokens: 'トークン',
+		mergeSelected: '選択を結合',
+		splitAtBoundary: 'この位置でトークンを分割',
+		selectTokens: 'トークンを選択'
+	},
 	footer: {
 		info: 'このツールにて生成されたイラストは、{license}ライセンスにて公開されています。即ち完全著作権フリーであり、自由に使用することができます。また、強制ではないが、利用する際にシェアや引用リツイートすると製作者は歓びます。'
 	},

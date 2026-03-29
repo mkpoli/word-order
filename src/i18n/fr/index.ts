@@ -30,6 +30,12 @@ const fr: Translation = {
 		guidance:
 			'Les mots sont découpés automatiquement avec une segmentation adaptée à la langue quand elle est disponible, sinon avec les espaces et la ponctuation. Utilisez {delimiter} pour un découpage plus précis. Exemple : {example}'
 	},
+	tokenEditor: {
+		tokens: 'Tokens',
+		mergeSelected: 'Fusionner la selection',
+		splitAtBoundary: 'Scinder le token a cette limite',
+		selectTokens: 'Selectionnez des tokens'
+	},
 	footer: {
 		info: 'L’illustration générée par cette application est distribuée sous la licence {license}, ce qui signifie qu’elle sera dans le domaine public et totalement libre d’utilisation. Il n’est pas obligatoire, mais bienvenu de partager et de créditer'
 	},
