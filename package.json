@@ -16,7 +16,7 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.35.1",
-		"@sveltejs/adapter-auto": "^2.1.0",
+		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^1.30.4",
 		"@types/dom-to-image": "^2.6.4",
 		"@typescript-eslint/eslint-plugin": "^5.60.0",
