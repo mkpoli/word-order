@@ -395,11 +395,13 @@
 <footer>
 	<p>
 		Word Order Illustrator (
-		<a href="https://github.com/mkpoli/word-order/" title="Github Repository"><iconify-icon icon="logos:github-icon" inline="true" /></a>,
-		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title="Anounce Tweet"><iconify-icon icon="logos:twitter" inline="true" /></a>) by
-		@mkpoli (
-		<a href="https://twitter.com/mkpoli/"><iconify-icon icon="logos:twitter" inline="true" /></a>,
-		<a href="https://mkpo.li/"><iconify-icon icon="mdi:home" inline="true" /></a>
+		<a href="https://github.com/mkpoli/word-order/" title="Github Repository" class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
+		>,
+		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title="Anounce Tweet" class="twitter-link"
+			><iconify-icon icon="mdi:twitter" inline="true" /></a
+		>) by @mkpoli (
+		<a href="https://twitter.com/mkpoli/" class="twitter-link"><iconify-icon icon="mdi:twitter" inline="true" /></a>,
+		<a href="https://mkpo.li/" class="home-link"><iconify-icon icon="mdi:home" inline="true" /></a>
 		)
 	</p>
 	<p>
@@ -424,6 +426,37 @@
 		color: #444;
 		max-width: 1024px;
 		margin: 0 auto;
+	}
+
+	footer iconify-icon {
+		display: inline-block;
+		width: 1.15em;
+		height: 1.15em;
+		vertical-align: middle;
+	}
+
+	footer a.github-link {
+		color: #181717;
+	}
+
+	footer a.github-link:visited {
+		color: #181717;
+	}
+
+	footer a.twitter-link {
+		color: #1d9bf0;
+	}
+
+	footer a.twitter-link:visited {
+		color: #1d9bf0;
+	}
+
+	footer a.home-link {
+		color: #444;
+	}
+
+	footer a.home-link:visited {
+		color: #444;
 	}
 
 	.params {
