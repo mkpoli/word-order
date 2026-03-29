@@ -1,12 +1,12 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en: BaseTranslation = {
-	// TODO: your translations go here
 	params: {
 		options: 'Options',
 		verticalGap: 'Vertical Gap',
 		lineGap: 'Line Gap',
 		straightLength: 'Straight Part',
+		endpointCorrection: 'Endpoint Correction',
 		textAlignment: 'Text Alignment',
 		displayLanguage: 'Display Language',
 		text: 'Text',
@@ -24,7 +24,7 @@ const en: BaseTranslation = {
 	},
 	input: {
 		input: 'Input',
-		placeholder: 'Input new sentence here...',
+		placeholder: 'Input new sentence here…',
 		add: 'Add',
 		modify: 'Modify',
 		guidance:
@@ -50,4 +50,5 @@ const en: BaseTranslation = {
 		png: 'Export PNG'
 	}
 };
+
 export default en;
