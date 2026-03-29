@@ -114,11 +114,29 @@ type RootTranslation = {
 		 */
 		modify: string
 		/**
-		 * E​a​c​h​ ​w​o​r​d​ ​a​r​e​ ​s​e​p​a​r​a​t​e​d​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​b​y​ ​s​p​a​c​e​ ​a​n​d​ ​p​u​n​c​t​u​a​t​i​o​n​s​.​ ​U​s​e​ ​{​d​e​l​i​m​i​t​e​r​}​ ​f​o​r​ ​f​u​r​t​h​e​r​ ​s​e​p​a​r​a​t​i​o​n​ ​o​r​ ​n​o​n​-​s​p​a​c​e​ ​s​e​p​a​r​a​t​e​d​ ​s​c​r​i​p​t​,​ ​s​u​c​h​ ​a​s​ ​C​h​i​n​e​s​e​ ​/​ ​J​a​p​a​n​e​s​e​ ​/​ ​T​h​a​i​ ​/​ ​T​i​b​e​t​a​n​ ​/​ ​e​t​c​.​,​ ​e​.​g​.​ ​{​e​x​a​m​p​l​e​}
+		 * W​o​r​d​s​ ​a​r​e​ ​s​p​l​i​t​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​w​i​t​h​ ​l​o​c​a​l​e​-​a​w​a​r​e​ ​s​e​g​m​e​n​t​a​t​i​o​n​ ​w​h​e​n​ ​a​v​a​i​l​a​b​l​e​,​ ​o​r​ ​b​y​ ​s​p​a​c​e​s​ ​a​n​d​ ​p​u​n​c​t​u​a​t​i​o​n​ ​a​s​ ​a​ ​f​a​l​l​b​a​c​k​.​ ​U​s​e​ ​{​d​e​l​i​m​i​t​e​r​}​ ​f​o​r​ ​f​i​n​e​r​ ​c​o​n​t​r​o​l​,​ ​e​.​g​.​ ​{​e​x​a​m​p​l​e​}
 		 * @param {string} delimiter
 		 * @param {string} example
 		 */
 		guidance: RequiredParams<'delimiter' | 'example'>
+	}
+	tokenEditor: {
+		/**
+		 * T​o​k​e​n​s
+		 */
+		tokens: string
+		/**
+		 * M​e​r​g​e​ ​s​e​l​e​c​t​e​d
+		 */
+		mergeSelected: string
+		/**
+		 * S​p​l​i​t​ ​t​o​k​e​n​ ​a​t​ ​b​o​u​n​d​a​r​y
+		 */
+		splitAtBoundary: string
+		/**
+		 * S​e​l​e​c​t​ ​t​o​k​e​n​(​s​)
+		 */
+		selectTokens: string
 	}
 	footer: {
 		/**
@@ -276,9 +294,27 @@ export type TranslationFunctions = {
 		 */
 		modify: () => LocalizedString
 		/**
-		 * Each word are separated automatically by space and punctuations. Use {delimiter} for further separation or non-space separated script, such as Chinese / Japanese / Thai / Tibetan / etc., e.g. {example}
+		 * Words are split automatically with locale-aware segmentation when available, or by spaces and punctuation as a fallback. Use {delimiter} for finer control, e.g. {example}
 		 */
 		guidance: (arg: { delimiter: string, example: string }) => LocalizedString
+	}
+	tokenEditor: {
+		/**
+		 * Tokens
+		 */
+		tokens: () => LocalizedString
+		/**
+		 * Merge selected
+		 */
+		mergeSelected: () => LocalizedString
+		/**
+		 * Split token at boundary
+		 */
+		splitAtBoundary: () => LocalizedString
+		/**
+		 * Select token(s)
+		 */
+		selectTokens: () => LocalizedString
 	}
 	footer: {
 		/**

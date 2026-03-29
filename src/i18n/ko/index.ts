@@ -30,6 +30,12 @@ const ko: Translation = {
 		guidance:
 			'단어는 지원되는 환경에서는 언어에 맞게 자동 분리되며, 사용할 수 없을 때는 공백과 문장 부호를 기준으로 분리됩니다. 더 세밀하게 나누려면 {delimiter}을 사용하세요. 예: {example}'
 	},
+	tokenEditor: {
+		tokens: '토큰',
+		mergeSelected: '선택 병합',
+		splitAtBoundary: '이 경계에서 토큰 분할',
+		selectTokens: '토큰 선택'
+	},
 	footer: {
 		info: '이 툴은의해 생성된 삽화는 {license} 라이선스에 따라 제공됩니다. 즉 완전 저작권 무료이며, 자유롭게 사용할 수 있습니다. 또, 강제는 아니지만, 이용할 때에 쉐어나 출처 밝히는 환영합니다.'
 	},

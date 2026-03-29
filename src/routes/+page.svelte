@@ -115,6 +115,16 @@
 	// LINE_COORDINATES
 
 	let lines: Line[] = [];
+	let editingText = '';
+	let editingSelectionStart = -1;
+	let editingSelectionEnd = -1;
+
+	$: previewSentences =
+		modifying === -1
+			? sentences
+			: sentences.map(
+					([lang, words], index) => [lang, index === modifying ? editingText.split(/[|]/u).filter(Boolean) : words] as [string, string[]]
+			  );
 
 	async function onsubmit({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
 		if (modifying !== -1) {
@@ -126,6 +136,9 @@
 			}
 
 			modifying = -1;
+			editingText = '';
+			editingSelectionStart = -1;
+			editingSelectionEnd = -1;
 			wordsBeforeModify = [];
 		} else {
 			// Adding new sentence
@@ -287,7 +300,7 @@
 	<div class="output">
 		{#if mounted}
 			<Output
-				{sentences}
+				sentences={previewSentences}
 				{color_map}
 				{equivalency}
 				{alignment}
@@ -302,6 +315,8 @@
 				{fontSize}
 				{loading}
 				{modifying}
+				{editingSelectionStart}
+				{editingSelectionEnd}
 				bind:word_spans
 				bind:mode
 				bind:output
@@ -333,13 +348,30 @@
 				on:modify={({ detail: { sentence } }) => {
 					modifying = sentence;
 					wordsBeforeModify = sentences[sentence][1];
+					editingText = sentences[sentence][1].join('|');
+					editingSelectionStart = -1;
+					editingSelectionEnd = -1;
+				}}
+				on:merge={({ detail: { sentence, start, end } }) => {
+					const words = previewSentences[sentence][1];
+					const merged = words.slice(start, end + 1).join('');
+					editingText = [...words.slice(0, start), merged, ...words.slice(end + 1)].join('|');
+					editingSelectionStart = start;
+					editingSelectionEnd = start;
+				}}
+				on:split={({ detail: { sentence, word, offset } }) => {
+					const words = previewSentences[sentence][1];
+					const token = words[word];
+					editingText = [...words.slice(0, word), token.slice(0, offset), token.slice(offset), ...words.slice(word + 1)].filter(Boolean).join('|');
+					editingSelectionStart = word;
+					editingSelectionEnd = word + 1;
 				}}
 			/>
 		{/if}
 	</div>
 
 	<div class="input">
-		<SentenceInput on:submit={onsubmit} {modifying} {sentences} />
+		<SentenceInput on:submit={onsubmit} {modifying} {sentences} bind:text={editingText} />
 	</div>
 
 	<div class="params">

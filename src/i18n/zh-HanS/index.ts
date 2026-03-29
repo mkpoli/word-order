@@ -29,6 +29,12 @@ const zh: Translation = {
 		modify: '修改',
 		guidance: '支持时会按语言自动分词，否则回退为空格和标点分词。使用{delimiter}可以进一步精细分隔，例如{example}'
 	},
+	tokenEditor: {
+		tokens: '词元',
+		mergeSelected: '合并所选',
+		splitAtBoundary: '在此处分割词元',
+		selectTokens: '请选择词元'
+	},
 	footer: {
 		info: '使用本应用生成的图像以{license}释出，意即于公有领域公开，完全自由使用。不过也欢迎分享并在使用时标注出处。'
 	},
