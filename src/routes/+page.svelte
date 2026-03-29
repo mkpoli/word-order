@@ -118,6 +118,8 @@
 	let editingText = '';
 	let editingSelectionStart = -1;
 	let editingSelectionEnd = -1;
+	let outputContainer: HTMLDivElement;
+	let inputContainer: HTMLDivElement;
 
 	$: previewSentences =
 		modifying === -1
@@ -125,6 +127,21 @@
 			: sentences.map(
 					([lang, words], index) => [lang, index === modifying ? editingText.split(/[|]/u).filter(Boolean) : words] as [string, string[]]
 			  );
+
+	function cancelUnchangedEdit() {
+		modifying = -1;
+		editingText = '';
+		editingSelectionStart = -1;
+		editingSelectionEnd = -1;
+		wordsBeforeModify = [];
+	}
+
+	function shouldKeepSentenceEdit(target: EventTarget | null): boolean {
+		if (!(target instanceof HTMLElement)) return false;
+		if (outputContainer?.contains(target)) return true;
+		if (inputContainer?.contains(target)) return true;
+		return false;
+	}
 
 	async function onsubmit({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
 		if (modifying !== -1) {
@@ -224,6 +241,15 @@
 	let output: HTMLOutputElement;
 </script>
 
+<svelte:window
+	on:pointerdown={(e) => {
+		if (modifying === -1) return;
+		if (shouldKeepSentenceEdit(e.target)) return;
+		if (editingText !== wordsBeforeModify.join('|')) return;
+		cancelUnchangedEdit();
+	}}
+/>
+
 <header class="menu">
 	<button
 		disabled={mode === 'edit'}
@@ -297,7 +323,7 @@
 </header>
 
 <main>
-	<div class="output">
+	<div class="output" bind:this={outputContainer}>
 		{#if mounted}
 			<Output
 				sentences={previewSentences}
@@ -370,7 +396,7 @@
 		{/if}
 	</div>
 
-	<div class="input">
+	<div class="input" bind:this={inputContainer}>
 		<SentenceInput on:submit={onsubmit} {modifying} {sentences} bind:text={editingText} />
 	</div>
 
