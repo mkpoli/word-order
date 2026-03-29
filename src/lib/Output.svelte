@@ -784,6 +784,11 @@
 		visibility: hidden;
 	}
 
+	.modifying-sentence .modify,
+	.modifying-sentence .delete {
+		visibility: hidden;
+	}
+
 	.dragger {
 		cursor: move;
 	}
