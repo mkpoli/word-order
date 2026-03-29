@@ -1,6 +1,12 @@
 import Color from 'colorjs.io';
 
-function* generateEvenlySpacedNumbers(start: number, end: number, n: number, scramble: boolean = false): Generator<number> {
+function* generateEvenlySpacedNumbers(start: number, end: number, n: number, scramble = false): Generator<number> {
+	if (n <= 0) return;
+	if (n === 1) {
+		yield start;
+		return;
+	}
+
 	const distance = end - start;
 	let step: number;
 	if (scramble) {
@@ -17,7 +23,7 @@ function* generateEvenlySpacedNumbers(start: number, end: number, n: number, scr
 
 type OklchTuple = [l: number, c: number, h: number];
 
-export function pickNColors(n: number, scramble: boolean = true): OklchTuple[] {
+export function pickNColors(n: number, scramble = true): OklchTuple[] {
 	return [...generateEvenlySpacedNumbers(0, 360, n, scramble)].map((degrees) => [0.6, 0.25, degrees]);
 }
 
