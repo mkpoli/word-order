@@ -25,7 +25,7 @@
 		"dom-to-svg": "^0.12.2",
 		"eslint": "^8.43.0",
 		"eslint-config-prettier": "^8.8.0",
-		"eslint-plugin-svelte3": "^4.0.0",
+		"eslint-plugin-svelte": "^3.16.0",
 		"prettier": "^2.8.8",
 		"prettier-plugin-svelte": "^2.10.1",
 		"svelte": "^4.2.20",
