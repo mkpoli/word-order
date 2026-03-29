@@ -87,6 +87,28 @@
 		color_map = color_map;
 	}
 
+	function gcd(a: number, b: number): number {
+		let x = Math.abs(a);
+		let y = Math.abs(b);
+		while (y !== 0) {
+			const remainder = x % y;
+			x = y;
+			y = remainder;
+		}
+		return x;
+	}
+
+	function getScrambleStep(n: number): number {
+		const defaultStep = (n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2);
+		if (defaultStep > 1) return defaultStep;
+
+		for (let step = 2; step < n; step++) {
+			if (gcd(step, n) === 1) return step;
+		}
+
+		return defaultStep;
+	}
+
 	$: colors = pickNColors(equivalency.length, false).map(oklchToHex);
 
 	// LINE_COORDINATES
@@ -348,7 +370,7 @@
 					equivalency = equivalency;
 					return;
 				}
-				const coprimeN = (n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2);
+				const coprimeN = getScrambleStep(n);
 				const result = [];
 				let idx = 0;
 				for (let i = 0; i < n; i++) {
