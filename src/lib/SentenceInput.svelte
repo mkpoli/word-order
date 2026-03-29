@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
+	import { tokenizeSentence } from './tokenize';
 
 	export let modifying: number;
 	export let sentences: [string, string[]][];
@@ -64,7 +65,7 @@
 			<label for="lang">{displayName}</label>
 			<button
 				on:click={() => {
-					const words = text.split(modifying === -1 ? /(<ruby>.*?<\/ruby>)|([\s\p{P}]+)|[|]/u : /[|]/u).filter(Boolean);
+					const words = modifying === -1 ? tokenizeSentence(text, lang) : text.split(/[|]/u).filter(Boolean);
 					if (words.length === 0) {
 						empty = true;
 						return;

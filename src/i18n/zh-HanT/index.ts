@@ -27,7 +27,7 @@ const zh: Translation = {
 		placeholder: '在此輸入新的句子……',
 		add: '加入',
 		modify: '修改',
-		guidance: '空格和標點符號自動分詞。使用{delimiter}來進一步分隔或用於中日韓泰藏等不使用空格分詞的語言，例如{example}'
+		guidance: '支援時會按語言自動分詞，否則回退為空格和標點分詞。使用{delimiter}可以進一步精細分隔，例如{example}'
 	},
 	footer: {
 		info: '使用本程式產生的圖像以{license}釋出，意即於公有領域公開，完全自由使用。不過也歡迎分享並在使用時標註出處。'
