@@ -117,11 +117,11 @@
 					y2 -= lineGap;
 
 					const color = colors[i];
-					lines.push([x1, y1 + straightLength, x2, y2 - straightLength, color] as Line);
+					lines.push([x1, y1 + straightLength, x2, y2 - straightLength, color]);
 
 					if (straightLength !== 0) {
-						lines.push([x1, y1, x1, y1 + straightLength, color] as Line);
-						lines.push([x2, y2, x2, y2 - straightLength, color] as Line);
+						lines.push([x1, y1, x1, y1 + straightLength, color]);
+						lines.push([x2, y2, x2, y2 - straightLength, color]);
 					}
 				}
 			}
@@ -219,6 +219,7 @@
 				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
 				<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
 					{#each words as word, j}
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<span
 							class="word"
 							class:content={isContent(word)}
@@ -260,6 +261,7 @@
 					{/each}
 				</span>
 				<div class="modify action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<iconify-icon
 						icon="material-symbols:edit-rounded"
 						on:click={() => {
@@ -270,6 +272,7 @@
 					/>
 				</div>
 				<div class="delete action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<iconify-icon
 						icon="ic:baseline-delete-forever"
 						width="1.2em"

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lch2rgb, pickNColors } from '$lib/color';
+	import { oklchToHex, pickNColors } from '$lib/color';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -43,12 +43,14 @@
 		[[], [7], [7], []]
 	];
 
+	let mode: Mode = 'view';
+	let goldenHue = 0;
+
 	// Prevent empty entry from existing
 	$: equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
 
-	let mode: Mode = 'view';
-
 	let color_map: number[][] = [];
+	let colors: string[] = [];
 	let word_spans: HTMLSpanElement[][];
 
 	// Parameters
@@ -85,7 +87,29 @@
 		color_map = color_map;
 	}
 
-	$: colors = pickNColors(equivalency.length).map(lch2rgb);
+	function gcd(a: number, b: number): number {
+		let x = Math.abs(a);
+		let y = Math.abs(b);
+		while (y !== 0) {
+			const remainder = x % y;
+			x = y;
+			y = remainder;
+		}
+		return x;
+	}
+
+	function getScrambleStep(n: number): number {
+		const defaultStep = (n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2);
+		if (defaultStep > 1) return defaultStep;
+
+		for (let step = 2; step < n; step++) {
+			if (gcd(step, n) === 1) return step;
+		}
+
+		return defaultStep;
+	}
+
+	$: colors = pickNColors(equivalency.length, false).map(oklchToHex);
 
 	// LINE_COORDINATES
 
@@ -152,8 +176,10 @@
 						}
 					}
 
-					// Add new entry
-					equivalency.push(grouped);
+					// Insert a new entry while keeping neighboring colors visually smooth
+					goldenHue = (goldenHue + 0.618033988749895) % 1;
+					const targetIndex = Math.floor(goldenHue * (equivalency.length + 1));
+					equivalency.splice(targetIndex, 0, grouped);
 				}
 			}
 		}
@@ -336,6 +362,22 @@
 				equivalency.splice(from, 1);
 				equivalency.splice(to, 0, entry);
 				equivalency = equivalency;
+			}}
+			on:scramble={() => {
+				const n = equivalency.length;
+				if (n <= 2) {
+					equivalency.reverse();
+					equivalency = equivalency;
+					return;
+				}
+				const coprimeN = getScrambleStep(n);
+				const result = [];
+				let idx = 0;
+				for (let i = 0; i < n; i++) {
+					result.push(equivalency[idx]);
+					idx = (idx + coprimeN) % n;
+				}
+				equivalency = result;
 			}}
 		/>
 	</div>
