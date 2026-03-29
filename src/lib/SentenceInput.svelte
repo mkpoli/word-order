@@ -29,7 +29,7 @@
 			textArea.focus();
 		} else {
 			lang = previousLang;
-			text = previousText;
+			text = '';
 			previousText = '';
 		}
 	}
