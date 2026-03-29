@@ -67,7 +67,7 @@
 
 <div
 	class="color-bar"
-	style:background-image={`linear-gradient(to bottom, ${pickNColors(15)
+	style:background-image={`linear-gradient(to bottom, ${pickNColors(15, false)
 		.map(lch2rgb)
 		.map((c, i) => `${c} ${((i * 1) / 15) * 100}%`)
 		.join(', ')})`}
