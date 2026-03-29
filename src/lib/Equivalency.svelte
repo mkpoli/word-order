@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pickNColors, lch2rgb } from '$lib/color';
+	import { pickNColors, oklchToHex } from '$lib/color';
 	import { createEventDispatcher } from 'svelte';
 	import Word from './Word.svelte';
 
@@ -68,7 +68,7 @@
 <div
 	class="color-bar"
 	style:background-image={`linear-gradient(to bottom, ${pickNColors(15, false)
-		.map(lch2rgb)
+		.map(oklchToHex)
 		.map((c, i) => `${c} ${((i * 1) / 15) * 100}%`)
 		.join(', ')})`}
 />
