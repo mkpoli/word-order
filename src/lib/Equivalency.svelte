@@ -157,7 +157,7 @@
 		</div>
 	{/each}
 </div>
-<button class="scramble-all" title="Scramble Colors" on:click={() => dispatch('scramble')}>
+<button class="scramble-all" title={$LL.menu.scramble()} aria-label={$LL.menu.scramble()} on:click={() => dispatch('scramble')}>
 	<iconify-icon icon="fad:random-1dice" width="1.5em" />
 </button>
 

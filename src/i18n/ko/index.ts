@@ -47,7 +47,8 @@ const ko: Translation = {
 		import: '가져오기',
 		export: '내보내기',
 		svg: 'SVG 내보내기',
-		png: 'PNG 내보내기'
+		png: 'PNG 내보내기',
+		scramble: '색상 섞기'
 	}
 };
 
