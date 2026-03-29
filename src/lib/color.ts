@@ -8,16 +8,10 @@ function* generateEvenlySpacedNumbers(start: number, end: number, n: number, scr
 	}
 
 	const distance = end - start;
-	let step: number;
-	if (scramble) {
-		const coprimeN = (n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2);
-		step = (distance / n) * coprimeN;
-	} else {
-		step = distance / (n - 1);
-	}
+	const step = scramble ? (distance / n) * ((n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2)) : distance / n;
 
 	for (let i = 0; i < n; i++) {
-		yield start + i * step;
+		yield ((((start + i * step - start) % distance) + distance) % distance) + start;
 	}
 }
 

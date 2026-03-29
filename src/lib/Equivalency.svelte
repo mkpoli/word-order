@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { pickNColors, oklchToHex } from '$lib/color';
 	import { createEventDispatcher } from 'svelte';
 	import Word from './Word.svelte';
 
@@ -8,6 +7,32 @@
 	export let sentences: [string, string[]][];
 	export let equivalency: number[][][];
 	export let colors: string[];
+
+	function buildStripeGradient(colors: string[]): string {
+		if (colors.length === 0) return 'none';
+		if (colors.length === 1) return `linear-gradient(to bottom, ${colors[0]}, ${colors[0]})`;
+
+		const stops: string[] = [];
+		for (const [index, color] of colors.entries()) {
+			const position = (index / (colors.length - 1)) * 100;
+			stops.push(`${color} ${position}%`);
+
+			if (index < colors.length - 1) {
+				const nextColor = colors[index + 1];
+				const quarter = ((index + 0.25) / (colors.length - 1)) * 100;
+				const midpoint = ((index + 0.5) / (colors.length - 1)) * 100;
+				const threeQuarter = ((index + 0.75) / (colors.length - 1)) * 100;
+
+				stops.push(`color-mix(in oklch, ${color} 75%, ${nextColor}) ${quarter}%`);
+				stops.push(`color-mix(in oklch, ${color} 50%, ${nextColor}) ${midpoint}%`);
+				stops.push(`color-mix(in oklch, ${color} 25%, ${nextColor}) ${threeQuarter}%`);
+			}
+		}
+
+		return `linear-gradient(to bottom, ${stops.join(', ')})`;
+	}
+
+	$: stripeGradient = buildStripeGradient(colors);
 
 	let draggingIndex = -1;
 	let draggingPosition = { x: 0, y: 0 };
@@ -65,12 +90,7 @@
 
 <svelte:window on:pointerup={dragend} on:pointermove={onpointermove} />
 
-<div
-	class="color-bar"
-	style:background-image={`linear-gradient(to bottom, ${colors
-		.map((c, i) => `${c} ${((i * 1) / Math.max(1, colors.length - 1)) * 100}%`)
-		.join(', ')})`}
-/>
+<div class="color-bar" style:background-image={stripeGradient} />
 <div class="entries">
 	{#each equivalency as entry, i}
 		<div
@@ -116,6 +136,7 @@
 		/* position: absolute; */
 		width: 0.3em;
 		border-radius: 9999px;
+		filter: saturate(1.08);
 	}
 
 	.words:not(:last-of-type)::after {
@@ -131,7 +152,6 @@
 		border: none;
 		background: none;
 		cursor: pointer;
-		margin-top: 1em;
 		align-self: center;
 		color: #777;
 		transition: color 0.15s ease;

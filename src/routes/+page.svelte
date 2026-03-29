@@ -43,12 +43,14 @@
 		[[], [7], [7], []]
 	];
 
+	let mode: Mode = 'view';
+	let goldenHue = 0;
+
 	// Prevent empty entry from existing
 	$: equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
 
-	let mode: Mode = 'view';
-
 	let color_map: number[][] = [];
+	let colors: string[] = [];
 	let word_spans: HTMLSpanElement[][];
 
 	// Parameters
@@ -152,8 +154,10 @@
 						}
 					}
 
-					// Add new entry
-					equivalency.push(grouped);
+					// Insert a new entry while keeping neighboring colors visually smooth
+					goldenHue = (goldenHue + 0.618033988749895) % 1;
+					const targetIndex = Math.floor(goldenHue * (equivalency.length + 1));
+					equivalency.splice(targetIndex, 0, grouped);
 				}
 			}
 		}
