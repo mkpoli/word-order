@@ -85,7 +85,7 @@
 		color_map = color_map;
 	}
 
-	$: colors = pickNColors(equivalency.length).map(oklchToHex);
+	$: colors = pickNColors(equivalency.length, false).map(oklchToHex);
 
 	// LINE_COORDINATES
 
