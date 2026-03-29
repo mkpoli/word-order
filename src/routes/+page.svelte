@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lch2rgb, pickNColors } from '$lib/color';
+	import { oklchToHex, pickNColors } from '$lib/color';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -85,7 +85,7 @@
 		color_map = color_map;
 	}
 
-	$: colors = pickNColors(equivalency.length).map(lch2rgb);
+	$: colors = pickNColors(equivalency.length).map(oklchToHex);
 
 	// LINE_COORDINATES
 

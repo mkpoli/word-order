@@ -15,12 +15,15 @@ function* generateEvenlySpacedNumbers(start: number, end: number, n: number, scr
 	}
 }
 
-type LCh = [l: number, c: number, h: number];
+type OklchTuple = [l: number, c: number, h: number];
 
-export function pickNColors(n: number, scramble: boolean = true): LCh[] {
+export function pickNColors(n: number, scramble: boolean = true): OklchTuple[] {
 	return [...generateEvenlySpacedNumbers(0, 360, n, scramble)].map((degrees) => [0.6, 0.25, degrees]);
 }
 
-export function lch2rgb(lch: LCh): string {
-	return new Color('oklch', lch).to('srgb').toString({ format: 'hex' });
+/**
+ * Converts an OKLCH tuple to a hex string.
+ */
+export function oklchToHex(oklch: OklchTuple): string {
+	return new Color('oklch', oklch).to('srgb').toString({ format: 'hex' });
 }
