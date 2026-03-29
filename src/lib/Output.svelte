@@ -6,7 +6,6 @@
 <script lang="ts">
 	import { onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
-	import { cartesian, segmentate } from './array';
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
