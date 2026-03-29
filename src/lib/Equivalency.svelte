@@ -95,6 +95,9 @@
 		</div>
 	{/each}
 </div>
+<button class="scramble-all" title="Scramble Colors" on:click={() => dispatch('scramble')}>
+	<iconify-icon icon="fad:random-1dice" width="1.5em" />
+</button>
 
 <style>
 	.entries {
@@ -121,5 +124,20 @@
 
 	.word:not(:last-of-type)::after {
 		content: '|';
+	}
+
+	.scramble-all {
+		appearance: none;
+		border: none;
+		background: none;
+		cursor: pointer;
+		margin-top: 1em;
+		align-self: center;
+		color: #777;
+		transition: color 0.15s ease;
+	}
+
+	.scramble-all:hover {
+		color: #333;
 	}
 </style>

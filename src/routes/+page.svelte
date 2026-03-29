@@ -337,6 +337,22 @@
 				equivalency.splice(to, 0, entry);
 				equivalency = equivalency;
 			}}
+			on:scramble={() => {
+				const n = equivalency.length;
+				if (n <= 2) {
+					equivalency.reverse();
+					equivalency = equivalency;
+					return;
+				}
+				const coprimeN = (n >>> 1) - +((n & 1) === 0) - +((n & 3) === 2);
+				const result = [];
+				let idx = 0;
+				for (let i = 0; i < n; i++) {
+					result.push(equivalency[idx]);
+					idx = (idx + coprimeN) % n;
+				}
+				equivalency = result;
+			}}
 		/>
 	</div>
 </main>
