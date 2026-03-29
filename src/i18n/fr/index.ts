@@ -28,7 +28,7 @@ const fr: Translation = {
 		add: 'Ajouter',
 		modify: 'Modifier',
 		guidance:
-			'Les mots sont automatiquement découpés par des espaces et les caractères de ponctuation. Utilisez {delimiter} pour découper ou pour utiliser les textes qui ne sont pas séparés par des espaces pour les langues chinoises, japonais, thaï, tibétain et celtique. Exemple : {example}'
+			'Les mots sont découpés automatiquement avec une segmentation adaptée à la langue quand elle est disponible, sinon avec les espaces et la ponctuation. Utilisez {delimiter} pour un découpage plus précis. Exemple : {example}'
 	},
 	footer: {
 		info: 'L’illustration générée par cette application est distribuée sous la licence {license}, ce qui signifie qu’elle sera dans le domaine public et totalement libre d’utilisation. Il n’est pas obligatoire, mais bienvenu de partager et de créditer'
