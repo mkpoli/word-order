@@ -67,9 +67,8 @@
 
 <div
 	class="color-bar"
-	style:background-image={`linear-gradient(to bottom, ${pickNColors(15, false)
-		.map(oklchToHex)
-		.map((c, i) => `${c} ${((i * 1) / 15) * 100}%`)
+	style:background-image={`linear-gradient(to bottom, ${colors
+		.map((c, i) => `${c} ${((i * 1) / Math.max(1, colors.length - 1)) * 100}%`)
 		.join(', ')})`}
 />
 <div class="entries">
