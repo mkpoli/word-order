@@ -37,7 +37,7 @@ const fr: Translation = {
 		selectTokens: 'Selectionnez des tokens'
 	},
 	footer: {
-		info: 'L’illustration générée par cette application est distribuée sous la licence {license}, ce qui signifie qu’elle sera dans le domaine public et totalement libre d’utilisation. Il n’est pas obligatoire, mais bienvenu de partager et de créditer'
+		info: 'Cette application ne revendique pas de droits sur les illustrations que vous créez ici. La façon dont vous les utilisez ou les partagez dépend entièrement de vous. Partager cet outil est apprécié.'
 	},
 	dialog: {
 		editing: 'Édition',

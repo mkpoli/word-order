@@ -461,7 +461,7 @@
 		)
 	</p>
 	<p>
-		{@html $LL.footer.info({ license: '<iconify-icon icon="ri:creative-commons-zero-line" inline="true"></iconify-icon> (CC0) ' })}
+		{$LL.footer.info()}
 	</p>
 </footer>
 
