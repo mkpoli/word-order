@@ -40,6 +40,7 @@ const LOCALE_OPTIONS: LocaleOption[] = [
 	{ value: 'pt', endonym: 'Português', iso639: 'pt', tag: 'pt' },
 	{ value: 'ru', endonym: 'Русский', iso639: 'ru', tag: 'ru' },
 	{ value: 'ar', endonym: 'العربية', iso639: 'ar', tag: 'ar' },
+	{ value: 'ain', endonym: 'アイヌ イタㇰ', iso639: 'ain', tag: 'ain' },
 	{ value: 'hi', endonym: 'हिन्दी', iso639: 'hi', tag: 'hi' },
 	{ value: 'eo', endonym: 'Esperanto', iso639: 'eo', tag: 'eo' },
 	{ value: 'ia', endonym: 'Interlingua', iso639: 'ia', tag: 'ia' },
