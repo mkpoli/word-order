@@ -41,8 +41,14 @@ const LOCALE_OPTIONS: LocaleOption[] = [
 	{ value: 'ru', endonym: 'Русский', iso639: 'ru', tag: 'ru' },
 	{ value: 'ar', endonym: 'العربية', iso639: 'ar', tag: 'ar' },
 	{ value: 'hi', endonym: 'हिन्दी', iso639: 'hi', tag: 'hi' },
+	{ value: 'eo', endonym: 'Esperanto', iso639: 'eo', tag: 'eo' },
+	{ value: 'ia', endonym: 'Interlingua', iso639: 'ia', tag: 'ia' },
+	{ value: 'la', endonym: 'Lingua Latina', iso639: 'la', tag: 'la' },
+	{ value: 'tok', endonym: 'toki pona', iso639: 'tok', tag: 'tok' },
 	{ value: 'ja', endonym: '日本語', iso639: 'ja', tag: 'ja' },
+	{ value: 'ja-Hira', endonym: 'やさしい日本語', iso639: 'ja', tag: 'ja-Hira' },
 	{ value: 'ko', endonym: '한국어', iso639: 'ko', tag: 'ko' },
+	{ value: 'ko-Kore', endonym: '韓國語 (國漢文混用)', iso639: 'ko', tag: 'ko-Kore' },
 	{ value: 'zh-HanS', endonym: '简体中文', iso639: 'zh', tag: 'zh-Hans' },
 	{ value: 'zh-HanT', endonym: '繁體中文', iso639: 'zh', tag: 'zh-Hant' }
 ];
