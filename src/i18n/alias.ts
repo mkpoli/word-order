@@ -8,7 +8,11 @@ export const LOCALE_ALIAS = new Map<string, Locales>([
 	['zh-TW', 'zh-HanT'],
 	['zh-HK', 'zh-HanT'],
 	['zh-MO', 'zh-HanT'],
-	['zh', 'zh-HanS']
+	['zh', 'zh-HanS'],
+	['ja-Hrkt', 'ja-Hira'],
+	['ja-Kana', 'ja-Hira'],
+	['ko-Hani', 'ko-Kore'],
+	['ko-Hant', 'ko-Kore']
 ]);
 
 export function getAliasedLocale(locale: string): Locales {
