@@ -1,6 +1,9 @@
 import type { Translation } from '../i18n-types';
 
 const ko: Translation = {
+	meta: {
+		title: '어순 일러스트레이터'
+	},
 	params: {
 		options: '옵션',
 		verticalGap: '줄 간격',
@@ -37,7 +40,13 @@ const ko: Translation = {
 		selectTokens: '토큰 선택'
 	},
 	footer: {
-		info: '이 도구로 생성한 이미지에 대해 본 도구는 어떠한 권리도 주장하지 않습니다. 사용하거나 공개하는 방식은 자유롭게 결정하실 수 있습니다. 이 도구를 공유해 주시거나 출처를 남겨 주시면 제작자에게 큰 기쁨이 됩니다.'
+		info: '이 도구로 생성한 이미지에 대해 본 도구는 어떠한 권리도 주장하지 않습니다. 사용하거나 공개하는 방식은 자유롭게 결정하실 수 있습니다. 이 도구를 공유해 주시거나 출처를 남겨 주시면 제작자에게 큰 기쁨이 됩니다.',
+		githubRepository: 'GitHub 저장소',
+		announcement: '안내 게시물',
+		by: '제작'
+	},
+	ui: {
+		selected: '선택됨'
 	},
 	dialog: {
 		editing: '편집 중',

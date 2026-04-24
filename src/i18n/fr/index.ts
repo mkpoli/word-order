@@ -1,6 +1,9 @@
 import type { Translation } from '../i18n-types';
 
 const fr: Translation = {
+	meta: {
+		title: 'Illustrateur de l’ordre des mots'
+	},
 	params: {
 		options: 'Options',
 		verticalGap: 'Espace vertical',
@@ -37,7 +40,13 @@ const fr: Translation = {
 		selectTokens: 'Selectionnez des tokens'
 	},
 	footer: {
-		info: 'Cette application ne revendique pas de droits sur les illustrations que vous créez ici. La façon dont vous les utilisez ou les partagez dépend entièrement de vous. Partager cet outil est apprécié.'
+		info: 'Cette application ne revendique pas de droits sur les illustrations que vous créez ici. La facon dont vous les utilisez ou les partagez depend entierement de vous. Partager cet outil est apprecie.',
+		githubRepository: 'Depot GitHub',
+		announcement: 'Annonce',
+		by: 'par'
+	},
+	ui: {
+		selected: 'Selectionne'
 	},
 	dialog: {
 		editing: 'Édition',

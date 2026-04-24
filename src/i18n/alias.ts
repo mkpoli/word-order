@@ -12,7 +12,9 @@ export const LOCALE_ALIAS = new Map<string, Locales>([
 ]);
 
 export function getAliasedLocale(locale: string): Locales {
-	const aliasedLocale = (LOCALE_ALIAS.get(locale) ?? locale) as Locales;
+	const normalizedLocale = locale.trim();
+	const baseLanguage = normalizedLocale.split('-')[0];
+	const aliasedLocale = (LOCALE_ALIAS.get(normalizedLocale) ?? LOCALE_ALIAS.get(baseLanguage) ?? baseLanguage) as Locales;
 	return locales.includes(aliasedLocale) ? aliasedLocale : baseLocale;
 }
 

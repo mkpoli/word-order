@@ -18,6 +18,12 @@ export type Translation = RootTranslation
 export type Translations = RootTranslation
 
 type RootTranslation = {
+	meta: {
+		/**
+		 * W​o​r​d​ ​O​r​d​e​r​ ​I​l​l​u​s​t​r​a​t​o​r
+		 */
+		title: string
+	}
 	params: {
 		/**
 		 * O​p​t​i​o​n​s
@@ -143,6 +149,24 @@ type RootTranslation = {
 		 * T​h​i​s​ ​a​p​p​l​i​c​a​t​i​o​n​ ​d​o​e​s​ ​n​o​t​ ​c​l​a​i​m​ ​r​i​g​h​t​s​ ​o​v​e​r​ ​t​h​e​ ​i​l​l​u​s​t​r​a​t​i​o​n​s​ ​y​o​u​ ​c​r​e​a​t​e​ ​h​e​r​e​.​ ​H​o​w​ ​y​o​u​ ​u​s​e​ ​o​r​ ​s​h​a​r​e​ ​t​h​e​m​ ​i​s​ ​c​o​m​p​l​e​t​e​l​y​ ​u​p​ ​t​o​ ​y​o​u​.​ ​S​h​a​r​i​n​g​ ​t​h​i​s​ ​t​o​o​l​ ​i​s​ ​a​p​p​r​e​c​i​a​t​e​d​.
 		 */
 		info: string
+		/**
+		 * G​i​t​H​u​b​ ​r​e​p​o​s​i​t​o​r​y
+		 */
+		githubRepository: string
+		/**
+		 * A​n​n​o​u​n​c​e​m​e​n​t​ ​p​o​s​t
+		 */
+		announcement: string
+		/**
+		 * b​y
+		 */
+		by: string
+	}
+	ui: {
+		/**
+		 * S​e​l​e​c​t​e​d
+		 */
+		selected: string
 	}
 	dialog: {
 		/**
@@ -197,6 +221,12 @@ type RootTranslation = {
 }
 
 export type TranslationFunctions = {
+	meta: {
+		/**
+		 * Word Order Illustrator
+		 */
+		title: () => LocalizedString
+	}
 	params: {
 		/**
 		 * Options
@@ -320,6 +350,24 @@ export type TranslationFunctions = {
 		 * This application does not claim rights over the illustrations you create here. How you use or share them is completely up to you. Sharing this tool is appreciated.
 		 */
 		info: () => LocalizedString
+		/**
+		 * GitHub repository
+		 */
+		githubRepository: () => LocalizedString
+		/**
+		 * Announcement post
+		 */
+		announcement: () => LocalizedString
+		/**
+		 * by
+		 */
+		by: () => LocalizedString
+	}
+	ui: {
+		/**
+		 * Selected
+		 */
+		selected: () => LocalizedString
 	}
 	dialog: {
 		/**

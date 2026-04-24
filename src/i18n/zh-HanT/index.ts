@@ -1,6 +1,9 @@
 import type { Translation } from '../i18n-types';
 
 const zh: Translation = {
+	meta: {
+		title: '語序示意圖工具'
+	},
 	params: {
 		options: '選項',
 		verticalGap: '行距',
@@ -36,7 +39,13 @@ const zh: Translation = {
 		selectTokens: '請選擇詞元'
 	},
 	footer: {
-		info: '本工具不會對產生的圖像主張任何權利，請您自行決定如何使用或發布。歡迎分享本工具，並在使用時標註出處。'
+		info: '本工具不會對產生的圖像主張任何權利，請您自行決定如何使用或發布。歡迎分享本工具，並在使用時標註出處。',
+		githubRepository: 'GitHub 倉庫',
+		announcement: '發布說明',
+		by: '作者'
+	},
+	ui: {
+		selected: '已選擇'
 	},
 	dialog: {
 		editing: '正在編輯',

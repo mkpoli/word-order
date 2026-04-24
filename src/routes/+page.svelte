@@ -12,6 +12,7 @@
 
 	// Components
 	import Equivalency from '$lib/Equivalency.svelte';
+	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
@@ -320,6 +321,9 @@
 		<iconify-icon icon="teenyicons:png-outline" />
 		{$LL.menu.png()}
 	</button>
+	<div class="menu-locale">
+		<LocaleSelect />
+	</div>
 </header>
 
 <main>
@@ -445,17 +449,17 @@
 </main>
 
 <svelte:head>
-	<title>Word Order Illustrator</title>
+	<title>{$LL.meta.title()}</title>
 </svelte:head>
 
 <footer class:editing-muted={modifying !== -1}>
 	<p>
-		Word Order Illustrator (
-		<a href="https://github.com/mkpoli/word-order/" title="Github Repository" class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
+		{$LL.meta.title()} (
+		<a href="https://github.com/mkpoli/word-order/" title={$LL.footer.githubRepository()} class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
 		>,
-		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title="Anounce Tweet" class="twitter-link"
+		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title={$LL.footer.announcement()} class="twitter-link"
 			><iconify-icon icon="mdi:twitter" inline="true" /></a
-		>) by @mkpoli (
+		>) {$LL.footer.by()} @mkpoli (
 		<a href="https://twitter.com/mkpoli/" class="twitter-link"><iconify-icon icon="mdi:twitter" inline="true" /></a>,
 		<a href="https://mkpo.li/" class="home-link"><iconify-icon icon="mdi:home" inline="true" /></a>
 		)
@@ -661,9 +665,17 @@
 
 	.menu {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 1em;
 		padding: 1em;
-		justify-content: center;
+		justify-content: flex-start;
+		align-items: stretch;
+	}
+
+	.menu-locale {
+		margin-left: auto;
+		flex: 0 1 16rem;
+		max-width: 16rem;
 	}
 
 	.menu button {
@@ -687,5 +699,17 @@
 
 	.menu button:not(:disabled):hover {
 		background-color: #eee;
+	}
+
+	@media (max-width: 720px) {
+		.menu {
+			padding-top: 0.75rem;
+		}
+
+		.menu-locale {
+			margin-left: 0;
+			flex-basis: 100%;
+			max-width: none;
+		}
 	}
 </style>

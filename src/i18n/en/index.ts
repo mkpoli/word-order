@@ -1,6 +1,9 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en: BaseTranslation = {
+	meta: {
+		title: 'Word Order Illustrator'
+	},
 	params: {
 		options: 'Options',
 		verticalGap: 'Vertical Gap',
@@ -37,7 +40,13 @@ const en: BaseTranslation = {
 		selectTokens: 'Select token(s)'
 	},
 	footer: {
-		info: 'This application does not claim rights over the illustrations you create here. How you use or share them is completely up to you. Sharing this tool is appreciated.'
+		info: 'This application does not claim rights over the illustrations you create here. How you use or share them is completely up to you. Sharing this tool is appreciated.',
+		githubRepository: 'GitHub repository',
+		announcement: 'Announcement post',
+		by: 'by'
+	},
+	ui: {
+		selected: 'Selected'
 	},
 	dialog: {
 		editing: 'Editing',
