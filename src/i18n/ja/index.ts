@@ -2,7 +2,7 @@ import type { Translation } from '../i18n-types';
 
 const ja: Translation = {
 	meta: {
-		title: '語順イラストレーター'
+		title: '語順図メーカー'
 	},
 	params: {
 		options: 'オプション',
