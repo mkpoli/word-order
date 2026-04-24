@@ -3,6 +3,7 @@
 	import { setLocale } from '$i18n/i18n-svelte';
 	import type { Locales } from '$i18n/i18n-types';
 	import { loadLocale } from '$i18n/i18n-util.sync';
+	import { getLocaleDirection } from '$lib/lang';
 
 	export let data: { locale: Locales };
 
@@ -19,6 +20,7 @@
 			window.localStorage.setItem('locale', lang);
 		}
 		document.documentElement.lang = locale;
+		document.documentElement.dir = getLocaleDirection(locale);
 	}
 
 	setLocale(locale);

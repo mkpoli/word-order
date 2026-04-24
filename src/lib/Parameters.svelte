@@ -1,6 +1,5 @@
 <script lang="ts">
 	// Components
-	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import RangeSlider from '$lib/ui/RangeSlider.svelte';
 
 	import { LL } from '$i18n/i18n-svelte';
@@ -59,11 +58,6 @@
 		disabled={lineGap <= 0 || straightLength > 0}
 	/>
 
-	<label for="locale">
-		<iconify-icon icon="mdi:earth" inline="true" />
-		{$LL.params.displayLanguage()}
-	</label>
-	<LocaleSelect />
 </fieldset>
 
 <fieldset>

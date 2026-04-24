@@ -1,6 +1,9 @@
 import type { Translation } from '../i18n-types';
 
 const ja: Translation = {
+	meta: {
+		title: '語順イラストレーター'
+	},
 	params: {
 		options: 'オプション',
 		verticalGap: '行間隔',
@@ -37,7 +40,13 @@ const ja: Translation = {
 		selectTokens: 'トークンを選択'
 	},
 	footer: {
-		info: 'このツールで生成したイラストについては、こちら側で権利を主張することはありません。利用や公開の仕方を自由にお決めいただけます。利用する際にこのページをシェアしてくださると、製作者が歓びます。'
+		info: 'このツールで生成したイラストについては、こちら側で権利を主張することはありません。利用や公開の仕方を自由にお決めいただけます。利用する際にこのページをシェアしてくださると、製作者が歓びます。',
+		githubRepository: 'GitHub リポジトリ',
+		announcement: '告知投稿',
+		by: '作者'
+	},
+	ui: {
+		selected: '選択中'
 	},
 	dialog: {
 		editing: '編集中',
