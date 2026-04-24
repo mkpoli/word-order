@@ -34,7 +34,13 @@ export function getLocaleDisplayCode(option: Pick<LocaleOption, 'iso639' | 'tag'
 
 const LOCALE_OPTIONS: LocaleOption[] = [
 	{ value: 'en', endonym: 'English', iso639: 'en', tag: 'en' },
+	{ value: 'es', endonym: 'Español', iso639: 'es', tag: 'es' },
 	{ value: 'fr', endonym: 'Français', iso639: 'fr', tag: 'fr' },
+	{ value: 'de', endonym: 'Deutsch', iso639: 'de', tag: 'de' },
+	{ value: 'pt', endonym: 'Português', iso639: 'pt', tag: 'pt' },
+	{ value: 'ru', endonym: 'Русский', iso639: 'ru', tag: 'ru' },
+	{ value: 'ar', endonym: 'العربية', iso639: 'ar', tag: 'ar' },
+	{ value: 'hi', endonym: 'हिन्दी', iso639: 'hi', tag: 'hi' },
 	{ value: 'ja', endonym: '日本語', iso639: 'ja', tag: 'ja' },
 	{ value: 'ko', endonym: '한국어', iso639: 'ko', tag: 'ko' },
 	{ value: 'zh-HanS', endonym: '简体中文', iso639: 'zh', tag: 'zh-Hans' },

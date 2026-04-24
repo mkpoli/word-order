@@ -6,10 +6,16 @@ export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'en'
 
 export type Locales =
+	| 'ar'
+	| 'de'
 	| 'en'
+	| 'es'
 	| 'fr'
+	| 'hi'
 	| 'ja'
 	| 'ko'
+	| 'pt'
+	| 'ru'
 	| 'zh-HanS'
 	| 'zh-HanT'
 

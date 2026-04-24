@@ -6,10 +6,16 @@ import type { Locales, Translations } from './i18n-types'
 import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
 const localeTranslationLoaders = {
+	ar: () => import('./ar'),
+	de: () => import('./de'),
 	en: () => import('./en'),
+	es: () => import('./es'),
 	fr: () => import('./fr'),
+	hi: () => import('./hi'),
 	ja: () => import('./ja'),
 	ko: () => import('./ko'),
+	pt: () => import('./pt'),
+	ru: () => import('./ru'),
 	'zh-HanS': () => import('./zh-HanS'),
 	'zh-HanT': () => import('./zh-HanT'),
 }
