@@ -35,12 +35,25 @@ export function getLocaleDisplayCode(option: Pick<LocaleOption, 'iso639' | 'tag'
 const LOCALE_OPTIONS: LocaleOption[] = [
 	{ value: 'en', endonym: 'English', iso639: 'en', tag: 'en' },
 	{ value: 'es', endonym: 'Español', iso639: 'es', tag: 'es' },
+	{ value: 'id', endonym: 'Bahasa Indonesia', iso639: 'id', tag: 'id' },
 	{ value: 'fr', endonym: 'Français', iso639: 'fr', tag: 'fr' },
 	{ value: 'de', endonym: 'Deutsch', iso639: 'de', tag: 'de' },
+	{ value: 'it', endonym: 'Italiano', iso639: 'it', tag: 'it' },
+	{ value: 'nl', endonym: 'Nederlands', iso639: 'nl', tag: 'nl' },
+	{ value: 'pl', endonym: 'Polski', iso639: 'pl', tag: 'pl' },
 	{ value: 'pt', endonym: 'Português', iso639: 'pt', tag: 'pt' },
+	{ value: 'tr', endonym: 'Türkçe', iso639: 'tr', tag: 'tr' },
+	{ value: 'vi', endonym: 'Tiếng Việt', iso639: 'vi', tag: 'vi' },
+	{ value: 'uk', endonym: 'Українська', iso639: 'uk', tag: 'uk' },
 	{ value: 'ru', endonym: 'Русский', iso639: 'ru', tag: 'ru' },
 	{ value: 'ar', endonym: 'العربية', iso639: 'ar', tag: 'ar' },
+	{ value: 'fa', endonym: 'فارسی', iso639: 'fa', tag: 'fa' },
+	{ value: 'ur', endonym: 'اردو', iso639: 'ur', tag: 'ur' },
+	{ value: 'bn', endonym: 'বাংলা', iso639: 'bn', tag: 'bn' },
+	{ value: 'ain', endonym: 'アイヌ イタㇰ', iso639: 'ain', tag: 'ain' },
 	{ value: 'hi', endonym: 'हिन्दी', iso639: 'hi', tag: 'hi' },
+	{ value: 'th', endonym: 'ไทย', iso639: 'th', tag: 'th' },
+	{ value: 'grc', endonym: 'Ἑλληνική', iso639: 'grc', tag: 'grc' },
 	{ value: 'eo', endonym: 'Esperanto', iso639: 'eo', tag: 'eo' },
 	{ value: 'ia', endonym: 'Interlingua', iso639: 'ia', tag: 'ia' },
 	{ value: 'la', endonym: 'Lingua Latina', iso639: 'la', tag: 'la' },
@@ -54,7 +67,7 @@ const LOCALE_OPTIONS: LocaleOption[] = [
 ];
 
 export function getLocaleDirection(locale: string): 'ltr' | 'rtl' {
-	return locale === 'ar' ? 'rtl' : 'ltr';
+	return ['ar', 'fa', 'ur'].includes(locale) ? 'rtl' : 'ltr';
 }
 
 export function getLocaleOptions(displayLocale: string): (LocaleOption & { exonym: string })[] {

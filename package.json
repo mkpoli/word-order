@@ -8,13 +8,14 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide --strategy globalVariable baseLocale --emit-ts-declarations --is-server 'import.meta.env.SSR' --silent",
+		"check": "npm run paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "npm run paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write .",
-		"typesafe-i18n": "typesafe-i18n"
+		"format": "prettier --write ."
 	},
 	"devDependencies": {
+		"@inlang/paraglide-js": "^2.16.0",
 		"@playwright/test": "^1.58.2",
 		"@sveltejs/adapter-vercel": "^6.3.3",
 		"@sveltejs/kit": "^2.55.0",
@@ -39,7 +40,6 @@
 	"dependencies": {
 		"@neodrag/svelte": "^2.3.3",
 		"colorjs.io": "^0.6.1",
-		"iconify-icon": "^1.0.8",
-		"typesafe-i18n": "^5.27.1"
+		"iconify-icon": "^1.0.8"
 	}
 }

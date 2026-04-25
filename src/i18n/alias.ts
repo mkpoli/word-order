@@ -1,6 +1,5 @@
-import { baseLocale, locales } from './i18n-util';
+import { baseLocale, locales } from '$lib/paraglide/runtime';
 import type { Locales } from './i18n-types';
-import { detectLocale, type LocaleDetector } from 'typesafe-i18n/detectors';
 
 export const LOCALE_ALIAS = new Map<string, Locales>([
 	['zh-CN', 'zh-HanS'],
@@ -26,7 +25,15 @@ export function getAllLocales(): string[] {
 	return [...locales, ...LOCALE_ALIAS.keys()];
 }
 
-export function detectLocaleAliased(detector: LocaleDetector): Locales {
-	const locale = detectLocale(baseLocale, getAllLocales(), detector);
-	return getAliasedLocale(locale);
+export function detectLocaleAliased(acceptLanguage: string | null): Locales {
+	const candidates =
+		acceptLanguage
+			?.split(',')
+			.map((part) => part.split(';')[0]?.trim())
+			.filter(Boolean) ?? [];
+	for (const candidate of candidates) {
+		const locale = getAliasedLocale(candidate);
+		if (locale !== baseLocale || candidate.split('-')[0] === baseLocale) return locale;
+	}
+	return baseLocale;
 }
