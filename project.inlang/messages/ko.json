@@ -31,7 +31,7 @@
 	"footer_info": "이 도구로 생성한 이미지에 대해 본 도구는 어떠한 권리도 주장하지 않습니다. 사용하거나 공개하는 방식은 자유롭게 결정하실 수 있습니다. 이 도구를 공유해 주시거나 출처를 남겨 주시면 제작자에게 큰 기쁨이 됩니다.",
 	"footer_github_repository": "GitHub 저장소",
 	"footer_announcement": "안내 게시물",
-	"footer_by": "제작",
+	"footer_by": "{author} 제작",
 	"ui_selected": "선택됨",
 	"dialog_editing": "편집 중",
 	"dialog_confirm": "확인",

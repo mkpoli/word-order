@@ -31,7 +31,7 @@
 	"footer_info": "Ĉi tiu aplikaĵo ne pretendas rajtojn pri la ilustraĵoj, kiujn vi kreas ĉi tie. Kiel vi uzas aŭ dividas ilin dependas tute de vi. Diskonigi ĉi tiun ilon estas bonvena.",
 	"footer_github_repository": "GitHub-deponejo",
 	"footer_announcement": "Anonca afiŝo",
-	"footer_by": "de",
+	"footer_by": "de {author}",
 	"ui_selected": "Elektita",
 	"dialog_editing": "Redaktado",
 	"dialog_confirm": "Konfirmi",

@@ -31,7 +31,7 @@
 	"footer_info": "این برنامه هیچ حقی بر تصویرهایی که اینجا می‌سازید ادعا نمی‌کند. شیوه استفاده یا اشتراک‌گذاری آن‌ها کاملاً به خود شما بستگی دارد. معرفی این ابزار مایه قدردانی است.",
 	"footer_github_repository": "مخزن GitHub",
 	"footer_announcement": "نوشته اعلام",
-	"footer_by": "از",
+	"footer_by": "از {author}",
 	"ui_selected": "انتخاب‌شده",
 	"dialog_editing": "در حال ویرایش",
 	"dialog_confirm": "تأیید",

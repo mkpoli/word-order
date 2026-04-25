@@ -31,7 +31,7 @@
 	"footer_info": "Cette application ne revendique pas de droits sur les illustrations que vous créez ici. La facon dont vous les utilisez ou les partagez depend entierement de vous. Partager cet outil est apprecie.",
 	"footer_github_repository": "Depot GitHub",
 	"footer_announcement": "Annonce",
-	"footer_by": "par",
+	"footer_by": "par {author}",
 	"ui_selected": "Selectionne",
 	"dialog_editing": "Édition",
 	"dialog_confirm": "Confirmer",

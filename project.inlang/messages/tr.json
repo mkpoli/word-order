@@ -31,7 +31,7 @@
 	"footer_info": "Bu uygulama burada oluşturduğunuz çizimler üzerinde hak iddia etmez. Onları nasıl kullanacağınız veya paylaşacağınız tamamen size bağlıdır. Bu aracı paylaşmanız memnuniyetle karşılanır.",
 	"footer_github_repository": "GitHub deposu",
 	"footer_announcement": "Duyuru gönderisi",
-	"footer_by": "hazırlayan",
+	"footer_by": "{author} tarafından",
 	"ui_selected": "Seçili",
 	"dialog_editing": "Düzenleniyor",
 	"dialog_confirm": "Onayla",

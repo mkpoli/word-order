@@ -31,7 +31,7 @@
 	"footer_info": "この どうぐで つくった えを、「これは わたしたちのものです」とは いいません。どう つかうか、どう ひとに みせるかは、あなたが きめられます。この どうぐを ひとに おしえてくれると うれしいです。",
 	"footer_github_repository": "GitHub の ページ",
 	"footer_announcement": "おしらせ",
-	"footer_by": "つくったひと",
+	"footer_by": "{author} がつくった",
 	"ui_selected": "えらんでいます",
 	"dialog_editing": "なおしています",
 	"dialog_confirm": "これでいい",

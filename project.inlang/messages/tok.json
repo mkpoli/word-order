@@ -31,7 +31,7 @@
 	"footer_info": "sina pali e sitelen lon ilo ni la, sitelen li tan sina. ilo ni li jo ala e ona. sina ken kepeken sitelen anu pana e sitelen tawa jan ante. sina toki tawa jan ante e ilo ni la, ni li pona tawa mi.",
 	"footer_github_repository": "lipu GitHub",
 	"footer_announcement": "lipu toki sin",
-	"footer_by": "jan",
+	"footer_by": "tan jan {author}",
 	"ui_selected": "ni li lon",
 	"dialog_editing": "sina ante e ni",
 	"dialog_confirm": "pona",

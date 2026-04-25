@@ -31,7 +31,7 @@
 	"footer_info": "Aplikasi ini tidak mengklaim hak atas ilustrasi yang Anda buat di sini. Cara Anda menggunakan atau membagikannya sepenuhnya terserah Anda. Kami menghargai jika alat ini dibagikan.",
 	"footer_github_repository": "Repositori GitHub",
 	"footer_announcement": "Pengumuman",
-	"footer_by": "oleh",
+	"footer_by": "oleh {author}",
 	"ui_selected": "Dipilih",
 	"dialog_editing": "Mengedit",
 	"dialog_confirm": "Konfirmasi",

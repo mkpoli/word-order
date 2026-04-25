@@ -31,7 +31,7 @@
 	"footer_info": "本工具不会对生成的图像主张任何权利，请您自行决定如何使用或发布。欢迎分享本工具，并在使用时标注出处。",
 	"footer_github_repository": "GitHub 仓库",
 	"footer_announcement": "发布说明",
-	"footer_by": "作者",
+	"footer_by": "作者：{author}",
 	"ui_selected": "已选择",
 	"dialog_editing": "正在编辑",
 	"dialog_confirm": "确认",

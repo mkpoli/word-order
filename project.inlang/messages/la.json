@@ -31,7 +31,7 @@
 	"footer_info": "Haec applicatio iura in illustrationes hic creatas sibi non vindicat. Quomodo eas utaris aut communices omnino a te pendet. Hoc instrumentum communicare gratum est.",
 	"footer_github_repository": "Repositorium GitHub",
 	"footer_announcement": "Nuntium annuntiationis",
-	"footer_by": "a",
+	"footer_by": "a {author}",
 	"ui_selected": "Electum",
 	"dialog_editing": "Editio",
 	"dialog_confirm": "Confirma",

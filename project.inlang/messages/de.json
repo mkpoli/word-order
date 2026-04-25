@@ -31,7 +31,7 @@
 	"footer_info": "Diese Anwendung beansprucht keine Rechte an den Illustrationen, die du hier erstellst. Wie du sie nutzt oder teilst, bleibt vollstandig dir uberlassen. Das Teilen dieses Werkzeugs wird geschatzt.",
 	"footer_github_repository": "GitHub-Repository",
 	"footer_announcement": "Ankundigung",
-	"footer_by": "von",
+	"footer_by": "von {author}",
 	"ui_selected": "Ausgewahlt",
 	"dialog_editing": "Bearbeitung",
 	"dialog_confirm": "Bestatigen",

@@ -31,7 +31,7 @@
 	"footer_info": "このツールで生成したイラストについては、こちら側で権利を主張することはありません。利用や公開の仕方を自由にお決めいただけます。利用する際にこのページをシェアしてくださると、製作者が歓びます。",
 	"footer_github_repository": "GitHub リポジトリ",
 	"footer_announcement": "告知投稿",
-	"footer_by": "作者",
+	"footer_by": "作者 {author}",
 	"ui_selected": "選択中",
 	"dialog_editing": "編集中",
 	"dialog_confirm": "確認",
