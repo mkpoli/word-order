@@ -7,6 +7,8 @@
 	import domToImage from 'dom-to-image';
 
 	import { LL } from '../i18n/i18n-svelte';
+	import { page } from '$app/stores';
+	import { getCanonicalUrl, getJsonLd, getOgImageUrl, siteDescription, siteKeywords, siteName, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
 
@@ -241,6 +243,8 @@
 	}
 
 	let output: HTMLOutputElement;
+	$: canonicalUrl = getCanonicalUrl($page.url.origin);
+	$: ogImageUrl = getOgImageUrl($page.url.origin);
 </script>
 
 <svelte:window
@@ -453,6 +457,34 @@
 
 <svelte:head>
 	<title>{$LL.meta.title()}</title>
+	<meta name="description" content={siteDescription} />
+	<meta name="keywords" content={siteKeywords.join(', ')} />
+	<meta name="author" content="mkpoli" />
+	<meta name="creator" content="mkpoli" />
+	<meta name="publisher" content="mkpoli" />
+	<meta name="robots" content="index, follow, max-image-preview:large" />
+	<meta name="theme-color" content={themeColor} />
+	<link rel="canonical" href={canonicalUrl} />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content={siteName} />
+	<meta property="og:title" content={$LL.meta.title()} />
+	<meta property="og:description" content={siteDescription} />
+	<meta property="og:url" content={canonicalUrl} />
+	<meta property="og:image" content={ogImageUrl} />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Word Order Illustrator preview card" />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:creator" content="@mkpoli" />
+	<meta name="twitter:title" content={$LL.meta.title()} />
+	<meta name="twitter:description" content={siteDescription} />
+	<meta name="twitter:image" content={ogImageUrl} />
+	<meta name="twitter:image:alt" content="Word Order Illustrator preview card" />
+
+	<script type="application/ld+json">{getJsonLd($page.url.origin)}</script>
 </svelte:head>
 
 <footer class:editing-muted={modifying !== -1}>
@@ -462,7 +494,7 @@
 		>,
 		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title={$LL.footer.announcement()} class="twitter-link"
 			><iconify-icon icon="mdi:twitter" inline="true" /></a
-		>) {$LL.footer.by({ author: '@mkpoli' })} (
+		>) {$LL.footer.by()} @mkpoli (
 		<a href="https://twitter.com/mkpoli/" class="twitter-link"><iconify-icon icon="mdi:twitter" inline="true" /></a>,
 		<a href="https://mkpo.li/" class="home-link"><iconify-icon icon="mdi:home" inline="true" /></a>
 		)
