@@ -673,7 +673,7 @@
 	}
 
 	.menu-locale {
-		margin-left: auto;
+		margin-inline-start: auto;
 		flex: 0 1 16rem;
 		max-width: 16rem;
 	}
@@ -707,7 +707,7 @@
 		}
 
 		.menu-locale {
-			margin-left: auto;
+			margin-inline-start: auto;
 			flex: 0 1 16rem;
 			max-width: min(16rem, 100%);
 		}

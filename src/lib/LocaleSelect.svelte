@@ -225,7 +225,7 @@
 	.locale-menu {
 		position: absolute;
 		top: calc(100% + 0.35rem);
-		right: 0;
+		inset-inline-end: 0;
 		width: min(34rem, calc(100vw - 2rem));
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -313,7 +313,7 @@
 		}
 
 		.locale-menu {
-			right: 0;
+			inset-inline-end: 0;
 			width: min(18rem, calc(100vw - 2rem));
 			max-height: min(32rem, calc(100dvh - 8rem));
 			overflow-y: auto;
