@@ -5,6 +5,7 @@
 	"params_line_gap": "ระยะห่างเส้น",
 	"params_straight_length": "ส่วนเส้นตรง",
 	"params_endpoint_correction": "ปรับปลายเส้น",
+	"params_curvature": "ความโค้ง",
 	"params_text_alignment": "การจัดแนวข้อความ",
 	"params_display_language": "ภาษาที่แสดง",
 	"params_text": "ข้อความ",

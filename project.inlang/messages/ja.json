@@ -5,6 +5,7 @@
 	"params_line_gap": "直線隙間",
 	"params_straight_length": "直線部分",
 	"params_endpoint_correction": "終点補正",
+	"params_curvature": "曲率",
 	"params_text_alignment": "テキスト配置",
 	"params_display_language": "表示言語",
 	"params_text": "テキスト",
