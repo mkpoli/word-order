@@ -34,40 +34,39 @@ export function getLocaleDisplayCode(option: Pick<LocaleOption, 'iso639' | 'tag'
 
 const LOCALE_OPTIONS: LocaleOption[] = [
 	{ value: 'en', endonym: 'English', iso639: 'en', tag: 'en' },
+	{ value: 'zh-HanS', endonym: '简体中文', iso639: 'zh', tag: 'zh-Hans' },
+	{ value: 'zh-HanT', endonym: '繁體中文', iso639: 'zh', tag: 'zh-Hant' },
+	{ value: 'hi', endonym: 'हिन्दी', iso639: 'hi', tag: 'hi' },
 	{ value: 'es', endonym: 'Español', iso639: 'es', tag: 'es' },
+	{ value: 'ar', endonym: 'العربية', iso639: 'ar', tag: 'ar' },
+	{ value: 'bn', endonym: 'বাংলা', iso639: 'bn', tag: 'bn' },
+	{ value: 'pt', endonym: 'Português', iso639: 'pt', tag: 'pt' },
+	{ value: 'ru', endonym: 'Русский', iso639: 'ru', tag: 'ru' },
 	{ value: 'id', endonym: 'Bahasa Indonesia', iso639: 'id', tag: 'id' },
 	{ value: 'fr', endonym: 'Français', iso639: 'fr', tag: 'fr' },
 	{ value: 'de', endonym: 'Deutsch', iso639: 'de', tag: 'de' },
-	{ value: 'it', endonym: 'Italiano', iso639: 'it', tag: 'it' },
-	{ value: 'nl', endonym: 'Nederlands', iso639: 'nl', tag: 'nl' },
-	{ value: 'pl', endonym: 'Polski', iso639: 'pl', tag: 'pl' },
-	{ value: 'pt', endonym: 'Português', iso639: 'pt', tag: 'pt' },
+	{ value: 'ja', endonym: '日本語', iso639: 'ja', tag: 'ja' },
+	{ value: 'ja-Hira', endonym: 'やさしい日本語', iso639: 'ja', tag: 'ja-Hira' },
 	{ value: 'tr', endonym: 'Türkçe', iso639: 'tr', tag: 'tr' },
 	{ value: 'vi', endonym: 'Tiếng Việt', iso639: 'vi', tag: 'vi' },
-	{ value: 'uk', endonym: 'Українська', iso639: 'uk', tag: 'uk' },
-	{ value: 'ru', endonym: 'Русский', iso639: 'ru', tag: 'ru' },
-	{ value: 'ar', endonym: 'العربية', iso639: 'ar', tag: 'ar' },
+	{ value: 'ko', endonym: '한국어', iso639: 'ko', tag: 'ko' },
+	{ value: 'ko-Kore', endonym: '韓國語 (國漢文混用)', iso639: 'ko', tag: 'ko-Kore' },
+	{ value: 'it', endonym: 'Italiano', iso639: 'it', tag: 'it' },
 	{ value: 'fa', endonym: 'فارسی', iso639: 'fa', tag: 'fa' },
-	{ value: 'ur', endonym: 'اردو', iso639: 'ur', tag: 'ur' },
-	{ value: 'bn', endonym: 'বাংলা', iso639: 'bn', tag: 'bn' },
-	{ value: 'ain', endonym: 'アイヌ イタㇰ', iso639: 'ain', tag: 'ain' },
-	{ value: 'hi', endonym: 'हिन्दी', iso639: 'hi', tag: 'hi' },
+	{ value: 'pl', endonym: 'Polski', iso639: 'pl', tag: 'pl' },
+	{ value: 'uk', endonym: 'Українська', iso639: 'uk', tag: 'uk' },
+	{ value: 'nl', endonym: 'Nederlands', iso639: 'nl', tag: 'nl' },
 	{ value: 'th', endonym: 'ไทย', iso639: 'th', tag: 'th' },
-	{ value: 'grc', endonym: 'Ἑλληνική', iso639: 'grc', tag: 'grc' },
 	{ value: 'eo', endonym: 'Esperanto', iso639: 'eo', tag: 'eo' },
 	{ value: 'ia', endonym: 'Interlingua', iso639: 'ia', tag: 'ia' },
 	{ value: 'la', endonym: 'Lingua Latina', iso639: 'la', tag: 'la' },
+	{ value: 'grc', endonym: 'Ἑλληνική', iso639: 'grc', tag: 'grc' },
 	{ value: 'tok', endonym: 'toki pona', iso639: 'tok', tag: 'tok' },
-	{ value: 'ja', endonym: '日本語', iso639: 'ja', tag: 'ja' },
-	{ value: 'ja-Hira', endonym: 'やさしい日本語', iso639: 'ja', tag: 'ja-Hira' },
-	{ value: 'ko', endonym: '한국어', iso639: 'ko', tag: 'ko' },
-	{ value: 'ko-Kore', endonym: '韓國語 (國漢文混用)', iso639: 'ko', tag: 'ko-Kore' },
-	{ value: 'zh-HanS', endonym: '简体中文', iso639: 'zh', tag: 'zh-Hans' },
-	{ value: 'zh-HanT', endonym: '繁體中文', iso639: 'zh', tag: 'zh-Hant' }
+	{ value: 'ain', endonym: 'アイヌ イタㇰ', iso639: 'ain', tag: 'ain' }
 ];
 
 export function getLocaleDirection(locale: string): 'ltr' | 'rtl' {
-	return ['ar', 'fa', 'ur'].includes(locale) ? 'rtl' : 'ltr';
+	return ['ar', 'fa'].includes(locale) ? 'rtl' : 'ltr';
 }
 
 export function getLocaleOptions(displayLocale: string): (LocaleOption & { exonym: string })[] {
