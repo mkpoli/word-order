@@ -1,15 +1,11 @@
 <script lang="ts">
 	import { setLocale, locale } from '$i18n/i18n-svelte';
 	import type { Locales } from '$i18n/i18n-types';
-	import { loadLocaleAsync } from '$i18n/i18n-util.async';
 	import { LL } from '$i18n/i18n-svelte';
 	import { getLocaleDirection, getLocaleDisplayCode, getLocaleOption, getLocaleOptions } from './lang';
 
 	const switchLocale = async (newLocale: Locales) => {
 		if (!newLocale || $locale === newLocale) return;
-
-		// load new dictionary from server
-		await loadLocaleAsync(newLocale);
 
 		// select locale
 		setLocale(newLocale);
