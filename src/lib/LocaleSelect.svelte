@@ -226,8 +226,11 @@
 		position: absolute;
 		top: calc(100% + 0.35rem);
 		right: 0;
-		width: min(18rem, calc(100vw - 2rem));
-		padding: 0.3rem 0;
+		width: min(34rem, calc(100vw - 2rem));
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-content: start;
+		padding: 0.3rem;
 		border-radius: 0.45rem;
 		border: 1px solid #ddd;
 		background: rgb(255 255 255 / 0.94);
@@ -243,7 +246,7 @@
 		gap: 0.6rem;
 		padding: 0.48rem 0.8rem;
 		border: 1px solid transparent;
-		border-radius: 0;
+		border-radius: 0.25rem;
 		background: transparent;
 		text-align: left;
 		transition: background-color 160ms ease, border-color 160ms ease;
@@ -306,25 +309,28 @@
 
 	@media (max-width: 720px) {
 		.locale-picker {
-			min-width: 100%;
-		}
-
-		.locale-picker > summary {
-			grid-template-columns: auto minmax(0, 1fr) auto;
+			min-width: min(15rem, 100%);
 		}
 
 		.locale-menu {
-			left: 0;
 			right: 0;
-			width: auto;
-		}
-
-		.locale-menu button {
+			width: min(18rem, calc(100vw - 2rem));
+			max-height: min(32rem, calc(100dvh - 8rem));
+			overflow-y: auto;
+			overflow-x: hidden;
+			scroll-padding-block: 0.6rem;
+			scrollbar-gutter: stable;
 			grid-template-columns: 1fr;
 		}
 
+		.locale-menu::after {
+			content: '';
+			display: block;
+			height: 0.8rem;
+		}
+
 		.locale-option-meta {
-			justify-content: flex-start;
+			justify-content: flex-end;
 		}
 	}
 </style>
