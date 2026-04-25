@@ -31,7 +31,7 @@
 	"footer_info": "แอปนี้ไม่อ้างสิทธิ์ในภาพประกอบที่คุณสร้างที่นี่ คุณจะใช้หรือแชร์อย่างไรก็ขึ้นอยู่กับคุณ หากช่วยแชร์เครื่องมือนี้จะขอบคุณมาก",
 	"footer_github_repository": "คลัง GitHub",
 	"footer_announcement": "โพสต์ประกาศ",
-	"footer_by": "โดย",
+	"footer_by": "โดย {author}",
 	"ui_selected": "เลือกแล้ว",
 	"dialog_editing": "กำลังแก้ไข",
 	"dialog_confirm": "ยืนยัน",

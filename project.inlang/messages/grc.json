@@ -31,7 +31,7 @@
 	"footer_info": "Τὸδε τὸ ὄργανον οὐκ ἀξιοῖ δικαιώματα περὶ τῶν εἰκόνων ἃς ἐνθάδε ποιεῖς. Ὅπως χρῇ ἢ μεταδιδῷς, ἐπὶ σοὶ ἐστίν. Χάρις, ἐὰν τὸ ὄργανον τοῦτο μεταδιδῷς.",
 	"footer_github_repository": "Θησαυρὸς GitHub",
 	"footer_announcement": "Ἀγγελία",
-	"footer_by": "ὑπό",
+	"footer_by": "ὑπὸ {author}",
 	"ui_selected": "Ἐκλελεγμένον",
 	"dialog_editing": "Μεταβολή",
 	"dialog_confirm": "Κύρωσον",

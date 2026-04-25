@@ -31,7 +31,7 @@
 	"footer_info": "لا يدعي هذا التطبيق أي حقوق على الرسومات التي تنشئها هنا. لك الحرية الكاملة في كيفية استخدامها أو مشاركتها. نقدر مشاركة هذه الأداة.",
 	"footer_github_repository": "مستودع GitHub",
 	"footer_announcement": "منشور الإعلان",
-	"footer_by": "بواسطة",
+	"footer_by": "بواسطة {author}",
 	"ui_selected": "محدد",
 	"dialog_editing": "جارٍ التعديل",
 	"dialog_confirm": "تأكيد",

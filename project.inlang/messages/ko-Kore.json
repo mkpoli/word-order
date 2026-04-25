@@ -31,7 +31,7 @@
 	"footer_info": "이 도구로 生成한 이미지에 對해 本 도구는 어떠한 權利도 主張하지 않습니다. 使用하거나 公開하는 方式은 自由롭게 決定하실 수 있습니다. 이 도구를 共有해 주시거나 出處를 남겨 주시면 製作者에게 큰 기쁨이 됩니다.",
 	"footer_github_repository": "GitHub 貯藏所",
 	"footer_announcement": "案內 게시물",
-	"footer_by": "製作",
+	"footer_by": "{author} 製作",
 	"ui_selected": "選擇됨",
 	"dialog_editing": "編輯 中",
 	"dialog_confirm": "確認",

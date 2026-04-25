@@ -31,7 +31,7 @@
 	"footer_info": "Deze toepassing claimt geen rechten op de illustraties die je hier maakt. Hoe je ze gebruikt of deelt is helemaal aan jou. Het delen van dit hulpmiddel wordt gewaardeerd.",
 	"footer_github_repository": "GitHub-repository",
 	"footer_announcement": "Aankondigingsbericht",
-	"footer_by": "door",
+	"footer_by": "door {author}",
 	"ui_selected": "Geselecteerd",
 	"dialog_editing": "Bewerken",
 	"dialog_confirm": "Bevestigen",

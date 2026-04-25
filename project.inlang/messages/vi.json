@@ -31,7 +31,7 @@
 	"footer_info": "Ứng dụng này không tuyên bố quyền sở hữu đối với các minh họa bạn tạo tại đây. Cách bạn sử dụng hoặc chia sẻ chúng hoàn toàn do bạn quyết định. Rất hoan nghênh việc chia sẻ công cụ này.",
 	"footer_github_repository": "Kho GitHub",
 	"footer_announcement": "Bài thông báo",
-	"footer_by": "bởi",
+	"footer_by": "bởi {author}",
 	"ui_selected": "Đã chọn",
 	"dialog_editing": "Đang sửa",
 	"dialog_confirm": "Xác nhận",

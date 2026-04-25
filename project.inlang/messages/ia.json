@@ -31,7 +31,7 @@
 	"footer_info": "Iste application non reclama derectos super le illustrationes que tu crea hic. Le modo de usar o compartir los es completemente a tu decision. Compartir iste instrumento es appreciabile.",
 	"footer_github_repository": "Repositorio GitHub",
 	"footer_announcement": "Publication de annuncio",
-	"footer_by": "per",
+	"footer_by": "per {author}",
 	"ui_selected": "Selectionate",
 	"dialog_editing": "Modification",
 	"dialog_confirm": "Confirmar",
