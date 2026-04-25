@@ -1,5 +1,38 @@
-import { baseLocale, locales } from '$lib/paraglide/runtime';
 import type { Locales } from './i18n-types';
+
+const baseLocale: Locales = 'en';
+const locales = [
+	'ain',
+	'ar',
+	'bn',
+	'de',
+	'en',
+	'eo',
+	'es',
+	'fa',
+	'fr',
+	'grc',
+	'hi',
+	'ia',
+	'id',
+	'it',
+	'ja',
+	'ja-Hira',
+	'ko',
+	'ko-Kore',
+	'la',
+	'nl',
+	'pl',
+	'pt',
+	'ru',
+	'th',
+	'tok',
+	'tr',
+	'uk',
+	'vi',
+	'zh-HanS',
+	'zh-HanT'
+] satisfies Locales[];
 
 export const LOCALE_ALIAS = new Map<string, Locales>([
 	['zh-CN', 'zh-HanS'],
