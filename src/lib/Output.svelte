@@ -58,6 +58,7 @@
 	export let lineGap: number;
 	export let straightLength: number;
 	export let endpointCorrection: number;
+	export let curvature = 1;
 	export let alignment: Alignment = 'center';
 	export let fontFamily: FontFamily;
 	export let fontStyle: FontStyle;
@@ -141,6 +142,16 @@
 			}
 		}
 		return lines;
+	}
+
+	function connectionPath(x1: number, y1: number, x2: number, y2: number, curvature: number): string {
+		if (curvature === 0) return `M ${x1} ${y1} L ${x2} ${y2}`;
+
+		const middleY = (y1 + y2) / 2;
+		const controlY1 = y1 + (middleY - y1) * curvature;
+		const controlY2 = y2 + (middleY - y2) * curvature;
+
+		return `M ${x1} ${y1} C ${x1} ${controlY1}, ${x2} ${controlY2}, ${x2} ${y2}`;
 	}
 
 	function segmentate(arr: number[]): number[][] {
@@ -498,7 +509,12 @@
 		{/if}
 		<svg style="position: absolute;" width="100%" height="100%">
 			{#each lines as [x1, y1, x2, y2, color]}
-				<line {x1} {y1} {x2} {y2} stroke={color} stroke-width="1" />
+				<path
+					d={connectionPath(x1, y1, x2, y2, curvature)}
+					stroke={color}
+					stroke-width="1"
+					fill="none"
+				/>
 			{/each}
 		</svg>
 

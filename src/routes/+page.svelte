@@ -60,6 +60,7 @@
 	let lineGap: number;
 	let straightLength: number;
 	let endpointCorrection: number;
+	let curvature = 1;
 	let alignment: Alignment;
 	let fontFamily: FontFamily;
 	let fontStyle: FontStyle;
@@ -340,6 +341,7 @@
 				{lineGap}
 				{straightLength}
 				{endpointCorrection}
+				{curvature}
 				{fontFamily}
 				{fontStyle}
 				{fontSize}
@@ -410,6 +412,7 @@
 			bind:lineGap
 			bind:straightLength
 			bind:endpointCorrection
+			bind:curvature
 			bind:alignment
 			bind:fontFamily
 			bind:fontStyle

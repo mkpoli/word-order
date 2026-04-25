@@ -9,6 +9,7 @@
 	export let lineGap = 5;
 	export let straightLength = 0;
 	export let endpointCorrection = 0;
+	export let curvature = 1;
 	export let alignment: Alignment = 'center';
 	export let fontFamily: FontFamily = 'default';
 	export let fontStyle: FontStyle = 'normal';
@@ -17,6 +18,7 @@
 	$: lineGap = Math.min(lineGap, verticalGap / 2);
 	$: straightLength = Math.min(straightLength, verticalGap / 2);
 	$: endpointCorrection = lineGap <= 0 || straightLength > 0 ? 0 : Math.min(endpointCorrection, lineGap);
+	$: curvature = Math.max(0, Math.min(curvature, 2));
 </script>
 
 <fieldset>
@@ -57,6 +59,12 @@
 		suffix=" px"
 		disabled={lineGap <= 0 || straightLength > 0}
 	/>
+
+	<label for="curvature">
+		<iconify-icon icon="mdi:transit-connection-variant" inline="true" />
+		{$LL.params.curvature()}
+	</label>
+	<RangeSlider id="curvature" min={0} max={2} step={0.1} bind:value={curvature} suffix="x" />
 
 </fieldset>
 
