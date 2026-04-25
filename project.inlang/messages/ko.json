@@ -5,6 +5,7 @@
 	"params_line_gap": "직선 틈",
 	"params_straight_length": "직선 길이",
 	"params_endpoint_correction": "종점 보정",
+	"params_curvature": "곡률",
 	"params_text_alignment": "문자 정렬",
 	"params_display_language": "표시 언어",
 	"params_text": "문자",

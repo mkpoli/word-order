@@ -1,0 +1,22 @@
+{
+	"name": "Word Order Illustrator",
+	"short_name": "Word Order",
+	"description": "Create clear, shareable word-order diagrams for translations, interlinear examples, language learning, and linguistics teaching.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"theme_color": "#2c47ff",
+	"icons": [
+		{
+			"src": "/favicon-16x16.png",
+			"sizes": "16x16",
+			"type": "image/png"
+		},
+		{
+			"src": "/favicon-32x32.png",
+			"sizes": "32x32",
+			"type": "image/png"
+		}
+	]
+}

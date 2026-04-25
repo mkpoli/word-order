@@ -12,7 +12,8 @@
 		"check": "npm run paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "npm run paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"compile:og": "magick static/og-image.svg static/og-image.png"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.16.0",
