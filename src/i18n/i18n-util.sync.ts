@@ -7,42 +7,66 @@ import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
 import ain from './ain'
 import ar from './ar'
+import bn from './bn'
 import de from './de'
 import en from './en'
 import eo from './eo'
 import es from './es'
+import fa from './fa'
 import fr from './fr'
+import grc from './grc'
 import hi from './hi'
 import ia from './ia'
+import id from './id'
+import it from './it'
 import ja from './ja'
 import ja_Hira from './ja-Hira'
 import ko from './ko'
 import ko_Kore from './ko-Kore'
 import la from './la'
+import nl from './nl'
+import pl from './pl'
 import pt from './pt'
 import ru from './ru'
+import th from './th'
 import tok from './tok'
+import tr from './tr'
+import uk from './uk'
+import ur from './ur'
+import vi from './vi'
 import zh_HanS from './zh-HanS'
 import zh_HanT from './zh-HanT'
 
 const localeTranslations = {
 	ain,
 	ar,
+	bn,
 	de,
 	en,
 	eo,
 	es,
+	fa,
 	fr,
+	grc,
 	hi,
 	ia,
+	id,
+	it,
 	ja,
 	'ja-Hira': ja_Hira,
 	ko,
 	'ko-Kore': ko_Kore,
 	la,
+	nl,
+	pl,
 	pt,
 	ru,
+	th,
 	tok,
+	tr,
+	uk,
+	ur,
+	vi,
 	'zh-HanS': zh_HanS,
 	'zh-HanT': zh_HanT,
 }
