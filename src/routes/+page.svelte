@@ -707,9 +707,9 @@
 		}
 
 		.menu-locale {
-			margin-left: 0;
-			flex-basis: 100%;
-			max-width: none;
+			margin-left: auto;
+			flex: 0 1 16rem;
+			max-width: min(16rem, 100%);
 		}
 	}
 </style>
