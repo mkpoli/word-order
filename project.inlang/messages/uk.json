@@ -5,6 +5,7 @@
 	"params_line_gap": "Проміжок між лініями",
 	"params_straight_length": "Пряма частина",
 	"params_endpoint_correction": "Корекція кінцевої точки",
+	"params_curvature": "Кривина",
 	"params_text_alignment": "Вирівнювання тексту",
 	"params_display_language": "Мова інтерфейсу",
 	"params_text": "Текст",
