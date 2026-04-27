@@ -529,7 +529,7 @@
 		>,
 		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title={$LL.footer.announcement()} class="twitter-link"
 			><iconify-icon icon="mdi:twitter" inline="true" /></a
-		>) {$LL.footer.by()} @mkpoli (
+		>) {$LL.footer.by({ author: '@mkpoli' })} (
 		<a href="https://twitter.com/mkpoli/" class="twitter-link"><iconify-icon icon="mdi:twitter" inline="true" /></a>,
 		<a href="https://mkpo.li/" class="home-link"><iconify-icon icon="mdi:home" inline="true" /></a>
 		)
