@@ -3,6 +3,7 @@
 	"params_options": "オプション",
 	"params_vertical_gap": "行間隔",
 	"params_line_gap": "直線隙間",
+	"params_line_width": "線の太さ",
 	"params_straight_length": "直線部分",
 	"params_endpoint_correction": "終点補正",
 	"params_curvature": "曲率",
