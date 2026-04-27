@@ -3,18 +3,22 @@
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import { tokenizeSentence } from './tokenize';
+	import type { Sentence } from './types';
+	import { createSentenceTokens, getSentenceGlosses, getSentenceWords } from './types';
 
 	export let modifying: number;
-	export let sentences: [string, string[]][];
+	export let sentences: Sentence[];
 	export let text = '';
+	export let glosses: string[] = [];
+	export let glossEnabled = false;
 
 	let lang = 'en';
 	let displayName = 'English';
 
 	$: displayName = getLanguageName(lang, $locale);
+	$: syncGlosses(text, glosses);
 
 	let previousLang = 'en';
-	let previousText = '';
 
 	let textArea: HTMLTextAreaElement;
 
@@ -23,14 +27,16 @@
 	function onmodifyingchange(modifying: number) {
 		if (modifying !== -1) {
 			previousLang = lang;
-			previousText = text;
-			lang = sentences[modifying][0];
-			text = sentences[modifying][1].join('|');
+			lang = sentences[modifying].lang;
+			text = getSentenceWords(sentences[modifying]).join('|');
+			glosses = [...getSentenceGlosses(sentences[modifying])];
+			glossEnabled = sentences[modifying].showGloss || glosses.some(Boolean);
 			textArea.focus();
 		} else {
 			lang = previousLang;
 			text = '';
-			previousText = '';
+			glosses = [];
+			glossEnabled = false;
 		}
 	}
 
@@ -38,10 +44,36 @@
 		submit: {
 			lang: string;
 			words: string[];
+			glosses: string[];
+			showGloss: boolean;
 		};
 	}>();
 
 	let empty = false;
+
+	function getWords(value: string): string[] {
+		return modifying === -1 ? tokenizeSentence(value, lang) : value.split(/[|]/u).filter(Boolean);
+	}
+
+	function syncGlosses(value: string, currentGlosses: string[]) {
+		const words = getWords(value);
+		const nextGlosses = words.map((_, index) => currentGlosses[index] ?? '');
+
+		if (
+			nextGlosses.length === currentGlosses.length &&
+			nextGlosses.every((gloss, index) => gloss === currentGlosses[index])
+		) {
+			return;
+		}
+
+		glosses = nextGlosses;
+	}
+
+	function isGlossableToken(word: string): boolean {
+		return !word.match(/^(\s|\p{P}+)$/u);
+	}
+
+	$: glossTokens = createSentenceTokens(getWords(text), glosses);
 </script>
 
 <fieldset class:editing={modifying !== -1}>
@@ -59,19 +91,42 @@
 			on:change={() => {
 				empty = false;
 			}}
-		/>
+		></textarea>
+		<details class="gloss-panel" bind:open={glossEnabled}>
+			<summary>
+				<iconify-icon icon="mdi:format-annotation-plus" inline="true" />
+				Interlinear gloss
+			</summary>
+			<div class="gloss-content">
+				{#if glossTokens.length === 0}
+					<p class="gloss-empty">Add some words first to enter glosses.</p>
+				{:else}
+					<div class="gloss-grid">
+						{#each glossTokens as token, index}
+							{#if isGlossableToken(token.text)}
+								<label class="gloss-field" for={`gloss-${index}`}>
+									<span class="gloss-word" lang={lang}>{token.text}</span>
+									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder="Gloss" />
+								</label>
+							{/if}
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</details>
 		<div class="buttons">
 			<input type="text" bind:value={lang} id="lang" />
 			<label for="lang">{displayName}</label>
 			<button
 				on:click={() => {
-					const words = modifying === -1 ? tokenizeSentence(text, lang) : text.split(/[|]/u).filter(Boolean);
+					const words = getWords(text);
 					if (words.length === 0) {
 						empty = true;
 						return;
 					}
 					text = '';
-					dispatch('submit', { lang, words });
+					const nextGlosses = words.map((_, index) => glosses[index] ?? '');
+					dispatch('submit', { lang, words, glosses: nextGlosses, showGloss: glossEnabled || nextGlosses.some(Boolean) });
 				}}
 			>
 				<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
@@ -120,10 +175,11 @@
 
 		grid-template-areas:
 			't t t'
+			'g g g'
 			'l n b'
 			'i i i';
 
-		grid-template-rows: 1fr auto auto;
+		grid-template-rows: 1fr auto auto auto;
 
 		gap: 1em;
 
@@ -147,6 +203,58 @@
 		height: 100%;
 
 		grid-area: t;
+	}
+
+	.gloss-panel {
+		grid-area: g;
+		border: 1px solid rgb(44 71 255 / 18%);
+		border-radius: 0.5em;
+		background: rgb(249 251 255 / 92%);
+		overflow: hidden;
+	}
+
+	.gloss-panel summary {
+		list-style: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		padding: 0.8em 1em;
+		cursor: pointer;
+		font-weight: 600;
+		color: rgb(35 51 120);
+	}
+
+	.gloss-panel summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.gloss-content {
+		padding: 0 1em 1em;
+	}
+
+	.gloss-grid {
+		display: grid;
+		gap: 0.75em;
+		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+	}
+
+	.gloss-field {
+		display: grid;
+		gap: 0.35em;
+	}
+
+	.gloss-word {
+		display: block;
+		font-size: 0.92em;
+		font-weight: 600;
+		color: rgb(60 67 96);
+		word-break: break-word;
+	}
+
+	.gloss-empty {
+		margin: 0;
+		color: rgb(92 98 124);
+		font-size: 0.92em;
 	}
 
 	.buttons {
@@ -207,6 +315,7 @@
 		.input-form {
 			grid-template-areas:
 				't t t'
+				'g g g'
 				'n n n'
 				'l l l'
 				'b b b'

@@ -2,10 +2,11 @@
 	import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
 	import { LL } from '../i18n/i18n-svelte';
 	import Word from './Word.svelte';
+	import type { Sentence } from './types';
 
 	const dispatch = createEventDispatcher();
 
-	export let sentences: [string, string[]][];
+	export let sentences: Sentence[];
 	export let equivalency: number[][][];
 	export let colors: string[];
 
@@ -150,7 +151,7 @@
 						<span class="word">❌</span>
 					{:else}
 						{#each words as k}
-							<span lang={sentences[j][0]} class="word"><Word word={sentences[j][1][k]} /></span>
+							<span lang={sentences[j].lang} class="word"><Word word={sentences[j].tokens[k].text} /></span>
 						{/each}
 					{/if}
 				</span>
