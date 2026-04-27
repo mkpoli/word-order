@@ -60,6 +60,7 @@
 	// Parameters
 	let verticalGap: number;
 	let lineGap: number;
+	let lineWidth = 1;
 	let straightLength: number;
 	let endpointCorrection: number;
 	let curvature = 1;
@@ -343,6 +344,7 @@
 				{colors}
 				{verticalGap}
 				{lineGap}
+				{lineWidth}
 				{straightLength}
 				{endpointCorrection}
 				{curvature}
@@ -414,6 +416,7 @@
 		<Parameters
 			bind:verticalGap
 			bind:lineGap
+			bind:lineWidth
 			bind:straightLength
 			bind:endpointCorrection
 			bind:curvature

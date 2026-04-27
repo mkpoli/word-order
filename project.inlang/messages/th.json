@@ -3,6 +3,7 @@
 	"params_options": "ตัวเลือก",
 	"params_vertical_gap": "ระยะห่างแนวตั้ง",
 	"params_line_gap": "ระยะห่างเส้น",
+	"params_line_width": "ความหนาเส้น",
 	"params_straight_length": "ส่วนเส้นตรง",
 	"params_endpoint_correction": "ปรับปลายเส้น",
 	"params_curvature": "ความโค้ง",
