@@ -148,7 +148,7 @@
 		<span>。</span>
 	</span>
 	`
-				})}
+				}, { locale: $locale })}
 			</p>
 		</div>
 	</div>

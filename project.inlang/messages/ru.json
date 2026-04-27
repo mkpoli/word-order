@@ -6,6 +6,7 @@
 	"params_options": "Параметры",
 	"params_vertical_gap": "Вертикальный отступ",
 	"params_line_gap": "Промежуток между линиями",
+	"params_line_width": "Толщина линии",
 	"params_straight_length": "Прямой участок",
 	"params_endpoint_correction": "Коррекция конца линии",
 	"params_curvature": "Кривизна",

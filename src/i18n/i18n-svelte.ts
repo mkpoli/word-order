@@ -14,6 +14,7 @@ const createLL = () => ({
 		options: m.params_options,
 		verticalGap: m.params_vertical_gap,
 		lineGap: m.params_line_gap,
+		lineWidth: m.params_line_width,
 		straightLength: m.params_straight_length,
 		endpointCorrection: m.params_endpoint_correction,
 		curvature: m.params_curvature,
