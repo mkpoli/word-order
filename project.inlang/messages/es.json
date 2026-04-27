@@ -3,6 +3,7 @@
 	"params_options": "Opciones",
 	"params_vertical_gap": "Espacio vertical",
 	"params_line_gap": "Espacio entre lineas",
+	"params_line_width": "Ancho de linea",
 	"params_straight_length": "Tramo recto",
 	"params_endpoint_correction": "Correccion del extremo",
 	"params_curvature": "Curvatura",

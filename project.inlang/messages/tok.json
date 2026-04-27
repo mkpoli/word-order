@@ -3,6 +3,7 @@
 	"params_options": "ante",
 	"params_vertical_gap": "weka sewi",
 	"params_line_gap": "weka pi linja tu",
+	"params_line_width": "suli pi linja",
 	"params_straight_length": "suli pi linja pona",
 	"params_endpoint_correction": "o pona e pini linja",
 	"params_curvature": "sike linja",
