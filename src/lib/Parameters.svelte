@@ -15,6 +15,7 @@
 	export let fontFamily: FontFamily = 'default';
 	export let fontStyle: FontStyle = 'normal';
 	export let fontSize = 15;
+	export let spaceWidth = 4;
 
 	$: lineGap = Math.min(lineGap, verticalGap / 2);
 	$: lineWidth = Math.max(0.1, lineWidth);
@@ -122,6 +123,12 @@
 		{$LL.params.fontSize()}
 	</label>
 	<RangeSlider bind:value={fontSize} id="font-size" min={10} max={30} suffix=" px" />
+
+	<label for="space-width">
+		<iconify-icon icon="mdi:format-horizontal-align-center" inline="true" />
+		{$LL.params.spaceWidth()}
+	</label>
+	<RangeSlider bind:value={spaceWidth} id="space-width" min={0} max={40} suffix=" px" />
 </fieldset>
 
 <style>
