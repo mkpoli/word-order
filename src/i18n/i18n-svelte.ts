@@ -5,7 +5,10 @@ import type { Locales } from './i18n-types';
 
 const createLL = () => ({
 	meta: {
-		title: m.meta_title
+		title: m.meta_title,
+		description: m.meta_description,
+		keywords: m.meta_keywords,
+		imageAlt: m.meta_image_alt
 	},
 	params: {
 		options: m.params_options,

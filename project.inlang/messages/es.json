@@ -1,5 +1,8 @@
 {
 	"meta_title": "Ilustrador del orden de palabras",
+	"meta_description": "Crea diagramas claros del orden de palabras para traduccion, aprendizaje de idiomas y ensenanza de linguistica.",
+	"meta_keywords": "orden de palabras, linguistica, traduccion, aprendizaje de idiomas, visualizacion sintactica",
+	"meta_image_alt": "Vista previa del Ilustrador del orden de palabras con palabras conectadas entre dos idiomas.",
 	"params_options": "Opciones",
 	"params_vertical_gap": "Espacio vertical",
 	"params_line_gap": "Espacio entre lineas",

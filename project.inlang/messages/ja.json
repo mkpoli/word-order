@@ -1,5 +1,8 @@
 {
 	"meta_title": "語順図メーカー",
+	"meta_description": "翻訳、語学学習、言語学教育のための分かりやすい語順図を作成できます。",
+	"meta_keywords": "語順, 言語学, 翻訳, 語学学習, 構文の可視化",
+	"meta_image_alt": "二つの言語の語が線で対応付けられた語順図メーカーのプレビュー。",
 	"params_options": "オプション",
 	"params_vertical_gap": "行間隔",
 	"params_line_gap": "直線隙間",

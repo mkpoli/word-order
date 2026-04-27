@@ -1,5 +1,8 @@
 {
 	"meta_title": "Sözcük Sırası Çizim Aracı",
+	"meta_description": "Ceviri, dil ogrenimi ve dilbilim egitimi icin acik sozcuk sirasi diyagramlari olusturun.",
+	"meta_keywords": "sozcuk sirasi, dilbilim, ceviri, dil ogrenimi, soz dizimi gorsellestirme",
+	"meta_image_alt": "Iki dil arasinda baglanmis sozcukleri gosteren Sozcuk Sirasi Cizim Araci onizlemesi.",
 	"params_options": "Seçenekler",
 	"params_vertical_gap": "Dikey Boşluk",
 	"params_line_gap": "Çizgi Boşluğu",
