@@ -5,7 +5,8 @@
 
 <script lang="ts">
 	import { onMount, tick, createEventDispatcher } from 'svelte';
-	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, Mode, Sentence } from '$lib/types';
+	import { getSentenceWords } from '$lib/types';
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
@@ -36,8 +37,6 @@
 			offset: number;
 		};
 	}>();
-
-	type Sentence = [lang: string, words: string[]];
 
 	// Data
 	export let sentences: Sentence[];
@@ -122,7 +121,7 @@
 						let x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
 						let y1 = Math.max(rectA1.bottom, rectA2.bottom) - rectOutput.top;
 						let x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
-						let y2 = Math.min(rectB1.top, rectB2.top) - rectOutput.top;
+						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
 
 						const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
 						x1 += correction;
@@ -179,6 +178,31 @@
 
 	function isContent(word: string) {
 		return !word.match(/^(\s|\p{P}+)$/u);
+	}
+
+	function isWhitespace(word: string) {
+		return !!word.match(/^\s+$/u);
+	}
+
+	function sentenceShowsGloss(sentence: Sentence): boolean {
+		return sentence.showGloss || sentence.tokens.some((token) => token.gloss.trim().length > 0);
+	}
+
+	function getTopEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, rectOutput: DOMRect): number {
+		const rect1 = span1.getBoundingClientRect();
+		const rect2 = span2.getBoundingClientRect();
+		const wordTop = Math.min(rect1.top, rect2.top) - rectOutput.top;
+
+		if (!sentenceShowsGloss(sentence)) return wordTop;
+
+		const glosses = [span1, span2]
+			.map((span) => span.parentElement?.querySelector('.gloss-token'))
+			.filter((element): element is HTMLElement => element instanceof HTMLElement)
+			.map((element) => element.getBoundingClientRect());
+
+		if (glosses.length === 0) return wordTop;
+
+		return Math.min(...glosses.map((rect) => rect.top)) - rectOutput.top;
 	}
 
 	let connected: [l: number, w: number][] = [];
@@ -279,7 +303,7 @@
 		selectedWordEnd = editingSelectionEnd;
 	}
 
-	$: editingWords = modifying === -1 ? [] : sentences[modifying]?.[1] ?? [];
+	$: editingWords = modifying === -1 ? [] : getSentenceWords(sentences[modifying]) ?? [];
 	$: if (selectedWordStart !== -1 && selectedWordEnd >= editingWords.length) {
 		resetEditingWordSelection();
 	}
@@ -344,63 +368,73 @@
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
 >
-	{#if !loading}
-		{#each sentences as [lang, words], i}
-			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
-				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
-					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
-				</div>
-				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
-				<span class="words" {lang} style:text-align={alignment} style:transform={getTransform(i, draggingOffset)}>
-					{#each words as word, j}
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<span
-							class="word"
-							class:content={isContent(word)}
-							class:editing={mode === 'edit'}
-							class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
-							class:connected={connecting.some(([l, w]) => l == i && w == j)}
-							style:color={colors[color_map[i][j]]}
-							on:click={() => {
-								if (i === modifying) {
-									selectEditingWord(i, j);
-									return;
-								}
-
-								if (!isContent(word)) return;
-
-								const entryIndex = color_map[i][j];
-
-								if (mode === 'view') {
-									mode = 'edit';
-
-									if (entryIndex !== -1) {
-										connected = [];
-										for (let [i, words] of equivalency[entryIndex].entries()) {
-											for (let word of words) {
-												connected.push([i, word]);
+		{#if !loading}
+			{#each sentences as sentence, i}
+				{@const { lang, tokens } = sentence}
+				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+					<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
+					</div>
+					<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
+					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
+						<span class="words" {lang} style:text-align={alignment}>
+							{#each tokens as token, j}
+								{@const word = token.text}
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
+									{#if sentenceShowsGloss(sentence) && isContent(word)}
+										<span class="gloss-token">{isContent(word) ? token.gloss : ''}</span>
+									{/if}
+									<span
+										class="word"
+										class:whitespace={isWhitespace(word)}
+										class:content={isContent(word)}
+										class:editing={mode === 'edit'}
+										class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
+										class:connected={connecting.some(([l, w]) => l == i && w == j)}
+										style:color={colors[color_map[i][j]]}
+										on:click={() => {
+											if (i === modifying) {
+												selectEditingWord(i, j);
+												return;
 											}
-										}
 
-										connecting = connected.map(([l, w]) => [l, w]);
-										connectedIndex = entryIndex;
-										return;
-									}
-								}
+											if (!isContent(word)) return;
 
-								if (connecting.some(([l, w]) => l == i && w == j)) {
-									connecting = connecting.filter(([l, w]) => l != i || w != j);
-								} else {
-									connecting = [...connecting, [i, j]];
-								}
-							}}
-							bind:this={word_spans[i][j]}
-						>
-							<Word {word} /></span
-						>
-					{/each}
-				</span>
-				<div class="modify action">
+											const entryIndex = color_map[i][j];
+
+											if (mode === 'view') {
+												mode = 'edit';
+
+												if (entryIndex !== -1) {
+													connected = [];
+													for (let [i, words] of equivalency[entryIndex].entries()) {
+														for (let word of words) {
+															connected.push([i, word]);
+														}
+													}
+
+													connecting = connected.map(([l, w]) => [l, w]);
+													connectedIndex = entryIndex;
+													return;
+												}
+											}
+
+											if (connecting.some(([l, w]) => l == i && w == j)) {
+												connecting = connecting.filter(([l, w]) => l != i || w != j);
+											} else {
+												connecting = [...connecting, [i, j]];
+											}
+										}}
+										bind:this={word_spans[i][j]}
+									>
+										<Word word={word} />
+									</span>
+								</span>
+							{/each}
+						</span>
+					</div>
+					<div class="modify action">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<iconify-icon
 						icon="material-symbols:edit-rounded"
@@ -557,6 +591,45 @@
 		margin-right: 2em;
 	}
 
+	.sentence-body {
+		display: block;
+	}
+
+	.sentence-body.with-gloss {
+		padding-top: 1.35em;
+	}
+
+	.words {
+		display: block;
+	}
+
+	.token {
+		display: inline-block;
+		position: relative;
+		vertical-align: baseline;
+		text-align: center;
+	}
+
+	.word.whitespace {
+		white-space: pre;
+	}
+
+	.gloss-token {
+		display: block;
+		position: absolute;
+		left: 50%;
+		bottom: 100%;
+		min-width: 100%;
+		transform: translateX(-50%);
+		text-align: center;
+		font-size: 0.74em;
+		line-height: 1.2;
+		letter-spacing: 0.02em;
+		color: rgb(86 92 120);
+		white-space: nowrap;
+		pointer-events: none;
+	}
+
 	.word.content:hover {
 		background-color: #eee;
 	}
@@ -580,7 +653,8 @@
 
 		display: grid;
 		grid-template-columns: auto auto 1fr auto auto;
-		gap: 1em;
+		column-gap: 1em;
+		row-gap: 0.65em;
 		width: fit-content;
 	}
 

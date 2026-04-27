@@ -10,7 +10,8 @@
 	import { page } from '$app/stores';
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
-	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
 
 	// Components
 	import Equivalency from '$lib/Equivalency.svelte';
@@ -27,11 +28,11 @@
 	// 	['ja', '私はガラスを食べられます。それは私を傷つけません。']
 	// ];
 
-	let sentences: [string, string[]][] = [
-		['en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']],
-		['zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']],
-		['zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']],
-		['ja', ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。']]
+	let sentences: Sentence[] = [
+		createSentence('en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']),
+		createSentence('zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']),
+		createSentence('zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']),
+		createSentence('ja', ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。'])
 	];
 
 	let equivalency: number[][][] = [
@@ -79,7 +80,7 @@
 
 	$: if (mounted) calculate_color_map(equivalency);
 	function calculate_color_map(equivalency: number[][][]) {
-		color_map = sentences.map(([, words]) => new Array(words.length).fill(-1));
+		color_map = sentences.map((sentence) => new Array(sentence.tokens.length).fill(-1));
 		for (let [i, entry] of equivalency.entries()) {
 			for (let [j, words] of entry.entries()) {
 				for (let word of words) {
@@ -120,6 +121,9 @@
 
 	let lines: Line[] = [];
 	let editingText = '';
+	let editingGlosses: string[] = [];
+	let editingShowGloss = false;
+	let glossesBeforeModify: string[] = [];
 	let editingSelectionStart = -1;
 	let editingSelectionEnd = -1;
 	let outputContainer: HTMLDivElement;
@@ -129,12 +133,16 @@
 		modifying === -1
 			? sentences
 			: sentences.map(
-					([lang, words], index) => [lang, index === modifying ? editingText.split(/[|]/u).filter(Boolean) : words] as [string, string[]]
+					(sentence, index) =>
+						index === modifying ? createSentence(sentence.lang, editingText.split(/[|]/u).filter(Boolean), editingGlosses, editingShowGloss) : sentence
 			  );
 
 	function cancelUnchangedEdit() {
 		modifying = -1;
 		editingText = '';
+		editingGlosses = [];
+		editingShowGloss = false;
+		glossesBeforeModify = [];
 		editingSelectionStart = -1;
 		editingSelectionEnd = -1;
 		wordsBeforeModify = [];
@@ -147,10 +155,12 @@
 		return false;
 	}
 
-	async function onsubmit({ detail: { lang, words } }: CustomEvent<{ lang: string; words: string[] }>): Promise<void> {
+	async function onsubmit({ detail: { lang, words, glosses, showGloss } }: CustomEvent<{ lang: string; words: string[]; glosses: string[]; showGloss: boolean }>): Promise<void> {
+		const sentence = createSentence(lang, words, glosses, showGloss);
+
 		if (modifying !== -1) {
 			// Modifying existing sentence
-			sentences[modifying] = [lang, words];
+			sentences[modifying] = sentence;
 
 			if (!words.every((word, i) => word === wordsBeforeModify[i])) {
 				equivalency = remapSentenceConnections(equivalency, modifying, wordsBeforeModify, words);
@@ -158,12 +168,15 @@
 
 			modifying = -1;
 			editingText = '';
+			editingGlosses = [];
+			editingShowGloss = false;
+			glossesBeforeModify = [];
 			editingSelectionStart = -1;
 			editingSelectionEnd = -1;
 			wordsBeforeModify = [];
 		} else {
 			// Adding new sentence
-			sentences.push([lang, words]);
+			sentences.push(sentence);
 			color_map = [...color_map, new Array(words.length).fill(-1)];
 			word_spans = [...word_spans, new Array(words.length).fill(null)];
 
@@ -233,9 +246,9 @@
 		return window.getComputedStyle(document.body).backgroundColor || document.body.style.backgroundColor || 'white';
 	}
 
-	async function load(data: { equivalency: number[][][]; sentences: [string, string[]][] }) {
+	async function load(data: { equivalency: number[][][]; sentences: SentenceData[] }) {
 		loading = true;
-		sentences = data.sentences;
+		sentences = data.sentences.map(normalizeSentence);
 		equivalency = data.equivalency;
 		await tick();
 		word_spans = sentences.map(() => []);
@@ -261,6 +274,9 @@
 		if (modifying === -1) return;
 		if (shouldKeepSentenceEdit(e.target)) return;
 		if (editingText !== wordsBeforeModify.join('|')) return;
+		if (editingShowGloss !== sentences[modifying].showGloss) return;
+		if (editingGlosses.length !== glossesBeforeModify.length) return;
+		if (editingGlosses.some((gloss, index) => gloss !== (glossesBeforeModify[index] ?? ''))) return;
 		cancelUnchangedEdit();
 	}}
 />
@@ -367,9 +383,9 @@
 				bind:output
 				on:connect={onconnect}
 				on:reorder={({ detail: { from, to } }) => {
-					const [lang, words] = sentences[from];
+					const sentence = sentences[from];
 					sentences.splice(from, 1);
-					sentences.splice(to, 0, [lang, words]);
+					sentences.splice(to, 0, sentence);
 					sentences = sentences;
 
 					for (const [i, entry] of equivalency.entries()) {
@@ -392,22 +408,29 @@
 				}}
 				on:modify={({ detail: { sentence } }) => {
 					modifying = sentence;
-					wordsBeforeModify = sentences[sentence][1];
-					editingText = sentences[sentence][1].join('|');
+					wordsBeforeModify = getSentenceWords(sentences[sentence]);
+					editingText = wordsBeforeModify.join('|');
+					glossesBeforeModify = [...getSentenceGlosses(sentences[sentence])];
+					editingGlosses = [...glossesBeforeModify];
+					editingShowGloss = sentences[sentence].showGloss;
 					editingSelectionStart = -1;
 					editingSelectionEnd = -1;
 				}}
 				on:merge={({ detail: { sentence, start, end } }) => {
-					const words = previewSentences[sentence][1];
+					const words = getSentenceWords(previewSentences[sentence]);
+					const glosses = getSentenceGlosses(previewSentences[sentence]);
 					const merged = words.slice(start, end + 1).join('');
 					editingText = [...words.slice(0, start), merged, ...words.slice(end + 1)].join('|');
+					editingGlosses = [...glosses.slice(0, start), glosses.slice(start, end + 1).filter(Boolean).join('-'), ...glosses.slice(end + 1)];
 					editingSelectionStart = start;
 					editingSelectionEnd = start;
 				}}
 				on:split={({ detail: { sentence, word, offset } }) => {
-					const words = previewSentences[sentence][1];
+					const words = getSentenceWords(previewSentences[sentence]);
+					const glosses = getSentenceGlosses(previewSentences[sentence]);
 					const token = words[word];
 					editingText = [...words.slice(0, word), token.slice(0, offset), token.slice(offset), ...words.slice(word + 1)].filter(Boolean).join('|');
+					editingGlosses = [...glosses.slice(0, word), glosses[word] ?? '', glosses[word] ?? '', ...glosses.slice(word + 1)];
 					editingSelectionStart = word;
 					editingSelectionEnd = word + 1;
 				}}
@@ -416,7 +439,7 @@
 	</div>
 
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
-		<SentenceInput on:submit={onsubmit} {modifying} {sentences} bind:text={editingText} />
+		<SentenceInput on:submit={onsubmit} {modifying} {sentences} bind:text={editingText} bind:glosses={editingGlosses} bind:glossEnabled={editingShowGloss} />
 	</div>
 
 	<div class="params" class:editing-muted={modifying !== -1}>
