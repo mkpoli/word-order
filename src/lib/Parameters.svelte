@@ -7,6 +7,7 @@
 
 	export let verticalGap = 30;
 	export let lineGap = 5;
+	export let lineWidth = 1;
 	export let straightLength = 0;
 	export let endpointCorrection = 0;
 	export let curvature = 1;
@@ -16,6 +17,7 @@
 	export let fontSize = 15;
 
 	$: lineGap = Math.min(lineGap, verticalGap / 2);
+	$: lineWidth = Math.max(0.1, lineWidth);
 	$: straightLength = Math.min(straightLength, verticalGap / 2);
 	$: endpointCorrection = lineGap <= 0 || straightLength > 0 ? 0 : Math.min(endpointCorrection, lineGap);
 	$: curvature = Math.max(0, Math.min(curvature, 2));
@@ -39,6 +41,12 @@
 		{$LL.params.lineGap()}
 	</label>
 	<RangeSlider id="line-gap" min={-5} max={verticalGap / 2} bind:value={lineGap} suffix=" px" />
+
+	<label for="line-width">
+		<iconify-icon icon="mdi:vector-line" inline="true" />
+		{$LL.params.lineWidth()}
+	</label>
+	<RangeSlider id="line-width" min={0.1} max={6} step={0.1} bind:value={lineWidth} suffix=" px" />
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true" />

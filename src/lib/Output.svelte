@@ -55,6 +55,7 @@
 	// Parameters
 	export let verticalGap: number;
 	export let lineGap: number;
+	export let lineWidth = 1;
 	export let straightLength: number;
 	export let endpointCorrection: number;
 	export let curvature = 1;
@@ -546,7 +547,7 @@
 				<path
 					d={connectionPath(x1, y1, x2, y2, curvature)}
 					stroke={color}
-					stroke-width="1"
+					stroke-width={lineWidth}
 					fill="none"
 				/>
 			{/each}
