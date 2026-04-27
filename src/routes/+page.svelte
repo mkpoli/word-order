@@ -69,6 +69,7 @@
 	let fontFamily: FontFamily;
 	let fontStyle: FontStyle;
 	let fontSize: number;
+	let spaceWidth = 4;
 
 	let mounted = false;
 	onMount(() => {
@@ -376,6 +377,7 @@
 				{fontFamily}
 				{fontStyle}
 				{fontSize}
+				{spaceWidth}
 				{loading}
 				{modifying}
 				{editingSelectionStart}
@@ -456,6 +458,7 @@
 			bind:fontFamily
 			bind:fontStyle
 			bind:fontSize
+			bind:spaceWidth
 		/>
 	</div>
 

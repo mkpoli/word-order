@@ -63,6 +63,7 @@
 	export let fontFamily: FontFamily;
 	export let fontStyle: FontStyle;
 	export let fontSize: number;
+	export let spaceWidth: number;
 	export let mode: Mode = 'view';
 
 	export let output: HTMLOutputElement;
@@ -76,7 +77,7 @@
 
 	$: if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 
-	$: if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && $locale)
+	$: if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && spaceWidth !== undefined && $locale)
 		tick().then(() => {
 			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 		});
@@ -393,6 +394,7 @@
 										class:editing={mode === 'edit'}
 										class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
 										class:connected={connecting.some(([l, w]) => l == i && w == j)}
+										style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
 										style:color={colors[color_map[i][j]]}
 										on:click={() => {
 											if (i === modifying) {
@@ -612,6 +614,7 @@
 	}
 
 	.word.whitespace {
+		display: inline-block;
 		white-space: pre;
 	}
 
@@ -934,11 +937,11 @@
 		background-color: transparent;
 	}
 
-	output.modifying-sentence .sentence:not(.modifying) > .tag,
-	output.modifying-sentence .sentence:not(.modifying) > .words,
-	output.modifying-sentence svg {
-		opacity: 0.3;
-	}
+output.modifying-sentence .sentence:not(.modifying) > .tag,
+output.modifying-sentence .sentence:not(.modifying) > .sentence-body,
+output.modifying-sentence svg {
+	opacity: 0.3;
+}
 
 	output.dragging {
 		user-select: none;

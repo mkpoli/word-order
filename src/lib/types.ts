@@ -49,7 +49,7 @@ export function normalizeSentence(sentence: SentenceData): Sentence {
 		return createSentence(lang, words);
 	}
 
-	if (Array.isArray(sentence.tokens)) {
+	if ('tokens' in sentence && Array.isArray(sentence.tokens)) {
 		return {
 			lang: sentence.lang,
 			showGloss: sentence.showGloss ?? sentence.tokens.some((token) => (token.gloss ?? '').length > 0),
@@ -60,5 +60,12 @@ export function normalizeSentence(sentence: SentenceData): Sentence {
 		};
 	}
 
-	return createSentence(sentence.lang, sentence.words ?? [], sentence.glosses ?? [], sentence.showGloss ?? false);
+	const sentenceObject = sentence as {
+		lang: string;
+		words?: string[];
+		glosses?: string[];
+		showGloss?: boolean;
+	};
+
+	return createSentence(sentenceObject.lang, sentenceObject.words ?? [], sentenceObject.glosses ?? [], sentenceObject.showGloss ?? false);
 }
