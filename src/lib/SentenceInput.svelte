@@ -95,18 +95,18 @@
 		<details class="gloss-panel" bind:open={glossEnabled}>
 			<summary>
 				<iconify-icon icon="mdi:format-annotation-plus" inline="true" />
-				Interlinear gloss
+				{$LL.input.gloss()}
 			</summary>
 			<div class="gloss-content">
 				{#if glossTokens.length === 0}
-					<p class="gloss-empty">Add some words first to enter glosses.</p>
+					<p class="gloss-empty">{$LL.input.glossEmpty()}</p>
 				{:else}
 					<div class="gloss-grid">
 						{#each glossTokens as token, index}
 							{#if isGlossableToken(token.text)}
 								<label class="gloss-field" for={`gloss-${index}`}>
 									<span class="gloss-word" lang={lang}>{token.text}</span>
-									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder="Gloss" />
+									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder={$LL.input.glossPlaceholder()} />
 								</label>
 							{/if}
 						{/each}

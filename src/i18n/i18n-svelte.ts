@@ -31,14 +31,18 @@ const createLL = () => ({
 		italic: m.params_italic,
 		bold: m.params_bold,
 		boldItalic: m.params_bold_italic,
-		fontSize: m.params_font_size
+		fontSize: m.params_font_size,
+		spaceWidth: m.params_space_width
 	},
 	input: {
 		input: m.input_input,
 		placeholder: m.input_placeholder,
 		add: m.input_add,
 		modify: m.input_modify,
-		guidance: m.input_guidance
+		guidance: m.input_guidance,
+		gloss: m.input_gloss,
+		glossEmpty: m.input_gloss_empty,
+		glossPlaceholder: m.input_gloss_placeholder
 	},
 	tokenEditor: {
 		tokens: m.token_editor_tokens,
