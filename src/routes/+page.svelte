@@ -6,9 +6,9 @@
 	import { elementToSVG } from 'dom-to-svg';
 	import domToImage from 'dom-to-image';
 
-	import { LL } from '../i18n/i18n-svelte';
+	import { LL, locale } from '../i18n/i18n-svelte';
 	import { page } from '$app/stores';
-	import { getCanonicalUrl, getJsonLd, getOgImageUrl, siteDescription, siteKeywords, siteName, themeColor } from '$lib/seo';
+	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode } from '$lib/types';
 
@@ -245,6 +245,15 @@
 	let output: HTMLOutputElement;
 	$: canonicalUrl = getCanonicalUrl($page.url.origin);
 	$: ogImageUrl = getOgImageUrl($page.url.origin);
+	$: metaTitle = $LL.meta.title();
+	$: metaDescription = $LL.meta.description();
+	$: metaKeywords = $LL.meta.keywords();
+	$: metaImageAlt = $LL.meta.imageAlt();
+	$: jsonLd = getJsonLd($page.url.origin, {
+		name: metaTitle,
+		description: metaDescription,
+		locale: $locale
+	});
 </script>
 
 <svelte:window
@@ -456,9 +465,9 @@
 </main>
 
 <svelte:head>
-	<title>{$LL.meta.title()}</title>
-	<meta name="description" content={siteDescription} />
-	<meta name="keywords" content={siteKeywords.join(', ')} />
+	<title>{metaTitle}</title>
+	<meta name="description" content={metaDescription} />
+	<meta name="keywords" content={metaKeywords} />
 	<meta name="author" content="mkpoli" />
 	<meta name="creator" content="mkpoli" />
 	<meta name="publisher" content="mkpoli" />
@@ -467,24 +476,24 @@
 	<link rel="canonical" href={canonicalUrl} />
 
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content={siteName} />
-	<meta property="og:title" content={$LL.meta.title()} />
-	<meta property="og:description" content={siteDescription} />
+	<meta property="og:site_name" content={metaTitle} />
+	<meta property="og:title" content={metaTitle} />
+	<meta property="og:description" content={metaDescription} />
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:image" content={ogImageUrl} />
 	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Word Order Illustrator preview card" />
+	<meta property="og:image:alt" content={metaImageAlt} />
 
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:creator" content="@mkpoli" />
-	<meta name="twitter:title" content={$LL.meta.title()} />
-	<meta name="twitter:description" content={siteDescription} />
+	<meta name="twitter:title" content={metaTitle} />
+	<meta name="twitter:description" content={metaDescription} />
 	<meta name="twitter:image" content={ogImageUrl} />
-	<meta name="twitter:image:alt" content="Word Order Illustrator preview card" />
+	<meta name="twitter:image:alt" content={metaImageAlt} />
 
-	<script type="application/ld+json">{getJsonLd($page.url.origin)}</script>
+	<script type="application/ld+json">{jsonLd}</script>
 </svelte:head>
 
 <footer class:editing-muted={modifying !== -1}>

@@ -1,5 +1,8 @@
 {
 	"meta_title": "語序示意圖工具",
+	"meta_description": "為翻譯、語言學習和語言學教學建立清晰的語序示意圖。",
+	"meta_keywords": "語序, 語言學, 翻譯, 語言學習, 句法視覺化",
+	"meta_image_alt": "語序示意圖工具預覽，展示兩種語言之間以連線對應的詞語。",
 	"params_options": "選項",
 	"params_vertical_gap": "行距",
 	"params_line_gap": "線距",
