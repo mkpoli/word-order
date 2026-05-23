@@ -2,149 +2,98 @@ import type { Sentence, SentenceData } from './types';
 import { normalizeSentence } from './types';
 import { EXAMPLES, type Example } from './examples';
 
-export type Project = {
-	id: string;
-	name: string;
+export type PersistedDoc = {
+	schemaVersion: 1;
 	sentences: Sentence[];
 	equivalency: number[][][];
-	createdAt: number;
-	updatedAt: number;
-};
-
-export type PersistedState = {
-	schemaVersion: 1;
-	projects: Project[];
-	activeId: string;
 };
 
 const STORAGE_KEY = 'word-order:state';
 const SCHEMA_VERSION = 1 as const;
 
-function randomId(): string {
-	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-		return crypto.randomUUID();
-	}
-	return `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-export function createEmptyProject(name = ''): Project {
-	const now = Date.now();
-	return {
-		id: randomId(),
-		name,
-		sentences: [],
-		equivalency: [],
-		createdAt: now,
-		updatedAt: now
-	};
-}
-
-export function projectFromExample(example: Example, blankName = false): Project {
-	const now = Date.now();
-	return {
-		id: randomId(),
-		name: blankName ? '' : example.name,
-		sentences: structuredClone(example.sentences),
-		equivalency: structuredClone(example.equivalency),
-		createdAt: now,
-		updatedAt: now
-	};
-}
-
-export function createDefaultState(): PersistedState {
-	const sample = projectFromExample(EXAMPLES[0], true);
-	return { schemaVersion: SCHEMA_VERSION, projects: [sample], activeId: sample.id };
-}
-
 type LegacyDoc = { sentences: SentenceData[]; equivalency: number[][][] };
 
-function normalizeProject(raw: unknown): Project | null {
-	if (!raw || typeof raw !== 'object') return null;
-	const candidate = raw as Partial<Project> & { sentences?: SentenceData[] };
-	if (!Array.isArray(candidate.sentences) || !Array.isArray(candidate.equivalency)) return null;
+export function createDefaultDoc(): PersistedDoc {
+	return docFromExample(EXAMPLES[0]);
+}
 
-	const now = Date.now();
+export function docFromExample(example: Example): PersistedDoc {
 	return {
-		id: typeof candidate.id === 'string' && candidate.id ? candidate.id : randomId(),
-		name: typeof candidate.name === 'string' ? candidate.name : '',
-		sentences: candidate.sentences.map(normalizeSentence),
-		equivalency: candidate.equivalency as number[][][],
-		createdAt: typeof candidate.createdAt === 'number' ? candidate.createdAt : now,
-		updatedAt: typeof candidate.updatedAt === 'number' ? candidate.updatedAt : now
+		schemaVersion: SCHEMA_VERSION,
+		sentences: structuredClone(example.sentences),
+		equivalency: structuredClone(example.equivalency)
 	};
 }
 
-export function loadState(): PersistedState {
-	if (typeof localStorage === 'undefined') return createDefaultState();
+export function docFromLegacy(doc: LegacyDoc): PersistedDoc {
+	return {
+		schemaVersion: SCHEMA_VERSION,
+		sentences: doc.sentences.map(normalizeSentence),
+		equivalency: doc.equivalency
+	};
+}
+
+export function docToLegacy(doc: { sentences: Sentence[]; equivalency: number[][][] }): LegacyDoc {
+	return { sentences: doc.sentences, equivalency: doc.equivalency };
+}
+
+export function loadDoc(): PersistedDoc {
+	if (typeof localStorage === 'undefined') return createDefaultDoc();
 
 	const raw = localStorage.getItem(STORAGE_KEY);
-	if (!raw) return createDefaultState();
+	if (!raw) return createDefaultDoc();
 
 	try {
 		const parsed = JSON.parse(raw);
 
-		// Current schema
-		if (parsed && typeof parsed === 'object' && parsed.schemaVersion === SCHEMA_VERSION && Array.isArray(parsed.projects)) {
-			const projects: Project[] = parsed.projects.map(normalizeProject).filter((p: Project | null): p is Project => p !== null);
-			if (projects.length === 0) return createDefaultState();
-			const activeId = typeof parsed.activeId === 'string' && projects.some((p: Project) => p.id === parsed.activeId) ? parsed.activeId : projects[0].id;
-			return { schemaVersion: SCHEMA_VERSION, projects, activeId };
+		// Current single-doc shape
+		if (
+			parsed &&
+			typeof parsed === 'object' &&
+			parsed.schemaVersion === SCHEMA_VERSION &&
+			Array.isArray(parsed.sentences) &&
+			Array.isArray(parsed.equivalency)
+		) {
+			return {
+				schemaVersion: SCHEMA_VERSION,
+				sentences: parsed.sentences.map(normalizeSentence),
+				equivalency: parsed.equivalency
+			};
 		}
 
-		// Legacy single-doc shape
+		// Earlier multi-project shape from the tabs prototype — pluck the active project's data
+		if (parsed && typeof parsed === 'object' && Array.isArray(parsed.projects)) {
+			const active =
+				parsed.projects.find((p: { id: string }) => p.id === parsed.activeId) ?? parsed.projects[0];
+			if (active && Array.isArray(active.sentences) && Array.isArray(active.equivalency)) {
+				return {
+					schemaVersion: SCHEMA_VERSION,
+					sentences: active.sentences.map(normalizeSentence),
+					equivalency: active.equivalency
+				};
+			}
+		}
+
+		// Legacy raw {sentences, equivalency} JSON export shape
 		if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sentences) && Array.isArray(parsed.equivalency)) {
-			const project = projectFromDoc(parsed as LegacyDoc);
-			return { schemaVersion: SCHEMA_VERSION, projects: [project], activeId: project.id };
+			return docFromLegacy(parsed as LegacyDoc);
 		}
 	} catch {
-		// fall through
+		// fall through to default
 	}
 
-	return createDefaultState();
+	return createDefaultDoc();
 }
 
-export function saveState(state: PersistedState): void {
+export function saveDoc(doc: PersistedDoc): void {
 	if (typeof localStorage === 'undefined') return;
 	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(doc));
 	} catch {
 		// quota or other failure — best effort
 	}
 }
 
-export function projectFromDoc(doc: LegacyDoc, name = ''): Project {
-	const now = Date.now();
-	return {
-		id: randomId(),
-		name,
-		sentences: doc.sentences.map(normalizeSentence),
-		equivalency: doc.equivalency,
-		createdAt: now,
-		updatedAt: now
-	};
-}
-
-export function projectToDoc(project: Project): LegacyDoc {
-	return { sentences: project.sentences, equivalency: project.equivalency };
-}
-
-const RUBY_RE = /<ruby>(.*?)<\/ruby>/gu;
-const RT_RE = /<rt>.*?<\/rt>/gu;
-
-export function derivedProjectName(project: Project, fallback: string): string {
-	if (project.name.trim()) return project.name;
-	const first = project.sentences[0];
-	if (!first) return fallback;
-	const text = first.tokens
-		.map((t) => t.text)
-		.join('')
-		.replace(RT_RE, '')
-		.replace(RUBY_RE, '$1')
-		.trim();
-	if (!text) return fallback;
-	return text.length > 24 ? text.slice(0, 24) + '…' : text;
-}
-
-export function isProjectEmpty(project: Project): boolean {
-	return project.sentences.length === 0 && project.equivalency.length === 0;
+export function isDocEmpty(doc: { sentences: Sentence[]; equivalency: number[][][] }): boolean {
+	return doc.sentences.length === 0 && doc.equivalency.length === 0;
 }

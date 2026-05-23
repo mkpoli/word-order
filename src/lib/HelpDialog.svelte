@@ -59,7 +59,6 @@
 					<li>{$LL.help.featureTokenization()}</li>
 					<li>{$LL.help.featureGloss()}</li>
 					<li>{$LL.help.featureRuby()}</li>
-					<li>{$LL.help.featureTabs()}</li>
 					<li>{$LL.help.featureAutosave()}</li>
 					<li>{$LL.help.featureExport()}</li>
 				</ul>

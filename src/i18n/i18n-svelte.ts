@@ -67,7 +67,8 @@ const createLL = () => ({
 	confirm: {
 		deleteSentence: m.confirm_delete_sentence,
 		new: m.confirm_new,
-		closeTab: m.confirm_close_tab
+		import: m.confirm_import,
+		loadExample: m.confirm_load_example
 	},
 	menu: {
 		new: m.menu_new,
@@ -84,12 +85,6 @@ const createLL = () => ({
 		close: m.examples_close,
 		hint: m.examples_hint
 	},
-	projects: {
-		untitled: m.projects_untitled,
-		newTab: m.projects_new_tab,
-		closeTab: m.projects_close_tab,
-		renameHint: m.projects_rename_hint
-	},
 	help: {
 		title: m.help_title,
 		close: m.help_close,
@@ -104,7 +99,6 @@ const createLL = () => ({
 		featureTokenization: m.help_feature_tokenization,
 		featureGloss: m.help_feature_gloss,
 		featureRuby: m.help_feature_ruby,
-		featureTabs: m.help_feature_tabs,
 		featureAutosave: m.help_feature_autosave,
 		featureExport: m.help_feature_export,
 		gotIt: m.help_got_it,
