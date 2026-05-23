@@ -15,6 +15,7 @@
 	export let fontFamily: FontFamily = 'default';
 	export let fontStyle: FontStyle = 'normal';
 	export let fontSize = 15;
+	export let glossFontSize = 11;
 	export let spaceWidth = 4;
 
 	$: lineGap = Math.min(lineGap, verticalGap / 2);
@@ -122,6 +123,12 @@
 		{$LL.params.fontSize()}
 	</label>
 	<RangeSlider bind:value={fontSize} id="font-size" min={10} max={30} suffix=" px" />
+
+	<label for="gloss-font-size">
+		<iconify-icon icon="mdi:format-annotation-plus" inline="true" />
+		{$LL.params.glossFontSize()}
+	</label>
+	<RangeSlider bind:value={glossFontSize} id="gloss-font-size" min={6} max={24} suffix=" px" />
 
 	<label for="space-width">
 		<iconify-icon icon="mdi:format-horizontal-align-center" inline="true" />
