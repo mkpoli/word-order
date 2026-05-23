@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Components
 	import RangeSlider from '$lib/ui/RangeSlider.svelte';
+	import MarginInput, { type Margin } from '$lib/ui/MarginInput.svelte';
 
 	import { LL } from '$i18n/i18n-svelte';
 	import type { Alignment, FontFamily, FontStyle } from '$lib/types';
@@ -17,6 +18,7 @@
 	export let fontSize = 15;
 	export let glossFontSize = 11;
 	export let spaceWidth = 4;
+	export let outputMargin: Margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
 	$: lineGap = Math.min(lineGap, verticalGap / 2);
 	$: lineWidth = Math.max(0.1, lineWidth);
@@ -75,6 +77,14 @@
 		{$LL.params.curvature()}
 	</label>
 	<RangeSlider id="curvature" min={0} max={2} step={0.1} bind:value={curvature} suffix="x" />
+
+	<label for="output-margin" class="margin-label">
+		<iconify-icon icon="mdi:border-outside" inline="true" />
+		{$LL.params.outputMargin()}
+	</label>
+	<div class="margin-control">
+		<MarginInput bind:value={outputMargin} />
+	</div>
 </fieldset>
 
 <fieldset>
@@ -203,5 +213,14 @@
 
 	:global(fieldset > select) {
 		padding: 0.2em 0.5em;
+	}
+
+	.margin-label {
+		align-self: start;
+		padding-top: 0.4em;
+	}
+
+	.margin-control {
+		min-width: 0;
 	}
 </style>

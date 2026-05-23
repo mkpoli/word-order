@@ -23,6 +23,7 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
+	import type { Margin } from '$lib/ui/MarginInput.svelte';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 
@@ -90,6 +91,7 @@
 	let fontSize: number;
 	let glossFontSize = 11;
 	let spaceWidth = 4;
+	let outputMargin: Margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
 	let aboutOpen = false;
 	let examplesOpen = false;
@@ -635,6 +637,7 @@
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
+					{outputMargin}
 					{loading}
 					{modifying}
 					{editingSelectionStart}
@@ -732,6 +735,7 @@
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
+			bind:outputMargin
 		/>
 	</div>
 
