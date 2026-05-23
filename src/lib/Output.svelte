@@ -7,7 +7,7 @@
 	import { onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence } from '$lib/types';
 	import { getSentenceWords } from '$lib/types';
-	import { getLanguageName } from './lang';
+	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
 
@@ -379,7 +379,7 @@
 				</div>
 				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
 				<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-					<span class="words" {lang} style:text-align={alignment}>
+					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
 						{#each tokens as token, j}
 							{@const word = token.text}
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -587,6 +587,7 @@
 		font-weight: bold;
 		text-align: center;
 		margin-right: 2em;
+		white-space: nowrap;
 	}
 
 	.sentence-body {
