@@ -5,6 +5,7 @@
 	import 'iconify-icon';
 	import { elementToSVG } from 'dom-to-svg';
 	import domToImage from 'dom-to-image';
+	import { jsPDF } from 'jspdf';
 
 	import { LL, locale } from '../i18n/i18n-svelte';
 	import { page } from '$app/stores';
@@ -14,6 +15,7 @@
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
 
 	// Components
+	import AboutDialog from '$lib/AboutDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
@@ -85,6 +87,8 @@
 	let fontStyle: FontStyle;
 	let fontSize: number;
 	let spaceWidth = 4;
+
+	let aboutOpen = false;
 
 	let mounted = false;
 	onMount(() => {
@@ -369,10 +373,46 @@
 		<iconify-icon icon="teenyicons:png-outline" />
 		{$LL.menu.png()}
 	</button>
+	<button
+		disabled={mode === 'edit'}
+		on:click={async () => {
+			if (!output) return;
+			const scale = 2;
+			const dataUrl = await domToImage.toPng(output, {
+				width: output.clientWidth * scale,
+				height: output.clientHeight * scale,
+				style: {
+					transform: `scale(${scale})`,
+					transformOrigin: 'top left',
+					'background-color': getBodyBackgroundColor()
+				}
+			});
+			const widthPx = output.clientWidth;
+			const heightPx = output.clientHeight;
+			const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
+			const pdf = new jsPDF({
+				orientation,
+				unit: 'px',
+				format: [widthPx, heightPx],
+				hotfixes: ['px_scaling']
+			});
+			pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
+			pdf.save('output.pdf');
+		}}
+	>
+		<iconify-icon icon="teenyicons:pdf-outline" />
+		{$LL.menu.pdf()}
+	</button>
+	<button class="about-button" title={$LL.menu.about()} aria-label={$LL.menu.about()} on:click={() => (aboutOpen = true)}>
+		<iconify-icon icon="mdi:information-outline" />
+		{$LL.menu.about()}
+	</button>
 	<div class="menu-locale">
 		<LocaleSelect />
 	</div>
 </header>
+
+<AboutDialog bind:open={aboutOpen} />
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>

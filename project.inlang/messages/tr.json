@@ -52,5 +52,12 @@
 	"menu_export": "Dışa aktar",
 	"menu_svg": "SVG dışa aktar",
 	"menu_png": "PNG dışa aktar",
-	"menu_scramble": "Renkleri karıştır"
+	"menu_pdf": "PDF dışa aktar",
+	"menu_scramble": "Renkleri karıştır",
+	"menu_about": "Hakkında",
+	"about_title": "Hakkında",
+	"about_close": "Kapat",
+	"about_tagline": "Birden çok dil arası sözcük hizalama ve sözcük sırası diyagramları çizmek için bir web aracı.",
+	"about_credit": "Özgün fikir {author} tarafından — ilk sürüm Ağustos 2022, o günden beri geliştirildi.",
+	"about_links": "Bağlantılar"
 }

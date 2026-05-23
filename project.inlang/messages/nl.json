@@ -52,5 +52,12 @@
 	"menu_export": "Exporteren",
 	"menu_svg": "SVG exporteren",
 	"menu_png": "PNG exporteren",
-	"menu_scramble": "Kleuren mengen"
+	"menu_pdf": "PDF exporteren",
+	"menu_scramble": "Kleuren mengen",
+	"menu_about": "Over",
+	"about_title": "Over",
+	"about_close": "Sluiten",
+	"about_tagline": "Een webhulpmiddel voor het tekenen van woorduitlijning- en woordvolgordediagrammen tussen meerdere talen.",
+	"about_credit": "Oorspronkelijk idee van {author} — eerste versie augustus 2022, sindsdien uitgebreid.",
+	"about_links": "Koppelingen"
 }

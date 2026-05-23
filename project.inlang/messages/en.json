@@ -52,5 +52,12 @@
 	"menu_export": "Export",
 	"menu_svg": "Export SVG",
 	"menu_png": "Export PNG",
-	"menu_scramble": "Scramble colors"
+	"menu_pdf": "Export PDF",
+	"menu_scramble": "Scramble colors",
+	"menu_about": "About",
+	"about_title": "About",
+	"about_close": "Close",
+	"about_tagline": "A web tool for drawing multilingual word-alignment and word-order diagrams.",
+	"about_credit": "Original idea by {author} — first released August 2022, with further additions since.",
+	"about_links": "Links"
 }

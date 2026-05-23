@@ -52,5 +52,12 @@
 	"menu_export": "匯出",
 	"menu_svg": "匯出SVG",
 	"menu_png": "匯出PNG",
-	"menu_scramble": "打亂顏色順序"
+	"menu_pdf": "匯出PDF",
+	"menu_scramble": "打亂顏色順序",
+	"menu_about": "關於",
+	"about_title": "關於",
+	"about_close": "關閉",
+	"about_tagline": "用於繪製多語詞語對應與語序示意圖的網頁工具。",
+	"about_credit": "由 {author} 提出最初構想，於 2022 年 8 月首次發布，此後陸續完善。",
+	"about_links": "連結"
 }

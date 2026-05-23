@@ -52,5 +52,12 @@
 	"menu_export": "Xuất",
 	"menu_svg": "Xuất SVG",
 	"menu_png": "Xuất PNG",
-	"menu_scramble": "Xáo màu"
+	"menu_pdf": "Xuất PDF",
+	"menu_scramble": "Xáo màu",
+	"menu_about": "Giới thiệu",
+	"about_title": "Giới thiệu",
+	"about_close": "Đóng",
+	"about_tagline": "Công cụ web để vẽ sơ đồ liên kết từ và trật tự từ giữa nhiều ngôn ngữ.",
+	"about_credit": "Ý tưởng ban đầu của {author} — phát hành lần đầu vào tháng 8 năm 2022, được bổ sung kể từ đó.",
+	"about_links": "Liên kết"
 }
