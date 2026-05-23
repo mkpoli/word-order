@@ -52,6 +52,7 @@
 	"menu_export": "エクスポート",
 	"menu_svg": "SVG出力",
 	"menu_png": "PNG出力",
+	"menu_pdf": "PDF出力",
 	"menu_scramble": "色を並べ替え",
 	"menu_about": "情報",
 	"about_title": "概要",
