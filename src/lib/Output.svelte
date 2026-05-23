@@ -238,6 +238,42 @@
 	let draggingOffset = { x: 0, y: 0 };
 	let draggers: HTMLDivElement[] = [];
 
+	// Dragging output margins from the canvas edge.
+	type MarginSide = keyof Margin;
+	let marginDrag: { side: MarginSide; startPos: number; startValue: number } | null = null;
+	const MARGIN_MAX = 200;
+
+	function startMarginDrag(side: MarginSide, e: PointerEvent) {
+		if (mode === 'edit' || modifying !== -1 || draggingIndex !== -1) return;
+		e.preventDefault();
+		e.stopPropagation();
+		const vertical = side === 'top' || side === 'bottom';
+		marginDrag = {
+			side,
+			startPos: vertical ? e.clientY : e.clientX,
+			startValue: outputMargin[side]
+		};
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+	}
+
+	function onMarginDragMove(e: PointerEvent) {
+		if (!marginDrag) return;
+		const { side, startPos, startValue } = marginDrag;
+		const vertical = side === 'top' || side === 'bottom';
+		const current = vertical ? e.clientY : e.clientX;
+		let delta = current - startPos;
+		// `bottom` and `right` grow when the pointer moves toward the centre.
+		if (side === 'bottom' || side === 'right') delta = -delta;
+		const next = Math.max(0, Math.min(MARGIN_MAX, Math.round(startValue + delta)));
+		outputMargin = { ...outputMargin, [side]: next };
+	}
+
+	function endMarginDrag(e: PointerEvent) {
+		if (!marginDrag) return;
+		(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+		marginDrag = null;
+	}
+
 	function dragstart(l: number, e: PointerEvent) {
 		draggingIndex = l;
 		draggers[draggingIndex]?.setPointerCapture(e.pointerId);
@@ -389,7 +425,90 @@
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
 	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	class:margin-adjusting={marginDrag !== null}
 >
+	<!-- Per-side margin overlays — tinted bands over the padding region.
+	     Always rendered so `output:hover` and `.margin-adjusting` can toggle
+	     visibility purely from CSS; pointer-events: none so they never steal
+	     interaction from the sentences or the connector SVG. -->
+	<div class="margin-overlay top" style:height={`${outputMargin.top}px`} class:active={marginDrag?.side === 'top'} aria-hidden="true"></div>
+	<div class="margin-overlay bottom" style:height={`${outputMargin.bottom}px`} class:active={marginDrag?.side === 'bottom'} aria-hidden="true"></div>
+	<div class="margin-overlay left" style:width={`${outputMargin.left}px`} class:active={marginDrag?.side === 'left'} aria-hidden="true"></div>
+	<div class="margin-overlay right" style:width={`${outputMargin.right}px`} class:active={marginDrag?.side === 'right'} aria-hidden="true"></div>
+
+	<!-- Drag handles, one per side. Disabled (display:none via CSS class)
+	     during sentence editing / reorder so they don't steal those gestures. -->
+	{#if mode !== 'edit' && modifying === -1}
+		<div
+			class="margin-handle top"
+			class:active={marginDrag?.side === 'top'}
+			role="slider"
+			tabindex="-1"
+			aria-label="Top margin"
+			aria-valuenow={outputMargin.top}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`Top margin: ${outputMargin.top}px (drag)`}
+			on:pointerdown={(e) => startMarginDrag('top', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		>
+			{#if marginDrag?.side === 'top'}<span class="margin-badge">{outputMargin.top}px</span>{/if}
+		</div>
+		<div
+			class="margin-handle bottom"
+			class:active={marginDrag?.side === 'bottom'}
+			role="slider"
+			tabindex="-1"
+			aria-label="Bottom margin"
+			aria-valuenow={outputMargin.bottom}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`Bottom margin: ${outputMargin.bottom}px (drag)`}
+			on:pointerdown={(e) => startMarginDrag('bottom', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		>
+			{#if marginDrag?.side === 'bottom'}<span class="margin-badge">{outputMargin.bottom}px</span>{/if}
+		</div>
+		<div
+			class="margin-handle left"
+			class:active={marginDrag?.side === 'left'}
+			role="slider"
+			tabindex="-1"
+			aria-label="Left margin"
+			aria-valuenow={outputMargin.left}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`Left margin: ${outputMargin.left}px (drag)`}
+			on:pointerdown={(e) => startMarginDrag('left', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		>
+			{#if marginDrag?.side === 'left'}<span class="margin-badge">{outputMargin.left}px</span>{/if}
+		</div>
+		<div
+			class="margin-handle right"
+			class:active={marginDrag?.side === 'right'}
+			role="slider"
+			tabindex="-1"
+			aria-label="Right margin"
+			aria-valuenow={outputMargin.right}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`Right margin: ${outputMargin.right}px (drag)`}
+			on:pointerdown={(e) => startMarginDrag('right', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		>
+			{#if marginDrag?.side === 'right'}<span class="margin-badge">{outputMargin.right}px</span>{/if}
+		</div>
+	{/if}
+
 	{#if !loading}
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
@@ -676,6 +795,135 @@
 
 	svg {
 		pointer-events: none;
+	}
+
+	/* --- Direct margin manipulation -------------------------------------- */
+
+	.margin-overlay {
+		position: absolute;
+		background: rgb(228 67 175 / 0);
+		transition: background 140ms ease;
+		pointer-events: none;
+		z-index: 4;
+	}
+
+	.margin-overlay.top {
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.margin-overlay.bottom {
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.margin-overlay.left {
+		top: 0;
+		bottom: 0;
+		left: 0;
+	}
+
+	.margin-overlay.right {
+		top: 0;
+		bottom: 0;
+		right: 0;
+	}
+
+	output:hover .margin-overlay {
+		background: rgb(228 67 175 / 0.08);
+	}
+
+	output.margin-adjusting .margin-overlay,
+	.margin-overlay.active {
+		background: rgb(228 67 175 / 0.22);
+	}
+
+	.margin-handle {
+		position: absolute;
+		background: transparent;
+		transition: background 140ms ease;
+		z-index: 6;
+		touch-action: none;
+	}
+
+	.margin-handle.top,
+	.margin-handle.bottom {
+		left: 0;
+		right: 0;
+		height: 8px;
+		cursor: ns-resize;
+	}
+
+	.margin-handle.left,
+	.margin-handle.right {
+		top: 0;
+		bottom: 0;
+		width: 8px;
+		cursor: ew-resize;
+	}
+
+	.margin-handle.top {
+		top: 0;
+	}
+
+	.margin-handle.bottom {
+		bottom: 0;
+	}
+
+	.margin-handle.left {
+		left: 0;
+	}
+
+	.margin-handle.right {
+		right: 0;
+	}
+
+	output:hover .margin-handle {
+		background: rgb(46 91 255 / 0.18);
+	}
+
+	.margin-handle:hover,
+	.margin-handle.active {
+		background: rgb(46 91 255 / 0.5);
+	}
+
+	.margin-badge {
+		position: absolute;
+		background: rgb(33 56 199);
+		color: white;
+		font-size: 0.72rem;
+		font-weight: 600;
+		padding: 0.2em 0.55em;
+		border-radius: 0.25em;
+		white-space: nowrap;
+		pointer-events: none;
+		box-shadow: 0 4px 14px rgb(15 23 42 / 0.18);
+	}
+
+	.margin-handle.top .margin-badge {
+		top: calc(100% + 0.4em);
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.margin-handle.bottom .margin-badge {
+		bottom: calc(100% + 0.4em);
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.margin-handle.left .margin-badge {
+		left: calc(100% + 0.4em);
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.margin-handle.right .margin-badge {
+		right: calc(100% + 0.4em);
+		top: 50%;
+		transform: translateY(-50%);
 	}
 
 	.edit-dialog {
