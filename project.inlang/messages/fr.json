@@ -56,7 +56,7 @@
 	"menu_about": "À propos",
 	"about_title": "À propos",
 	"about_close": "Fermer",
-	"about_tagline": "Un outil web pour dessiner des diagrammes d'alignement de mots et d'ordre des mots entre langues.",
+	"about_tagline": "Un outil web pour dessiner des diagrammes d'alignement de mots et d'ordre des mots entre plusieurs langues.",
 	"about_credit": "Idée originale de {author} — première version en août 2022, enrichie depuis.",
 	"about_links": "Liens"
 }
