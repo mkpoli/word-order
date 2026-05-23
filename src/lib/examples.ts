@@ -5,10 +5,6 @@ export type Example = {
 	name: string;
 	sentences: Sentence[];
 	equivalency: number[][][];
-	/** Override the default space width (in px) when loading this example.
-	 *  Useful for glossed examples where each token needs more breathing room
-	 *  for the longer gloss text above it. */
-	spaceWidth?: number;
 };
 
 function s(lang: string, tokens: string[], glosses: string[] = []): Sentence {
@@ -85,7 +81,6 @@ export const EXAMPLES: Example[] = [
 	{
 		id: 'sov-vs-svo',
 		name: 'SOV vs SVO',
-		spaceWidth: 37,
 		sentences: [
 			s('en', ['I', ' ', 'read', ' ', 'the', ' ', 'book', '.'], ['1SG', '', 'read', '', 'DEF', '', 'book', '']),
 			s('ja', ['私', 'は', '本', 'を', '読む', '。'], ['1SG', 'TOP', 'book', 'ACC', 'read', '']),
@@ -117,7 +112,6 @@ export const EXAMPLES: Example[] = [
 	{
 		id: 'pro-drop',
 		name: 'Pro-drop',
-		spaceWidth: 37,
 		sentences: [
 			s('en', ['I', ' ', 'have', ' ', 'a', ' ', 'cat', '.'], ['1SG', '', 'have', '', 'INDF', '', 'cat', '']),
 			s('es', ['Yo', ' ', 'tengo', ' ', 'un', ' ', 'gato', '.'], ['1SG', '', 'have.1SG', '', 'INDF', '', 'cat', '']),
@@ -134,7 +128,6 @@ export const EXAMPLES: Example[] = [
 	{
 		id: 'gloss-turkish',
 		name: 'Turkish gloss',
-		spaceWidth: 37,
 		sentences: [
 			s(
 				'tr',
