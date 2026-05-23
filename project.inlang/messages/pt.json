@@ -52,5 +52,12 @@
 	"menu_export": "Exportar",
 	"menu_svg": "Exportar SVG",
 	"menu_png": "Exportar PNG",
-	"menu_scramble": "Embaralhar cores"
+	"menu_pdf": "Exportar PDF",
+	"menu_scramble": "Embaralhar cores",
+	"menu_about": "Sobre",
+	"about_title": "Sobre",
+	"about_close": "Fechar",
+	"about_tagline": "Uma ferramenta web para desenhar diagramas de alinhamento e ordem das palavras entre várias línguas.",
+	"about_credit": "Ideia original de {author} — primeira versão em agosto de 2022, expandida desde então.",
+	"about_links": "Ligações"
 }

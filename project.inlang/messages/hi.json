@@ -52,5 +52,12 @@
 	"menu_export": "निर्यात",
 	"menu_svg": "SVG निर्यात",
 	"menu_png": "PNG निर्यात",
-	"menu_scramble": "रंग बदलें"
+	"menu_pdf": "PDF निर्यात",
+	"menu_scramble": "रंग बदलें",
+	"menu_about": "परिचय",
+	"about_title": "परिचय",
+	"about_close": "बंद करें",
+	"about_tagline": "कई भाषाओं के बीच शब्द संरेखण और शब्द क्रम के आरेख बनाने वाला वेब टूल।",
+	"about_credit": "मूल विचार {author} द्वारा — पहली बार अगस्त 2022 में जारी, तब से और जोड़े गए हैं।",
+	"about_links": "लिंक"
 }

@@ -1,6 +1,6 @@
 {
 	"meta_title": "Itakpo Ukotukka A=nokakarpe",
-	"meta_description": "pirka noka Create clear word-order diagrams for translation, language learning, and linguistics teaching.",
+	"meta_description": "A=etupte wa itak a=eyayhonokka wa itak kampinuye a=eyaypakasnu kusu itak a=oeroski katu a=nukare pirka noka a=kar ro!",
 	"meta_keywords": "word order, linguistics, translation, language learning, syntax visualization",
 	"meta_image_alt": "Preview of the Word Order Illustrator with linked words across two languages.",
 	"params_options": "Ieramasu",
@@ -52,5 +52,12 @@
 	"menu_export": "Cinuyep omante",
 	"menu_svg": "SVG sanke",
 	"menu_png": "PNG sanke",
-	"menu_scramble": "Color a=sinna"
+	"menu_pdf": "PDF sanke",
+	"menu_scramble": "Color a=sinna",
+	"menu_about": "Nep kusu",
+	"about_title": "Tanpe nep ne ya?",
+	"about_close": "Uska",
+	"about_tagline": "Usa okay itakpo a=ekote wa itak a=oeroski katu a=nukare noka ci=kar kuni p ne aeywankep ne.",
+	"about_credit": "{author} or wa a=esanniyo wa 2022 pa 8 cup wa ci=kar wa an wa orowa ci=pirkare a ci=pirkare a.",
+	"about_links": "Rinko"
 }
