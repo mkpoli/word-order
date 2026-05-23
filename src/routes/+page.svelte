@@ -13,7 +13,9 @@
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
-	import { docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
+	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
+	import type { Example } from '$lib/examples';
+	import ExamplePicker from '$lib/ExamplePicker.svelte';
 
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
@@ -90,6 +92,7 @@
 	let spaceWidth = 4;
 
 	let aboutOpen = false;
+	let examplesOpen = false;
 
 	let mounted = false;
 	onMount(async () => {
@@ -282,9 +285,7 @@
 		return window.getComputedStyle(document.body).backgroundColor || document.body.style.backgroundColor || 'white';
 	}
 
-	async function load(data: { equivalency: number[][][]; sentences: SentenceData[] }) {
-		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.import())) return;
-		const next = docFromLegacy(data);
+	async function replaceDoc(next: { sentences: Sentence[]; equivalency: number[][][] }) {
 		if (modifying !== -1) cancelUnchangedEdit();
 		mode = 'view';
 		loading = true;
@@ -293,6 +294,16 @@
 		await tick();
 		word_spans = sentences.map(() => []);
 		loading = false;
+	}
+
+	async function load(data: { equivalency: number[][][]; sentences: SentenceData[] }) {
+		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.import())) return;
+		await replaceDoc(docFromLegacy(data));
+	}
+
+	async function loadExample(example: Example) {
+		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.loadExample({ name: example.name }))) return;
+		await replaceDoc(docFromExample(example));
 	}
 
 	let exportOpen = false;
@@ -484,6 +495,10 @@
 		<iconify-icon icon="uil:import" />
 		{$LL.menu.import()}</button
 	>
+	<button disabled={mode === 'edit'} on:click={() => (examplesOpen = true)}>
+		<iconify-icon icon="mdi:bookshelf" />
+		{$LL.menu.examples()}
+	</button>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} on:mouseenter={openExportMenu} on:mouseleave={scheduleExportClose}>
 		<button
@@ -528,6 +543,12 @@
 </header>
 
 <AboutDialog bind:open={aboutOpen} />
+<ExamplePicker
+	bind:open={examplesOpen}
+	on:pick={async (e) => {
+		await loadExample(e.detail.example);
+	}}
+/>
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
