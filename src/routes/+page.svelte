@@ -16,7 +16,6 @@
 	// Components
 	import Equivalency from '$lib/Equivalency.svelte';
 	import ExamplePicker from '$lib/ExamplePicker.svelte';
-	import HelpDialog from '$lib/HelpDialog.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
@@ -35,7 +34,6 @@
 
 	let sentences: Sentence[] = [];
 	let equivalency: number[][][] = [];
-	let helpOpen = false;
 	let examplesOpen = false;
 
 	let mode: Mode = 'view';
@@ -370,21 +368,11 @@
 		<iconify-icon icon="mdi:bookshelf" />
 		{$LL.menu.examples()}
 	</button>
-	<button
-		class="help-button"
-		title={$LL.menu.help()}
-		aria-label={$LL.menu.help()}
-		on:click={() => (helpOpen = true)}
-	>
-		<iconify-icon icon="mdi:help-circle-outline" />
-		{$LL.menu.help()}
-	</button>
 	<div class="menu-locale">
 		<LocaleSelect />
 	</div>
 </header>
 
-<HelpDialog bind:open={helpOpen} />
 <ExamplePicker
 	bind:open={examplesOpen}
 	on:pick={async (e) => {
@@ -560,20 +548,6 @@
 </svelte:head>
 
 <footer class:editing-muted={modifying !== -1}>
-	<section class="about">
-		<h2>
-			<iconify-icon icon="mdi:help-circle-outline" inline="true" />
-			{$LL.help.title()}
-		</h2>
-		<p>{$LL.help.tagline()}</p>
-		<p>{$LL.help.intro()}</p>
-		<p>
-			<button class="learn-more" type="button" on:click={() => (helpOpen = true)}>
-				<iconify-icon icon="mdi:book-open-variant" inline="true" />
-				{$LL.help.learnMore()}
-			</button>
-		</p>
-	</section>
 	<p>
 		{$LL.meta.title()} (
 		<a href="https://github.com/mkpoli/word-order/" title={$LL.footer.githubRepository()} class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
@@ -624,51 +598,6 @@
 		color: #444;
 		max-width: 1024px;
 		margin: 0 auto;
-	}
-
-	footer .about {
-		text-align: left;
-		max-width: 42em;
-		margin: 0 auto 1.5em;
-		padding: 1.2em 1.4em;
-		background: rgb(255 255 255 / 0.7);
-		border: 1px solid rgb(46 91 255 / 0.12);
-		border-radius: 0.7em;
-	}
-
-	footer .about h2 {
-		margin: 0 0 0.4em;
-		font-size: 1.1em;
-		color: rgb(33 56 199);
-		display: flex;
-		align-items: center;
-		gap: 0.4em;
-	}
-
-	footer .about p {
-		margin: 0.3em 0;
-		color: #333;
-		line-height: 1.5;
-	}
-
-	footer .about .learn-more {
-		appearance: none;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4em;
-		padding: 0.4em 0.9em;
-		border: 1px solid rgb(46 91 255 / 0.3);
-		border-radius: 0.4em;
-		background: white;
-		color: rgb(33 56 199);
-		font-weight: 600;
-		cursor: pointer;
-		font: inherit;
-		font-weight: 600;
-	}
-
-	footer .about .learn-more:hover {
-		background: rgb(46 91 255 / 0.06);
 	}
 
 	footer iconify-icon {

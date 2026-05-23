@@ -46,14 +46,11 @@
 				</button>
 			</header>
 
-			<p class="hint">{$LL.examples.hint()}</p>
-
 			<ul class="example-list">
 				{#each EXAMPLES as example (example.id)}
 					<li>
 						<button class="example" type="button" on:click={() => pick(example)}>
 							<div class="example-name">{example.name}</div>
-							<div class="example-desc">{example.description}</div>
 							<div class="example-langs">
 								{#each example.sentences as sentence}
 									<span class="lang-chip" lang={sentence.lang}>{sentence.lang}</span>
@@ -123,12 +120,6 @@
 		background: rgb(24 33 61 / 0.08);
 	}
 
-	.hint {
-		color: rgb(74 82 112);
-		margin: 0 0 1em;
-		font-size: 0.95em;
-	}
-
 	.example-list {
 		list-style: none;
 		padding: 0;
@@ -163,12 +154,6 @@
 		font-weight: 700;
 		font-size: 1.05em;
 		color: rgb(33 56 199);
-	}
-
-	.example-desc {
-		color: rgb(45 55 80);
-		font-size: 0.93em;
-		line-height: 1.4;
 	}
 
 	.example-langs {

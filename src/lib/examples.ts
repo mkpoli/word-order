@@ -3,7 +3,6 @@ import type { Sentence } from './types';
 export type Example = {
 	id: string;
 	name: string;
-	description: string;
 	sentences: Sentence[];
 	equivalency: number[][][];
 };
@@ -20,7 +19,6 @@ export const EXAMPLES: Example[] = [
 	{
 		id: 'glass',
 		name: 'I can eat glass',
-		description: 'English / Chinese (Simp. & Trad.) / Japanese — negation and reordering',
 		sentences: [
 			s('en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']),
 			s('zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']),
@@ -58,7 +56,6 @@ export const EXAMPLES: Example[] = [
 	{
 		id: 'genesis-1-1',
 		name: 'Genesis 1:1',
-		description: 'A classic parallel text — Hebrew, Koine Greek, Latin (Vulgate), English (KJV)',
 		sentences: [
 			// 0:בְּרֵאשִׁית 1:space 2:בָּרָא 3:space 4:אֱלֹהִים 5:space 6:אֵת 7:space 8:הַשָּׁמַיִם 9:space 10:וְאֵת 11:space 12:הָאָרֶץ
 			s('he', ['בְּרֵאשִׁית', ' ', 'בָּרָא', ' ', 'אֱלֹהִים', ' ', 'אֵת', ' ', 'הַשָּׁמַיִם', ' ', 'וְאֵת', ' ', 'הָאָרֶץ']),
@@ -84,7 +81,6 @@ export const EXAMPLES: Example[] = [
 	{
 		id: 'sov-vs-svo',
 		name: 'SOV vs SVO',
-		description: 'How the verb moves to the end in Japanese and Korean compared to English',
 		sentences: [
 			s('en', ['I', ' ', 'read', ' ', 'the', ' ', 'book', '.'], ['1SG', '', 'read', '', 'DEF', '', 'book', '']),
 			s('ja', ['私', 'は', '本', 'を', '読む', '。'], ['1SG', 'TOP', 'book', 'ACC', 'read', '']),
@@ -98,8 +94,7 @@ export const EXAMPLES: Example[] = [
 	},
 	{
 		id: 'rtl',
-		name: 'Left-to-right vs right-to-left',
-		description: 'English / Arabic / Hebrew — same meaning, opposite reading direction',
+		name: 'LTR · RTL',
 		sentences: [
 			// 0:I 1:space 2:love 3:space 4:coffee 5:.
 			s('en', ['I', ' ', 'love', ' ', 'coffee', '.']),
@@ -116,8 +111,7 @@ export const EXAMPLES: Example[] = [
 	},
 	{
 		id: 'pro-drop',
-		name: 'Subject pronouns: pro-drop',
-		description: 'English keeps the subject pronoun; Italian drops it, Spanish keeps an explicit one',
+		name: 'Pro-drop',
 		sentences: [
 			s('en', ['I', ' ', 'have', ' ', 'a', ' ', 'cat', '.'], ['1SG', '', 'have', '', 'INDF', '', 'cat', '']),
 			s('es', ['Yo', ' ', 'tengo', ' ', 'un', ' ', 'gato', '.'], ['1SG', '', 'have.1SG', '', 'INDF', '', 'cat', '']),
@@ -133,8 +127,7 @@ export const EXAMPLES: Example[] = [
 	},
 	{
 		id: 'gloss-turkish',
-		name: 'Interlinear gloss: Turkish',
-		description: 'Leipzig-style morpheme-by-morpheme gloss showing Turkish agglutination',
+		name: 'Turkish gloss',
 		sentences: [
 			s(
 				'tr',

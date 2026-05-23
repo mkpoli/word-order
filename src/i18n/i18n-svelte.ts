@@ -77,32 +77,11 @@ const createLL = () => ({
 		svg: m.menu_svg,
 		png: m.menu_png,
 		scramble: m.menu_scramble,
-		help: m.menu_help,
 		examples: m.menu_examples
 	},
 	examples: {
 		title: m.examples_title,
-		close: m.examples_close,
-		hint: m.examples_hint
-	},
-	help: {
-		title: m.help_title,
-		close: m.help_close,
-		tagline: m.help_tagline,
-		intro: m.help_intro,
-		howTitle: m.help_how_title,
-		howStep1: m.help_how_step1,
-		howStep2: m.help_how_step2,
-		howStep3: m.help_how_step3,
-		howStep4: m.help_how_step4,
-		featuresTitle: m.help_features_title,
-		featureTokenization: m.help_feature_tokenization,
-		featureGloss: m.help_feature_gloss,
-		featureRuby: m.help_feature_ruby,
-		featureAutosave: m.help_feature_autosave,
-		featureExport: m.help_feature_export,
-		gotIt: m.help_got_it,
-		learnMore: m.help_learn_more
+		close: m.examples_close
 	}
 });
 
