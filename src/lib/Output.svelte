@@ -10,6 +10,7 @@
 	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
+	import type { Margin } from '$lib/ui/MarginInput.svelte';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -65,6 +66,7 @@
 	export let fontSize: number;
 	export let glossFontSize: number;
 	export let spaceWidth: number;
+	export let outputMargin: Margin = { top: 0, right: 0, bottom: 0, left: 0 };
 	export let mode: Mode = 'view';
 
 	export let output: HTMLOutputElement;
@@ -83,6 +85,13 @@
 			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 		});
 
+	// Redraw when outputMargin changes — padding shifts every token, so connector
+	// endpoints need to be recomputed against the new padding-box origin.
+	$: if (mounted && !loading && outputMargin)
+		tick().then(() => {
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+		});
+
 	function drawLines(
 		word_spans: HTMLSpanElement[][],
 		equivalency: number[][][],
@@ -92,6 +101,15 @@
 		endpointCorrection: number
 	): Line[] {
 		const rectOutput = output.getBoundingClientRect();
+		// The connector SVG is position:absolute inside <output>, so its (0,0)
+		// sits at the padding-box top-left — not the border-box. Subtract the
+		// padding when normalising token positions, otherwise margin > 0 would
+		// offset every line by exactly that padding away from its tokens.
+		const cs = getComputedStyle(output);
+		const padLeft = parseFloat(cs.paddingLeft) || 0;
+		const padTop = parseFloat(cs.paddingTop) || 0;
+		const originX = rectOutput.left + padLeft;
+		const originY = rectOutput.top + padTop;
 
 		const lines: Line[] = [];
 
@@ -121,10 +139,10 @@
 						const rectB1 = spanB1.getBoundingClientRect();
 						const rectB2 = spanB2.getBoundingClientRect();
 
-						let x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
-						let y1 = Math.max(rectA1.bottom, rectA2.bottom) - rectOutput.top;
-						let x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
-						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
+						let x1 = (rectA1.left + rectA2.right) / 2 - originX;
+						let y1 = Math.max(rectA1.bottom, rectA2.bottom) - originY;
+						let x2 = (rectB1.left + rectB2.right) / 2 - originX;
+						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, originY);
 
 						const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
 						x1 += correction;
@@ -191,10 +209,10 @@
 		return sentence.showGloss || sentence.tokens.some((token) => token.gloss.trim().length > 0);
 	}
 
-	function getTopEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, rectOutput: DOMRect): number {
+	function getTopEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, originY: number): number {
 		const rect1 = span1.getBoundingClientRect();
 		const rect2 = span2.getBoundingClientRect();
-		const wordTop = Math.min(rect1.top, rect2.top) - rectOutput.top;
+		const wordTop = Math.min(rect1.top, rect2.top) - originY;
 
 		if (!sentenceShowsGloss(sentence)) return wordTop;
 
@@ -205,7 +223,7 @@
 
 		if (glosses.length === 0) return wordTop;
 
-		return Math.min(...glosses.map((rect) => rect.top)) - rectOutput.top;
+		return Math.min(...glosses.map((rect) => rect.top)) - originY;
 	}
 
 	let connected: [l: number, w: number][] = [];
@@ -370,6 +388,7 @@
 	class:bold={fontStyle === 'bold' || fontStyle === 'bold-italic'}
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
+	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
 >
 	{#if !loading}
 		{#each sentences as sentence, i}

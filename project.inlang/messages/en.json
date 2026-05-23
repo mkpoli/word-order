@@ -26,6 +26,7 @@
 	"params_font_size": "Font Size",
 	"params_gloss_font_size": "Gloss Font Size",
 	"params_space_width": "Space Width",
+	"params_output_margin": "Margins",
 	"input_input": "Input",
 	"input_placeholder": "Input new sentence here…",
 	"input_add": "Add",
