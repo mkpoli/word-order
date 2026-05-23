@@ -486,6 +486,10 @@
 		<iconify-icon icon="eos-icons:content-new" />
 		{$LL.menu.new()}
 	</button>
+	<button disabled={mode === 'edit'} on:click={() => (examplesOpen = true)}>
+		<iconify-icon icon="mdi:bookshelf" />
+		{$LL.menu.examples()}
+	</button>
 	<button
 		disabled={mode === 'edit'}
 		on:click={() => {
@@ -495,10 +499,6 @@
 		<iconify-icon icon="uil:import" />
 		{$LL.menu.import()}</button
 	>
-	<button disabled={mode === 'edit'} on:click={() => (examplesOpen = true)}>
-		<iconify-icon icon="mdi:bookshelf" />
-		{$LL.menu.examples()}
-	</button>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} on:mouseenter={openExportMenu} on:mouseleave={scheduleExportClose}>
 		<button
