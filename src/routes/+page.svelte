@@ -804,6 +804,12 @@
 		position: relative;
 		z-index: 1;
 		overflow-x: auto;
+		/* overflow-y: clip — not auto — keeps the absolute-positioned ::after
+		   indicator below visible without enabling a vertical scrollbar. The
+		   spec downgrades overflow-y: visible to auto whenever overflow-x is
+		   non-visible, but clip is allowed to coexist with auto on the other axis. */
+		overflow-y: clip;
+		overflow-clip-margin: 2rem;
 		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
 		transition:
