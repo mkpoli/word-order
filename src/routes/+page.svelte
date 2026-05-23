@@ -32,7 +32,22 @@
 		createSentence('en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']),
 		createSentence('zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']),
 		createSentence('zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']),
-		createSentence('ja', ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。'])
+		createSentence('ja', [
+			'<ruby>私<rt>わたし</rt></ruby>',
+			'は',
+			'ガラス',
+			'を',
+			'食べ',
+			'れます',
+			'。',
+			'それ',
+			'は',
+			'私',
+			'を',
+			'傷つけ',
+			'ません',
+			'。'
+		])
 	];
 
 	let equivalency: number[][][] = [
@@ -134,10 +149,9 @@
 	$: previewSentences =
 		modifying === -1
 			? sentences
-			: sentences.map(
-					(sentence, index) =>
-						index === modifying ? createSentence(sentence.lang, editingText.split(/[|]/u).filter(Boolean), editingGlosses, editingShowGloss) : sentence
-			  );
+			: sentences.map((sentence, index) =>
+					index === modifying ? createSentence(sentence.lang, editingText.split(/[|]/u).filter(Boolean), editingGlosses, editingShowGloss) : sentence
+				);
 
 	function cancelUnchangedEdit() {
 		modifying = -1;
@@ -157,7 +171,9 @@
 		return false;
 	}
 
-	async function onsubmit({ detail: { lang, words, glosses, showGloss } }: CustomEvent<{ lang: string; words: string[]; glosses: string[]; showGloss: boolean }>): Promise<void> {
+	async function onsubmit({
+		detail: { lang, words, glosses, showGloss }
+	}: CustomEvent<{ lang: string; words: string[]; glosses: string[]; showGloss: boolean }>): Promise<void> {
 		const sentence = createSentence(lang, words, glosses, showGloss);
 
 		if (modifying !== -1) {
@@ -425,7 +441,14 @@
 					const glosses = getSentenceGlosses(previewSentences[sentence]);
 					const merged = words.slice(start, end + 1).join('');
 					editingText = [...words.slice(0, start), merged, ...words.slice(end + 1)].join('|');
-					editingGlosses = [...glosses.slice(0, start), glosses.slice(start, end + 1).filter(Boolean).join('-'), ...glosses.slice(end + 1)];
+					editingGlosses = [
+						...glosses.slice(0, start),
+						glosses
+							.slice(start, end + 1)
+							.filter(Boolean)
+							.join('-'),
+						...glosses.slice(end + 1)
+					];
 					editingSelectionStart = start;
 					editingSelectionEnd = start;
 				}}
@@ -443,7 +466,14 @@
 	</div>
 
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
-		<SentenceInput on:submit={onsubmit} {modifying} {sentences} bind:text={editingText} bind:glosses={editingGlosses} bind:glossEnabled={editingShowGloss} />
+		<SentenceInput
+			on:submit={onsubmit}
+			{modifying}
+			{sentences}
+			bind:text={editingText}
+			bind:glosses={editingGlosses}
+			bind:glossEnabled={editingShowGloss}
+		/>
 	</div>
 
 	<div class="params" class:editing-muted={modifying !== -1}>
@@ -522,13 +552,14 @@
 	<meta name="twitter:image" content={ogImageUrl} />
 	<meta name="twitter:image:alt" content={metaImageAlt} />
 
-	<script type="application/ld+json">{jsonLd}</script>
+	{@html `<script type="application/ld+json">${jsonLd}<\/script>`}
 </svelte:head>
 
 <footer class:editing-muted={modifying !== -1}>
 	<p>
 		{$LL.meta.title()} (
-		<a href="https://github.com/mkpoli/word-order/" title={$LL.footer.githubRepository()} class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
+		<a href="https://github.com/mkpoli/word-order/" title={$LL.footer.githubRepository()} class="github-link"
+			><iconify-icon icon="mdi:github" inline="true" /></a
 		>,
 		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title={$LL.footer.announcement()} class="twitter-link"
 			><iconify-icon icon="mdi:twitter" inline="true" /></a
@@ -613,7 +644,10 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 1em;
-		transition: opacity 180ms ease, filter 180ms ease, transform 180ms ease;
+		transition:
+			opacity 180ms ease,
+			filter 180ms ease,
+			transform 180ms ease;
 	}
 
 	.equivalency {
@@ -622,7 +656,10 @@
 		height: fit-content;
 		padding: 1em;
 		justify-content: center;
-		transition: opacity 180ms ease, filter 180ms ease, transform 180ms ease;
+		transition:
+			opacity 180ms ease,
+			filter 180ms ease,
+			transform 180ms ease;
 	}
 
 	.output {
@@ -631,7 +668,12 @@
 		justify-content: center;
 		position: relative;
 		z-index: 1;
-		transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease, opacity 180ms ease, filter 180ms ease;
+		transition:
+			box-shadow 180ms ease,
+			border-color 180ms ease,
+			transform 180ms ease,
+			opacity 180ms ease,
+			filter 180ms ease;
 	}
 
 	.output::after {
@@ -651,7 +693,12 @@
 		position: relative;
 		padding: 0;
 		z-index: 1;
-		transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease, opacity 180ms ease, filter 180ms ease,
+		transition:
+			box-shadow 180ms ease,
+			border-color 180ms ease,
+			transform 180ms ease,
+			opacity 180ms ease,
+			filter 180ms ease,
 			background-color 180ms ease;
 	}
 
@@ -664,7 +711,9 @@
 		padding: 1rem;
 		border-radius: 1.4rem;
 		border: 1px solid rgb(46 91 255 / 0.2);
-		box-shadow: 0 18px 42px rgb(31 44 84 / 0.12), 0 0 0 0.35rem rgb(46 91 255 / 0.08);
+		box-shadow:
+			0 18px 42px rgb(31 44 84 / 0.12),
+			0 0 0 0.35rem rgb(46 91 255 / 0.08);
 	}
 
 	.input.editing-active {
@@ -687,7 +736,9 @@
 	}
 
 	.editing-context {
-		transition: opacity 180ms ease, filter 180ms ease;
+		transition:
+			opacity 180ms ease,
+			filter 180ms ease;
 	}
 
 	.editing-context {

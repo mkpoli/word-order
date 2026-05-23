@@ -154,7 +154,9 @@
 		box-shadow: 1px 1px 5px 0 #ccc;
 		cursor: pointer;
 		user-select: none;
-		transition: background-color 160ms ease, box-shadow 160ms ease;
+		transition:
+			background-color 160ms ease,
+			box-shadow 160ms ease;
 	}
 
 	.locale-picker > summary::-webkit-details-marker {
@@ -168,7 +170,9 @@
 	.locale-picker:has(summary:focus-visible) > summary {
 		outline: none;
 		background-color: #f4f4f4;
-		box-shadow: 0 0 0 2px rgb(0 0 0 / 14%), 1px 1px 5px 0 #ccc;
+		box-shadow:
+			0 0 0 2px rgb(0 0 0 / 14%),
+			1px 1px 5px 0 #ccc;
 	}
 
 	.locale-picker[open] > summary {
@@ -249,7 +253,9 @@
 		border-radius: 0.25rem;
 		background: transparent;
 		text-align: left;
-		transition: background-color 160ms ease, border-color 160ms ease;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease;
 	}
 
 	.locale-menu button:hover,

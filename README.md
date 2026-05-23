@@ -2,7 +2,7 @@
 
 ## Developing
 
-[Bun](https://bun.sh) must be installed before running the development commands. 
+[Bun](https://bun.sh) must be installed before running the development commands.
 
 ```bash
 bun install
