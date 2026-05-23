@@ -52,5 +52,11 @@
 	"menu_export": "导出",
 	"menu_svg": "导出SVG",
 	"menu_png": "导出PNG",
-	"menu_scramble": "打乱颜色顺序"
+	"menu_scramble": "打乱颜色顺序",
+	"menu_about": "关于",
+	"about_title": "关于",
+	"about_close": "关闭",
+	"about_tagline": "用于绘制多语词语对齐与语序示意图的网页工具。",
+	"about_credit": "由 {author} 提出最初构想，于 2022 年 8 月首次发布，此后陆续完善。",
+	"about_links": "链接"
 }

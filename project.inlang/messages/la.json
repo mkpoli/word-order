@@ -52,5 +52,11 @@
 	"menu_export": "Exporta",
 	"menu_svg": "Exporta SVG",
 	"menu_png": "Exporta PNG",
-	"menu_scramble": "Colores misce"
+	"menu_scramble": "Colores misce",
+	"menu_about": "De hoc",
+	"about_title": "De hoc",
+	"about_close": "Claudere",
+	"about_tagline": "Instrumentum telae ad diagrammata congruentiae verborum et ordinis verborum inter plures linguas pingenda.",
+	"about_credit": "Conceptus originalis a {author} — prima editio mense Augusto MMXXII, postea aucta.",
+	"about_links": "Nexus"
 }

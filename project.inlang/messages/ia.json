@@ -52,5 +52,11 @@
 	"menu_export": "Exportar",
 	"menu_svg": "Exportar SVG",
 	"menu_png": "Exportar PNG",
-	"menu_scramble": "Miscer colores"
+	"menu_scramble": "Miscer colores",
+	"menu_about": "A proposito",
+	"about_title": "A proposito",
+	"about_close": "Clauder",
+	"about_tagline": "Un instrumento web pro designar diagrammas de alineamento de parolas e ordine inter plure linguas.",
+	"about_credit": "Idea original de {author} — prime version in augusto 2022, ampliate desde alora.",
+	"about_links": "Ligamines"
 }

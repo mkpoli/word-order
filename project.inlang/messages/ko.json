@@ -52,5 +52,11 @@
 	"menu_export": "내보내기",
 	"menu_svg": "SVG 내보내기",
 	"menu_png": "PNG 내보내기",
-	"menu_scramble": "색상 섞기"
+	"menu_scramble": "색상 섞기",
+	"menu_about": "정보",
+	"about_title": "소개",
+	"about_close": "닫기",
+	"about_tagline": "여러 언어 간의 단어 대응과 어순을 도식화하는 웹 도구입니다.",
+	"about_credit": "{author} 님의 아이디어로 2022년 8월에 처음 공개되었으며, 이후로도 기능이 추가되어 왔습니다.",
+	"about_links": "링크"
 }

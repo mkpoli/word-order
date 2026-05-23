@@ -52,5 +52,11 @@
 	"menu_export": "Exportar",
 	"menu_svg": "Exportar SVG",
 	"menu_png": "Exportar PNG",
-	"menu_scramble": "Mezclar colores"
+	"menu_scramble": "Mezclar colores",
+	"menu_about": "Acerca de",
+	"about_title": "Acerca de",
+	"about_close": "Cerrar",
+	"about_tagline": "Una herramienta web para crear diagramas de alineación de palabras y de orden de palabras entre varias lenguas.",
+	"about_credit": "Idea original de {author} — primera versión en agosto de 2022, ampliada desde entonces.",
+	"about_links": "Enlaces"
 }
