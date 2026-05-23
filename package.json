@@ -16,32 +16,35 @@
 		"compile:og": "magick static/og-image.svg static/og-image.png"
 	},
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@inlang/paraglide-js": "^2.18.1",
 		"@playwright/test": "^1.60.0",
 		"@sveltejs/adapter-vercel": "^6.3.3",
 		"@sveltejs/kit": "^2.61.0",
 		"@sveltejs/vite-plugin-svelte": "^3.1.2",
 		"@types/dom-to-image": "^2.6.7",
-		"@typescript-eslint/eslint-plugin": "^5.62.0",
-		"@typescript-eslint/parser": "^5.62.0",
+		"@typescript-eslint/eslint-plugin": "8",
+		"@typescript-eslint/parser": "8",
 		"dom-to-image": "^2.6.0",
 		"dom-to-svg": "^0.12.2",
-		"eslint": "^8.57.1",
-		"eslint-config-prettier": "^8.10.2",
+		"eslint": "9",
+		"eslint-config-prettier": "10",
 		"eslint-plugin-svelte": "^3.17.1",
-		"prettier": "^2.8.8",
-		"prettier-plugin-svelte": "^2.10.1",
+		"globals": "^17.6.0",
+		"prettier": "3",
+		"prettier-plugin-svelte": "3",
 		"svelte": "^4.2.20",
 		"svelte-check": "^3.8.6",
 		"svelte-preprocess": "^5.1.4",
 		"tslib": "^2.8.1",
 		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.59.4",
 		"vite": "^5.4.21"
 	},
 	"dependencies": {
 		"@neodrag/svelte": "^2.3.3",
 		"colorjs.io": "^0.6.1",
-		"iconify-icon": "^1.0.8",
+		"iconify-icon": "3",
 		"jspdf": "^4.2.1"
 	}
 }

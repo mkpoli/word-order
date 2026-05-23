@@ -15,16 +15,8 @@
 <svelte:window on:keydown={onkeydown} />
 
 {#if open}
-	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
 	<div class="backdrop" on:click={close} role="presentation">
-		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-		<div
-			class="dialog"
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="about-title"
-			on:click|stopPropagation
-		>
+		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" on:click|stopPropagation>
 			<header>
 				<h2 id="about-title">
 					<iconify-icon icon="mdi:information-outline" inline="true" />
