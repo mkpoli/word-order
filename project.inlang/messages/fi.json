@@ -47,5 +47,11 @@
 	"menu_export": "Vie",
 	"menu_svg": "Vie SVG",
 	"menu_png": "Vie PNG",
-	"menu_scramble": "Sekoita värit"
+	"menu_scramble": "Sekoita värit",
+	"menu_about": "Tietoja",
+	"about_title": "Tietoja",
+	"about_close": "Sulje",
+	"about_tagline": "Verkkotyökalu sanavastaavuus- ja sanajärjestyskaavioiden piirtämiseen kielten välillä.",
+	"about_credit": "Alkuperäinen idea: {author} — ensimmäinen versio elokuussa 2022, sittemmin laajennettu.",
+	"about_links": "Linkit"
 }

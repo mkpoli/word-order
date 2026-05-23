@@ -52,5 +52,11 @@
 	"menu_export": "Eksporti",
 	"menu_svg": "Eksporti SVG",
 	"menu_png": "Eksporti PNG",
-	"menu_scramble": "Miksi kolorojn"
+	"menu_scramble": "Miksi kolorojn",
+	"menu_about": "Pri",
+	"about_title": "Pri",
+	"about_close": "Fermi",
+	"about_tagline": "Reta ilo por desegni vortkunigajn kaj vortordajn diagramojn inter lingvoj.",
+	"about_credit": "Origina ideo de {author} — unua versio en aŭgusto 2022, ekde tiam plivastigita.",
+	"about_links": "Ligiloj"
 }
