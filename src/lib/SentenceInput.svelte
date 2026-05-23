@@ -5,6 +5,7 @@
 	import { tokenizeSentence } from './tokenize';
 	import type { Sentence } from './types';
 	import { createSentenceTokens, getSentenceGlosses, getSentenceWords } from './types';
+	import Word from './Word.svelte';
 
 	export let modifying: number;
 	export let sentences: Sentence[];
@@ -102,7 +103,7 @@
 						{#each glossTokens as token, index}
 							{#if isGlossableToken(token.text)}
 								<label class="gloss-field" for={`gloss-${index}`}>
-									<span class="gloss-word" {lang}>{token.text}</span>
+									<span class="gloss-word" {lang}><Word word={token.text} /></span>
 									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder={$LL.input.glossPlaceholder()} />
 								</label>
 							{/if}
