@@ -47,6 +47,7 @@
 	"dialog_cancel": "Cancel",
 	"confirm_delete_sentence": "Are you sure you want to delete this sentence?",
 	"confirm_new": "Are you sure you want to create a new illustration? This will DELETE everything!!!",
+	"confirm_import": "Import this file? Your current sentences and connections will be replaced.",
 	"menu_new": "New",
 	"menu_import": "Import",
 	"menu_export": "Export",
