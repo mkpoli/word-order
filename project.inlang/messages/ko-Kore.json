@@ -52,6 +52,7 @@
 	"menu_export": "내보내기",
 	"menu_svg": "SVG 내보내기",
 	"menu_png": "PNG 내보내기",
+	"menu_pdf": "PDF 내보내기",
 	"menu_scramble": "色相 섞기",
 	"menu_about": "情報",
 	"about_title": "紹介",

@@ -41,6 +41,7 @@
 	"dependencies": {
 		"@neodrag/svelte": "^2.3.3",
 		"colorjs.io": "^0.6.1",
-		"iconify-icon": "^1.0.8"
+		"iconify-icon": "^1.0.8",
+		"jspdf": "^4.2.1"
 	}
 }

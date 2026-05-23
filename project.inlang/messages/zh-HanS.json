@@ -52,6 +52,7 @@
 	"menu_export": "导出",
 	"menu_svg": "导出SVG",
 	"menu_png": "导出PNG",
+	"menu_pdf": "导出PDF",
 	"menu_scramble": "打乱颜色顺序",
 	"menu_about": "关于",
 	"about_title": "关于",
