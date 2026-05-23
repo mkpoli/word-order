@@ -8,10 +8,7 @@ export function getOgImageUrl(origin: string): string {
 	return new URL('/og-image.png', origin).toString();
 }
 
-export function getJsonLd(
-	origin: string,
-	{ name, description, locale }: { name: string; description: string; locale: string }
-): string {
+export function getJsonLd(origin: string, { name, description, locale }: { name: string; description: string; locale: string }): string {
 	const canonicalUrl = getCanonicalUrl(origin);
 	const jsonLd = {
 		'@context': 'https://schema.org',

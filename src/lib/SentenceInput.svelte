@@ -59,10 +59,7 @@
 		const words = getWords(value);
 		const nextGlosses = words.map((_, index) => currentGlosses[index] ?? '');
 
-		if (
-			nextGlosses.length === currentGlosses.length &&
-			nextGlosses.every((gloss, index) => gloss === currentGlosses[index])
-		) {
+		if (nextGlosses.length === currentGlosses.length && nextGlosses.every((gloss, index) => gloss === currentGlosses[index])) {
 			return;
 		}
 
@@ -105,7 +102,7 @@
 						{#each glossTokens as token, index}
 							{#if isGlossableToken(token.text)}
 								<label class="gloss-field" for={`gloss-${index}`}>
-									<span class="gloss-word" lang={lang}>{token.text}</span>
+									<span class="gloss-word" {lang}>{token.text}</span>
 									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder={$LL.input.glossPlaceholder()} />
 								</label>
 							{/if}
@@ -136,9 +133,10 @@
 		<div class="guidance">
 			<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
 			<p>
-				{@html $LL.input.guidance({
-					delimiter: '<code title="(U+007C, VERTICAL LINE)">|</code>',
-					example: `
+				{@html $LL.input.guidance(
+					{
+						delimiter: '<code title="(U+007C, VERTICAL LINE)">|</code>',
+						example: `
 	<code>我|愛|你。</code>
 	→
 	<span style="display:inline-flex; font-family: sans-serif;" lang="zh-HanT">
@@ -148,7 +146,9 @@
 		<span>。</span>
 	</span>
 	`
-				}, { locale: $locale })}
+					},
+					{ locale: $locale }
+				)}
 			</p>
 		</div>
 	</div>
@@ -162,7 +162,10 @@
 		border: 1px solid transparent;
 		border-radius: 0.4em;
 		min-width: 0;
-		transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+		transition:
+			border-color 180ms ease,
+			box-shadow 180ms ease,
+			background-color 180ms ease;
 	}
 
 	fieldset.editing {

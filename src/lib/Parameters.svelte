@@ -74,7 +74,6 @@
 		{$LL.params.curvature()}
 	</label>
 	<RangeSlider id="curvature" min={0} max={2} step={0.1} bind:value={curvature} suffix="x" />
-
 </fieldset>
 
 <fieldset>

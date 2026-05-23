@@ -305,7 +305,7 @@
 		selectedWordEnd = editingSelectionEnd;
 	}
 
-	$: editingWords = modifying === -1 ? [] : getSentenceWords(sentences[modifying]) ?? [];
+	$: editingWords = modifying === -1 ? [] : (getSentenceWords(sentences[modifying]) ?? []);
 	$: if (selectedWordStart !== -1 && selectedWordEnd >= editingWords.length) {
 		resetEditingWordSelection();
 	}
@@ -370,74 +370,74 @@
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
 >
-		{#if !loading}
-			{#each sentences as sentence, i}
-				{@const { lang, tokens } = sentence}
-				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
-					<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
-						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
-					</div>
-					<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
-					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-						<span class="words" {lang} style:text-align={alignment}>
-							{#each tokens as token, j}
-								{@const word = token.text}
+	{#if !loading}
+		{#each sentences as sentence, i}
+			{@const { lang, tokens } = sentence}
+			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
+				</div>
+				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
+				<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
+					<span class="words" {lang} style:text-align={alignment}>
+						{#each tokens as token, j}
+							{@const word = token.text}
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
-								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
-									{#if sentenceShowsGloss(sentence) && isContent(word)}
-										<span class="gloss-token">{isContent(word) ? token.gloss : ''}</span>
-									{/if}
-									<span
-										class="word"
-										class:whitespace={isWhitespace(word)}
-										class:content={isContent(word)}
-										class:editing={mode === 'edit'}
-										class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
-										class:connected={connecting.some(([l, w]) => l == i && w == j)}
-										style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
-										style:color={colors[color_map[i][j]]}
-										on:click={() => {
-											if (i === modifying) {
-												selectEditingWord(i, j);
+							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
+								{#if sentenceShowsGloss(sentence) && isContent(word)}
+									<span class="gloss-token">{isContent(word) ? token.gloss : ''}</span>
+								{/if}
+								<span
+									class="word"
+									class:whitespace={isWhitespace(word)}
+									class:content={isContent(word)}
+									class:editing={mode === 'edit'}
+									class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
+									class:connected={connecting.some(([l, w]) => l == i && w == j)}
+									style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
+									style:color={colors[color_map[i][j]]}
+									on:click={() => {
+										if (i === modifying) {
+											selectEditingWord(i, j);
+											return;
+										}
+
+										if (!isContent(word)) return;
+
+										const entryIndex = color_map[i][j];
+
+										if (mode === 'view') {
+											mode = 'edit';
+
+											if (entryIndex !== -1) {
+												connected = [];
+												for (let [i, words] of equivalency[entryIndex].entries()) {
+													for (let word of words) {
+														connected.push([i, word]);
+													}
+												}
+
+												connecting = connected.map(([l, w]) => [l, w]);
+												connectedIndex = entryIndex;
 												return;
 											}
+										}
 
-											if (!isContent(word)) return;
-
-											const entryIndex = color_map[i][j];
-
-											if (mode === 'view') {
-												mode = 'edit';
-
-												if (entryIndex !== -1) {
-													connected = [];
-													for (let [i, words] of equivalency[entryIndex].entries()) {
-														for (let word of words) {
-															connected.push([i, word]);
-														}
-													}
-
-													connecting = connected.map(([l, w]) => [l, w]);
-													connectedIndex = entryIndex;
-													return;
-												}
-											}
-
-											if (connecting.some(([l, w]) => l == i && w == j)) {
-												connecting = connecting.filter(([l, w]) => l != i || w != j);
-											} else {
-												connecting = [...connecting, [i, j]];
-											}
-										}}
-										bind:this={word_spans[i][j]}
-									>
-										<Word word={word} />
-									</span>
+										if (connecting.some(([l, w]) => l == i && w == j)) {
+											connecting = connecting.filter(([l, w]) => l != i || w != j);
+										} else {
+											connecting = [...connecting, [i, j]];
+										}
+									}}
+									bind:this={word_spans[i][j]}
+								>
+									<Word {word} />
 								</span>
-							{/each}
-						</span>
-					</div>
-					<div class="modify action">
+							</span>
+						{/each}
+					</span>
+				</div>
+				<div class="modify action">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<iconify-icon
 						icon="material-symbols:edit-rounded"
@@ -546,12 +546,7 @@
 		{/if}
 		<svg style="position: absolute;" width="100%" height="100%">
 			{#each lines as [x1, y1, x2, y2, color]}
-				<path
-					d={connectionPath(x1, y1, x2, y2, curvature)}
-					stroke={color}
-					stroke-width={lineWidth}
-					fill="none"
-				/>
+				<path d={connectionPath(x1, y1, x2, y2, curvature)} stroke={color} stroke-width={lineWidth} fill="none" />
 			{/each}
 		</svg>
 
@@ -937,11 +932,11 @@
 		background-color: transparent;
 	}
 
-output.modifying-sentence .sentence:not(.modifying) > .tag,
-output.modifying-sentence .sentence:not(.modifying) > .sentence-body,
-output.modifying-sentence svg {
-	opacity: 0.3;
-}
+	output.modifying-sentence .sentence:not(.modifying) > .tag,
+	output.modifying-sentence .sentence:not(.modifying) > .sentence-body,
+	output.modifying-sentence svg {
+		opacity: 0.3;
+	}
 
 	output.dragging {
 		user-select: none;

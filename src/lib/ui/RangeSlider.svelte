@@ -14,7 +14,7 @@
 	export let id: string;
 	export let prefix = '';
 	export let suffix = '';
-	export let formatter = (value: number, percentage: number) => value;
+	export let formatter = (value: number, _percentage: number) => value;
 
 	export let precision = 2;
 	export let springValues = { stiffness: 0.15, damping: 0.4 };
@@ -167,7 +167,6 @@
 
 	function sliderInteractStart(e: MouseEvent | TouchEvent) {
 		if (!disabled) {
-			const el = e.target;
 			const clientPos = normalisedClient(e);
 			// set the closest handle as active
 			focus = true;
@@ -182,7 +181,7 @@
 		}
 	}
 
-	function sliderInteractEnd(e: Event) {
+	function sliderInteractEnd(_e: Event) {
 		handlePressed = false;
 	}
 
@@ -231,7 +230,7 @@
 
 		e.preventDefault();
 	}}
-	on:mouseleave={(e) => {
+	on:mouseleave={() => {
 		if (activatedByWheel) {
 			activatedByWheel = false;
 			focus = false;
