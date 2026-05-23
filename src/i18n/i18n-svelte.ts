@@ -74,7 +74,15 @@ const createLL = () => ({
 		export: m.menu_export,
 		svg: m.menu_svg,
 		png: m.menu_png,
-		scramble: m.menu_scramble
+		scramble: m.menu_scramble,
+		about: m.menu_about
+	},
+	about: {
+		title: m.about_title,
+		close: m.about_close,
+		tagline: m.about_tagline,
+		credit: m.about_credit,
+		links: m.about_links
 	}
 });
 

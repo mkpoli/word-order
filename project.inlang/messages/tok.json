@@ -52,5 +52,11 @@
 	"menu_export": "o pana e lipu",
 	"menu_svg": "o pana e SVG",
 	"menu_png": "o pana e PNG",
-	"menu_scramble": "o ante e kule"
+	"menu_scramble": "o ante e kule",
+	"menu_about": "sona",
+	"about_title": "sona pi ilo ni",
+	"about_close": "pini",
+	"about_tagline": "ni li ilo lipu pi sitelen e nimi sama lon toki mute.",
+	"about_credit": "{author} li lawa e nasin pi ilo ni. ilo ni li open lon mun nanpa luka tu wan pi sike 2022.",
+	"about_links": "linluwi"
 }
