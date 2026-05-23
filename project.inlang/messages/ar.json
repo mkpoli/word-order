@@ -52,5 +52,11 @@
 	"menu_export": "تصدير",
 	"menu_svg": "تصدير SVG",
 	"menu_png": "تصدير PNG",
-	"menu_scramble": "خلط الألوان"
+	"menu_scramble": "خلط الألوان",
+	"menu_about": "حول",
+	"about_title": "حول",
+	"about_close": "إغلاق",
+	"about_tagline": "أداة ويب لرسم مخططات محاذاة الكلمات وترتيب الكلمات بين اللغات.",
+	"about_credit": "فكرة أصلية من {author} — أُطلق الإصدار الأول في أغسطس 2022، ومنذ ذلك الحين تُضاف ميزات.",
+	"about_links": "روابط"
 }

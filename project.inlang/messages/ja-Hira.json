@@ -52,5 +52,11 @@
 	"menu_export": "かきだす",
 	"menu_svg": "SVG で かきだす",
 	"menu_png": "PNG で かきだす",
-	"menu_scramble": "いろを まぜる"
+	"menu_scramble": "いろを まぜる",
+	"menu_about": "この つーるに ついて",
+	"about_title": "この つーるに ついて",
+	"about_close": "とじる",
+	"about_tagline": "にげんごかんの たんごたいおうと ごじゅんの ずを えがく うぇぶつーるです。",
+	"about_credit": "{author} さんの はつあんで 2022ねん 8がつに しょはんを こうかい、そのご きのうを ついかしています。",
+	"about_links": "りんく"
 }

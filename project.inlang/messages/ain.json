@@ -52,5 +52,11 @@
 	"menu_export": "Cinuyep omante",
 	"menu_svg": "SVG sanke",
 	"menu_png": "PNG sanke",
-	"menu_scramble": "Color a=sinna"
+	"menu_scramble": "Color a=sinna",
+	"menu_about": "Tan iyotta",
+	"about_title": "Tan iyotta",
+	"about_close": "Maka",
+	"about_tagline": "A web tool for drawing bitext word-alignment and word-order diagrams.",
+	"about_credit": "Original idea by {author} — first released August 2022, with further additions since.",
+	"about_links": "Linkpe"
 }

@@ -52,5 +52,11 @@
 	"menu_export": "내보내기",
 	"menu_svg": "SVG 내보내기",
 	"menu_png": "PNG 내보내기",
-	"menu_scramble": "色相 섞기"
+	"menu_scramble": "色相 섞기",
+	"menu_about": "情報",
+	"about_title": "紹介",
+	"about_close": "닫기",
+	"about_tagline": "두 言語間의 單語對應과 語順을 圖式化하는 웹 道具입니다.",
+	"about_credit": "{author} 님의 아이디어로 2022年 8月에 처음 公開되었으며, 以後로도 機能이 追加되어 왔습니다.",
+	"about_links": "連結"
 }
