@@ -52,6 +52,7 @@
 	"menu_export": "匯出",
 	"menu_svg": "匯出SVG",
 	"menu_png": "匯出PNG",
+	"menu_pdf": "匯出PDF",
 	"menu_scramble": "打亂顏色順序",
 	"menu_about": "關於",
 	"about_title": "關於",

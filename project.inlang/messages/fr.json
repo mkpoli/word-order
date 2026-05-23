@@ -52,6 +52,7 @@
 	"menu_export": "Exporter",
 	"menu_svg": "Exporter SVG",
 	"menu_png": "Exporter PNG",
+	"menu_pdf": "Exporter PDF",
 	"menu_scramble": "Mélanger les couleurs",
 	"menu_about": "À propos",
 	"about_title": "À propos",

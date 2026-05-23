@@ -47,6 +47,7 @@
 	"menu_export": "Експортиране",
 	"menu_svg": "Експортиране като SVG",
 	"menu_png": "Експортиране като PNG",
+	"menu_pdf": "Експортиране като PDF",
 	"menu_scramble": "Разбъркай цветовете",
 	"menu_about": "Относно",
 	"about_title": "Относно",
