@@ -45,7 +45,7 @@ For a guided tour, click the **Help** button in the header.
 
 ## Developing
 
-[Bun](https://bun.sh) is the recommended package manager (the lockfile is `bun.lockb`).
+[Bun](https://bun.sh) is the recommended package manager (the lockfile is `bun.lockb`) and must be installed before running the development commands.
 
 ```bash
 bun install

@@ -16,7 +16,7 @@ export function getLanguageName(code: string, locale: string): string {
 	const languageNames = getLanguageNames(locale);
 	try {
 		return languageNames.of(code) ?? code;
-	} catch (e) {
+	} catch {
 		return code;
 	}
 }
