@@ -277,106 +277,86 @@
 		loading = false;
 	}
 
-	let output: HTMLOutputElement;
-	$: canonicalUrl = getCanonicalUrl($page.url.origin);
-	$: ogImageUrl = getOgImageUrl($page.url.origin);
-	$: metaTitle = $LL.meta.title();
-	$: metaDescription = $LL.meta.description();
-	$: metaKeywords = $LL.meta.keywords();
-	$: metaImageAlt = $LL.meta.imageAlt();
-	$: jsonLd = getJsonLd($page.url.origin, {
-		name: metaTitle,
-		description: metaDescription,
-		locale: $locale
-	});
-</script>
+	let exportOpen = false;
+	let exportWrapper: HTMLDivElement;
+	let exportTrigger: HTMLButtonElement;
+	let exportCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
-<svelte:window
-	on:pointerdown={(e) => {
-		if (modifying === -1) return;
-		if (shouldKeepSentenceEdit(e.target)) return;
-		if (editingText !== wordsBeforeModify.join('|')) return;
-		if (editingShowGloss !== sentences[modifying].showGloss) return;
-		if (editingGlosses.length !== glossesBeforeModify.length) return;
-		if (editingGlosses.some((gloss, index) => gloss !== (glossesBeforeModify[index] ?? ''))) return;
-		cancelUnchangedEdit();
-	}}
-/>
+	function openExportMenu() {
+		if (mode === 'edit') return;
+		if (exportCloseTimer) {
+			clearTimeout(exportCloseTimer);
+			exportCloseTimer = null;
+		}
+		exportOpen = true;
+	}
 
-<header class="menu" class:editing-context={modifying !== -1}>
-	<button
-		disabled={mode === 'edit'}
-		on:click={() => {
-			if (!confirm($LL.confirm.new())) return;
+	function scheduleExportClose() {
+		if (mode === 'edit') return;
+		if (exportCloseTimer) clearTimeout(exportCloseTimer);
+		exportCloseTimer = setTimeout(() => {
+			exportOpen = false;
+			exportCloseTimer = null;
+		}, 220);
+	}
 
-			sentences = [];
-			equivalency = [];
-		}}
-	>
-		<iconify-icon icon="eos-icons:content-new" />
-		{$LL.menu.new()}
-	</button>
-	<button
-		disabled={mode === 'edit'}
-		on:click={() => {
-			const data = {
-				sentences: sentences,
-				equivalency: equivalency
-			};
-			save(JSON.stringify(data), 'application/json', 'data.json');
-		}}
-	>
-		<iconify-icon icon="uil:export" />
-		{$LL.menu.export()}</button
-	>
-	<button
-		disabled={mode === 'edit'}
-		on:click={() => {
-			open(load);
-		}}
-	>
-		<iconify-icon icon="uil:import" />
-		{$LL.menu.import()}</button
-	>
-	<button
-		disabled={mode === 'edit'}
-		on:click={() => {
-			if (output) {
-				const serializer = new XMLSerializer();
-				const svgDocument = elementToSVG(output);
-				const svgString = serializer.serializeToString(svgDocument);
-				save(svgString, 'image/svg+xml', 'output.svg');
+	function closeExportMenu(restoreFocus = false) {
+		if (exportCloseTimer) {
+			clearTimeout(exportCloseTimer);
+			exportCloseTimer = null;
+		}
+		exportOpen = false;
+		if (restoreFocus && exportTrigger) exportTrigger.focus();
+	}
+
+	async function exportPngBlob(scale = 2): Promise<Blob | null> {
+		if (!output) return null;
+		return await domToImage.toBlob(output, {
+			width: output.clientWidth * scale,
+			height: output.clientHeight * scale,
+			style: {
+				transform: `scale(${scale})`,
+				transformOrigin: 'top left',
+				'background-color': getBodyBackgroundColor()
 			}
-		}}
-	>
-		<iconify-icon icon="teenyicons:svg-outline" />
-		{$LL.menu.svg()}
-	</button>
-	<button
-		disabled={mode === 'edit'}
-		on:click={async () => {
-			if (output) {
-				const scale = 2;
-				const png = await domToImage.toBlob(output, {
-					width: output.clientWidth * scale,
-					height: output.clientHeight * scale,
-					style: {
-						transform: `scale(${scale})`, // `translate(${em}px, ${em}px)
-						transformOrigin: 'top left',
-						'background-color': getBodyBackgroundColor()
-					}
-				});
-				save(png, 'image/png', 'output.png');
-			}
-		}}
-	>
-		<iconify-icon icon="teenyicons:png-outline" />
-		{$LL.menu.png()}
-	</button>
-	<button
-		disabled={mode === 'edit'}
-		on:click={async () => {
-			if (!output) return;
+		});
+	}
+
+	function exportJson() {
+		const data = { sentences, equivalency };
+		save(JSON.stringify(data), 'application/json', 'data.json');
+		closeExportMenu();
+	}
+
+	function exportSvg() {
+		if (!output) {
+			closeExportMenu();
+			return;
+		}
+		const serializer = new XMLSerializer();
+		const svgDocument = elementToSVG(output);
+		const svgString = serializer.serializeToString(svgDocument);
+		save(svgString, 'image/svg+xml', 'output.svg');
+		closeExportMenu();
+	}
+
+	async function exportPng() {
+		try {
+			const png = await exportPngBlob();
+			if (png) save(png, 'image/png', 'output.png');
+		} catch (err) {
+			console.error('Export PNG failed:', err);
+		} finally {
+			closeExportMenu();
+		}
+	}
+
+	async function exportPdf() {
+		if (!output) {
+			closeExportMenu();
+			return;
+		}
+		try {
 			const scale = 2;
 			const dataUrl = await domToImage.toPng(output, {
 				width: output.clientWidth * scale,
@@ -398,11 +378,101 @@
 			});
 			pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
 			pdf.save('output.pdf');
+		} catch (err) {
+			console.error('Export PDF failed:', err);
+		} finally {
+			closeExportMenu();
+		}
+	}
+
+	let output: HTMLOutputElement;
+	$: canonicalUrl = getCanonicalUrl($page.url.origin);
+	$: ogImageUrl = getOgImageUrl($page.url.origin);
+	$: metaTitle = $LL.meta.title();
+	$: metaDescription = $LL.meta.description();
+	$: metaKeywords = $LL.meta.keywords();
+	$: metaImageAlt = $LL.meta.imageAlt();
+	$: jsonLd = getJsonLd($page.url.origin, {
+		name: metaTitle,
+		description: metaDescription,
+		locale: $locale
+	});
+</script>
+
+<svelte:window
+	on:pointerdown={(e) => {
+		if (exportOpen && e.target instanceof Node && exportWrapper && !exportWrapper.contains(e.target)) {
+			closeExportMenu();
+		}
+		if (modifying === -1) return;
+		if (shouldKeepSentenceEdit(e.target)) return;
+		if (editingText !== wordsBeforeModify.join('|')) return;
+		if (editingShowGloss !== sentences[modifying].showGloss) return;
+		if (editingGlosses.length !== glossesBeforeModify.length) return;
+		if (editingGlosses.some((gloss, index) => gloss !== (glossesBeforeModify[index] ?? ''))) return;
+		cancelUnchangedEdit();
+	}}
+	on:keydown={(e) => {
+		if (e.key === 'Escape' && exportOpen) closeExportMenu(true);
+	}}
+/>
+
+<header class="menu" class:editing-context={modifying !== -1}>
+	<button
+		disabled={mode === 'edit'}
+		on:click={() => {
+			if (!confirm($LL.confirm.new())) return;
+
+			sentences = [];
+			equivalency = [];
 		}}
 	>
-		<iconify-icon icon="teenyicons:pdf-outline" />
-		{$LL.menu.pdf()}
+		<iconify-icon icon="eos-icons:content-new" />
+		{$LL.menu.new()}
 	</button>
+	<button
+		disabled={mode === 'edit'}
+		on:click={() => {
+			open(load);
+		}}
+	>
+		<iconify-icon icon="uil:import" />
+		{$LL.menu.import()}</button
+	>
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} on:mouseenter={openExportMenu} on:mouseleave={scheduleExportClose}>
+		<button
+			class="export-trigger"
+			disabled={mode === 'edit'}
+			aria-haspopup="true"
+			aria-expanded={exportOpen}
+			bind:this={exportTrigger}
+			on:click={() => (exportOpen ? closeExportMenu() : openExportMenu())}
+			on:focus={openExportMenu}
+		>
+			<iconify-icon icon="uil:export" />
+			{$LL.menu.export()}
+			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron" />
+		</button>
+		<div class="export-menu" role="group" aria-label={$LL.menu.export()}>
+			<button type="button" disabled={mode === 'edit'} on:click={exportJson}>
+				<iconify-icon icon="mdi:code-braces" inline="true" />
+				JSON
+			</button>
+			<button type="button" disabled={mode === 'edit'} on:click={exportSvg}>
+				<iconify-icon icon="mdi:vector-square" inline="true" />
+				SVG
+			</button>
+			<button type="button" disabled={mode === 'edit'} on:click={exportPng}>
+				<iconify-icon icon="mdi:image-outline" inline="true" />
+				PNG
+			</button>
+			<button type="button" disabled={mode === 'edit'} on:click={exportPdf}>
+				<iconify-icon icon="mdi:file-pdf-box" inline="true" />
+				PDF
+			</button>
+		</div>
+	</div>
 	<button class="about-button" title={$LL.menu.about()} aria-label={$LL.menu.about()} on:click={() => (aboutOpen = true)}>
 		<iconify-icon icon="mdi:information-outline" />
 		{$LL.menu.about()}
@@ -863,6 +933,82 @@
 
 	.menu button:not(:disabled):hover {
 		background-color: #eee;
+	}
+
+	.export-dropdown {
+		position: relative;
+		display: inline-flex;
+	}
+
+	.export-trigger :global(.chevron) {
+		font-size: 0.95em;
+		opacity: 0.6;
+		margin-inline-start: 0.15em;
+		transition: transform 160ms ease;
+	}
+
+	.export-dropdown.open .export-trigger :global(.chevron) {
+		transform: rotate(180deg);
+	}
+
+	.export-menu {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		min-width: 10em;
+		margin-top: 0;
+		padding: 0.55em 0.35em 0.35em;
+		display: none;
+		flex-direction: column;
+		gap: 0.1em;
+		background: white;
+		border-radius: 0.3em;
+		box-shadow:
+			1px 1px 5px 0 #ccc,
+			0 6px 22px rgb(15 23 42 / 0.12);
+		z-index: 100;
+	}
+
+	.export-dropdown.open .export-menu {
+		display: flex;
+	}
+
+	.export-menu button {
+		appearance: none;
+		background: none;
+		border: none;
+		box-shadow: none;
+		padding: 0.5em 0.85em;
+		border-radius: 0.2em;
+		font: inherit;
+		font-weight: bold;
+		font-size: 1em;
+		color: #333;
+		display: grid;
+		grid-template-columns: 1.3em 1fr;
+		align-items: center;
+		gap: 0.6em;
+		text-align: left;
+		cursor: pointer;
+		width: 100%;
+		justify-content: flex-start;
+	}
+
+	.export-menu button :global(iconify-icon) {
+		font-size: 1.15em;
+		justify-self: center;
+		color: #555;
+	}
+
+	.export-menu button:not(:disabled):hover,
+	.export-menu button:focus-visible {
+		background-color: #eee;
+		outline: none;
+	}
+
+	.export-menu button:disabled {
+		opacity: 0.5;
+		cursor: default;
 	}
 
 	@media (max-width: 720px) {
