@@ -12,7 +12,7 @@
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
-	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords } from '$lib/types';
 	import { docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 
 	// Components
@@ -87,6 +87,7 @@
 	let fontFamily: FontFamily;
 	let fontStyle: FontStyle;
 	let fontSize: number;
+	let glossFontSize = 11;
 	let spaceWidth = 4;
 
 	let aboutOpen = false;
@@ -553,6 +554,7 @@
 					{fontFamily}
 					{fontStyle}
 					{fontSize}
+					{glossFontSize}
 					{spaceWidth}
 					{loading}
 					{modifying}
@@ -649,6 +651,7 @@
 			bind:fontFamily
 			bind:fontStyle
 			bind:fontSize
+			bind:glossFontSize
 			bind:spaceWidth
 		/>
 	</div>
