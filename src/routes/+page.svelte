@@ -303,6 +303,7 @@
 
 	async function loadExample(example: Example) {
 		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.loadExample({ name: example.name }))) return;
+		if (example.spaceWidth !== undefined) spaceWidth = example.spaceWidth;
 		await replaceDoc(docFromExample(example));
 	}
 
