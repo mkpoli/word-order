@@ -56,7 +56,7 @@
 	"menu_about": "Über",
 	"about_title": "Über",
 	"about_close": "Schließen",
-	"about_tagline": "Ein Webwerkzeug zum Zeichnen von Wortausrichtungs- und Wortstellungsdiagrammen zwischen Sprachen.",
+	"about_tagline": "Ein Webwerkzeug zum Zeichnen von Wortausrichtungs- und Wortstellungsdiagrammen zwischen mehreren Sprachen.",
 	"about_credit": "Ursprüngliche Idee von {author} — erste Version im August 2022, seitdem erweitert.",
 	"about_links": "Links"
 }
