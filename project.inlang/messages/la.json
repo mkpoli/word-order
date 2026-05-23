@@ -52,6 +52,7 @@
 	"menu_export": "Exporta",
 	"menu_svg": "Exporta SVG",
 	"menu_png": "Exporta PNG",
+	"menu_pdf": "Exporta PDF",
 	"menu_scramble": "Colores misce",
 	"menu_about": "De hoc",
 	"about_title": "De hoc",
