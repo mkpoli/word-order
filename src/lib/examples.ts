@@ -23,22 +23,7 @@ export const EXAMPLES: Example[] = [
 			s('en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']),
 			s('zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']),
 			s('zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']),
-			s('ja', [
-				'<ruby>私<rt>わたし</rt></ruby>',
-				'は',
-				'ガラス',
-				'を',
-				'食べ',
-				'れます',
-				'。',
-				'それ',
-				'は',
-				'私',
-				'を',
-				'傷つけ',
-				'ません',
-				'。'
-			])
+			s('ja', ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。'])
 		],
 		equivalency: [
 			[[0], [0], [0], [0, 1]],
@@ -145,6 +130,84 @@ export const EXAMPLES: Example[] = [
 			[[10], [4]], // -yor (PROG) = -ing in living
 			[[12], [0]] // -uz (1PL) = We
 		]
+	},
+	{
+		id: 'ainu-polysynthesis',
+		name: 'Ainu polysynthesis',
+		sentences: [
+			// One Ainu verb packs subject, object, and stem into a single word
+			// 0:a= 1:e= 2:nukar
+			s('ain', ['a=', 'e=', 'nukar'], ['1SG.A', '2SG.O', 'see']),
+			// 0:I 1:space 2:see 3:space 4:you 5:.
+			s('en', ['I', ' ', 'see', ' ', 'you', '.'], ['1SG.A', '', 'see', '', '2SG.O', ''])
+		],
+		equivalency: [
+			[[0], [0]], // a= (1SG.A) = I
+			[[1], [4]], // e= (2SG.O) = you (note the position swap)
+			[[2], [2]] // nukar = see
+		]
+	},
+	{
+		id: 'question-name',
+		name: 'What is your name?',
+		sentences: [
+			// 0:What 1:space 2:is 3:space 4:your 5:space 6:name 7:?
+			s('en', ['What', ' ', 'is', ' ', 'your', ' ', 'name', '?']),
+			// 0:あなた 1:の 2:名前 3:は 4:何 5:です 6:か
+			// "you-GEN name-TOP what COP Q" — wh-word stays in situ, near the end
+			s('ja', ['あなた', 'の', '名前', 'は', '何', 'です', 'か']),
+			// 0:आपका 1:space 2:नाम 3:space 4:क्या 5:space 6:है 7:?
+			// "your.GEN name what COP" — wh-word before the verb
+			s('hi', ['आपका', ' ', 'नाम', ' ', 'क्या', ' ', 'है', '?']),
+			// 0:ما 1:space 2:اسمك 3:؟
+			// "what your-name" — possessive is a clitic on 'name'
+			s('ar', ['ما', ' ', 'اسمك', '؟'])
+		],
+		equivalency: [
+			[[0], [4], [4], [0]], // what
+			[[4], [0], [0], [2]], // your (ar: -k clitic on اسمك)
+			[[6], [2], [2], [2]] // name (ar: stem of اسمك)
+		]
+	},
+	{
+		id: 'numbers-1-5',
+		name: 'Numbers 1–5',
+		sentences: [
+			// 0:one 1:space 2:two 3:space 4:three 5:space 6:four 7:space 8:five
+			s('en', ['one', ' ', 'two', ' ', 'three', ' ', 'four', ' ', 'five']),
+			s('hi', ['एक', ' ', 'दो', ' ', 'तीन', ' ', 'चार', ' ', 'पाँच']),
+			s('vi', ['một', ' ', 'hai', ' ', 'ba', ' ', 'bốn', ' ', 'năm']),
+			s('fi', ['yksi', ' ', 'kaksi', ' ', 'kolme', ' ', 'neljä', ' ', 'viisi']),
+			s('ar', ['واحد', ' ', 'اثنان', ' ', 'ثلاثة', ' ', 'أربعة', ' ', 'خمسة'])
+		],
+		equivalency: [
+			[[0], [0], [0], [0], [0]], // 1
+			[[2], [2], [2], [2], [2]], // 2
+			[[4], [4], [4], [4], [4]], // 3
+			[[6], [6], [6], [6], [6]], // 4
+			[[8], [8], [8], [8], [8]] // 5
+		]
+	},
+	{
+		id: 'plural-strategies',
+		name: 'Plural strategies',
+		sentences: [
+			// 0:two 1:space 2:book 3:s — suffix
+			s('en', ['two', ' ', 'book', 's']),
+			// 0:两 1:本 2:书 — numeral + classifier + bare noun, no plural marker
+			s('zh-HanS', ['两', '本', '书']),
+			// 0:dua 1:space 2:buku — bare noun, plural inferred from numeral
+			s('id', ['dua', ' ', 'buku']),
+			// 0:две 1:space 2:книги — case- and gender-marked plural via suffix
+			s('ru', ['две', ' ', 'книги']),
+			// 0:kaksi 1:space 2:kirjaa — numeral triggers partitive singular
+			s('fi', ['kaksi', ' ', 'kirjaa'])
+		],
+		equivalency: [
+			[[0], [0], [0], [0], [0]], // two
+			[[2], [2], [2], [2], [2]], // book
+			[[3], [], [], [], []], // -s (English plural suffix)
+			[[], [1], [], [], []] // 本 (Chinese classifier)
+		]
 	}
 ];
-
