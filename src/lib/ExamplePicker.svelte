@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, tick } from 'svelte';
 	import { LL } from '../i18n/i18n-svelte';
 	import { EXAMPLES, type Example } from './examples';
 
@@ -8,6 +8,10 @@
 	const dispatch = createEventDispatcher<{
 		pick: { example: Example };
 	}>();
+
+	let dialog: HTMLDivElement;
+	let previousFocus: HTMLElement | null = null;
+	let lastOpen = false;
 
 	function close() {
 		open = false;
@@ -18,8 +22,55 @@
 		close();
 	}
 
+	function focusableElements(): HTMLElement[] {
+		if (!dialog) return [];
+		return Array.from(
+			dialog.querySelectorAll<HTMLElement>(
+				'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input:not([disabled])'
+			)
+		);
+	}
+
+	$: if (open !== lastOpen) {
+		lastOpen = open;
+		if (open) {
+			previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+			tick().then(() => {
+				const items = focusableElements();
+				(items[0] ?? dialog)?.focus();
+			});
+		} else if (previousFocus) {
+			previousFocus.focus();
+			previousFocus = null;
+		}
+	}
+
 	function onkeydown(e: KeyboardEvent) {
-		if (open && e.key === 'Escape') close();
+		if (!open) return;
+		if (e.key === 'Escape') {
+			close();
+			return;
+		}
+		if (e.key !== 'Tab') return;
+
+		const items = focusableElements();
+		if (items.length === 0) {
+			e.preventDefault();
+			dialog?.focus();
+			return;
+		}
+
+		const first = items[0];
+		const last = items[items.length - 1];
+		const active = document.activeElement;
+
+		if (e.shiftKey && active === first) {
+			e.preventDefault();
+			last.focus();
+		} else if (!e.shiftKey && active === last) {
+			e.preventDefault();
+			first.focus();
+		}
 	}
 </script>
 
@@ -34,6 +85,8 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="examples-title"
+			bind:this={dialog}
+			tabindex="-1"
 			on:click|stopPropagation
 		>
 			<header>
