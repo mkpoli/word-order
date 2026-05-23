@@ -15,6 +15,7 @@
 
 	// Components
 	import Equivalency from '$lib/Equivalency.svelte';
+	import ExamplePicker from '$lib/ExamplePicker.svelte';
 	import HelpDialog from '$lib/HelpDialog.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
@@ -27,16 +28,19 @@
 		createEmptyProject,
 		loadState,
 		projectFromDoc,
+		projectFromExample,
 		projectToDoc,
 		saveState,
 		type Project
 	} from '$lib/projects';
+	import type { Example } from '$lib/examples';
 
 	let projects: Project[] = [];
 	let activeId = '';
 	let sentences: Sentence[] = [];
 	let equivalency: number[][][] = [];
 	let helpOpen = false;
+	let examplesOpen = false;
 
 	let mode: Mode = 'view';
 	let goldenHue = 0;
@@ -449,6 +453,13 @@
 		{$LL.menu.png()}
 	</button>
 	<button
+		disabled={mode === 'edit'}
+		on:click={() => (examplesOpen = true)}
+	>
+		<iconify-icon icon="mdi:bookshelf" />
+		{$LL.menu.examples()}
+	</button>
+	<button
 		class="help-button"
 		title={$LL.menu.help()}
 		aria-label={$LL.menu.help()}
@@ -474,6 +485,12 @@
 {/if}
 
 <HelpDialog bind:open={helpOpen} />
+<ExamplePicker
+	bind:open={examplesOpen}
+	on:pick={async (e) => {
+		await addTab(projectFromExample(e.detail.example));
+	}}
+/>
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>

@@ -1,5 +1,6 @@
 import type { Sentence, SentenceData } from './types';
 import { normalizeSentence } from './types';
+import { EXAMPLES, type Example } from './examples';
 
 export type Project = {
 	id: string;
@@ -38,52 +39,20 @@ export function createEmptyProject(name = ''): Project {
 	};
 }
 
-const DEFAULT_SAMPLE = (): Project => ({
-	id: randomId(),
-	name: '',
-	sentences: [
-		{
-			lang: 'en',
-			showGloss: false,
-			tokens: ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.'].map((text) => ({ text, gloss: '' }))
-		},
-		{
-			lang: 'zh-HanS',
-			showGloss: false,
-			tokens: ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。'].map((text) => ({ text, gloss: '' }))
-		},
-		{
-			lang: 'zh-HanT',
-			showGloss: false,
-			tokens: ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。'].map((text) => ({ text, gloss: '' }))
-		},
-		{
-			lang: 'ja',
-			showGloss: false,
-			tokens: ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。'].map((text) => ({
-				text,
-				gloss: ''
-			}))
-		}
-	],
-	equivalency: [
-		[[0], [0], [0], [0, 1]],
-		[[2], [1], [1], [5]],
-		[[4], [2], [2], [4]],
-		[[6], [3], [3], [2, 3]],
-		[[8], [4], [4], []],
-		[[10], [], [], [7, 8]],
-		[[12], [5], [5], [12]],
-		[[14], [6], [6], [11]],
-		[[16], [], [], [9, 10]],
-		[[], [7], [7], []]
-	],
-	createdAt: Date.now(),
-	updatedAt: Date.now()
-});
+export function projectFromExample(example: Example, blankName = false): Project {
+	const now = Date.now();
+	return {
+		id: randomId(),
+		name: blankName ? '' : example.name,
+		sentences: structuredClone(example.sentences),
+		equivalency: structuredClone(example.equivalency),
+		createdAt: now,
+		updatedAt: now
+	};
+}
 
 export function createDefaultState(): PersistedState {
-	const sample = DEFAULT_SAMPLE();
+	const sample = projectFromExample(EXAMPLES[0], true);
 	return { schemaVersion: SCHEMA_VERSION, projects: [sample], activeId: sample.id };
 }
 

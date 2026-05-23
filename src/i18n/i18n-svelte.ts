@@ -76,7 +76,13 @@ const createLL = () => ({
 		svg: m.menu_svg,
 		png: m.menu_png,
 		scramble: m.menu_scramble,
-		help: m.menu_help
+		help: m.menu_help,
+		examples: m.menu_examples
+	},
+	examples: {
+		title: m.examples_title,
+		close: m.examples_close,
+		hint: m.examples_hint
 	},
 	projects: {
 		untitled: m.projects_untitled,
