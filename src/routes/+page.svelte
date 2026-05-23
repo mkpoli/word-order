@@ -1160,11 +1160,13 @@
 		top: 100%;
 		left: 0;
 		min-width: 18em;
+		max-height: min(70vh, 28em);
+		overflow-y: auto;
 		margin-top: 0;
-		padding: 0.45em 0.35em;
+		padding: 0.35em 0.3em;
 		display: none;
 		flex-direction: column;
-		gap: 0.1em;
+		gap: 0.05em;
 		background: white;
 		border-radius: 0.3em;
 		box-shadow:
@@ -1182,37 +1184,37 @@
 		background: none;
 		border: none;
 		box-shadow: none;
-		padding: 0.5em 0.85em;
+		padding: 0.4em 0.7em;
 		border-radius: 0.25em;
 		font: inherit;
 		color: #333;
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: 0.2em;
+		gap: 0.15em;
 		text-align: left;
 		cursor: pointer;
 		width: 100%;
 	}
 
 	.examples-menu .example-name {
-		font-weight: bold;
-		font-size: 1em;
+		font-weight: 600;
+		font-size: 0.9em;
 		color: #333;
 	}
 
 	.examples-menu .example-langs {
 		display: flex;
 		flex-wrap: nowrap;
-		gap: 0.25em;
+		gap: 0.2em;
 	}
 
 	.examples-menu .lang-chip {
 		flex-shrink: 0;
 		white-space: nowrap;
-		font-size: 0.72em;
+		font-size: 0.65em;
 		font-weight: 600;
-		padding: 0.05em 0.45em;
+		padding: 0.05em 0.4em;
 		border-radius: 0.25em;
 		background: rgb(46 91 255 / 0.1);
 		color: rgb(33 56 199);
