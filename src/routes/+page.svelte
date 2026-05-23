@@ -637,7 +637,7 @@
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
-					{outputMargin}
+					bind:outputMargin
 					{loading}
 					{modifying}
 					{editingSelectionStart}
