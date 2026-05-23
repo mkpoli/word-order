@@ -5,6 +5,7 @@
 	import 'iconify-icon';
 	import { elementToSVG } from 'dom-to-svg';
 	import domToImage from 'dom-to-image';
+	import { jsPDF } from 'jspdf';
 
 	import { LL, locale } from '../i18n/i18n-svelte';
 	import { page } from '$app/stores';
@@ -355,6 +356,36 @@
 	>
 		<iconify-icon icon="teenyicons:png-outline" />
 		{$LL.menu.png()}
+	</button>
+	<button
+		disabled={mode === 'edit'}
+		on:click={async () => {
+			if (!output) return;
+			const scale = 2;
+			const dataUrl = await domToImage.toPng(output, {
+				width: output.clientWidth * scale,
+				height: output.clientHeight * scale,
+				style: {
+					transform: `scale(${scale})`,
+					transformOrigin: 'top left',
+					'background-color': getBodyBackgroundColor()
+				}
+			});
+			const widthPx = output.clientWidth;
+			const heightPx = output.clientHeight;
+			const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
+			const pdf = new jsPDF({
+				orientation,
+				unit: 'px',
+				format: [widthPx, heightPx],
+				hotfixes: ['px_scaling']
+			});
+			pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
+			pdf.save('output.pdf');
+		}}
+	>
+		<iconify-icon icon="teenyicons:pdf-outline" />
+		{$LL.menu.pdf()}
 	</button>
 	<button
 		class="about-button"
