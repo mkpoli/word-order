@@ -549,11 +549,7 @@
 			{#each EXAMPLES as example (example.id)}
 				<button type="button" disabled={mode === 'edit'} on:click={() => loadExample(example)}>
 					<span class="example-name">{example.name}</span>
-					<span class="example-langs">
-						{#each example.sentences as sentence}
-							<span class="lang-chip" lang={sentence.lang}>{sentence.lang}</span>
-						{/each}
-					</span>
+					<span class="example-langs">{example.sentences.map((s) => s.lang).join(' · ')}</span>
 				</button>
 			{/each}
 		</div>
@@ -1184,41 +1180,40 @@
 		background: none;
 		border: none;
 		box-shadow: none;
-		padding: 0.4em 0.7em;
+		padding: 0.35em 0.7em;
 		border-radius: 0.25em;
 		font: inherit;
 		color: #333;
 		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.15em;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.8em;
 		text-align: left;
 		cursor: pointer;
 		width: 100%;
 	}
 
 	.examples-menu .example-name {
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		font-weight: 600;
-		font-size: 0.9em;
+		font-size: 0.85em;
 		color: #333;
 	}
 
 	.examples-menu .example-langs {
-		display: flex;
-		flex-wrap: nowrap;
-		gap: 0.2em;
-	}
-
-	.examples-menu .lang-chip {
-		flex-shrink: 0;
+		flex: 0 1 auto;
+		min-width: 0;
+		max-width: 50%;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		white-space: nowrap;
-		font-size: 0.65em;
-		font-weight: 600;
-		padding: 0.05em 0.4em;
-		border-radius: 0.25em;
-		background: rgb(46 91 255 / 0.1);
-		color: rgb(33 56 199);
-		letter-spacing: 0.04em;
+		font-size: 0.7em;
+		color: #888;
+		letter-spacing: 0.02em;
 	}
 
 	.examples-menu button:not(:disabled):hover,
