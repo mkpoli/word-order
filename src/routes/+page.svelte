@@ -513,8 +513,9 @@
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
-		{#if mounted}
-			<Output
+		<div class="output-scroll">
+			{#if mounted}
+				<Output
 				sentences={previewSentences}
 				{color_map}
 				{equivalency}
@@ -600,6 +601,7 @@
 				}}
 			/>
 		{/if}
+		</div>
 	</div>
 
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
@@ -803,21 +805,22 @@
 		padding: 0;
 		position: relative;
 		z-index: 1;
-		overflow-x: auto;
-		/* overflow-y: clip — not auto — keeps the absolute-positioned ::after
-		   indicator below visible without enabling a vertical scrollbar. The
-		   spec downgrades overflow-y: visible to auto whenever overflow-x is
-		   non-visible, but clip is allowed to coexist with auto on the other axis. */
-		overflow-y: clip;
-		overflow-clip-margin: 2rem;
-		-webkit-overflow-scrolling: touch;
-		overscroll-behavior-x: contain;
 		transition:
 			box-shadow 180ms ease,
 			border-color 180ms ease,
 			transform 180ms ease,
 			opacity 180ms ease,
 			filter 180ms ease;
+	}
+
+	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
+	   so .output's overflow stays visible and the ::after editing indicator
+	   below the box can render. */
+	.output-scroll {
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-x: contain;
 	}
 
 	.output::after {
