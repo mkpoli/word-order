@@ -12,7 +12,7 @@
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
-	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords } from '$lib/types';
 	import { docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 
 	// Components
