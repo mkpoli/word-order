@@ -32,6 +32,7 @@ const createLL = () => ({
 		bold: m.params_bold,
 		boldItalic: m.params_bold_italic,
 		fontSize: m.params_font_size,
+		glossFontSize: m.params_gloss_font_size,
 		spaceWidth: m.params_space_width
 	},
 	input: {
