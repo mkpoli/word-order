@@ -66,7 +66,8 @@ const createLL = () => ({
 	},
 	confirm: {
 		deleteSentence: m.confirm_delete_sentence,
-		new: m.confirm_new
+		new: m.confirm_new,
+		closeTab: m.confirm_close_tab
 	},
 	menu: {
 		new: m.menu_new,
@@ -74,7 +75,34 @@ const createLL = () => ({
 		export: m.menu_export,
 		svg: m.menu_svg,
 		png: m.menu_png,
-		scramble: m.menu_scramble
+		scramble: m.menu_scramble,
+		help: m.menu_help
+	},
+	projects: {
+		untitled: m.projects_untitled,
+		newTab: m.projects_new_tab,
+		closeTab: m.projects_close_tab,
+		renameHint: m.projects_rename_hint
+	},
+	help: {
+		title: m.help_title,
+		close: m.help_close,
+		tagline: m.help_tagline,
+		intro: m.help_intro,
+		howTitle: m.help_how_title,
+		howStep1: m.help_how_step1,
+		howStep2: m.help_how_step2,
+		howStep3: m.help_how_step3,
+		howStep4: m.help_how_step4,
+		featuresTitle: m.help_features_title,
+		featureTokenization: m.help_feature_tokenization,
+		featureGloss: m.help_feature_gloss,
+		featureRuby: m.help_feature_ruby,
+		featureTabs: m.help_feature_tabs,
+		featureAutosave: m.help_feature_autosave,
+		featureExport: m.help_feature_export,
+		gotIt: m.help_got_it,
+		learnMore: m.help_learn_more
 	}
 });
 

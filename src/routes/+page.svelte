@@ -11,42 +11,32 @@
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
-	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords } from '$lib/types';
 
 	// Components
 	import Equivalency from '$lib/Equivalency.svelte';
+	import HelpDialog from '$lib/HelpDialog.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
+	import ProjectTabs from '$lib/ProjectTabs.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
+	import {
+		createEmptyProject,
+		loadState,
+		projectFromDoc,
+		projectToDoc,
+		saveState,
+		type Project
+	} from '$lib/projects';
 
-	// const SENTENCES = [
-	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
-	// 	['zh', '我能吞下玻璃而不傷身體。'],
-	// 	['ja', '私はガラスを食べられます。それは私を傷つけません。']
-	// ];
-
-	let sentences: Sentence[] = [
-		createSentence('en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']),
-		createSentence('zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']),
-		createSentence('zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']),
-		createSentence('ja', ['<ruby>私<rt>わたし</rt></ruby>', 'は', 'ガラス', 'を', '食べ', 'れます', '。', 'それ', 'は', '私', 'を', '傷つけ', 'ません', '。'])
-	];
-
-	let equivalency: number[][][] = [
-		[[0], [0], [0], [0, 1]],
-		[[2], [1], [1], [5]],
-		[[4], [2], [2], [4]],
-		[[6], [3], [3], [2, 3]],
-		[[8], [4], [4], []],
-		[[10], [], [], [7, 8]],
-		[[12], [5], [5], [12]],
-		[[14], [6], [6], [11]],
-		[[16], [], [], [9, 10]],
-		[[], [7], [7], []]
-	];
+	let projects: Project[] = [];
+	let activeId = '';
+	let sentences: Sentence[] = [];
+	let equivalency: number[][][] = [];
+	let helpOpen = false;
 
 	let mode: Mode = 'view';
 	let goldenHue = 0;
@@ -72,13 +62,113 @@
 	let spaceWidth = 4;
 
 	let mounted = false;
-	onMount(() => {
+	onMount(async () => {
 		const rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
 		verticalGap = Math.round(2 * rem);
 		lineGap = Math.round(0.3 * rem);
 
+		const state = loadState();
+		projects = state.projects;
+		activeId = state.activeId;
+		const active = projects.find((p) => p.id === activeId);
+		if (active) {
+			sentences = active.sentences;
+			equivalency = active.equivalency;
+		}
+
 		mounted = true;
+		await tick();
+		word_spans = sentences.map(() => []);
 	});
+
+	// Persist current tab's sentences/equivalency whenever they change.
+	// Mutates projects[idx] in place to avoid retriggering reactivity on `projects`
+	// (which would re-render the tab bar unnecessarily).
+	$: if (mounted && activeId) persistActive(sentences, equivalency, activeId);
+
+	function persistActive(s: Sentence[], e: number[][][], id: string) {
+		const idx = projects.findIndex((p) => p.id === id);
+		if (idx === -1) return;
+		projects[idx].sentences = s;
+		projects[idx].equivalency = e;
+		projects[idx].updatedAt = Date.now();
+		saveState({ schemaVersion: 1, projects, activeId: id });
+	}
+
+	function persistMeta() {
+		saveState({ schemaVersion: 1, projects, activeId });
+	}
+
+	async function switchTab(id: string) {
+		if (id === activeId) return;
+		// Bail any in-progress sentence edit
+		if (modifying !== -1) cancelUnchangedEdit();
+		mode = 'view';
+
+		// Make sure current tab's latest state is captured before swapping
+		persistActive(sentences, equivalency, activeId);
+
+		activeId = id;
+		const next = projects.find((p) => p.id === id);
+		loading = true;
+		sentences = next?.sentences ?? [];
+		equivalency = next?.equivalency ?? [];
+		await tick();
+		word_spans = sentences.map(() => []);
+		loading = false;
+		persistMeta();
+	}
+
+	async function addTab(initialProject?: Project) {
+		// Save current first
+		persistActive(sentences, equivalency, activeId);
+		const project = initialProject ?? createEmptyProject();
+		projects = [...projects, project];
+		await switchTab(project.id);
+	}
+
+	async function closeTab(id: string) {
+		const idx = projects.findIndex((p) => p.id === id);
+		if (idx === -1) return;
+
+		const remaining = projects.filter((p) => p.id !== id);
+		const wasActive = id === activeId;
+
+		if (remaining.length === 0) {
+			// Always keep at least one tab — replace with a fresh empty project
+			const fresh = createEmptyProject();
+			projects = [fresh];
+			activeId = fresh.id;
+			loading = true;
+			sentences = fresh.sentences;
+			equivalency = fresh.equivalency;
+			await tick();
+			word_spans = sentences.map(() => []);
+			loading = false;
+			persistMeta();
+			return;
+		}
+
+		projects = remaining;
+
+		if (wasActive) {
+			const fallback = remaining[Math.min(idx, remaining.length - 1)];
+			activeId = fallback.id;
+			loading = true;
+			sentences = fallback.sentences;
+			equivalency = fallback.equivalency;
+			await tick();
+			word_spans = sentences.map(() => []);
+			loading = false;
+		}
+
+		persistMeta();
+	}
+
+	function renameTab(id: string, name: string) {
+		projects = projects.map((p) => (p.id === id ? { ...p, name, updatedAt: Date.now() } : p));
+		persistMeta();
+	}
 
 	$: if (mounted) calculate_color_map(equivalency);
 	function calculate_color_map(equivalency: number[][][]) {
@@ -249,12 +339,12 @@
 	}
 
 	async function load(data: { equivalency: number[][][]; sentences: SentenceData[] }) {
-		loading = true;
-		sentences = data.sentences.map(normalizeSentence);
-		equivalency = data.equivalency;
-		await tick();
-		word_spans = sentences.map(() => []);
-		loading = false;
+		// Imported files open as a new tab — non-destructive.
+		const project = projectFromDoc({
+			sentences: data.sentences,
+			equivalency: data.equivalency
+		});
+		await addTab(project);
 	}
 
 	let output: HTMLOutputElement;
@@ -287,8 +377,9 @@
 	<button
 		disabled={mode === 'edit'}
 		on:click={() => {
-			if (!confirm($LL.confirm.new())) return;
-
+			if (sentences.length > 0 || equivalency.length > 0) {
+				if (!confirm($LL.confirm.new())) return;
+			}
 			sentences = [];
 			equivalency = [];
 		}}
@@ -299,10 +390,14 @@
 	<button
 		disabled={mode === 'edit'}
 		on:click={() => {
-			const data = {
-				sentences: sentences,
-				equivalency: equivalency
-			};
+			const data = projectToDoc({
+				id: activeId,
+				name: '',
+				sentences,
+				equivalency,
+				createdAt: 0,
+				updatedAt: 0
+			});
 			save(JSON.stringify(data), 'application/json', 'data.json');
 		}}
 	>
@@ -353,10 +448,32 @@
 		<iconify-icon icon="teenyicons:png-outline" />
 		{$LL.menu.png()}
 	</button>
+	<button
+		class="help-button"
+		title={$LL.menu.help()}
+		aria-label={$LL.menu.help()}
+		on:click={() => (helpOpen = true)}
+	>
+		<iconify-icon icon="mdi:help-circle-outline" />
+		{$LL.menu.help()}
+	</button>
 	<div class="menu-locale">
 		<LocaleSelect />
 	</div>
 </header>
+
+{#if mounted}
+	<ProjectTabs
+		{projects}
+		{activeId}
+		on:switch={(e) => switchTab(e.detail.id)}
+		on:add={() => addTab()}
+		on:close={(e) => closeTab(e.detail.id)}
+		on:rename={(e) => renameTab(e.detail.id, e.detail.name)}
+	/>
+{/if}
+
+<HelpDialog bind:open={helpOpen} />
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
@@ -526,6 +643,20 @@
 </svelte:head>
 
 <footer class:editing-muted={modifying !== -1}>
+	<section class="about">
+		<h2>
+			<iconify-icon icon="mdi:help-circle-outline" inline="true" />
+			{$LL.help.title()}
+		</h2>
+		<p>{$LL.help.tagline()}</p>
+		<p>{$LL.help.intro()}</p>
+		<p>
+			<button class="learn-more" type="button" on:click={() => (helpOpen = true)}>
+				<iconify-icon icon="mdi:book-open-variant" inline="true" />
+				{$LL.help.learnMore()}
+			</button>
+		</p>
+	</section>
 	<p>
 		{$LL.meta.title()} (
 		<a href="https://github.com/mkpoli/word-order/" title={$LL.footer.githubRepository()} class="github-link"><iconify-icon icon="mdi:github" inline="true" /></a
@@ -576,6 +707,51 @@
 		color: #444;
 		max-width: 1024px;
 		margin: 0 auto;
+	}
+
+	footer .about {
+		text-align: left;
+		max-width: 42em;
+		margin: 0 auto 1.5em;
+		padding: 1.2em 1.4em;
+		background: rgb(255 255 255 / 0.7);
+		border: 1px solid rgb(46 91 255 / 0.12);
+		border-radius: 0.7em;
+	}
+
+	footer .about h2 {
+		margin: 0 0 0.4em;
+		font-size: 1.1em;
+		color: rgb(33 56 199);
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+
+	footer .about p {
+		margin: 0.3em 0;
+		color: #333;
+		line-height: 1.5;
+	}
+
+	footer .about .learn-more {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		padding: 0.4em 0.9em;
+		border: 1px solid rgb(46 91 255 / 0.3);
+		border-radius: 0.4em;
+		background: white;
+		color: rgb(33 56 199);
+		font-weight: 600;
+		cursor: pointer;
+		font: inherit;
+		font-weight: 600;
+	}
+
+	footer .about .learn-more:hover {
+		background: rgb(46 91 255 / 0.06);
 	}
 
 	footer iconify-icon {
