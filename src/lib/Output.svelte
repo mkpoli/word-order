@@ -65,6 +65,7 @@
 	export let fontSize: number;
 	export let glossFontSize: number;
 	export let spaceWidth: number;
+	export let outputMargin: number;
 	export let mode: Mode = 'view';
 
 	export let output: HTMLOutputElement;
@@ -370,6 +371,7 @@
 	class:bold={fontStyle === 'bold' || fontStyle === 'bold-italic'}
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
+	style:padding={`${outputMargin}px`}
 >
 	{#if !loading}
 		{#each sentences as sentence, i}

@@ -17,6 +17,7 @@
 	export let fontSize = 15;
 	export let glossFontSize = 11;
 	export let spaceWidth = 4;
+	export let outputMargin = 0;
 
 	$: lineGap = Math.min(lineGap, verticalGap / 2);
 	$: lineWidth = Math.max(0.1, lineWidth);
@@ -75,6 +76,12 @@
 		{$LL.params.curvature()}
 	</label>
 	<RangeSlider id="curvature" min={0} max={2} step={0.1} bind:value={curvature} suffix="x" />
+
+	<label for="output-margin">
+		<iconify-icon icon="mdi:border-outside" inline="true" />
+		{$LL.params.outputMargin()}
+	</label>
+	<RangeSlider id="output-margin" min={0} max={80} bind:value={outputMargin} suffix=" px" />
 </fieldset>
 
 <fieldset>

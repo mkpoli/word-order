@@ -89,6 +89,7 @@
 	let fontSize: number;
 	let glossFontSize = 11;
 	let spaceWidth = 4;
+	let outputMargin = 0;
 
 	let aboutOpen = false;
 
@@ -556,6 +557,7 @@
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
+					{outputMargin}
 					{loading}
 					{modifying}
 					{editingSelectionStart}
@@ -653,6 +655,7 @@
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
+			bind:outputMargin
 		/>
 	</div>
 
