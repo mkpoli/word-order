@@ -385,7 +385,7 @@
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
 								{#if sentenceShowsGloss(sentence) && isContent(word)}
-									<span class="gloss-token"><Word word={token.gloss} /></span>
+									<span class="gloss-token">{isContent(word) ? token.gloss : ''}</span>
 								{/if}
 								<span
 									class="word"
