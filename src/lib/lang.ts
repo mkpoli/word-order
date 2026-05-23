@@ -68,7 +68,22 @@ const LOCALE_OPTIONS: LocaleOption[] = [
 ];
 
 export function getLocaleDirection(locale: string): 'ltr' | 'rtl' {
-	return ['ar', 'fa'].includes(locale) ? 'rtl' : 'ltr';
+	if (!locale) return 'ltr';
+	// Modern browsers expose direction info per BCP-47 locale; covers Hebrew,
+	// Arabic, Persian, Urdu, etc. without us maintaining a list. The TS lib for
+	// the project doesn't yet declare getTextInfo, so cast.
+	try {
+		const intlLocale = new Intl.Locale(locale) as Intl.Locale & {
+			getTextInfo?: () => { direction: 'ltr' | 'rtl' };
+		};
+		const info = intlLocale.getTextInfo?.();
+		if (info?.direction === 'rtl') return 'rtl';
+		if (info?.direction === 'ltr') return 'ltr';
+	} catch {
+		// fall through
+	}
+	const base = locale.split(/[-_]/)[0].toLowerCase();
+	return ['ar', 'fa', 'he', 'ur', 'ps', 'yi', 'dv', 'ks', 'sd', 'ckb'].includes(base) ? 'rtl' : 'ltr';
 }
 
 export function getLocaleOptions(displayLocale: string): (LocaleOption & { exonym: string })[] {
