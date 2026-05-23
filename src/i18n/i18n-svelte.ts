@@ -67,7 +67,8 @@ const createLL = () => ({
 	},
 	confirm: {
 		deleteSentence: m.confirm_delete_sentence,
-		new: m.confirm_new
+		new: m.confirm_new,
+		import: m.confirm_import
 	},
 	menu: {
 		new: m.menu_new,
