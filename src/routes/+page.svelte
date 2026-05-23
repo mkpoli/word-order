@@ -1159,7 +1159,7 @@
 		position: absolute;
 		top: 100%;
 		left: 0;
-		min-width: 14em;
+		min-width: 18em;
 		margin-top: 0;
 		padding: 0.45em 0.35em;
 		display: none;
@@ -1203,15 +1203,17 @@
 
 	.examples-menu .example-langs {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		gap: 0.25em;
 	}
 
 	.examples-menu .lang-chip {
+		flex-shrink: 0;
+		white-space: nowrap;
 		font-size: 0.72em;
 		font-weight: 600;
-		padding: 0.05em 0.5em;
-		border-radius: 999px;
+		padding: 0.05em 0.45em;
+		border-radius: 0.25em;
 		background: rgb(46 91 255 / 0.1);
 		color: rgb(33 56 199);
 		letter-spacing: 0.04em;
