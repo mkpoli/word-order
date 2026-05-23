@@ -81,10 +81,6 @@ const createLL = () => ({
 		about: m.menu_about,
 		examples: m.menu_examples
 	},
-	examples: {
-		title: m.examples_title,
-		close: m.examples_close
-	},
 	about: {
 		title: m.about_title,
 		close: m.about_close,
