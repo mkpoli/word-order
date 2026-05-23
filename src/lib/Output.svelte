@@ -63,6 +63,7 @@
 	export let fontFamily: FontFamily;
 	export let fontStyle: FontStyle;
 	export let fontSize: number;
+	export let glossFontSize: number;
 	export let spaceWidth: number;
 	export let mode: Mode = 'view';
 
@@ -385,7 +386,7 @@
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
 								{#if sentenceShowsGloss(sentence) && isContent(word)}
-									<span class="gloss-token">{isContent(word) ? token.gloss : ''}</span>
+									<span class="gloss-token" style:font-size={`${glossFontSize}px`}>{isContent(word) ? token.gloss : ''}</span>
 								{/if}
 								<span
 									class="word"
@@ -593,10 +594,6 @@
 		display: block;
 	}
 
-	.sentence-body.with-gloss {
-		padding-top: 1.35em;
-	}
-
 	.words {
 		display: block;
 	}
@@ -613,15 +610,11 @@
 		white-space: pre;
 	}
 
+	/* Gloss sits above the word in normal flow so the token's width grows to
+	   max(word, gloss) — wide gloss text no longer overflows onto neighbours. */
 	.gloss-token {
 		display: block;
-		position: absolute;
-		left: 50%;
-		bottom: 100%;
-		min-width: 100%;
-		transform: translateX(-50%);
 		text-align: center;
-		font-size: 0.74em;
 		line-height: 1.2;
 		letter-spacing: 0.02em;
 		color: rgb(86 92 120);
@@ -655,6 +648,10 @@
 		column-gap: 1em;
 		row-gap: 0.65em;
 		width: fit-content;
+		/* Centers within the scrollable .output wrapper when content fits;
+		   when content overflows, the wrapper scrolls horizontally instead of
+		   pushing the page off-screen. */
+		margin-inline: auto;
 	}
 
 	svg {
