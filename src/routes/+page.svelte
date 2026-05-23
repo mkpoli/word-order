@@ -14,6 +14,7 @@
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
 
 	// Components
+	import AboutDialog from '$lib/AboutDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
@@ -70,6 +71,8 @@
 	let fontStyle: FontStyle;
 	let fontSize: number;
 	let spaceWidth = 4;
+
+	let aboutOpen = false;
 
 	let mounted = false;
 	onMount(() => {
@@ -353,10 +356,21 @@
 		<iconify-icon icon="teenyicons:png-outline" />
 		{$LL.menu.png()}
 	</button>
+	<button
+		class="about-button"
+		title={$LL.menu.about()}
+		aria-label={$LL.menu.about()}
+		on:click={() => (aboutOpen = true)}
+	>
+		<iconify-icon icon="mdi:information-outline" />
+		{$LL.menu.about()}
+	</button>
 	<div class="menu-locale">
 		<LocaleSelect />
 	</div>
 </header>
+
+<AboutDialog bind:open={aboutOpen} />
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
