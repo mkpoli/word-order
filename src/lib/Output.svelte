@@ -655,6 +655,10 @@
 		column-gap: 1em;
 		row-gap: 0.65em;
 		width: fit-content;
+		/* Centers within the scrollable .output wrapper when content fits;
+		   when content overflows, the wrapper scrolls horizontally instead of
+		   pushing the page off-screen. */
+		margin-inline: auto;
 	}
 
 	svg {

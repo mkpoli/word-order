@@ -801,10 +801,11 @@
 
 	.output {
 		padding: 0;
-		display: flex;
-		justify-content: center;
 		position: relative;
 		z-index: 1;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-x: contain;
 		transition:
 			box-shadow 180ms ease,
 			border-color 180ms ease,
