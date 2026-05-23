@@ -309,6 +309,33 @@
 		if (restoreFocus && exportTrigger) exportTrigger.focus();
 	}
 
+	function slugify(text: string): string {
+		return text
+			.normalize('NFKD')
+			.replace(/[̀-ͯ]/g, '')
+			.replace(/<[^>]+>/g, '')
+			.replace(/[\p{P}\p{S}]+/gu, ' ')
+			.trim()
+			.toLowerCase()
+			.replace(/\s+/g, '-')
+			.replace(/^-+|-+$/g, '')
+			.slice(0, 40)
+			.replace(/-+$/, '');
+	}
+
+	function exportFilename(ext: string): string {
+		if (sentences.length === 0) return `word-order.${ext}`;
+		const langs = sentences.map((s) => s.lang).join('-');
+		const firstWords = sentences[0].tokens
+			.map((t) => t.text)
+			.filter((text) => !/^[\s\p{P}]+$/u.test(text))
+			.slice(0, 5)
+			.join(' ');
+		const slug = slugify(firstWords);
+		const stem = slug ? `${slug}.${langs}` : langs || 'word-order';
+		return `${stem}.${ext}`;
+	}
+
 	async function exportPngBlob(scale = 2): Promise<Blob | null> {
 		if (!output) return null;
 		return await domToImage.toBlob(output, {
@@ -324,7 +351,7 @@
 
 	function exportJson() {
 		const data = { sentences, equivalency };
-		save(JSON.stringify(data), 'application/json', 'data.json');
+		save(JSON.stringify(data), 'application/json', exportFilename('json'));
 		closeExportMenu();
 	}
 
@@ -336,14 +363,14 @@
 		const serializer = new XMLSerializer();
 		const svgDocument = elementToSVG(output);
 		const svgString = serializer.serializeToString(svgDocument);
-		save(svgString, 'image/svg+xml', 'output.svg');
+		save(svgString, 'image/svg+xml', exportFilename('svg'));
 		closeExportMenu();
 	}
 
 	async function exportPng() {
 		try {
 			const png = await exportPngBlob();
-			if (png) save(png, 'image/png', 'output.png');
+			if (png) save(png, 'image/png', exportFilename('png'));
 		} catch (err) {
 			console.error('Export PNG failed:', err);
 		} finally {
@@ -377,7 +404,7 @@
 				hotfixes: ['px_scaling']
 			});
 			pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
-			pdf.save('output.pdf');
+			pdf.save(exportFilename('pdf'));
 		} catch (err) {
 			console.error('Export PDF failed:', err);
 		} finally {
