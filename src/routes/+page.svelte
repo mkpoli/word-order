@@ -13,6 +13,7 @@
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
+	import { docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
@@ -91,13 +92,26 @@
 	let aboutOpen = false;
 
 	let mounted = false;
-	onMount(() => {
+	onMount(async () => {
 		const rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
 		verticalGap = Math.round(2 * rem);
 		lineGap = Math.round(0.3 * rem);
 
+		// Restore the user's last illustration from localStorage. If nothing is stored,
+		// keep the seeded sample sentences/equivalency above as the first-visit default.
+		const doc = loadDoc();
+		if (doc) {
+			sentences = doc.sentences;
+			equivalency = doc.equivalency;
+		}
+
 		mounted = true;
+		await tick();
+		word_spans = sentences.map(() => []);
 	});
+
+	// Autosave on any change to sentences or equivalency.
+	$: if (mounted) saveDoc({ schemaVersion: 1, sentences, equivalency });
 
 	$: if (mounted) calculate_color_map(equivalency);
 	function calculate_color_map(equivalency: number[][][]) {
@@ -269,9 +283,13 @@
 	}
 
 	async function load(data: { equivalency: number[][][]; sentences: SentenceData[] }) {
+		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.import())) return;
+		const next = docFromLegacy(data);
+		if (modifying !== -1) cancelUnchangedEdit();
+		mode = 'view';
 		loading = true;
-		sentences = data.sentences.map(normalizeSentence);
-		equivalency = data.equivalency;
+		sentences = next.sentences;
+		equivalency = next.equivalency;
 		await tick();
 		word_spans = sentences.map(() => []);
 		loading = false;
