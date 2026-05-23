@@ -86,7 +86,7 @@
 		});
 
 	// Redraw when outputMargin changes — padding shifts every token, so connector
-	// endpoints need to be recomputed against the new padding-box origin.
+	// endpoints need to be recomputed.
 	$: if (mounted && !loading && outputMargin)
 		tick().then(() => {
 			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
@@ -101,15 +101,6 @@
 		endpointCorrection: number
 	): Line[] {
 		const rectOutput = output.getBoundingClientRect();
-		// The connector SVG is position:absolute inside <output>, so its (0,0)
-		// sits at the padding-box top-left — not the border-box. Subtract the
-		// padding when normalising token positions, otherwise margin > 0 would
-		// offset every line by exactly that padding away from its tokens.
-		const cs = getComputedStyle(output);
-		const padLeft = parseFloat(cs.paddingLeft) || 0;
-		const padTop = parseFloat(cs.paddingTop) || 0;
-		const originX = rectOutput.left + padLeft;
-		const originY = rectOutput.top + padTop;
 
 		const lines: Line[] = [];
 
@@ -139,10 +130,18 @@
 						const rectB1 = spanB1.getBoundingClientRect();
 						const rectB2 = spanB2.getBoundingClientRect();
 
-						let x1 = (rectA1.left + rectA2.right) / 2 - originX;
-						let y1 = Math.max(rectA1.bottom, rectA2.bottom) - originY;
-						let x2 = (rectB1.left + rectB2.right) / 2 - originX;
-						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, originY);
+						// min/max instead of left/right ordering so RTL rows
+						// (where rectA1 is visually to the right of rectA2) still
+						// midpoint the *visual* span, not the gap between tokens.
+						const aLeft = Math.min(rectA1.left, rectA2.left);
+						const aRight = Math.max(rectA1.right, rectA2.right);
+						const bLeft = Math.min(rectB1.left, rectB2.left);
+						const bRight = Math.max(rectB1.right, rectB2.right);
+
+						let x1 = (aLeft + aRight) / 2 - rectOutput.left;
+						let y1 = Math.max(rectA1.bottom, rectA2.bottom) - rectOutput.top;
+						let x2 = (bLeft + bRight) / 2 - rectOutput.left;
+						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
 
 						const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
 						x1 += correction;
@@ -209,10 +208,10 @@
 		return sentence.showGloss || sentence.tokens.some((token) => token.gloss.trim().length > 0);
 	}
 
-	function getTopEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, originY: number): number {
+	function getTopEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, rectOutput: DOMRect): number {
 		const rect1 = span1.getBoundingClientRect();
 		const rect2 = span2.getBoundingClientRect();
-		const wordTop = Math.min(rect1.top, rect2.top) - originY;
+		const wordTop = Math.min(rect1.top, rect2.top) - rectOutput.top;
 
 		if (!sentenceShowsGloss(sentence)) return wordTop;
 
@@ -223,7 +222,7 @@
 
 		if (glosses.length === 0) return wordTop;
 
-		return Math.min(...glosses.map((rect) => rect.top)) - originY;
+		return Math.min(...glosses.map((rect) => rect.top)) - rectOutput.top;
 	}
 
 	let connected: [l: number, w: number][] = [];
@@ -262,8 +261,11 @@
 		const vertical = side === 'top' || side === 'bottom';
 		const current = vertical ? e.clientY : e.clientX;
 		let delta = current - startPos;
-		// `bottom` and `right` grow when the pointer moves toward the centre.
-		if (side === 'bottom' || side === 'right') delta = -delta;
+		// Drag outward (away from the centre) to grow — matches the convention
+		// for resizing a window edge: pull the edge out, the box gets bigger.
+		// Top/left point outward toward smaller coordinates, so their delta is
+		// flipped; bottom/right outward = larger coords, no flip.
+		if (side === 'top' || side === 'left') delta = -delta;
 		const next = Math.max(0, Math.min(MARGIN_MAX, Math.round(startValue + delta)));
 		outputMargin = { ...outputMargin, [side]: next };
 	}
