@@ -14,8 +14,7 @@
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
-	import type { Example } from '$lib/examples';
-	import ExamplePicker from '$lib/ExamplePicker.svelte';
+	import { EXAMPLES, type Example } from '$lib/examples';
 
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
@@ -302,7 +301,11 @@
 	}
 
 	async function loadExample(example: Example) {
-		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.loadExample({ name: example.name }))) return;
+		if (!isDocEmpty({ sentences, equivalency }) && !confirm($LL.confirm.loadExample({ name: example.name }))) {
+			closeExamplesMenu();
+			return;
+		}
+		closeExamplesMenu();
 		await replaceDoc(docFromExample(example));
 	}
 
@@ -336,6 +339,37 @@
 		}
 		exportOpen = false;
 		if (restoreFocus && exportTrigger) exportTrigger.focus();
+	}
+
+	let examplesWrapper: HTMLDivElement;
+	let examplesTrigger: HTMLButtonElement;
+	let examplesCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function openExamplesMenu() {
+		if (mode === 'edit') return;
+		if (examplesCloseTimer) {
+			clearTimeout(examplesCloseTimer);
+			examplesCloseTimer = null;
+		}
+		examplesOpen = true;
+	}
+
+	function scheduleExamplesClose() {
+		if (mode === 'edit') return;
+		if (examplesCloseTimer) clearTimeout(examplesCloseTimer);
+		examplesCloseTimer = setTimeout(() => {
+			examplesOpen = false;
+			examplesCloseTimer = null;
+		}, 220);
+	}
+
+	function closeExamplesMenu(restoreFocus = false) {
+		if (examplesCloseTimer) {
+			clearTimeout(examplesCloseTimer);
+			examplesCloseTimer = null;
+		}
+		examplesOpen = false;
+		if (restoreFocus && examplesTrigger) examplesTrigger.focus();
 	}
 
 	function slugify(text: string): string {
@@ -460,6 +494,9 @@
 		if (exportOpen && e.target instanceof Node && exportWrapper && !exportWrapper.contains(e.target)) {
 			closeExportMenu();
 		}
+		if (examplesOpen && e.target instanceof Node && examplesWrapper && !examplesWrapper.contains(e.target)) {
+			closeExamplesMenu();
+		}
 		if (modifying === -1) return;
 		if (shouldKeepSentenceEdit(e.target)) return;
 		if (editingText !== wordsBeforeModify.join('|')) return;
@@ -470,6 +507,7 @@
 	}}
 	on:keydown={(e) => {
 		if (e.key === 'Escape' && exportOpen) closeExportMenu(true);
+		if (e.key === 'Escape' && examplesOpen) closeExamplesMenu(true);
 	}}
 />
 
@@ -486,10 +524,40 @@
 		<iconify-icon icon="eos-icons:content-new" />
 		{$LL.menu.new()}
 	</button>
-	<button disabled={mode === 'edit'} on:click={() => (examplesOpen = true)}>
-		<iconify-icon icon="mdi:bookshelf" />
-		{$LL.menu.examples()}
-	</button>
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
+		class="examples-dropdown"
+		class:open={examplesOpen}
+		bind:this={examplesWrapper}
+		on:mouseenter={openExamplesMenu}
+		on:mouseleave={scheduleExamplesClose}
+	>
+		<button
+			class="examples-trigger"
+			disabled={mode === 'edit'}
+			aria-haspopup="true"
+			aria-expanded={examplesOpen}
+			bind:this={examplesTrigger}
+			on:click={() => (examplesOpen ? closeExamplesMenu() : openExamplesMenu())}
+			on:focus={openExamplesMenu}
+		>
+			<iconify-icon icon="mdi:bookshelf" />
+			{$LL.menu.examples()}
+			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron" />
+		</button>
+		<div class="examples-menu" role="group" aria-label={$LL.menu.examples()}>
+			{#each EXAMPLES as example (example.id)}
+				<button type="button" disabled={mode === 'edit'} on:click={() => loadExample(example)}>
+					<span class="example-name">{example.name}</span>
+					<span class="example-langs">
+						{#each example.sentences as sentence}
+							<span class="lang-chip" lang={sentence.lang}>{sentence.lang}</span>
+						{/each}
+					</span>
+				</button>
+			{/each}
+		</div>
+	</div>
 	<button
 		disabled={mode === 'edit'}
 		on:click={() => {
@@ -543,12 +611,6 @@
 </header>
 
 <AboutDialog bind:open={aboutOpen} />
-<ExamplePicker
-	bind:open={examplesOpen}
-	on:pick={async (e) => {
-		await loadExample(e.detail.example);
-	}}
-/>
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
@@ -1073,6 +1135,95 @@
 	}
 
 	.export-menu button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	.examples-dropdown {
+		position: relative;
+		display: inline-flex;
+	}
+
+	.examples-trigger :global(.chevron) {
+		font-size: 0.95em;
+		opacity: 0.6;
+		margin-inline-start: 0.15em;
+		transition: transform 160ms ease;
+	}
+
+	.examples-dropdown.open .examples-trigger :global(.chevron) {
+		transform: rotate(180deg);
+	}
+
+	.examples-menu {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		min-width: 14em;
+		margin-top: 0;
+		padding: 0.45em 0.35em;
+		display: none;
+		flex-direction: column;
+		gap: 0.1em;
+		background: white;
+		border-radius: 0.3em;
+		box-shadow:
+			1px 1px 5px 0 #ccc,
+			0 6px 22px rgb(15 23 42 / 0.12);
+		z-index: 100;
+	}
+
+	.examples-dropdown.open .examples-menu {
+		display: flex;
+	}
+
+	.examples-menu button {
+		appearance: none;
+		background: none;
+		border: none;
+		box-shadow: none;
+		padding: 0.5em 0.85em;
+		border-radius: 0.25em;
+		font: inherit;
+		color: #333;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.2em;
+		text-align: left;
+		cursor: pointer;
+		width: 100%;
+	}
+
+	.examples-menu .example-name {
+		font-weight: bold;
+		font-size: 1em;
+		color: #333;
+	}
+
+	.examples-menu .example-langs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25em;
+	}
+
+	.examples-menu .lang-chip {
+		font-size: 0.72em;
+		font-weight: 600;
+		padding: 0.05em 0.5em;
+		border-radius: 999px;
+		background: rgb(46 91 255 / 0.1);
+		color: rgb(33 56 199);
+		letter-spacing: 0.04em;
+	}
+
+	.examples-menu button:not(:disabled):hover,
+	.examples-menu button:focus-visible {
+		background-color: #eee;
+		outline: none;
+	}
+
+	.examples-menu button:disabled {
 		opacity: 0.5;
 		cursor: default;
 	}
