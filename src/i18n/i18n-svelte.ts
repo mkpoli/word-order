@@ -67,7 +67,8 @@ const createLL = () => ({
 	confirm: {
 		deleteSentence: m.confirm_delete_sentence,
 		new: m.confirm_new,
-		import: m.confirm_import
+		import: m.confirm_import,
+		loadExample: m.confirm_load_example
 	},
 	menu: {
 		new: m.menu_new,
@@ -77,7 +78,12 @@ const createLL = () => ({
 		png: m.menu_png,
 		pdf: m.menu_pdf,
 		scramble: m.menu_scramble,
-		about: m.menu_about
+		about: m.menu_about,
+		examples: m.menu_examples
+	},
+	examples: {
+		title: m.examples_title,
+		close: m.examples_close
 	},
 	about: {
 		title: m.about_title,

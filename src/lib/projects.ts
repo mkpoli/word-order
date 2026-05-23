@@ -1,5 +1,6 @@
 import type { Sentence, SentenceData } from './types';
 import { normalizeSentence } from './types';
+import type { Example } from './examples';
 
 export type PersistedDoc = {
 	schemaVersion: 1;
@@ -22,6 +23,14 @@ export function docFromLegacy(doc: LegacyDoc): PersistedDoc {
 
 export function docToLegacy(doc: { sentences: Sentence[]; equivalency: number[][][] }): LegacyDoc {
 	return { sentences: doc.sentences, equivalency: doc.equivalency };
+}
+
+export function docFromExample(example: Example): PersistedDoc {
+	return {
+		schemaVersion: SCHEMA_VERSION,
+		sentences: structuredClone(example.sentences),
+		equivalency: structuredClone(example.equivalency)
+	};
 }
 
 export function isDocEmpty(doc: { sentences: Sentence[]; equivalency: number[][][] }): boolean {
