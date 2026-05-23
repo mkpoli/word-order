@@ -12,7 +12,7 @@
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
-	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeSentence } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 	import { EXAMPLES, type Example } from '$lib/examples';
 
@@ -88,6 +88,7 @@
 	let fontFamily: FontFamily;
 	let fontStyle: FontStyle;
 	let fontSize: number;
+	let glossFontSize = 11;
 	let spaceWidth = 4;
 
 	let aboutOpen = false;
@@ -107,9 +108,13 @@
 			equivalency = doc.equivalency;
 		}
 
+		// Initialise word_spans to the right shape BEFORE Output mounts so its
+		// bind:this writes have a valid array to write into. Resetting it after
+		// mount + tick would clobber the just-populated bindings and leave the
+		// connector SVG empty until the next user interaction.
+		word_spans = sentences.map(() => []);
 		mounted = true;
 		await tick();
-		word_spans = sentences.map(() => []);
 	});
 
 	// Autosave on any change to sentences or equivalency.
@@ -610,93 +615,96 @@
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
-		{#if mounted}
-			<Output
-				sentences={previewSentences}
-				{color_map}
-				{equivalency}
-				{alignment}
-				bind:lines
-				{colors}
-				{verticalGap}
-				{lineGap}
-				{lineWidth}
-				{straightLength}
-				{endpointCorrection}
-				{curvature}
-				{fontFamily}
-				{fontStyle}
-				{fontSize}
-				{spaceWidth}
-				{loading}
-				{modifying}
-				{editingSelectionStart}
-				{editingSelectionEnd}
-				bind:word_spans
-				bind:mode
-				bind:output
-				on:connect={onconnect}
-				on:reorder={({ detail: { from, to } }) => {
-					const sentence = sentences[from];
-					sentences.splice(from, 1);
-					sentences.splice(to, 0, sentence);
-					sentences = sentences;
+		<div class="output-scroll">
+			{#if mounted}
+				<Output
+					sentences={previewSentences}
+					{color_map}
+					{equivalency}
+					{alignment}
+					bind:lines
+					{colors}
+					{verticalGap}
+					{lineGap}
+					{lineWidth}
+					{straightLength}
+					{endpointCorrection}
+					{curvature}
+					{fontFamily}
+					{fontStyle}
+					{fontSize}
+					{glossFontSize}
+					{spaceWidth}
+					{loading}
+					{modifying}
+					{editingSelectionStart}
+					{editingSelectionEnd}
+					bind:word_spans
+					bind:mode
+					bind:output
+					on:connect={onconnect}
+					on:reorder={({ detail: { from, to } }) => {
+						const sentence = sentences[from];
+						sentences.splice(from, 1);
+						sentences.splice(to, 0, sentence);
+						sentences = sentences;
 
-					for (const [i, entry] of equivalency.entries()) {
-						const value = entry[from];
-						entry.splice(from, 1);
-						entry.splice(to, 0, value);
-						equivalency[i] = entry;
-					}
-					equivalency = equivalency;
-				}}
-				on:delete={({ detail: { sentence } }) => {
-					sentences.splice(sentence, 1);
-					sentences = sentences;
+						for (const [i, entry] of equivalency.entries()) {
+							const value = entry[from];
+							entry.splice(from, 1);
+							entry.splice(to, 0, value);
+							equivalency[i] = entry;
+						}
+						equivalency = equivalency;
+					}}
+					on:delete={({ detail: { sentence } }) => {
+						sentences.splice(sentence, 1);
+						sentences = sentences;
 
-					for (const [i, entry] of equivalency.entries()) {
-						entry.splice(sentence, 1);
-						equivalency[i] = entry;
-					}
-					equivalency = equivalency;
-				}}
-				on:modify={({ detail: { sentence } }) => {
-					modifying = sentence;
-					wordsBeforeModify = getSentenceWords(sentences[sentence]);
-					editingText = wordsBeforeModify.join('|');
-					glossesBeforeModify = [...getSentenceGlosses(sentences[sentence])];
-					editingGlosses = [...glossesBeforeModify];
-					editingShowGloss = sentences[sentence].showGloss;
-					editingSelectionStart = -1;
-					editingSelectionEnd = -1;
-				}}
-				on:merge={({ detail: { sentence, start, end } }) => {
-					const words = getSentenceWords(previewSentences[sentence]);
-					const glosses = getSentenceGlosses(previewSentences[sentence]);
-					const merged = words.slice(start, end + 1).join('');
-					editingText = [...words.slice(0, start), merged, ...words.slice(end + 1)].join('|');
-					editingGlosses = [
-						...glosses.slice(0, start),
-						glosses
-							.slice(start, end + 1)
-							.filter(Boolean)
-							.join('-'),
-						...glosses.slice(end + 1)
-					];
-					editingSelectionStart = start;
-					editingSelectionEnd = start;
-				}}
-				on:split={({ detail: { sentence, word, offset } }) => {
-					const words = getSentenceWords(previewSentences[sentence]);
-					const glosses = getSentenceGlosses(previewSentences[sentence]);
-					const token = words[word];
-					editingText = [...words.slice(0, word), token.slice(0, offset), token.slice(offset), ...words.slice(word + 1)].filter(Boolean).join('|');
-					editingGlosses = [...glosses.slice(0, word), glosses[word] ?? '', glosses[word] ?? '', ...glosses.slice(word + 1)];
-					editingSelectionStart = word;
-					editingSelectionEnd = word + 1;
-				}}
-			/>
-		{/if}
+						for (const [i, entry] of equivalency.entries()) {
+							entry.splice(sentence, 1);
+							equivalency[i] = entry;
+						}
+						equivalency = equivalency;
+					}}
+					on:modify={({ detail: { sentence } }) => {
+						modifying = sentence;
+						wordsBeforeModify = getSentenceWords(sentences[sentence]);
+						editingText = wordsBeforeModify.join('|');
+						glossesBeforeModify = [...getSentenceGlosses(sentences[sentence])];
+						editingGlosses = [...glossesBeforeModify];
+						editingShowGloss = sentences[sentence].showGloss;
+						editingSelectionStart = -1;
+						editingSelectionEnd = -1;
+					}}
+					on:merge={({ detail: { sentence, start, end } }) => {
+						const words = getSentenceWords(previewSentences[sentence]);
+						const glosses = getSentenceGlosses(previewSentences[sentence]);
+						const merged = words.slice(start, end + 1).join('');
+						editingText = [...words.slice(0, start), merged, ...words.slice(end + 1)].join('|');
+						editingGlosses = [
+							...glosses.slice(0, start),
+							glosses
+								.slice(start, end + 1)
+								.filter(Boolean)
+								.join('-'),
+							...glosses.slice(end + 1)
+						];
+						editingSelectionStart = start;
+						editingSelectionEnd = start;
+					}}
+					on:split={({ detail: { sentence, word, offset } }) => {
+						const words = getSentenceWords(previewSentences[sentence]);
+						const glosses = getSentenceGlosses(previewSentences[sentence]);
+						const token = words[word];
+						editingText = [...words.slice(0, word), token.slice(0, offset), token.slice(offset), ...words.slice(word + 1)].filter(Boolean).join('|');
+						editingGlosses = [...glosses.slice(0, word), glosses[word] ?? '', glosses[word] ?? '', ...glosses.slice(word + 1)];
+						editingSelectionStart = word;
+						editingSelectionEnd = word + 1;
+					}}
+				/>
+			{/if}
+		</div>
 	</div>
 
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
@@ -722,6 +730,7 @@
 			bind:fontFamily
 			bind:fontStyle
 			bind:fontSize
+			bind:glossFontSize
 			bind:spaceWidth
 		/>
 	</div>
@@ -898,8 +907,6 @@
 
 	.output {
 		padding: 0;
-		display: flex;
-		justify-content: center;
 		position: relative;
 		z-index: 1;
 		transition:
@@ -908,6 +915,16 @@
 			transform 180ms ease,
 			opacity 180ms ease,
 			filter 180ms ease;
+	}
+
+	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
+	   so .output's overflow stays visible and the ::after editing indicator
+	   below the box can render. */
+	.output-scroll {
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-x: contain;
 	}
 
 	.output::after {
