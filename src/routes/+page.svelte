@@ -23,6 +23,7 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
+	import type { Margin } from '$lib/types';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 
@@ -90,6 +91,7 @@
 	let fontSize: number;
 	let glossFontSize = 11;
 	let spaceWidth = 4;
+	let outputMargin: Margin = { top: 40, right: 32, bottom: 40, left: 32 };
 
 	let aboutOpen = false;
 	let examplesOpen = false;
@@ -708,6 +710,7 @@
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
+					bind:outputMargin
 					{loading}
 					{modifying}
 					{editingSelectionStart}
@@ -999,6 +1002,13 @@
 		overflow-y: hidden;
 		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
+		/* Centre the <output> when it fits; the flex container still scrolls
+		   horizontally when the diagram exceeds the viewport because the inner
+		   <output> uses flex-shrink: 0. Avoids relying on margin-inline:auto on
+		   <output> itself, which would bake a non-zero computed margin into
+		   exported clones and push them off to one side. */
+		display: flex;
+		justify-content: center;
 	}
 
 	.output::after {
