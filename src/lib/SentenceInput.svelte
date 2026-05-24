@@ -121,6 +121,9 @@
 	}
 
 	$: words = getWords(text);
+	$: glossableTokens = words
+		.map((word, tokenIndex) => ({ word, tokenIndex }))
+		.filter(({ word }) => isGlossableToken(word));
 	$: hasAnyLane = annotationsAbove.length > 0 || annotationsBelow.length > 0;
 </script>
 
@@ -146,85 +149,66 @@
 				{$LL.input.gloss()}
 			</summary>
 			<div class="gloss-content">
-				{#if words.length === 0}
+				{#if glossableTokens.length === 0}
 					<p class="gloss-empty">{$LL.input.glossEmpty()}</p>
 				{:else}
-					<div class="lane-stack">
+					<div class="lane-grid" style="--n: {glossableTokens.length}">
 						{#each annotationsAbove as lane, laneIndex (`above-${laneIndex}`)}
-							<div class="lane">
-								<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
-								<div class="lane-cells">
-									{#each words as word, tokenIndex}
-										{#if isGlossableToken(word)}
-											<label class="lane-field">
-												<span class="lane-word" {lang}><Word {word} /></span>
-												<input
-													type="text"
-													bind:value={annotationsAbove[laneIndex][tokenIndex]}
-													placeholder={$LL.input.glossPlaceholder()}
-												/>
-											</label>
-										{/if}
-									{/each}
-								</div>
-								<button
-									type="button"
-									class="lane-remove"
-									title={$LL.input.removeLane()}
-									aria-label={$LL.input.removeLane()}
-									on:click={() => removeLane('above', laneIndex)}
-								>
-									<iconify-icon icon="mdi:close" inline="true" />
-								</button>
-							</div>
+							<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
+							{#each glossableTokens as { tokenIndex } (tokenIndex)}
+								<input
+									type="text"
+									class="lane-input"
+									bind:value={annotationsAbove[laneIndex][tokenIndex]}
+									placeholder={$LL.input.glossPlaceholder()}
+								/>
+							{/each}
+							<button
+								type="button"
+								class="lane-remove"
+								title={$LL.input.removeLane()}
+								aria-label={$LL.input.removeLane()}
+								on:click={() => removeLane('above', laneIndex)}
+							>
+								<iconify-icon icon="mdi:close" inline="true" />
+							</button>
 						{/each}
-						<button type="button" class="lane-add" on:click={() => addLane('above')}>
+
+						<button type="button" class="lane-add lane-add-above" on:click={() => addLane('above')}>
 							<iconify-icon icon="mdi:plus" inline="true" />
 							{$LL.input.addLaneAbove()}
 						</button>
 
-						<div class="word-row">
-							<span class="lane-label lane-label-word">{$LL.input.wordRow()}</span>
-							<div class="lane-cells lane-cells-words">
-								{#each words as word}
-									{#if isGlossableToken(word)}
-										<span class="lane-word lane-word-large" {lang}><Word {word} /></span>
-									{/if}
-								{/each}
-							</div>
-						</div>
+						<span class="lane-label lane-label-word">{$LL.input.wordRow()}</span>
+						{#each glossableTokens as { word, tokenIndex } (tokenIndex)}
+							<span class="word-cell" {lang}><Word {word} /></span>
+						{/each}
+						<span class="lane-corner" aria-hidden="true"></span>
 
-						<button type="button" class="lane-add" on:click={() => addLane('below')}>
+						<button type="button" class="lane-add lane-add-below" on:click={() => addLane('below')}>
 							<iconify-icon icon="mdi:plus" inline="true" />
 							{$LL.input.addLaneBelow()}
 						</button>
+
 						{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
-							<div class="lane">
-								<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
-								<div class="lane-cells">
-									{#each words as word, tokenIndex}
-										{#if isGlossableToken(word)}
-											<label class="lane-field">
-												<span class="lane-word" {lang}><Word {word} /></span>
-												<input
-													type="text"
-													bind:value={annotationsBelow[laneIndex][tokenIndex]}
-													placeholder={$LL.input.glossPlaceholder()}
-												/>
-											</label>
-										{/if}
-									{/each}
-								</div>
-								<button
-									type="button"
-									class="lane-remove"
-									title={$LL.input.removeLane()}
-									aria-label={$LL.input.removeLane()}
-									on:click={() => removeLane('below', laneIndex)}
-								>
-									<iconify-icon icon="mdi:close" inline="true" />
-								</button>
-							</div>
+							<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
+							{#each glossableTokens as { tokenIndex } (tokenIndex)}
+								<input
+									type="text"
+									class="lane-input"
+									bind:value={annotationsBelow[laneIndex][tokenIndex]}
+									placeholder={$LL.input.glossPlaceholder()}
+								/>
+							{/each}
+							<button
+								type="button"
+								class="lane-remove"
+								title={$LL.input.removeLane()}
+								aria-label={$LL.input.removeLane()}
+								on:click={() => removeLane('below', laneIndex)}
+							>
+								<iconify-icon icon="mdi:close" inline="true" />
+							</button>
 						{/each}
 					</div>
 				{/if}
@@ -361,74 +345,33 @@
 		padding: 0 1em 1em;
 	}
 
-	.lane-stack {
+	/* Single aligned grid: [label] N×[input] [×]. Lane rows, word row, and
+	   add-buttons all live in the same grid so columns line up across rows —
+	   matching the actual output diagram. */
+	.lane-grid {
 		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.5em;
-	}
-
-	.lane,
-	.word-row {
-		display: grid;
-		grid-template-columns: 7em 1fr 1.6em;
-		align-items: start;
-		gap: 0.6em;
-		padding: 0.5em 0.6em;
-		border-radius: 0.4em;
-		background: rgb(255 255 255 / 70%);
-		border: 1px solid rgb(44 71 255 / 10%);
-	}
-
-	.word-row {
-		background: rgb(46 91 255 / 0.06);
-		border-color: rgb(46 91 255 / 0.18);
+		grid-template-columns: max-content repeat(var(--n, 1), minmax(4em, 1fr)) auto;
+		gap: 0.35em 0.45em;
+		align-items: center;
+		padding: 0.2em 0.1em;
 	}
 
 	.lane-label {
-		font-size: 0.78em;
+		font-size: 0.74em;
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		color: rgb(74 89 142);
-		padding-top: 0.4em;
+		padding-right: 0.4em;
+		white-space: nowrap;
 	}
 
 	.lane-label-word {
 		color: rgb(33 56 199);
 	}
 
-	.lane-cells {
-		display: grid;
-		gap: 0.4em;
-		grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-	}
-
-	.lane-cells-words {
-		grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-		align-items: center;
-	}
-
-	.lane-field {
-		display: grid;
-		gap: 0.25em;
-	}
-
-	.lane-word {
-		display: block;
-		font-size: 0.85em;
-		font-weight: 600;
-		color: rgb(60 67 96);
-		word-break: break-word;
-	}
-
-	.lane-word-large {
-		font-size: 1em;
-		text-align: center;
-		padding: 0.2em 0;
-	}
-
-	.lane-field input {
-		padding: 0.3em 0.45em;
+	.lane-input {
+		padding: 0.28em 0.4em;
 		border: 1px solid rgb(44 71 255 / 20%);
 		border-radius: 0.3em;
 		background: white;
@@ -437,12 +380,29 @@
 		min-width: 0;
 		width: 100%;
 		box-sizing: border-box;
+		text-align: center;
+	}
+
+	.lane-input:focus {
+		outline: none;
+		border-color: rgb(44 71 255 / 55%);
+		box-shadow: 0 0 0 2px rgb(44 71 255 / 12%);
+	}
+
+	.word-cell {
+		text-align: center;
+		font-size: 1.05em;
+		font-weight: 600;
+		color: rgb(33 51 110);
+		padding: 0.35em 0.2em;
+		background: rgb(46 91 255 / 0.06);
+		border-radius: 0.25em;
 	}
 
 	.lane-remove {
 		appearance: none;
-		width: 1.6em;
-		height: 1.6em;
+		width: 1.5em;
+		height: 1.5em;
 		border: 1px solid rgb(220 60 60 / 25%);
 		background: white;
 		border-radius: 999px;
@@ -452,26 +412,30 @@
 		justify-content: center;
 		cursor: pointer;
 		padding: 0;
+		justify-self: center;
 	}
 
 	.lane-remove:hover {
 		background: rgb(220 60 60 / 12%);
 	}
 
+	/* Span the entire row so auto-flow lands the next lane label back in column 1.
+	   Partial spans would leave gaps that auto-flow tries to fill from the next row. */
 	.lane-add {
 		appearance: none;
+		grid-column: 1 / -1;
 		justify-self: start;
-		padding: 0.32em 0.7em;
+		padding: 0.22em 0.65em;
 		border: 1px dashed rgb(44 71 255 / 35%);
 		border-radius: 999px;
 		background: rgb(255 255 255 / 80%);
 		color: rgb(33 56 199);
 		font: inherit;
-		font-size: 0.85em;
+		font-size: 0.78em;
 		font-weight: 600;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35em;
+		gap: 0.3em;
 		cursor: pointer;
 	}
 
@@ -562,27 +526,15 @@
 				'i i i';
 		}
 
-		button {
+		.buttons > button,
+		button[type='submit'] {
 			width: 100%;
 		}
 
-		.lane,
-		.word-row {
-			grid-template-columns: 1fr 1.6em;
-		}
-
-		.lane-label,
-		.lane-label-word {
-			grid-column: 1 / -1;
-		}
-
-		.lane-cells {
-			grid-column: 1 / 2;
-		}
-
-		.lane-remove {
-			grid-column: 2 / 3;
-			align-self: start;
+		.lane-grid {
+			/* On narrow screens columns can shrink to their min so the editor
+			   stays scrollable within the panel rather than wrapping. */
+			grid-template-columns: max-content repeat(var(--n, 1), minmax(3.2em, 1fr)) auto;
 		}
 	}
 
