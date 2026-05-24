@@ -34,9 +34,9 @@
 	"input_add": "Dodaj",
 	"input_modify": "Zmień",
 	"input_guidance": "Wyrazy są dzielone automatycznie za pomocą segmentacji właściwej dla języka, jeśli jest dostępna, a w przeciwnym razie według spacji i interpunkcji. Użyj {delimiter}, aby mieć dokładniejszą kontrolę, np. {example}",
-	"input_gloss": "Glosa interlinearna",
-	"input_gloss_empty": "Najpierw dodaj slowa, aby wprowadzic glosy.",
-	"input_gloss_placeholder": "Glosa",
+	"input_gloss": "Adnotacje",
+	"input_gloss_empty": "Najpierw dodaj słowa, aby wprowadzić adnotacje.",
+	"input_gloss_placeholder": "Adnotacja",
 	"token_editor_tokens": "Segmenty",
 	"token_editor_merge_selected": "Scal zaznaczone",
 	"token_editor_split_at_boundary": "Podziel segment w tym miejscu",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Przetłumacz istniejące zdania na inne języki (używa twojego klucza API).",
 	"translate_retry": "Ponów",
 	"translate_cost_notice": "Każde zapytanie obciąża twoje konto {provider}. Tańsze modele zwykle wystarczają.",
-	"settings_model_hint": "Wybierz sugestię lub wpisz dowolny identyfikator modelu obsługiwany przez dostawcę."
+	"settings_model_hint": "Wybierz sugestię lub wpisz dowolny identyfikator modelu obsługiwany przez dostawcę.",
+	"input_lane_above": "Powyżej {n}",
+	"input_lane_below": "Poniżej {n}",
+	"input_word_row": "Słowo",
+	"input_add_lane_above": "Dodaj wiersz powyżej",
+	"input_add_lane_below": "Dodaj wiersz poniżej",
+	"input_remove_lane": "Usuń wiersz"
 }

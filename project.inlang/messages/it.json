@@ -34,9 +34,9 @@
 	"input_add": "Aggiungi",
 	"input_modify": "Modifica",
 	"input_guidance": "Le parole vengono separate automaticamente con segmentazione adatta alla lingua quando disponibile, oppure con spazi e punteggiatura come ripiego. Usa {delimiter} per un controllo più preciso, ad esempio {example}",
-	"input_gloss": "Glossa interlineare",
-	"input_gloss_empty": "Aggiungi prima delle parole per inserire le glosse.",
-	"input_gloss_placeholder": "Glossa",
+	"input_gloss": "Annotazioni",
+	"input_gloss_empty": "Aggiungi prima delle parole per inserire annotazioni.",
+	"input_gloss_placeholder": "Annotazione",
 	"token_editor_tokens": "Token",
 	"token_editor_merge_selected": "Unisci selezionati",
 	"token_editor_split_at_boundary": "Dividi il token in questo punto",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Traduci le frasi esistenti in altre lingue (usa la tua chiave API).",
 	"translate_retry": "Riprova",
 	"translate_cost_notice": "Ogni richiesta viene addebitata sul tuo account {provider}. I modelli più economici di solito bastano.",
-	"settings_model_hint": "Scegli un suggerimento o digita un ID di modello accettato dal fornitore."
+	"settings_model_hint": "Scegli un suggerimento o digita un ID di modello accettato dal fornitore.",
+	"input_lane_above": "Sopra {n}",
+	"input_lane_below": "Sotto {n}",
+	"input_word_row": "Parola",
+	"input_add_lane_above": "Aggiungi riga sopra",
+	"input_add_lane_below": "Aggiungi riga sotto",
+	"input_remove_lane": "Rimuovi riga"
 }

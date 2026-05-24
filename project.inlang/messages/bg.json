@@ -92,5 +92,14 @@
 	"aria_margin_top": "Горно поле",
 	"aria_margin_bottom": "Долно поле",
 	"aria_margin_left": "Ляво поле",
-	"aria_margin_right": "Дясно поле"
+	"aria_margin_right": "Дясно поле",
+	"input_gloss": "Анотации",
+	"input_gloss_empty": "Първо добавете думи, за да въведете анотации.",
+	"input_gloss_placeholder": "Анотация",
+	"input_lane_above": "Отгоре {n}",
+	"input_lane_below": "Отдолу {n}",
+	"input_word_row": "Дума",
+	"input_add_lane_above": "Добави ред отгоре",
+	"input_add_lane_below": "Добави ред отдолу",
+	"input_remove_lane": "Премахни реда"
 }

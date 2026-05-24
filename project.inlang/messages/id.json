@@ -34,9 +34,9 @@
 	"input_add": "Tambah",
 	"input_modify": "Ubah",
 	"input_guidance": "Kata akan dipisah otomatis dengan segmentasi sesuai bahasa jika tersedia, atau berdasarkan spasi dan tanda baca sebagai cadangan. Gunakan {delimiter} untuk kontrol yang lebih rinci, misalnya {example}",
-	"input_gloss": "Glos interlinear",
-	"input_gloss_empty": "Tambahkan kata terlebih dahulu untuk memasukkan glos.",
-	"input_gloss_placeholder": "Glos",
+	"input_gloss": "Anotasi",
+	"input_gloss_empty": "Tambahkan kata terlebih dahulu untuk memasukkan anotasi.",
+	"input_gloss_placeholder": "Anotasi",
 	"token_editor_tokens": "Token",
 	"token_editor_merge_selected": "Gabungkan pilihan",
 	"token_editor_split_at_boundary": "Pisahkan token di batas ini",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Terjemahkan kalimat yang ada ke bahasa lain (menggunakan kunci API Anda).",
 	"translate_retry": "Coba lagi",
 	"translate_cost_notice": "Setiap permintaan dibebankan ke akun {provider} Anda sendiri. Model yang lebih murah biasanya cukup.",
-	"settings_model_hint": "Pilih saran atau ketik ID model apa pun yang diterima penyedia."
+	"settings_model_hint": "Pilih saran atau ketik ID model apa pun yang diterima penyedia.",
+	"input_lane_above": "Atas {n}",
+	"input_lane_below": "Bawah {n}",
+	"input_word_row": "Kata",
+	"input_add_lane_above": "Tambah baris atas",
+	"input_add_lane_below": "Tambah baris bawah",
+	"input_remove_lane": "Hapus baris"
 }
