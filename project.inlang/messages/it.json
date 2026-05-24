@@ -92,5 +92,6 @@
 	"input_translate": "Traduci",
 	"input_translate_hint": "Traduci le frasi esistenti in altre lingue (usa la tua chiave API).",
 	"translate_retry": "Riprova",
-	"translate_cost_notice": "Ogni richiesta viene addebitata sul tuo account {provider}. I modelli più economici di solito bastano."
+	"translate_cost_notice": "Ogni richiesta viene addebitata sul tuo account {provider}. I modelli più economici di solito bastano.",
+	"settings_model_hint": "Scegli un suggerimento o digita un ID di modello accettato dal fornitore."
 }

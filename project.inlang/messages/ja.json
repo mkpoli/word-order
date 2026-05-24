@@ -92,5 +92,6 @@
 	"input_translate": "翻訳",
 	"input_translate_hint": "既存の文をさらに多くの言語に翻訳します（APIキーが必要です）。",
 	"translate_retry": "再試行",
-	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントへ課金されます。安いモデルでも十分なことが多いです。"
+	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントへ課金されます。安いモデルでも十分なことが多いです。",
+	"settings_model_hint": "候補から選ぶか、プロバイダーが受け付けるモデル ID を直接入力できます。"
 }

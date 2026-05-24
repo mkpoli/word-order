@@ -92,5 +92,6 @@
 	"input_translate": "Tłumacz",
 	"input_translate_hint": "Przetłumacz istniejące zdania na inne języki (używa twojego klucza API).",
 	"translate_retry": "Ponów",
-	"translate_cost_notice": "Każde zapytanie obciąża twoje konto {provider}. Tańsze modele zwykle wystarczają."
+	"translate_cost_notice": "Każde zapytanie obciąża twoje konto {provider}. Tańsze modele zwykle wystarczają.",
+	"settings_model_hint": "Wybierz sugestię lub wpisz dowolny identyfikator modelu obsługiwany przez dostawcę."
 }

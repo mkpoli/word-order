@@ -92,5 +92,6 @@
 	"input_translate": "飜譯",
 	"input_translate_hint": "旣存 文章을 더 많은 言語로 飜譯합니다 (使用者 API 키 使用).",
 	"translate_retry": "다시 試圖",
-	"translate_cost_notice": "要請마다 使用者 {provider} 計定에 費用이 請求됩니다. 저렴한 模型로도 充分한 境遇가 많습니다."
+	"translate_cost_notice": "要請마다 使用者 {provider} 計定에 費用이 請求됩니다. 저렴한 模型로도 充分한 境遇가 많습니다.",
+	"settings_model_hint": "提案 中에서 選擇하거나, 供給者가 許容하는 모델 ID를 直接 入力할 수 있습니다."
 }

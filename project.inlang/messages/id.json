@@ -92,5 +92,6 @@
 	"input_translate": "Terjemah",
 	"input_translate_hint": "Terjemahkan kalimat yang ada ke bahasa lain (menggunakan kunci API Anda).",
 	"translate_retry": "Coba lagi",
-	"translate_cost_notice": "Setiap permintaan dibebankan ke akun {provider} Anda sendiri. Model yang lebih murah biasanya cukup."
+	"translate_cost_notice": "Setiap permintaan dibebankan ke akun {provider} Anda sendiri. Model yang lebih murah biasanya cukup.",
+	"settings_model_hint": "Pilih saran atau ketik ID model apa pun yang diterima penyedia."
 }

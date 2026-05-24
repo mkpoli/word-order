@@ -92,5 +92,6 @@
 	"input_translate": "Vertere",
 	"input_translate_hint": "Sententias existentes in plures linguas vertere (clavem API tuam adhibet).",
 	"translate_retry": "Iterum conari",
-	"translate_cost_notice": "Quaeque petitio computatur in ratione tua {provider}. Exemplaria viliora plerumque sufficiunt."
+	"translate_cost_notice": "Quaeque petitio computatur in ratione tua {provider}. Exemplaria viliora plerumque sufficiunt.",
+	"settings_model_hint": "Suggestionem elige aut quamlibet exemplaris notam quae a praebitor accipitur scribe."
 }

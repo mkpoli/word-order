@@ -92,5 +92,6 @@
 	"input_translate": "翻译",
 	"input_translate_hint": "将现有句子翻译为更多语言（使用您自己的 API 密钥）。",
 	"translate_retry": "重试",
-	"translate_cost_notice": "每次请求都会从您自己的 {provider} 账户扣费。建议先试试更便宜的模型。"
+	"translate_cost_notice": "每次请求都会从您自己的 {provider} 账户扣费。建议先试试更便宜的模型。",
+	"settings_model_hint": "从建议中选择，或输入服务商支持的任意模型 ID。"
 }

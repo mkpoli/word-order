@@ -92,5 +92,6 @@
 	"input_translate": "ほんやく",
 	"input_translate_hint": "いまある文をほかのことばにほんやくします（APIキーがひつようです）。",
 	"translate_retry": "もういちど",
-	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントにおかねがかかります。やすいモデルでもじゅうぶんなことがおおいです。"
+	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントにおかねがかかります。やすいモデルでもじゅうぶんなことがおおいです。",
+	"settings_model_hint": "こうほからえらぶか、プロバイダーがうけつけるモデル ID をちょくせついれられます。"
 }

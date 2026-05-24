@@ -73,6 +73,7 @@
 	"settings_tagline": "Bring your own API key. Translations and alignments are generated directly from your browser.",
 	"settings_provider": "Provider",
 	"settings_model": "Model",
+	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts.",
 	"settings_api_key": "API key",
 	"settings_show": "Show",
 	"settings_hide": "Hide",

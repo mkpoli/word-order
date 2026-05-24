@@ -92,5 +92,6 @@
 	"input_translate": "Çevir",
 	"input_translate_hint": "Mevcut cümleleri daha fazla dile çevirin (kendi API anahtarınızı kullanır).",
 	"translate_retry": "Tekrar dene",
-	"translate_cost_notice": "Her istek kendi {provider} hesabınızdan ücretlendirilir. Daha ucuz modeller genelde yeterlidir."
+	"translate_cost_notice": "Her istek kendi {provider} hesabınızdan ücretlendirilir. Daha ucuz modeller genelde yeterlidir.",
+	"settings_model_hint": "Bir öneri seçin veya sağlayıcının kabul ettiği herhangi bir model kimliğini yazın."
 }
