@@ -218,13 +218,13 @@
 		border: none;
 		font-size: 1.2em;
 		cursor: pointer;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		padding: 0.2em 0.4em;
 		border-radius: 0.3em;
 	}
 
 	.dismiss:hover {
-		background: rgb(24 33 61 / 0.08);
+		background: var(--color-hover);
 	}
 
 	.lede {
