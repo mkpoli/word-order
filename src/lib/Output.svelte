@@ -6,7 +6,7 @@
 <script lang="ts">
 	import { onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence } from '$lib/types';
-	import { getSentenceWords } from '$lib/types';
+	import { getSentenceWords, sentenceHasAnyAnnotation } from '$lib/types';
 	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
@@ -122,7 +122,7 @@
 						const rectB2 = spanB2.getBoundingClientRect();
 
 						let x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
-						let y1 = Math.max(rectA1.bottom, rectA2.bottom) - rectOutput.top;
+						let y1 = getBottomEndpoint(sentences[j], spanA1, spanA2, rectOutput);
 						let x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
 						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
 
@@ -188,7 +188,7 @@
 	}
 
 	function sentenceShowsGloss(sentence: Sentence): boolean {
-		return sentence.showGloss || sentence.tokens.some((token) => token.gloss.trim().length > 0);
+		return sentence.showGloss || sentence.lanesAbove > 0 || sentence.lanesBelow > 0 || sentenceHasAnyAnnotation(sentence);
 	}
 
 	function getTopEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, rectOutput: DOMRect): number {
@@ -196,16 +196,33 @@
 		const rect2 = span2.getBoundingClientRect();
 		const wordTop = Math.min(rect1.top, rect2.top) - rectOutput.top;
 
-		if (!sentenceShowsGloss(sentence)) return wordTop;
+		if (!sentenceShowsGloss(sentence) || sentence.lanesAbove === 0) return wordTop;
 
-		const glosses = [span1, span2]
-			.map((span) => span.parentElement?.querySelector('.gloss-token'))
+		const aboveStacks = [span1, span2]
+			.map((span) => span.parentElement?.querySelector('.annotations-above'))
 			.filter((element): element is HTMLElement => element instanceof HTMLElement)
 			.map((element) => element.getBoundingClientRect());
 
-		if (glosses.length === 0) return wordTop;
+		if (aboveStacks.length === 0) return wordTop;
 
-		return Math.min(...glosses.map((rect) => rect.top)) - rectOutput.top;
+		return Math.min(...aboveStacks.map((rect) => rect.top)) - rectOutput.top;
+	}
+
+	function getBottomEndpoint(sentence: Sentence, span1: HTMLSpanElement, span2: HTMLSpanElement, rectOutput: DOMRect): number {
+		const rect1 = span1.getBoundingClientRect();
+		const rect2 = span2.getBoundingClientRect();
+		const wordBottom = Math.max(rect1.bottom, rect2.bottom) - rectOutput.top;
+
+		if (!sentenceShowsGloss(sentence) || sentence.lanesBelow === 0) return wordBottom;
+
+		const belowStacks = [span1, span2]
+			.map((span) => span.parentElement?.querySelector('.annotations-below'))
+			.filter((element): element is HTMLElement => element instanceof HTMLElement)
+			.map((element) => element.getBoundingClientRect());
+
+		if (belowStacks.length === 0) return wordBottom;
+
+		return Math.max(...belowStacks.map((rect) => rect.bottom)) - rectOutput.top;
 	}
 
 	let connected: [l: number, w: number][] = [];
@@ -383,10 +400,18 @@
 					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
 						{#each tokens as token, j}
 							{@const word = token.text}
+							{@const hasAboveLanes = sentence.lanesAbove > 0 && isContent(word)}
+							{@const hasBelowLanes = sentence.lanesBelow > 0 && isContent(word)}
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
-								{#if sentenceShowsGloss(sentence) && isContent(word)}
-									<span class="gloss-token" style:font-size={`${glossFontSize}px`}>{isContent(word) ? token.gloss : ''}</span>
+								{#if hasAboveLanes}
+									<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
+										{#each Array(sentence.lanesAbove) as _, laneIndex}
+											<span class="annotation-line annotation-above">
+												{token.annotationsAbove[laneIndex] ?? ''}
+											</span>
+										{/each}
+									</span>
 								{/if}
 								<span
 									class="word"
@@ -434,6 +459,15 @@
 								>
 									<Word {word} />
 								</span>
+								{#if hasBelowLanes}
+									<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
+										{#each Array(sentence.lanesBelow) as _, laneIndex}
+											<span class="annotation-line annotation-below">
+												{token.annotationsBelow[laneIndex] ?? ''}
+											</span>
+										{/each}
+									</span>
+								{/if}
 							</span>
 						{/each}
 					</span>
@@ -611,16 +645,23 @@
 		white-space: pre;
 	}
 
-	/* Gloss sits above the word in normal flow so the token's width grows to
-	   max(word, gloss) — wide gloss text no longer overflows onto neighbours. */
-	.gloss-token {
-		display: block;
+	/* Annotation stacks sit above/below the word in normal flow so the token's width
+	   grows to max(word, lane text) — wide annotations no longer overflow onto neighbours. */
+	.annotations-above,
+	.annotations-below {
+		display: flex;
+		flex-direction: column;
 		text-align: center;
 		line-height: 1.2;
 		letter-spacing: 0.02em;
 		color: rgb(86 92 120);
-		white-space: nowrap;
 		pointer-events: none;
+	}
+
+	.annotation-line {
+		display: block;
+		white-space: nowrap;
+		min-height: 1em;
 	}
 
 	.word.content:hover {

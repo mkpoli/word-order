@@ -7,11 +7,19 @@ export type Example = {
 	equivalency: number[][][];
 };
 
-function s(lang: string, tokens: string[], glosses: string[] = []): Sentence {
+function s(lang: string, tokens: string[], glosses: string[] = [], below: string[] = []): Sentence {
+	const lanesAbove = glosses.some(Boolean) ? 1 : 0;
+	const lanesBelow = below.some(Boolean) ? 1 : 0;
 	return {
 		lang,
-		showGloss: glosses.some(Boolean),
-		tokens: tokens.map((text, i) => ({ text, gloss: glosses[i] ?? '' }))
+		lanesAbove,
+		lanesBelow,
+		showGloss: lanesAbove > 0 || lanesBelow > 0,
+		tokens: tokens.map((text, i) => ({
+			text,
+			annotationsAbove: lanesAbove ? [glosses[i] ?? ''] : [],
+			annotationsBelow: lanesBelow ? [below[i] ?? ''] : []
+		}))
 	};
 }
 
@@ -186,6 +194,30 @@ export const EXAMPLES: Example[] = [
 			[[4], [4], [4], [4], [4]], // 3
 			[[6], [6], [6], [6], [6]], // 4
 			[[8], [8], [8], [8], [8]] // 5
+		]
+	},
+	{
+		id: 'romanization-above-below',
+		name: 'Romanization + gloss',
+		sentences: [
+			s(
+				'ja',
+				['私', 'は', '本', 'を', '読む', '。'],
+				['1SG', 'TOP', 'book', 'ACC', 'read', ''],
+				['watashi', 'wa', 'hon', 'o', 'yomu', '']
+			),
+			s(
+				'zh-HanS',
+				['我', '读', '书', '。'],
+				['1SG', 'read', 'book', ''],
+				['wǒ', 'dú', 'shū', '']
+			),
+			s('en', ['I', ' ', 'read', ' ', 'a', ' ', 'book', '.'], ['1SG', '', 'read', '', 'INDF', '', 'book', ''])
+		],
+		equivalency: [
+			[[0], [0], [0]],
+			[[4], [1], [2]],
+			[[2], [2], [6]]
 		]
 	},
 	{
