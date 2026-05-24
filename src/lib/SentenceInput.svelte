@@ -152,7 +152,8 @@
 				{#if glossableTokens.length === 0}
 					<p class="gloss-empty">{$LL.input.glossEmpty()}</p>
 				{:else}
-					<div class="lane-grid" style="--n: {glossableTokens.length}">
+					<div class="lane-scroll">
+						<div class="lane-grid" style="--n: {glossableTokens.length}">
 						{#each annotationsAbove as lane, laneIndex (`above-${laneIndex}`)}
 							<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
 							{#each glossableTokens as { tokenIndex } (tokenIndex)}
@@ -210,6 +211,7 @@
 								<iconify-icon icon="mdi:close" inline="true" />
 							</button>
 						{/each}
+						</div>
 					</div>
 				{/if}
 			</div>
@@ -345,12 +347,43 @@
 		padding: 0 1em 1em;
 	}
 
+	/* Horizontal scroll lives on this wrapper so wide sentences scroll within
+	   the panel instead of clipping or pushing the whole input column wider.
+	   Thin always-visible scrollbar so users see the affordance. */
+	.lane-scroll {
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
+		padding-bottom: 0.15em;
+		scrollbar-width: thin;
+		scrollbar-color: rgb(44 71 255 / 30%) transparent;
+	}
+
+	.lane-scroll::-webkit-scrollbar {
+		height: 6px;
+	}
+
+	.lane-scroll::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.lane-scroll::-webkit-scrollbar-thumb {
+		background: rgb(44 71 255 / 25%);
+		border-radius: 3px;
+	}
+
+	.lane-scroll::-webkit-scrollbar-thumb:hover {
+		background: rgb(44 71 255 / 45%);
+	}
+
 	/* Single aligned grid: [label] N×[input] [×]. Lane rows, word row, and
 	   add-buttons all live in the same grid so columns line up across rows —
-	   matching the actual output diagram. */
+	   matching the actual output diagram. min-width: max-content lets the grid
+	   exceed its parent and trigger the scroll wrapper above. */
 	.lane-grid {
 		display: grid;
-		grid-template-columns: max-content repeat(var(--n, 1), minmax(4em, 1fr)) auto;
+		grid-template-columns: max-content repeat(var(--n, 1), minmax(5em, max-content)) auto;
+		min-width: max-content;
 		gap: 0.35em 0.45em;
 		align-items: center;
 		padding: 0.2em 0.1em;
@@ -362,8 +395,14 @@
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		color: rgb(74 89 142);
-		padding-right: 0.4em;
+		padding: 0.2em 0.5em 0.2em 0.1em;
 		white-space: nowrap;
+		/* Pin to the left so you can still see "Above 1 / Word / Below 2" when
+		   scrolling horizontally through a long sentence. */
+		position: sticky;
+		left: 0;
+		background: rgb(249 251 255);
+		z-index: 1;
 	}
 
 	.lane-label-word {

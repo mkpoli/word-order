@@ -237,20 +237,23 @@ export const EXAMPLES: Example[] = [
 		]
 	},
 	{
-		id: 'two-level-annotation',
-		name: 'Two-level annotation',
+		id: 'multi-line-annotation',
+		name: 'Multi-line annotation',
 		sentences: [
-			// JP: gloss + kana reading above the word, Hepburn romaji below.
+			// JP: kana + gloss above; romaji + IPA below. Four annotation lanes total.
 			m(
 				'ja',
 				['私', 'は', '本', 'を', '読む', '。'],
 				[
-					['1SG', 'TOP', 'book', 'ACC', 'read', ''],
-					['わたし', 'は', 'ほん', 'を', 'よむ', '']
+					['わたし', 'は', 'ほん', 'を', 'よむ', ''],
+					['1SG', 'TOP', 'book', 'ACC', 'read', '']
 				],
-				[['watashi', 'wa', 'hon', 'o', 'yomu', '']]
+				[
+					['watashi', 'wa', 'hon', 'o', 'yomu', ''],
+					['ɰa̠ta̠ɕi', 'ɰa̠', 'ho̞ɴ', 'o̞', 'jo̞mɯ', '']
+				]
 			),
-			// ZH: gloss above, Pinyin + IPA below.
+			// ZH: gloss above; Pinyin + IPA below.
 			m(
 				'zh-HanS',
 				['我', '读', '书', '。'],
