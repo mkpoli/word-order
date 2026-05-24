@@ -427,6 +427,8 @@
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
 	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	style:--margin-left={`${outputMargin.left}px`}
+	style:--margin-right={`${outputMargin.right}px`}
 	class:margin-adjusting={marginDrag !== null}
 >
 	<!-- Per-side margin overlays — tinted bands over the padding region.
@@ -496,11 +498,11 @@
 			class:active={marginDrag?.side === 'top'}
 			role="slider"
 			tabindex="-1"
-			aria-label="Top margin"
+			aria-label={$LL.aria.marginTop()}
 			aria-valuenow={outputMargin.top}
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
-			title={`Top margin: ${outputMargin.top}px (drag)`}
+			title={`${$LL.aria.marginTop()}: ${outputMargin.top}px`}
 			on:pointerdown={(e) => startMarginDrag('top', e)}
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
@@ -512,11 +514,11 @@
 			class:active={marginDrag?.side === 'bottom'}
 			role="slider"
 			tabindex="-1"
-			aria-label="Bottom margin"
+			aria-label={$LL.aria.marginBottom()}
 			aria-valuenow={outputMargin.bottom}
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
-			title={`Bottom margin: ${outputMargin.bottom}px (drag)`}
+			title={`${$LL.aria.marginBottom()}: ${outputMargin.bottom}px`}
 			on:pointerdown={(e) => startMarginDrag('bottom', e)}
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
@@ -528,11 +530,11 @@
 			class:active={marginDrag?.side === 'left'}
 			role="slider"
 			tabindex="-1"
-			aria-label="Left margin"
+			aria-label={$LL.aria.marginLeft()}
 			aria-valuenow={outputMargin.left}
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
-			title={`Left margin: ${outputMargin.left}px (drag)`}
+			title={`${$LL.aria.marginLeft()}: ${outputMargin.left}px`}
 			on:pointerdown={(e) => startMarginDrag('left', e)}
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
@@ -544,11 +546,11 @@
 			class:active={marginDrag?.side === 'right'}
 			role="slider"
 			tabindex="-1"
-			aria-label="Right margin"
+			aria-label={$LL.aria.marginRight()}
 			aria-valuenow={outputMargin.right}
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
-			title={`Right margin: ${outputMargin.right}px (drag)`}
+			title={`${$LL.aria.marginRight()}: ${outputMargin.right}px`}
 			on:pointerdown={(e) => startMarginDrag('right', e)}
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
@@ -1273,6 +1275,23 @@
 		border-radius: 0.1em;
 		width: 1.5em;
 		height: 1.5em;
+		/* Editing chrome sits outside the diagram's padded "frame" so the
+		   margin band reads as pure framing. Each chrome cell keeps its grid
+		   row alignment but visually shifts onto the output's border edge:
+		   dragger goes left by the full left padding, modify/delete go right
+		   by the full right padding. z-index keeps them above margin
+		   overlays / handles / dimension annotations. */
+		position: relative;
+		z-index: 8;
+	}
+
+	.dragger {
+		left: calc(-1 * var(--margin-left, 0px));
+	}
+
+	.modify,
+	.delete {
+		left: var(--margin-right, 0px);
 	}
 
 	.action:hover {
