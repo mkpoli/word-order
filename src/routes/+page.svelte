@@ -102,21 +102,18 @@
 	let examplesOpen = false;
 	let translatePopoverOpen = false;
 
-	type TranslateSlot = {
-		id: string;
-		lang: string;
-		endonym: string;
-		status: 'pending' | 'error';
-		startedAt: number;
-		elapsedMs: number;
-		errorMessage?: string;
+	type PendingTranslation = {
 		abort: AbortController;
+		rowIndices: number[];
+		targets: string[];
 	};
 
-	let translateSlots: TranslateSlot[] = [];
-	let translateTimer: ReturnType<typeof setInterval> | null = null;
+	let pendingTranslation: PendingTranslation | null = null;
+	let translateError: { message: string; targets: string[] } | null = null;
 
 	const TRANSLATE_TIMEOUT_MS = 120_000;
+
+	$: pendingSentenceSet = new Set<number>(pendingTranslation?.rowIndices ?? []);
 
 	let mounted = false;
 	onMount(async () => {
@@ -141,8 +138,9 @@
 		await tick();
 	});
 
-	// Autosave on any change to sentences or equivalency.
-	$: if (mounted) saveDoc({ schemaVersion: 1, sentences, equivalency });
+	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
+	// so we don't persist the empty placeholder rows.
+	$: if (mounted && !pendingTranslation) saveDoc({ schemaVersion: 1, sentences, equivalency });
 
 	$: if (mounted) calculate_color_map(equivalency);
 	function calculate_color_map(equivalency: number[][][]) {
@@ -257,129 +255,128 @@
 		await tick();
 	}
 
-	function ensureTranslateTimer() {
-		if (translateTimer) return;
-		translateTimer = setInterval(() => {
-			const now = Date.now();
-			let anyPending = false;
-			for (const slot of translateSlots) {
-				if (slot.status === 'pending') {
-					slot.elapsedMs = now - slot.startedAt;
-					anyPending = true;
-				}
-			}
-			if (!anyPending) {
-				clearInterval(translateTimer!);
-				translateTimer = null;
-			}
-			translateSlots = translateSlots;
-		}, 250);
-	}
-
-	function cancelTranslateSlot(id: string) {
-		const slot = translateSlots.find((s) => s.id === id);
-		if (!slot) return;
-		slot.abort.abort();
-	}
-
-	function dismissTranslateSlot(id: string) {
-		translateSlots = translateSlots.filter((s) => s.id !== id);
-	}
-
 	function buildSources(): TranslateRequest['sources'] {
-		return sentences.map((s) => {
-			const tokens = getSentenceWords(s);
-			const glosses = getSentenceGlosses(s);
-			return { lang: s.lang, text: tokens.join(''), tokens, glosses };
-		});
+		return sentences
+			.filter((_, i) => !pendingSentenceSet.has(i))
+			.map((s) => {
+				const tokens = getSentenceWords(s);
+				const glosses = getSentenceGlosses(s);
+				return { lang: s.lang, text: tokens.join(''), tokens, glosses };
+			});
 	}
 
 	function startTranslate(targets: string[]) {
 		if (modifying !== -1) return;
+		if (pendingTranslation) return;
 		if (sentences.length === 0) return;
 
 		translatePopoverOpen = false;
+		translateError = null;
 		const sourcesSnapshot = buildSources();
 
-		const newSlots: TranslateSlot[] = targets.map((tag) => ({
-			id: crypto.randomUUID(),
-			lang: tag,
-			endonym: endonymFor(tag),
-			status: 'pending',
-			startedAt: Date.now(),
-			elapsedMs: 0,
-			abort: new AbortController()
-		}));
-
-		translateSlots = [...translateSlots, ...newSlots];
-		ensureTranslateTimer();
-
-		for (const slot of newSlots) {
-			void runOneTranslation(slot, sourcesSnapshot);
+		// Append placeholder rows (empty tokens) for each target. Output renders them with a loading bar.
+		const startIdx = sentences.length;
+		const rowIndices: number[] = [];
+		for (const tag of targets) {
+			sentences.push(createSentence(tag, [], [], false));
+			color_map = [...color_map, []];
+			word_spans = [...word_spans, []];
+			rowIndices.push(sentences.length - 1);
 		}
-	}
+		for (let i = 0; i < equivalency.length; i++) {
+			equivalency[i] = [...equivalency[i], ...targets.map(() => [] as number[])];
+		}
+		sentences = sentences;
+		equivalency = equivalency;
 
-	async function runOneTranslation(slot: TranslateSlot, sourcesSnapshot: TranslateRequest['sources']): Promise<void> {
+		const controller = new AbortController();
+		pendingTranslation = { abort: controller, rowIndices, targets: [...targets] };
+
 		const timeoutId = setTimeout(
-			() => slot.abort.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)),
+			() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)),
 			TRANSLATE_TIMEOUT_MS
 		);
 
+		void runTranslate(controller, rowIndices, targets, sourcesSnapshot, startIdx, timeoutId);
+	}
+
+	async function runTranslate(
+		controller: AbortController,
+		rowIndices: number[],
+		targets: string[],
+		sourcesSnapshot: TranslateRequest['sources'],
+		startIdx: number,
+		timeoutId: ReturnType<typeof setTimeout>
+	): Promise<void> {
 		try {
 			const result = await translateAndAlign(
-				{ sources: sourcesSnapshot, targets: [{ lang: slot.lang, endonym: slot.endonym }] },
+				{
+					sources: sourcesSnapshot,
+					targets: targets.map((tag) => ({ lang: tag, endonym: endonymFor(tag) }))
+				},
 				undefined,
-				slot.abort.signal
+				controller.signal
 			);
-			const newSentence = result.sentences[0];
-			if (!newSentence) throw new Error('No translation returned');
 
-			// Append the new row.
-			sentences.push(newSentence);
-			const newIdx = sentences.length - 1;
-			color_map = [...color_map, new Array(newSentence.tokens.length).fill(-1)];
-			word_spans = [...word_spans, new Array(newSentence.tokens.length).fill(null)];
-
-			// Pad pre-existing equivalency groups with empty entries for the new sentence.
-			for (let i = 0; i < equivalency.length; i++) {
-				equivalency[i] = [...equivalency[i], [] as number[]];
+			// Replace each placeholder with its real translation.
+			for (let k = 0; k < rowIndices.length; k++) {
+				const idx = rowIndices[k];
+				const translation = result.sentences[k];
+				if (!translation) continue;
+				sentences[idx] = translation;
+				color_map[idx] = new Array(translation.tokens.length).fill(-1);
+				word_spans[idx] = new Array(translation.tokens.length).fill(null);
 			}
 
-			// Derive new alignment groups from shared gloss text across sentences.
-			equivalency = addGlossAlignments(sentences, equivalency, [newIdx]);
+			// Build alignments from shared glosses across all sentences.
+			equivalency = addGlossAlignments(sentences, equivalency, rowIndices);
 			sentences = sentences;
+			color_map = color_map;
+			word_spans = word_spans;
 
-			// Remove this slot — done.
-			translateSlots = translateSlots.filter((s) => s.id !== slot.id);
-			// Auto-enter edit mode when the first translation lands, so user can tweak.
+			pendingTranslation = null;
 			if (mode === 'view') mode = 'edit';
 
 			await tick();
 		} catch (err) {
-			if (slot.abort.signal.aborted) {
-				// Cancellation: drop the slot quietly.
-				translateSlots = translateSlots.filter((s) => s.id !== slot.id);
-			} else {
-				slot.status = 'error';
-				slot.errorMessage = err instanceof Error ? err.message : String(err);
-				translateSlots = translateSlots;
+			// Roll back the placeholder rows we appended.
+			const removeCount = rowIndices.length;
+			sentences.splice(startIdx, removeCount);
+			color_map.splice(startIdx, removeCount);
+			word_spans.splice(startIdx, removeCount);
+			for (let i = 0; i < equivalency.length; i++) {
+				equivalency[i].splice(startIdx, removeCount);
 			}
+			sentences = sentences;
+			equivalency = equivalency;
+			color_map = color_map;
+			word_spans = word_spans;
+
+			if (!controller.signal.aborted) {
+				translateError = {
+					message: err instanceof Error ? err.message : String(err),
+					targets: [...targets]
+				};
+			}
+			pendingTranslation = null;
 		} finally {
 			clearTimeout(timeoutId);
 		}
 	}
 
-	function retryTranslateSlot(id: string) {
-		const slot = translateSlots.find((s) => s.id === id);
-		if (!slot || slot.status !== 'error') return;
-		slot.status = 'pending';
-		slot.startedAt = Date.now();
-		slot.elapsedMs = 0;
-		slot.errorMessage = undefined;
-		slot.abort = new AbortController();
-		translateSlots = translateSlots;
-		ensureTranslateTimer();
-		void runOneTranslation(slot, buildSources());
+	function cancelPendingTranslation() {
+		pendingTranslation?.abort.abort();
+	}
+
+	function retryTranslate() {
+		if (!translateError) return;
+		const targets = translateError.targets;
+		translateError = null;
+		startTranslate(targets);
+	}
+
+	function dismissTranslateError() {
+		translateError = null;
 	}
 
 	function endonymFor(tag: string): string {
@@ -783,33 +780,20 @@
 	on:close={() => (translatePopoverOpen = false)}
 />
 
-{#if translateSlots.length > 0}
-	<div class="translate-progress" role="status" aria-live="polite">
-		{#each translateSlots as slot (slot.id)}
-			<div class="translate-slot" class:errored={slot.status === 'error'}>
-				<span class="translate-slot-lang">
-					<iconify-icon icon="mdi:translate" inline="true" />
-					<span lang={slot.lang}>{slot.endonym}</span>
-				</span>
-				{#if slot.status === 'pending'}
-					<div class="translate-bar" aria-label="loading">
-						<div class="translate-bar-inner"></div>
-					</div>
-					<span class="translate-slot-time">{Math.floor(slot.elapsedMs / 1000)}s</span>
-					<button type="button" class="translate-slot-action" title={$LL.translate.cancel()} on:click={() => cancelTranslateSlot(slot.id)} aria-label={$LL.translate.cancel()}>
-						<iconify-icon icon="material-symbols:close-rounded" inline="true" />
-					</button>
-				{:else}
-					<span class="translate-slot-error" title={slot.errorMessage}>{slot.errorMessage}</span>
-					<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={() => retryTranslateSlot(slot.id)} aria-label={$LL.translate.retry()}>
-						<iconify-icon icon="mdi:refresh" inline="true" />
-					</button>
-					<button type="button" class="translate-slot-action" title={$LL.translate.dismissError()} on:click={() => dismissTranslateSlot(slot.id)} aria-label={$LL.translate.dismissError()}>
-						<iconify-icon icon="material-symbols:close-rounded" inline="true" />
-					</button>
-				{/if}
-			</div>
-		{/each}
+{#if translateError}
+	<div class="translate-progress" role="alert">
+		<div class="translate-slot errored">
+			<span class="translate-slot-lang">
+				<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
+			</span>
+			<span class="translate-slot-error" title={translateError.message}>{translateError.message}</span>
+			<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={retryTranslate} aria-label={$LL.translate.retry()}>
+				<iconify-icon icon="mdi:refresh" inline="true" />
+			</button>
+			<button type="button" class="translate-slot-action" title={$LL.translate.dismissError()} on:click={dismissTranslateError} aria-label={$LL.translate.dismissError()}>
+				<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+			</button>
+		</div>
 	</div>
 {/if}
 
@@ -821,6 +805,7 @@
 					sentences={previewSentences}
 					{color_map}
 					{equivalency}
+					pendingIndices={pendingSentenceSet}
 					{alignment}
 					bind:lines
 					{colors}
@@ -877,6 +862,7 @@
 						editingSelectionStart = -1;
 						editingSelectionEnd = -1;
 					}}
+					on:cancelTranslate={cancelPendingTranslation}
 					on:merge={({ detail: { sentence, start, end } }) => {
 						const words = getSentenceWords(previewSentences[sentence]);
 						const glosses = getSentenceGlosses(previewSentences[sentence]);
