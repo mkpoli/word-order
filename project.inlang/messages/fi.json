@@ -56,5 +56,9 @@
 	"about_close": "Sulje",
 	"about_tagline": "Verkkotyökalu sanavastaavuus- ja sanajärjestyskaavioiden piirtämiseen useamman kielen välillä.",
 	"about_credit": "Alkuperäinen idea: {author} — ensimmäinen versio elokuussa 2022, sittemmin laajennettu.",
-	"about_links": "Linkit"
+	"about_links": "Linkit",
+	"aria_margin_top": "Yläreunus",
+	"aria_margin_bottom": "Alareunus",
+	"aria_margin_left": "Vasen reunus",
+	"aria_margin_right": "Oikea reunus"
 }
