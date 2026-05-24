@@ -83,5 +83,10 @@
 	"translate_open_settings": "افتح الإعدادات",
 	"translate_too_long": "الجملة طويلة جدًا ({count} رموز؛ الحد الأقصى {max}).",
 	"translate_dismiss_error": "إخفاء",
-	"output_translate_row": "ترجم إلى لغات أخرى"
+	"menu_translate": "ترجم",
+	"translate_from_sources": "من {count} جمل: {langs}",
+	"translate_custom_placeholder": "رمز مخصّص (مثل ko-Kore، en-US)",
+	"translate_add_custom": "إضافة",
+	"translate_remove_custom": "إزالة",
+	"translate_cancel": "إلغاء"
 }

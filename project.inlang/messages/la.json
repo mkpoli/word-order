@@ -83,5 +83,10 @@
 	"translate_open_settings": "Configurationes aperire",
 	"translate_too_long": "Sententia nimis longa ({count} signa; maxime {max}).",
 	"translate_dismiss_error": "Claudere",
-	"output_translate_row": "In alias linguas vertere"
+	"menu_translate": "Vertere",
+	"translate_from_sources": "ex {count} sententiis: {langs}",
+	"translate_custom_placeholder": "Codex personalis (e.g. ko-Kore, en-US)",
+	"translate_add_custom": "Addere",
+	"translate_remove_custom": "Removere",
+	"translate_cancel": "Cancellare"
 }

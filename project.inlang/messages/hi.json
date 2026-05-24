@@ -83,5 +83,10 @@
 	"translate_open_settings": "सेटिंग्स खोलें",
 	"translate_too_long": "वाक्य बहुत लंबा है ({count} टोकन; अधिकतम {max})।",
 	"translate_dismiss_error": "बंद करें",
-	"output_translate_row": "अन्य भाषाओं में अनुवाद करें"
+	"menu_translate": "अनुवाद",
+	"translate_from_sources": "{count} वाक्यों से: {langs}",
+	"translate_custom_placeholder": "कस्टम कोड (जैसे ko-Kore, en-US)",
+	"translate_add_custom": "जोड़ें",
+	"translate_remove_custom": "हटाएँ",
+	"translate_cancel": "रद्द करें"
 }

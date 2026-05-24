@@ -83,5 +83,10 @@
 	"translate_open_settings": "Aperir configurationes",
 	"translate_too_long": "Phrase troppo longe ({count} tokens; max {max}).",
 	"translate_dismiss_error": "Clauder",
-	"output_translate_row": "Traducer in altere linguas"
+	"menu_translate": "Traducer",
+	"translate_from_sources": "ex {count} phrases: {langs}",
+	"translate_custom_placeholder": "Codice personal (ex. ko-Kore, en-US)",
+	"translate_add_custom": "Adder",
+	"translate_remove_custom": "Remover",
+	"translate_cancel": "Cancellar"
 }

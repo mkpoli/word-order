@@ -78,5 +78,10 @@
 	"translate_open_settings": "Avaa asetukset",
 	"translate_too_long": "Lause on liian pitkä ({count} merkkiä; enint. {max}).",
 	"translate_dismiss_error": "Sulje",
-	"output_translate_row": "Käännä muille kielille"
+	"menu_translate": "Käännä",
+	"translate_from_sources": "{count} lauseesta: {langs}",
+	"translate_custom_placeholder": "Oma koodi (esim. ko-Kore, en-US)",
+	"translate_add_custom": "Lisää",
+	"translate_remove_custom": "Poista",
+	"translate_cancel": "Peruuta"
 }

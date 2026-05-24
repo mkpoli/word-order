@@ -83,5 +83,10 @@
 	"translate_open_settings": "Відкрити налаштування",
 	"translate_too_long": "Речення завелике ({count} токенів; макс. {max}).",
 	"translate_dismiss_error": "Закрити",
-	"output_translate_row": "Перекласти іншими мовами"
+	"menu_translate": "Переклад",
+	"translate_from_sources": "з {count} речень: {langs}",
+	"translate_custom_placeholder": "Свій код (напр. ko-Kore, en-US)",
+	"translate_add_custom": "Додати",
+	"translate_remove_custom": "Видалити",
+	"translate_cancel": "Скасувати"
 }

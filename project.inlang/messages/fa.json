@@ -83,5 +83,10 @@
 	"translate_open_settings": "تنظیمات را باز کنید",
 	"translate_too_long": "جمله بسیار طولانی است ({count} توکن؛ حداکثر {max}).",
 	"translate_dismiss_error": "نادیده گرفتن",
-	"output_translate_row": "ترجمه به زبان‌های دیگر"
+	"menu_translate": "ترجمه",
+	"translate_from_sources": "از {count} جمله: {langs}",
+	"translate_custom_placeholder": "کد سفارشی (مانند ko-Kore، en-US)",
+	"translate_add_custom": "افزودن",
+	"translate_remove_custom": "حذف",
+	"translate_cancel": "لغو"
 }

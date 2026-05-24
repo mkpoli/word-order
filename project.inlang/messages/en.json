@@ -60,6 +60,7 @@
 	"menu_examples": "Examples",
 	"menu_about": "About",
 	"menu_settings": "Settings",
+	"menu_translate": "Translate",
 	"about_title": "About",
 	"about_close": "Close",
 	"about_tagline": "A web tool for drawing multilingual word-alignment and word-order diagrams.",
@@ -85,5 +86,9 @@
 	"translate_open_settings": "Open Settings",
 	"translate_too_long": "Sentence too long ({count} tokens; max {max}).",
 	"translate_dismiss_error": "Dismiss",
-	"output_translate_row": "Translate to other languages"
+	"translate_from_sources": "from {count} sentences: {langs}",
+	"translate_custom_placeholder": "Custom code (e.g. ko-Kore, en-US)",
+	"translate_add_custom": "Add",
+	"translate_remove_custom": "Remove",
+	"translate_cancel": "Cancel"
 }

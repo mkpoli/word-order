@@ -83,5 +83,10 @@
 	"translate_open_settings": "Mở Cài đặt",
 	"translate_too_long": "Câu quá dài ({count} token; tối đa {max}).",
 	"translate_dismiss_error": "Đóng",
-	"output_translate_row": "Dịch sang ngôn ngữ khác"
+	"menu_translate": "Dịch",
+	"translate_from_sources": "từ {count} câu: {langs}",
+	"translate_custom_placeholder": "Mã tuỳ chỉnh (vd. ko-Kore, en-US)",
+	"translate_add_custom": "Thêm",
+	"translate_remove_custom": "Xoá",
+	"translate_cancel": "Huỷ"
 }

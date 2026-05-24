@@ -81,6 +81,7 @@ const createLL = () => ({
 		scramble: m.menu_scramble,
 		about: m.menu_about,
 		settings: m.menu_settings,
+		translate: m.menu_translate,
 		examples: m.menu_examples
 	},
 	about: {
@@ -112,10 +113,12 @@ const createLL = () => ({
 		noKey: m.translate_no_key,
 		openSettings: m.translate_open_settings,
 		tooLong: m.translate_too_long,
-		dismissError: m.translate_dismiss_error
-	},
-	output: {
-		translateRow: m.output_translate_row
+		dismissError: m.translate_dismiss_error,
+		fromSources: m.translate_from_sources,
+		customPlaceholder: m.translate_custom_placeholder,
+		addCustom: m.translate_add_custom,
+		removeCustom: m.translate_remove_custom,
+		cancel: m.translate_cancel
 	}
 });
 

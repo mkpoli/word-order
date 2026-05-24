@@ -83,5 +83,10 @@
 	"translate_open_settings": "설정 열기",
 	"translate_too_long": "문장이 너무 깁니다 ({count} 토큰, 최대 {max}).",
 	"translate_dismiss_error": "닫기",
-	"output_translate_row": "다른 언어로 번역"
+	"menu_translate": "번역",
+	"translate_from_sources": "{count}개 문장에서: {langs}",
+	"translate_custom_placeholder": "사용자 코드 (예: ko-Kore, en-US)",
+	"translate_add_custom": "추가",
+	"translate_remove_custom": "제거",
+	"translate_cancel": "취소"
 }

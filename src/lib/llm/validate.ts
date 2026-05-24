@@ -58,7 +58,8 @@ export function validate(raw: LlmRawResponse, request: TranslateRequest): Valida
 		};
 	});
 
-	const sentenceLengths = [request.source.tokens.length, ...translations.map((t) => t.tokens.length)];
+	const sourceCount = request.sources.length;
+	const sentenceLengths = [...request.sources.map((s) => s.tokens.length), ...translations.map((t) => t.tokens.length)];
 
 	if (!Array.isArray(rawGroups)) {
 		return { translations, alignment_groups: [] };
@@ -68,8 +69,8 @@ export function validate(raw: LlmRawResponse, request: TranslateRequest): Valida
 	for (const group of rawGroups) {
 		if (!Array.isArray(group)) continue;
 		const cleanedGroup: number[][] = sentenceLengths.map((len, sentenceIdx) => {
-			// Drop entire sentence's alignments if its tokens were not trusted (sentenceIdx 0 = source, always trusted).
-			if (sentenceIdx > 0 && !translations[sentenceIdx - 1].tokensTrusted) return [];
+			// Drop entire sentence's alignments if its tokens were not trusted (sources are always trusted).
+			if (sentenceIdx >= sourceCount && !translations[sentenceIdx - sourceCount].tokensTrusted) return [];
 			const slot = group[sentenceIdx];
 			if (!Array.isArray(slot)) return [];
 			const seen = new Set<number>();

@@ -1,47 +1,71 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { LL, locale } from '../i18n/i18n-svelte';
-	import { getLocaleOptions } from './lang';
+	import { getLanguageName, getLocaleOptions } from './lang';
 	import { llmSettings, hasKey } from './settings';
 	import { MAX_SOURCE_TOKENS } from './llm/translate';
 	import { getProvider } from './llm/providers';
 
 	export let open = false;
-	export let sourceLang: string;
-	export let sourceTokenCount: number;
+	export let sourceLangs: string[] = [];
+	export let sourceTokenCounts: number[] = [];
 	export let busy = false;
+	export let elapsedMs = 0;
 	export let errorMessage = '';
 
 	const DEFAULT_TARGETS = ['en', 'ja', 'zh-HanS'];
 
 	const dispatch = createEventDispatcher<{
 		submit: { targets: string[] };
+		cancel: void;
 		openSettings: void;
 		close: void;
 	}>();
 
-	$: options = getLocaleOptions($locale).filter((opt) => opt.value !== sourceLang);
+	$: sourceLangSet = new Set(sourceLangs);
+	$: options = getLocaleOptions($locale).filter((opt) => !sourceLangSet.has(opt.value));
 	$: provider = getProvider($llmSettings.provider);
 	$: keyMissing = !hasKey($llmSettings);
-	$: tooLong = sourceTokenCount > MAX_SOURCE_TOKENS;
+	$: tooLong = sourceTokenCounts.find((c) => c > MAX_SOURCE_TOKENS) ?? 0;
+	$: sourceSummary = sourceLangs.map((l) => getLanguageName(l, $locale)).join(', ');
 
+	// "selected" can hold both known locale codes and ad-hoc custom BCP-47 codes.
 	let selected: Set<string> = new Set();
-	let initializedForLang = '';
+	let initializedFor = '';
+	let customCode = '';
 
-	$: if (open && initializedForLang !== sourceLang) {
+	$: signature = `${sourceLangs.join('|')}::${$locale}`;
+	$: if (open && initializedFor !== signature) {
 		const baseDefaults = [String($locale), ...DEFAULT_TARGETS]
-			.filter((value) => value && value !== sourceLang)
-			.filter((value) => options.some((o) => o.value === value));
+			.filter((v) => v && !sourceLangSet.has(v))
+			.filter((v) => options.some((o) => o.value === v));
 		selected = new Set(baseDefaults);
-		initializedForLang = sourceLang;
+		initializedFor = signature;
+		customCode = '';
 	}
 
-	$: if (!open) initializedForLang = '';
+	$: if (!open) initializedFor = '';
 
 	function toggle(value: string) {
 		if (selected.has(value)) selected.delete(value);
 		else selected.add(value);
 		selected = selected;
+	}
+
+	function addCustom() {
+		const v = customCode.trim();
+		if (!v) return;
+		if (sourceLangSet.has(v)) return;
+		selected.add(v);
+		selected = selected;
+		customCode = '';
+	}
+
+	function onCustomKey(e: KeyboardEvent) {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			addCustom();
+		}
 	}
 
 	function onSubmit() {
@@ -50,27 +74,42 @@
 	}
 
 	function onkeydown(e: KeyboardEvent) {
-		if (open && e.key === 'Escape') dispatch('close');
+		if (!open) return;
+		if (e.key === 'Escape') {
+			if (busy) dispatch('cancel');
+			else dispatch('close');
+		}
 	}
+
+	function fmtElapsed(ms: number): string {
+		const s = Math.floor(ms / 1000);
+		return `${s}s`;
+	}
+
+	// Custom chips = selected entries that aren't in the known options list and aren't sources.
+	$: customChips = Array.from(selected).filter((v) => !options.some((o) => o.value === v));
 </script>
 
 <svelte:window on:keydown={onkeydown} />
 
 {#if open}
-	<div class="backdrop" on:click={() => dispatch('close')} role="presentation">
+	<div class="backdrop" on:click={() => !busy && dispatch('close')} role="presentation">
 		<div class="popover" role="dialog" aria-modal="true" aria-labelledby="translate-popover-title" on:click|stopPropagation>
 			<header>
 				<h2 id="translate-popover-title">
 					<iconify-icon icon="mdi:translate" inline="true" />
 					{$LL.translate.title()}
 				</h2>
-				<button class="dismiss" type="button" aria-label={$LL.translate.close()} on:click={() => dispatch('close')}>
+				<button class="dismiss" type="button" aria-label={$LL.translate.close()} on:click={() => dispatch('close')} disabled={busy}>
 					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
 				</button>
 			</header>
 
 			<p class="muted">
 				{$LL.translate.usingProvider({ provider: provider.label })}
+				{#if sourceLangs.length > 0}
+					· {$LL.translate.fromSources({ count: String(sourceLangs.length), langs: sourceSummary })}
+				{/if}
 			</p>
 
 			{#if keyMissing}
@@ -84,10 +123,10 @@
 			{:else if tooLong}
 				<div class="warn">
 					<iconify-icon icon="mdi:alert-outline" inline="true" />
-					<span>{$LL.translate.tooLong({ count: String(sourceTokenCount), max: String(MAX_SOURCE_TOKENS) })}</span>
+					<span>{$LL.translate.tooLong({ count: String(tooLong), max: String(MAX_SOURCE_TOKENS) })}</span>
 				</div>
 			{:else}
-				<fieldset class="targets">
+				<fieldset class="targets" disabled={busy}>
 					<legend>{$LL.translate.targets()}</legend>
 					<div class="chips">
 						{#each options as opt}
@@ -97,6 +136,25 @@
 								<span class="exonym">{opt.exonym}</span>
 							</label>
 						{/each}
+						{#each customChips as code (code)}
+							<button type="button" class="chip on custom" on:click={() => toggle(code)} title={$LL.translate.removeCustom()}>
+								<span class="endonym">{code}</span>
+								<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+							</button>
+						{/each}
+					</div>
+					<div class="custom-row">
+						<input
+							type="text"
+							placeholder={$LL.translate.customPlaceholder()}
+							bind:value={customCode}
+							on:keydown={onCustomKey}
+							autocomplete="off"
+							spellcheck="false"
+						/>
+						<button type="button" class="add" on:click={addCustom} disabled={!customCode.trim()}>
+							{$LL.translate.addCustom()}
+						</button>
 					</div>
 				</fieldset>
 			{/if}
@@ -109,15 +167,21 @@
 			{/if}
 
 			<div class="actions">
-				<button type="button" class="submit" on:click={onSubmit} disabled={busy || selected.size === 0 || keyMissing || tooLong}>
-					{#if busy}
+				{#if busy}
+					<span class="elapsed" aria-live="polite">{fmtElapsed(elapsedMs)}</span>
+					<button type="button" class="cancel" on:click={() => dispatch('cancel')}>
+						{$LL.translate.cancel()}
+					</button>
+					<button type="button" class="submit" disabled>
 						<iconify-icon icon="mdi:loading" inline="true" />
 						{$LL.translate.busy()}
-					{:else}
+					</button>
+				{:else}
+					<button type="button" class="submit" on:click={onSubmit} disabled={selected.size === 0 || keyMissing || !!tooLong}>
 						<iconify-icon icon="mdi:translate" inline="true" />
 						{$LL.translate.submit({ count: String(selected.size) })}
-					{/if}
-				</button>
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -138,7 +202,7 @@
 
 	.popover {
 		background: white;
-		max-width: 32em;
+		max-width: 36em;
 		width: 100%;
 		border-radius: 0.8em;
 		box-shadow: 0 20px 60px rgb(23 36 78 / 0.3);
@@ -175,6 +239,11 @@
 
 	.dismiss:hover {
 		background: rgb(24 33 61 / 0.08);
+	}
+
+	.dismiss:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
 	}
 
 	.muted {
@@ -216,6 +285,10 @@
 		margin: 0 0 0.9em;
 	}
 
+	.targets[disabled] {
+		opacity: 0.6;
+	}
+
 	.targets legend {
 		font-weight: 600;
 		color: rgb(45 55 80);
@@ -252,6 +325,12 @@
 		color: rgb(33 56 199);
 	}
 
+	.chip.custom {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		background: rgb(46 91 255 / 0.18);
+		border-style: dashed;
+	}
+
 	.chip input {
 		display: none;
 	}
@@ -263,6 +342,44 @@
 	.exonym {
 		color: rgb(74 82 112);
 		font-size: 0.84em;
+	}
+
+	.custom-row {
+		display: flex;
+		gap: 0.4em;
+		margin-top: 0.7em;
+	}
+
+	.custom-row input {
+		flex: 1;
+		min-width: 0;
+		padding: 0.4em 0.6em;
+		border: 1px solid rgb(46 91 255 / 0.3);
+		border-radius: 0.35em;
+		font: inherit;
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.88em;
+	}
+
+	.custom-row .add {
+		appearance: none;
+		background: rgb(46 91 255 / 0.08);
+		border: 1px solid rgb(46 91 255 / 0.3);
+		color: rgb(33 56 199);
+		padding: 0 0.85em;
+		border-radius: 0.35em;
+		font-weight: 600;
+		cursor: pointer;
+		font-size: 0.88em;
+	}
+
+	.custom-row .add:hover:not(:disabled) {
+		background: rgb(46 91 255 / 0.15);
+	}
+
+	.custom-row .add:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	.error {
@@ -286,6 +403,30 @@
 	.actions {
 		display: flex;
 		justify-content: flex-end;
+		align-items: center;
+		gap: 0.5em;
+	}
+
+	.elapsed {
+		color: rgb(74 82 112);
+		font-size: 0.88em;
+		font-variant-numeric: tabular-nums;
+		margin-right: auto;
+	}
+
+	.cancel {
+		appearance: none;
+		background: white;
+		color: rgb(74 82 112);
+		border: 1px solid rgb(46 91 255 / 0.3);
+		font-weight: 600;
+		border-radius: 0.35em;
+		padding: 0.55em 1.1em;
+		cursor: pointer;
+	}
+
+	.cancel:hover {
+		background: rgb(46 91 255 / 0.06);
 	}
 
 	.submit {
