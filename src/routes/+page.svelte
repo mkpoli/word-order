@@ -367,10 +367,7 @@
 		const controller = new AbortController();
 		pendingTranslation = { abort: controller, rowIndices, targets: [...targets] };
 
-		const timeoutId = setTimeout(
-			() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)),
-			TRANSLATE_TIMEOUT_MS
-		);
+		const timeoutId = setTimeout(() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)), TRANSLATE_TIMEOUT_MS);
 
 		void runTranslate(controller, rowIndices, targets, sourcesSnapshot, startIdx, timeoutId);
 	}
@@ -865,7 +862,13 @@
 			<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={retryTranslate} aria-label={$LL.translate.retry()}>
 				<iconify-icon icon="mdi:refresh" inline="true" />
 			</button>
-			<button type="button" class="translate-slot-action" title={$LL.translate.dismissError()} on:click={dismissTranslateError} aria-label={$LL.translate.dismissError()}>
+			<button
+				type="button"
+				class="translate-slot-action"
+				title={$LL.translate.dismissError()}
+				on:click={dismissTranslateError}
+				aria-label={$LL.translate.dismissError()}
+			>
 				<iconify-icon icon="material-symbols:close-rounded" inline="true" />
 			</button>
 		</div>
@@ -933,12 +936,8 @@
 						const src = sentences[sentence];
 						wordsBeforeModify = getSentenceWords(src);
 						editingText = wordsBeforeModify.join('|');
-						annotationsAboveBeforeModify = Array.from({ length: src.lanesAbove }, (_, lane) =>
-							src.tokens.map((t) => t.annotationsAbove[lane] ?? '')
-						);
-						annotationsBelowBeforeModify = Array.from({ length: src.lanesBelow }, (_, lane) =>
-							src.tokens.map((t) => t.annotationsBelow[lane] ?? '')
-						);
+						annotationsAboveBeforeModify = Array.from({ length: src.lanesAbove }, (_, lane) => src.tokens.map((t) => t.annotationsAbove[lane] ?? ''));
+						annotationsBelowBeforeModify = Array.from({ length: src.lanesBelow }, (_, lane) => src.tokens.map((t) => t.annotationsBelow[lane] ?? ''));
 						editingAnnotationsAbove = annotationsAboveBeforeModify.map((lane) => [...lane]);
 						editingAnnotationsBelow = annotationsBelowBeforeModify.map((lane) => [...lane]);
 						editingShowGloss = src.showGloss;
@@ -1097,7 +1096,7 @@
 		position: absolute;
 		inset: -0.5rem;
 		border-radius: 2.2rem;
-		background: rgb(255 255 255 / 0.96);
+		background: color-mix(in srgb, var(--color-bg) 96%, transparent);
 		z-index: -2;
 		opacity: 0;
 		transition: opacity 180ms ease;
@@ -1111,7 +1110,7 @@
 		text-align: center;
 		padding: 1em;
 
-		color: #444;
+		color: var(--color-text-muted);
 		max-width: 1024px;
 		margin: 0 auto;
 	}
@@ -1333,9 +1332,10 @@
 		font-weight: bold;
 		font-size: 1.02em;
 
-		background-color: white;
+		background-color: var(--color-surface);
+		color: var(--color-text);
 
-		box-shadow: 1px 1px 5px 0 #ccc;
+		box-shadow: 1px 1px 5px 0 var(--color-shadow);
 
 		display: flex;
 		align-items: center;
@@ -1344,7 +1344,7 @@
 	}
 
 	.menu button:not(:disabled):hover {
-		background-color: #eee;
+		background-color: var(--color-hover);
 	}
 
 	.export-dropdown {
@@ -1373,10 +1373,10 @@
 		display: none;
 		flex-direction: column;
 		gap: 0.1em;
-		background: white;
+		background: var(--color-surface);
 		border-radius: 0.3em;
 		box-shadow:
-			1px 1px 5px 0 #ccc,
+			1px 1px 5px 0 var(--color-shadow),
 			0 6px 22px rgb(15 23 42 / 0.12);
 		z-index: 100;
 	}
@@ -1395,7 +1395,7 @@
 		font: inherit;
 		font-weight: bold;
 		font-size: 1em;
-		color: #333;
+		color: var(--color-text);
 		display: grid;
 		grid-template-columns: 1.3em 1fr;
 		align-items: center;
@@ -1409,12 +1409,12 @@
 	.export-menu button :global(iconify-icon) {
 		font-size: 1.15em;
 		justify-self: center;
-		color: #555;
+		color: var(--color-text-muted);
 	}
 
 	.export-menu button:not(:disabled):hover,
 	.export-menu button:focus-visible {
-		background-color: #eee;
+		background-color: var(--color-hover);
 		outline: none;
 	}
 
@@ -1451,10 +1451,10 @@
 		display: none;
 		flex-direction: column;
 		gap: 0.05em;
-		background: white;
+		background: var(--color-surface);
 		border-radius: 0.3em;
 		box-shadow:
-			1px 1px 5px 0 #ccc,
+			1px 1px 5px 0 var(--color-shadow),
 			0 6px 22px rgb(15 23 42 / 0.12);
 		z-index: 100;
 	}
@@ -1471,7 +1471,7 @@
 		padding: 0.35em 0.7em;
 		border-radius: 0.25em;
 		font: inherit;
-		color: #333;
+		color: var(--color-text);
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
@@ -1489,7 +1489,7 @@
 		white-space: nowrap;
 		font-weight: 600;
 		font-size: 0.85em;
-		color: #333;
+		color: var(--color-text);
 	}
 
 	.examples-menu .example-langs {
@@ -1500,13 +1500,13 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		font-size: 0.7em;
-		color: #888;
+		color: var(--color-text-faint);
 		letter-spacing: 0.02em;
 	}
 
 	.examples-menu button:not(:disabled):hover,
 	.examples-menu button:focus-visible {
-		background-color: #eee;
+		background-color: var(--color-hover);
 		outline: none;
 	}
 

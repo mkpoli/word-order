@@ -74,12 +74,14 @@
 	}
 
 	.dialog {
-		background: white;
+		background: var(--color-surface);
+		color: var(--color-text);
 		max-width: 32em;
 		width: 100%;
 		border-radius: 0.8em;
-		box-shadow: 0 20px 60px rgb(23 36 78 / 0.3);
+		box-shadow: 0 20px 60px var(--color-shadow);
 		padding: 1.4em 1.6em;
+		border: 1px solid var(--color-border-soft);
 	}
 
 	header {
@@ -116,7 +118,7 @@
 
 	.lede {
 		font-size: 1.05em;
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		margin: 0.6em 0 0.8em;
 		line-height: 1.5;
 	}
@@ -125,7 +127,7 @@
 		display: flex;
 		gap: 0.5em;
 		align-items: baseline;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		font-size: 0.95em;
 		margin: 0 0 1em;
 		line-height: 1.5;

@@ -115,7 +115,11 @@ const createLL = () => ({
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,
-		privacy: m.settings_privacy
+		privacy: m.settings_privacy,
+		theme: m.settings_theme,
+		themeSystem: m.settings_theme_system,
+		themeLight: m.settings_theme_light,
+		themeDark: m.settings_theme_dark
 	},
 	translate: {
 		button: m.translate_button,

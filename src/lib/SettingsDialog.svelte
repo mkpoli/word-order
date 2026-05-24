@@ -2,6 +2,10 @@
 	import { LL } from '../i18n/i18n-svelte';
 	import { llmSettings, type ProviderId } from './settings';
 	import { PROVIDERS, getProvider } from './llm/providers';
+	import { themePref, type ThemePref } from './theme';
+
+	const THEMES: ThemePref[] = ['system', 'light', 'dark'];
+	const themeLabelKey = (t: ThemePref) => `theme${t.charAt(0).toUpperCase() + t.slice(1)}` as 'themeSystem' | 'themeLight' | 'themeDark';
 
 	export let open = false;
 
@@ -54,6 +58,18 @@
 			</header>
 
 			<p class="lede">{$LL.settings.tagline()}</p>
+
+			<div class="field">
+				<span class="field-label">{$LL.settings.theme()}</span>
+				<div class="theme-row" role="radiogroup" aria-label={$LL.settings.theme()}>
+					{#each THEMES as t (t)}
+						<label class="theme-option" class:selected={$themePref === t}>
+							<input type="radio" name="theme" value={t} checked={$themePref === t} on:change={() => themePref.set(t)} />
+							<span>{$LL.settings[themeLabelKey(t)]()}</span>
+						</label>
+					{/each}
+				</div>
+			</div>
 
 			<div class="field">
 				<label for="settings-provider">{$LL.settings.provider()}</label>
@@ -125,12 +141,58 @@
 	}
 
 	.dialog {
-		background: white;
+		background: var(--color-surface);
+		color: var(--color-text);
 		max-width: 32em;
 		width: 100%;
 		border-radius: 0.8em;
-		box-shadow: 0 20px 60px rgb(23 36 78 / 0.3);
+		box-shadow: 0 20px 60px var(--color-shadow);
 		padding: 1.4em 1.6em;
+		border: 1px solid var(--color-border-soft);
+	}
+
+	.theme-row {
+		display: flex;
+		gap: 0.4em;
+		flex-wrap: wrap;
+	}
+
+	.theme-option {
+		display: flex;
+		align-items: center;
+		gap: 0.35em;
+		padding: 0.4em 0.7em;
+		border-radius: 0.3em;
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
+		color: var(--color-text);
+		cursor: pointer;
+		font-size: 0.9em;
+		font-weight: 600;
+		user-select: none;
+	}
+
+	.theme-option:hover {
+		background: var(--color-hover);
+	}
+
+	.theme-option.selected {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+		background: rgb(46 91 255 / 0.08);
+	}
+
+	.theme-option input {
+		appearance: none;
+		margin: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.field-label {
+		font-weight: 600;
+		font-size: 0.92em;
+		color: var(--color-text);
 	}
 
 	header {
@@ -167,7 +229,7 @@
 
 	.lede {
 		font-size: 1.05em;
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		margin: 0.6em 0 1em;
 		line-height: 1.5;
 	}
@@ -181,7 +243,7 @@
 	.field label {
 		font-weight: 600;
 		font-size: 0.92em;
-		color: rgb(45 55 80);
+		color: var(--color-text);
 	}
 
 	.field select,
@@ -190,8 +252,8 @@
 		border: 1px solid rgb(46 91 255 / 0.3);
 		border-radius: 0.35em;
 		font: inherit;
-		background: white;
-		color: rgb(28 36 64);
+		background: var(--color-surface);
+		color: var(--color-text);
 	}
 
 	.field select:focus,
@@ -202,7 +264,7 @@
 
 	.field-hint {
 		font-size: 0.82em;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		margin: 0;
 		line-height: 1.4;
 	}
