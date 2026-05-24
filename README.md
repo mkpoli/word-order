@@ -12,25 +12,24 @@ Paste sentences in any languages, click matching words across rows, and the tool
 
 - **Locale-aware tokenization** via `Intl.Segmenter` — CJK, Thai, and other unspaced scripts split correctly out of the box. Use `|` for finer manual control.
 - **Curved connectors** with adjustable curvature, line width, gap, straight segments, and endpoint correction.
-- **Interlinear gloss** row above each sentence for Leipzig-style annotations.
+- **Multi-tier annotations** — stack any number of gloss / IPA / morpheme lines **above and below** each word for full Leipzig-style displays.
 - **Ruby annotations** — `<ruby>漢<rt>かん</rt></ruby>` works inside both sentence text and glosses, so furigana, pinyin, and zhuyin render correctly.
 - **Per-token edit dialog** — merge selected tokens, split at any grapheme boundary, or merge into a neighbor.
-- **Multiple projects via tabs** with localStorage autosave — refreshing or closing the browser preserves your work.
-- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Genesis 1:1 across Hebrew / Koine Greek / Latin / English.
+- **Figma-style per-side margin control** — adjust top, right, bottom, and left padding of the canvas independently for tight social-share crops.
+- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
 - **Scramble equivalency** — instantly reorder the color groups to visualize how often translations rearrange information.
-- **Export** as SVG (vector) or PNG (raster), plus full project JSON for archival and sharing.
-- **UI in 20+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Bulgarian, Finnish, Esperanto, Interlingua, Toki Pona, and more.
+- **localStorage autosave** — refreshing or closing the browser preserves your work; an About dialog surfaces attribution and links.
+- **Export** as SVG (vector), PNG (raster), PDF, or full project JSON for archival and sharing. Filenames are auto-generated from the first row's text and locale list.
+- **UI in 30+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Bulgarian, Finnish, Esperanto, Interlingua, Toki Pona, and more.
 - **SEO-ready** with localized metadata, Open Graph, JSON-LD, and an Open Graph preview image.
 
 ## How to use
 
 1. Type or paste a sentence into the input box and press **Add**. Words are split automatically using locale-aware segmentation.
 2. Click a word in one row, then a matching word in an adjacent row, then press **Confirm** to connect them. Click an already-linked word to edit its color group.
-3. Use the pencil icon to fine-tune tokenization (merge/split tokens) and optionally fill in an interlinear gloss row.
-4. Adjust spacing, curvature, fonts, and text alignment in the Options panel.
-5. Export as SVG or PNG when you're done.
-
-For a guided tour, click the **Help** button in the header.
+3. Use the pencil icon to fine-tune tokenization (merge/split tokens) and add or rearrange annotation tiers above and below.
+4. Adjust spacing, curvature, fonts, per-side margins, and text alignment in the Options panel.
+5. Export as SVG, PNG, PDF, or JSON when you're done — or load the **Examples** menu in the header for ready-made illustrations.
 
 ## Tech stack
 
