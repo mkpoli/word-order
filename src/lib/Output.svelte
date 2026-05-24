@@ -835,10 +835,11 @@
 		column-gap: 1em;
 		row-gap: 0.65em;
 		width: fit-content;
-		/* Centers within the scrollable .output wrapper when content fits;
-		   when content overflows, the wrapper scrolls horizontally instead of
-		   pushing the page off-screen. */
-		margin-inline: auto;
+		/* No margin-inline:auto here — leaving it on <output> would bake a
+		   non-zero computed margin into the clone produced by dom-to-image /
+		   dom-to-svg, shifting exports off-centre to the right. Centring is
+		   handled by the .output-scroll wrapper instead. */
+		flex-shrink: 0;
 	}
 
 	svg {
