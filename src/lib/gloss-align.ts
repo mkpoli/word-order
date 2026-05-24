@@ -13,6 +13,18 @@ function normalize(s: string): string {
 }
 
 /**
+ * Strip morphology suffixes a model adds despite the prompt:
+ *   "me.DAT" → "me", "can.1SG" → "can", "i.TOP-i.TOP" → "i", "hurt.CONNEG" → "hurt"
+ * Keeps multi-character glosses with underscores intact ("to_me" stays "to_me").
+ */
+function normalizeGlossKey(g: string): string {
+	return g
+		.toLowerCase()
+		.split(/[.\-]/)[0]
+		.trim();
+}
+
+/**
  * Adds equivalency groups by bucketing tokens across sentences by their gloss text.
  *
  * For each gloss bucket that includes at least one of `newSentenceIndices`:
@@ -36,16 +48,17 @@ export function addGlossAlignments(
 ): number[][][] {
 	const newSet = new Set(newSentenceIndices);
 
-	// Bucket every glossed token across all sentences by its gloss text.
+	// Bucket every glossed token across all sentences by its NORMALISED gloss key
+	// — strips morphology suffixes so "me.DAT" / "me.ACC" / "me" all share one bucket.
 	const buckets = new Map<string, Array<[number, number]>>();
 	for (const [si, sentence] of sentences.entries()) {
 		for (const [ti, tok] of sentence.tokens.entries()) {
-			const g = tok.gloss.trim();
-			if (!g) continue;
-			let bucket = buckets.get(g);
+			const key = normalizeGlossKey(tok.gloss);
+			if (!key) continue;
+			let bucket = buckets.get(key);
 			if (!bucket) {
 				bucket = [];
-				buckets.set(g, bucket);
+				buckets.set(key, bucket);
 			}
 			bucket.push([si, ti]);
 		}
@@ -69,6 +82,7 @@ export function addGlossAlignments(
 				if (g) {
 					labels.add(g);
 					labels.add(g.toLowerCase());
+					labels.add(normalizeGlossKey(g));
 				}
 				const norm = normalize(tok.text);
 				if (norm) labels.add(norm);
@@ -87,12 +101,12 @@ export function addGlossAlignments(
 		return -1;
 	}
 
-	function findByLabel(gloss: string): number {
-		const normGloss = normalize(gloss);
-		const lowerGloss = gloss.toLowerCase();
+	function findByLabel(glossKey: string): number {
+		// glossKey is already normalised (lowercase, no morphology suffix).
+		const surfaceNorm = normalize(glossKey);
 		for (let gi = 0; gi < next.length; gi++) {
 			const labels = labelsFor(gi);
-			if (labels.has(gloss) || labels.has(lowerGloss) || (normGloss && labels.has(normGloss))) {
+			if (labels.has(glossKey) || (surfaceNorm && labels.has(surfaceNorm))) {
 				return gi;
 			}
 		}
