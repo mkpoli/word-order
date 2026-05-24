@@ -124,6 +124,7 @@
 	$: glossableTokens = words
 		.map((word, tokenIndex) => ({ word, tokenIndex }))
 		.filter(({ word }) => isGlossableToken(word));
+	$: reversedAboveIndices = annotationsAbove.map((_, i) => i).reverse();
 	$: hasAnyLane = annotationsAbove.length > 0 || annotationsBelow.length > 0;
 </script>
 
@@ -154,63 +155,69 @@
 				{:else}
 					<div class="lane-scroll">
 						<div class="lane-grid" style="--n: {glossableTokens.length}">
-						{#each annotationsAbove as lane, laneIndex (`above-${laneIndex}`)}
-							<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
-							{#each glossableTokens as { tokenIndex } (tokenIndex)}
-								<input
-									type="text"
-									class="lane-input"
-									bind:value={annotationsAbove[laneIndex][tokenIndex]}
-									placeholder={$LL.input.glossPlaceholder()}
-								/>
-							{/each}
-							<button
-								type="button"
-								class="lane-remove"
-								title={$LL.input.removeLane()}
-								aria-label={$LL.input.removeLane()}
-								on:click={() => removeLane('above', laneIndex)}
-							>
-								<iconify-icon icon="mdi:close" inline="true" />
+							<button type="button" class="lane-add lane-add-above" on:click={() => addLane('above')}>
+								<span class="lane-add-label">
+									<iconify-icon icon="mdi:plus" inline="true" />
+									{$LL.input.addLaneAbove()}
+								</span>
 							</button>
-						{/each}
 
-						<button type="button" class="lane-add lane-add-above" on:click={() => addLane('above')}>
-							<iconify-icon icon="mdi:plus" inline="true" />
-							{$LL.input.addLaneAbove()}
-						</button>
-
-						<span class="lane-label lane-label-word">{$LL.input.wordRow()}</span>
-						{#each glossableTokens as { word, tokenIndex } (tokenIndex)}
-							<span class="word-cell" {lang}><Word {word} /></span>
-						{/each}
-						<span class="lane-corner" aria-hidden="true"></span>
-
-						<button type="button" class="lane-add lane-add-below" on:click={() => addLane('below')}>
-							<iconify-icon icon="mdi:plus" inline="true" />
-							{$LL.input.addLaneBelow()}
-						</button>
-
-						{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
-							<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
-							{#each glossableTokens as { tokenIndex } (tokenIndex)}
-								<input
-									type="text"
-									class="lane-input"
-									bind:value={annotationsBelow[laneIndex][tokenIndex]}
-									placeholder={$LL.input.glossPlaceholder()}
-								/>
+							<!-- Above lanes render top-to-bottom in REVERSE index order so
+								"Above 1" = closest to word (just above WORD), "Above N" = furthest. -->
+							{#each reversedAboveIndices as laneIndex (`above-${laneIndex}`)}
+								<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
+								{#each glossableTokens as { tokenIndex } (tokenIndex)}
+									<input
+										type="text"
+										class="lane-input"
+										bind:value={annotationsAbove[laneIndex][tokenIndex]}
+										placeholder={$LL.input.glossPlaceholder()}
+									/>
+								{/each}
+								<button
+									type="button"
+									class="lane-remove"
+									title={$LL.input.removeLane()}
+									aria-label={$LL.input.removeLane()}
+									on:click={() => removeLane('above', laneIndex)}
+								>
+									<iconify-icon icon="mdi:close" inline="true" />
+								</button>
 							{/each}
-							<button
-								type="button"
-								class="lane-remove"
-								title={$LL.input.removeLane()}
-								aria-label={$LL.input.removeLane()}
-								on:click={() => removeLane('below', laneIndex)}
-							>
-								<iconify-icon icon="mdi:close" inline="true" />
+
+							<span class="lane-label lane-label-word">{$LL.input.wordRow()}</span>
+							{#each glossableTokens as { word, tokenIndex } (tokenIndex)}
+								<span class="word-cell" {lang}><Word {word} /></span>
+							{/each}
+							<span class="lane-corner" aria-hidden="true"></span>
+
+							{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
+								<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
+								{#each glossableTokens as { tokenIndex } (tokenIndex)}
+									<input
+										type="text"
+										class="lane-input"
+										bind:value={annotationsBelow[laneIndex][tokenIndex]}
+										placeholder={$LL.input.glossPlaceholder()}
+									/>
+								{/each}
+								<button
+									type="button"
+									class="lane-remove"
+									title={$LL.input.removeLane()}
+									aria-label={$LL.input.removeLane()}
+									on:click={() => removeLane('below', laneIndex)}
+								>
+									<iconify-icon icon="mdi:close" inline="true" />
+								</button>
+							{/each}
+
+							<button type="button" class="lane-add lane-add-below" on:click={() => addLane('below')}>
+								<span class="lane-add-label">
+									<iconify-icon icon="mdi:plus" inline="true" />
+									{$LL.input.addLaneBelow()}
+								</span>
 							</button>
-						{/each}
 						</div>
 					</div>
 				{/if}
@@ -378,15 +385,16 @@
 
 	/* Single aligned grid: [label] N×[input] [×]. Lane rows, word row, and
 	   add-buttons all live in the same grid so columns line up across rows —
-	   matching the actual output diagram. min-width: max-content lets the grid
-	   exceed its parent and trigger the scroll wrapper above. */
+	   matching the actual output diagram. Each input column sizes to
+	   max(word width, current input value width); field-sizing: content on
+	   the inputs is what lets the column shrink when values are short. */
 	.lane-grid {
 		display: grid;
-		grid-template-columns: max-content repeat(var(--n, 1), minmax(5em, max-content)) auto;
+		grid-template-columns: max-content repeat(var(--n, 1), max-content) auto;
 		min-width: max-content;
 		gap: 0.35em 0.45em;
 		align-items: center;
-		padding: 0.2em 0.1em;
+		padding: 0;
 	}
 
 	.lane-label {
@@ -410,15 +418,19 @@
 	}
 
 	.lane-input {
-		padding: 0.28em 0.4em;
+		/* Auto-size to the input's value (Chrome/Edge 123+, recent FF/Safari).
+		   In older browsers the input keeps its default intrinsic width, which
+		   is still functional, just wider than ideal. */
+		field-sizing: content;
+		padding: 0.28em 0.45em;
 		border: 1px solid rgb(44 71 255 / 20%);
 		border-radius: 0.3em;
 		background: white;
 		font: inherit;
 		font-size: 0.9em;
-		min-width: 0;
-		width: 100%;
-		box-sizing: border-box;
+		min-width: 2.5ch;
+		max-width: 16em;
+		box-sizing: content-box;
 		text-align: center;
 	}
 
@@ -458,28 +470,45 @@
 		background: rgb(220 60 60 / 12%);
 	}
 
-	/* Span the entire row so auto-flow lands the next lane label back in column 1.
-	   Partial spans would leave gaps that auto-flow tries to fill from the next row. */
+	/* Flat full-width bars at the top and bottom of the stack. The label inside
+	   sticks to the left so it stays visible even when the user scrolls right. */
 	.lane-add {
 		appearance: none;
 		grid-column: 1 / -1;
-		justify-self: start;
-		padding: 0.22em 0.65em;
-		border: 1px dashed rgb(44 71 255 / 35%);
-		border-radius: 999px;
-		background: rgb(255 255 255 / 80%);
+		justify-self: stretch;
+		display: block;
+		width: 100%;
+		padding: 0.3em 0;
+		border: none;
+		border-radius: 0;
+		background: rgb(46 91 255 / 0.06);
 		color: rgb(33 56 199);
 		font: inherit;
 		font-size: 0.78em;
 		font-weight: 600;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3em;
+		text-align: left;
 		cursor: pointer;
 	}
 
+	.lane-add-above {
+		border-bottom: 1px dashed rgb(44 71 255 / 25%);
+	}
+
+	.lane-add-below {
+		border-top: 1px dashed rgb(44 71 255 / 25%);
+	}
+
 	.lane-add:hover {
-		background: rgb(44 71 255 / 10%);
+		background: rgb(46 91 255 / 0.13);
+	}
+
+	.lane-add-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3em;
+		padding: 0 0.6em;
+		position: sticky;
+		left: 0;
 	}
 
 	.gloss-empty {
