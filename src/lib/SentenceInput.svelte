@@ -3,21 +3,24 @@
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import { tokenizeSentence } from './tokenize';
-	import type { Sentence } from './types';
-	import { createSentenceTokens, getSentenceGlosses, getSentenceWords } from './types';
+	import type { AnnotationPosition, Sentence } from './types';
+	import { getSentenceWords } from './types';
 	import Word from './Word.svelte';
 
 	export let modifying: number;
 	export let sentences: Sentence[];
 	export let text = '';
-	export let glosses: string[] = [];
+	/** annotationsAbove[laneIndex][tokenIndex] — top lane first. */
+	export let annotationsAbove: string[][] = [];
+	/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
+	export let annotationsBelow: string[][] = [];
 	export let glossEnabled = false;
 
 	let lang = 'en';
 	let displayName = 'English';
 
 	$: displayName = getLanguageName(lang, $locale);
-	$: syncGlosses(text, glosses);
+	$: syncLanes(text);
 
 	let previousLang = 'en';
 
@@ -28,15 +31,22 @@
 	function onmodifyingchange(modifying: number) {
 		if (modifying !== -1) {
 			previousLang = lang;
-			lang = sentences[modifying].lang;
-			text = getSentenceWords(sentences[modifying]).join('|');
-			glosses = [...getSentenceGlosses(sentences[modifying])];
-			glossEnabled = sentences[modifying].showGloss || glosses.some(Boolean);
+			const sentence = sentences[modifying];
+			lang = sentence.lang;
+			text = getSentenceWords(sentence).join('|');
+			annotationsAbove = Array.from({ length: sentence.lanesAbove }, (_, laneIndex) =>
+				sentence.tokens.map((t) => t.annotationsAbove[laneIndex] ?? '')
+			);
+			annotationsBelow = Array.from({ length: sentence.lanesBelow }, (_, laneIndex) =>
+				sentence.tokens.map((t) => t.annotationsBelow[laneIndex] ?? '')
+			);
+			glossEnabled = sentence.showGloss || sentence.lanesAbove > 0 || sentence.lanesBelow > 0;
 			textArea.focus();
 		} else {
 			lang = previousLang;
 			text = '';
-			glosses = [];
+			annotationsAbove = [];
+			annotationsBelow = [];
 			glossEnabled = false;
 		}
 	}
@@ -45,7 +55,8 @@
 		submit: {
 			lang: string;
 			words: string[];
-			glosses: string[];
+			annotationsAbove: string[][];
+			annotationsBelow: string[][];
 			showGloss: boolean;
 		};
 	}>();
@@ -56,22 +67,61 @@
 		return modifying === -1 ? tokenizeSentence(value, lang) : value.split(/[|]/u).filter(Boolean);
 	}
 
-	function syncGlosses(value: string, currentGlosses: string[]) {
+	function fitLanes(lanes: string[][], tokenCount: number): string[][] {
+		return lanes.map((lane) => {
+			const next = new Array(tokenCount).fill('');
+			for (let i = 0; i < Math.min(lane.length, tokenCount); i++) next[i] = lane[i] ?? '';
+			return next;
+		});
+	}
+
+	function syncLanes(value: string) {
 		const words = getWords(value);
-		const nextGlosses = words.map((_, index) => currentGlosses[index] ?? '');
+		const nextAbove = fitLanes(annotationsAbove, words.length);
+		const nextBelow = fitLanes(annotationsBelow, words.length);
 
-		if (nextGlosses.length === currentGlosses.length && nextGlosses.every((gloss, index) => gloss === currentGlosses[index])) {
-			return;
+		if (sameShape(nextAbove, annotationsAbove)) {
+			// no-op
+		} else {
+			annotationsAbove = nextAbove;
 		}
+		if (sameShape(nextBelow, annotationsBelow)) {
+			// no-op
+		} else {
+			annotationsBelow = nextBelow;
+		}
+	}
 
-		glosses = nextGlosses;
+	function sameShape(a: string[][], b: string[][]): boolean {
+		if (a.length !== b.length) return false;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i].length !== b[i].length) return false;
+			for (let j = 0; j < a[i].length; j++) {
+				if (a[i][j] !== b[i][j]) return false;
+			}
+		}
+		return true;
 	}
 
 	function isGlossableToken(word: string): boolean {
 		return !word.match(/^(\s|\p{P}+)$/u);
 	}
 
-	$: glossTokens = createSentenceTokens(getWords(text), glosses);
+	function addLane(position: AnnotationPosition) {
+		const words = getWords(text);
+		const newLane = new Array(words.length).fill('');
+		if (position === 'above') annotationsAbove = [...annotationsAbove, newLane];
+		else annotationsBelow = [...annotationsBelow, newLane];
+		glossEnabled = true;
+	}
+
+	function removeLane(position: AnnotationPosition, laneIndex: number) {
+		if (position === 'above') annotationsAbove = annotationsAbove.filter((_, i) => i !== laneIndex);
+		else annotationsBelow = annotationsBelow.filter((_, i) => i !== laneIndex);
+	}
+
+	$: words = getWords(text);
+	$: hasAnyLane = annotationsAbove.length > 0 || annotationsBelow.length > 0;
 </script>
 
 <fieldset class:editing={modifying !== -1}>
@@ -96,17 +146,85 @@
 				{$LL.input.gloss()}
 			</summary>
 			<div class="gloss-content">
-				{#if glossTokens.length === 0}
+				{#if words.length === 0}
 					<p class="gloss-empty">{$LL.input.glossEmpty()}</p>
 				{:else}
-					<div class="gloss-grid">
-						{#each glossTokens as token, index}
-							{#if isGlossableToken(token.text)}
-								<label class="gloss-field" for={`gloss-${index}`}>
-									<span class="gloss-word" {lang}><Word word={token.text} /></span>
-									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder={$LL.input.glossPlaceholder()} />
-								</label>
-							{/if}
+					<div class="lane-stack">
+						{#each annotationsAbove as lane, laneIndex (`above-${laneIndex}`)}
+							<div class="lane">
+								<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
+								<div class="lane-cells">
+									{#each words as word, tokenIndex}
+										{#if isGlossableToken(word)}
+											<label class="lane-field">
+												<span class="lane-word" {lang}><Word {word} /></span>
+												<input
+													type="text"
+													bind:value={annotationsAbove[laneIndex][tokenIndex]}
+													placeholder={$LL.input.glossPlaceholder()}
+												/>
+											</label>
+										{/if}
+									{/each}
+								</div>
+								<button
+									type="button"
+									class="lane-remove"
+									title={$LL.input.removeLane()}
+									aria-label={$LL.input.removeLane()}
+									on:click={() => removeLane('above', laneIndex)}
+								>
+									<iconify-icon icon="mdi:close" inline="true" />
+								</button>
+							</div>
+						{/each}
+						<button type="button" class="lane-add" on:click={() => addLane('above')}>
+							<iconify-icon icon="mdi:plus" inline="true" />
+							{$LL.input.addLaneAbove()}
+						</button>
+
+						<div class="word-row">
+							<span class="lane-label lane-label-word">{$LL.input.wordRow()}</span>
+							<div class="lane-cells lane-cells-words">
+								{#each words as word}
+									{#if isGlossableToken(word)}
+										<span class="lane-word lane-word-large" {lang}><Word {word} /></span>
+									{/if}
+								{/each}
+							</div>
+						</div>
+
+						<button type="button" class="lane-add" on:click={() => addLane('below')}>
+							<iconify-icon icon="mdi:plus" inline="true" />
+							{$LL.input.addLaneBelow()}
+						</button>
+						{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
+							<div class="lane">
+								<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
+								<div class="lane-cells">
+									{#each words as word, tokenIndex}
+										{#if isGlossableToken(word)}
+											<label class="lane-field">
+												<span class="lane-word" {lang}><Word {word} /></span>
+												<input
+													type="text"
+													bind:value={annotationsBelow[laneIndex][tokenIndex]}
+													placeholder={$LL.input.glossPlaceholder()}
+												/>
+											</label>
+										{/if}
+									{/each}
+								</div>
+								<button
+									type="button"
+									class="lane-remove"
+									title={$LL.input.removeLane()}
+									aria-label={$LL.input.removeLane()}
+									on:click={() => removeLane('below', laneIndex)}
+								>
+									<iconify-icon icon="mdi:close" inline="true" />
+								</button>
+							</div>
 						{/each}
 					</div>
 				{/if}
@@ -117,14 +235,21 @@
 			<label for="lang">{displayName}</label>
 			<button
 				on:click={() => {
-					const words = getWords(text);
-					if (words.length === 0) {
+					const w = getWords(text);
+					if (w.length === 0) {
 						empty = true;
 						return;
 					}
 					text = '';
-					const nextGlosses = words.map((_, index) => glosses[index] ?? '');
-					dispatch('submit', { lang, words, glosses: nextGlosses, showGloss: glossEnabled || nextGlosses.some(Boolean) });
+					const nextAbove = fitLanes(annotationsAbove, w.length);
+					const nextBelow = fitLanes(annotationsBelow, w.length);
+					dispatch('submit', {
+						lang,
+						words: w,
+						annotationsAbove: nextAbove,
+						annotationsBelow: nextBelow,
+						showGloss: glossEnabled || hasAnyLane
+					});
 				}}
 			>
 				<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
@@ -236,23 +361,122 @@
 		padding: 0 1em 1em;
 	}
 
-	.gloss-grid {
+	.lane-stack {
 		display: grid;
-		gap: 0.75em;
-		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		grid-template-columns: 1fr;
+		gap: 0.5em;
 	}
 
-	.gloss-field {
+	.lane,
+	.word-row {
 		display: grid;
-		gap: 0.35em;
+		grid-template-columns: 7em 1fr 1.6em;
+		align-items: start;
+		gap: 0.6em;
+		padding: 0.5em 0.6em;
+		border-radius: 0.4em;
+		background: rgb(255 255 255 / 70%);
+		border: 1px solid rgb(44 71 255 / 10%);
 	}
 
-	.gloss-word {
+	.word-row {
+		background: rgb(46 91 255 / 0.06);
+		border-color: rgb(46 91 255 / 0.18);
+	}
+
+	.lane-label {
+		font-size: 0.78em;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: rgb(74 89 142);
+		padding-top: 0.4em;
+	}
+
+	.lane-label-word {
+		color: rgb(33 56 199);
+	}
+
+	.lane-cells {
+		display: grid;
+		gap: 0.4em;
+		grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+	}
+
+	.lane-cells-words {
+		grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+		align-items: center;
+	}
+
+	.lane-field {
+		display: grid;
+		gap: 0.25em;
+	}
+
+	.lane-word {
 		display: block;
-		font-size: 0.92em;
+		font-size: 0.85em;
 		font-weight: 600;
 		color: rgb(60 67 96);
 		word-break: break-word;
+	}
+
+	.lane-word-large {
+		font-size: 1em;
+		text-align: center;
+		padding: 0.2em 0;
+	}
+
+	.lane-field input {
+		padding: 0.3em 0.45em;
+		border: 1px solid rgb(44 71 255 / 20%);
+		border-radius: 0.3em;
+		background: white;
+		font: inherit;
+		font-size: 0.9em;
+		min-width: 0;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.lane-remove {
+		appearance: none;
+		width: 1.6em;
+		height: 1.6em;
+		border: 1px solid rgb(220 60 60 / 25%);
+		background: white;
+		border-radius: 999px;
+		color: rgb(170 30 30);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	.lane-remove:hover {
+		background: rgb(220 60 60 / 12%);
+	}
+
+	.lane-add {
+		appearance: none;
+		justify-self: start;
+		padding: 0.32em 0.7em;
+		border: 1px dashed rgb(44 71 255 / 35%);
+		border-radius: 999px;
+		background: rgb(255 255 255 / 80%);
+		color: rgb(33 56 199);
+		font: inherit;
+		font-size: 0.85em;
+		font-weight: 600;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		cursor: pointer;
+	}
+
+	.lane-add:hover {
+		background: rgb(44 71 255 / 10%);
 	}
 
 	.gloss-empty {
@@ -263,13 +487,10 @@
 
 	.buttons {
 		display: contents;
-		/* align-items: center;
-		gap: 1em;
-
-		 */
 	}
 
-	button {
+	.buttons > button,
+	button[type='submit'] {
 		width: 100%;
 		grid-area: b;
 	}
@@ -315,6 +536,21 @@
 		opacity: 0.8;
 	}
 
+	.lane-remove,
+	.lane-add {
+		background: white;
+		color: inherit;
+		font-weight: 600;
+	}
+
+	.lane-add {
+		color: rgb(33 56 199);
+	}
+
+	.lane-remove {
+		color: rgb(170 30 30);
+	}
+
 	@media (max-width: 700px) {
 		.input-form {
 			grid-template-areas:
@@ -328,6 +564,25 @@
 
 		button {
 			width: 100%;
+		}
+
+		.lane,
+		.word-row {
+			grid-template-columns: 1fr 1.6em;
+		}
+
+		.lane-label,
+		.lane-label-word {
+			grid-column: 1 / -1;
+		}
+
+		.lane-cells {
+			grid-column: 1 / 2;
+		}
+
+		.lane-remove {
+			grid-column: 2 / 3;
+			align-self: start;
 		}
 	}
 

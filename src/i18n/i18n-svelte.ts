@@ -43,7 +43,13 @@ const createLL = () => ({
 		guidance: m.input_guidance,
 		gloss: m.input_gloss,
 		glossEmpty: m.input_gloss_empty,
-		glossPlaceholder: m.input_gloss_placeholder
+		glossPlaceholder: m.input_gloss_placeholder,
+		laneAbove: m.input_lane_above,
+		laneBelow: m.input_lane_below,
+		wordRow: m.input_word_row,
+		addLaneAbove: m.input_add_lane_above,
+		addLaneBelow: m.input_add_lane_below,
+		removeLane: m.input_remove_lane
 	},
 	tokenEditor: {
 		tokens: m.token_editor_tokens,
