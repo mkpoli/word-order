@@ -8,29 +8,52 @@
 
 Paste sentences in any languages, click matching words across rows, and the tool draws curved connectors. Reordered translations, one-to-many mappings, and many-to-one mappings all stay readable.
 
+## Who is it for?
+
+- **Translators** documenting how phrasing reshuffles across a pair.
+- **Language learners** seeing where their L1 intuition diverges from a new language.
+- **Conlangers** showing off word order, agglutination, or polypersonal agreement.
+- **Linguists and teachers** preparing Leipzig-style interlinear handouts and slides.
+
 ## Features
+
+### Editor & rendering
 
 - **Locale-aware tokenization** via `Intl.Segmenter` — CJK, Thai, and other unspaced scripts split correctly out of the box. Use `|` for finer manual control.
 - **Curved connectors** with adjustable curvature, line width, gap, straight segments, and endpoint correction.
-- **Interlinear gloss** row above each sentence for Leipzig-style annotations.
+- **Multi-tier annotations** — stack any number of gloss / IPA / morpheme lines **above and below** each word for full Leipzig-style displays.
 - **Ruby annotations** — `<ruby>漢<rt>かん</rt></ruby>` works inside both sentence text and glosses, so furigana, pinyin, and zhuyin render correctly.
 - **Per-token edit dialog** — merge selected tokens, split at any grapheme boundary, or merge into a neighbor.
-- **Multiple projects via tabs** with localStorage autosave — refreshing or closing the browser preserves your work.
-- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Genesis 1:1 across Hebrew / Koine Greek / Latin / English.
+- **Figma-style per-side margin control** — adjust top, right, bottom, and left padding of the canvas independently for tight social-share crops.
 - **Scramble equivalency** — instantly reorder the color groups to visualize how often translations rearrange information.
-- **Export** as SVG (vector) or PNG (raster), plus full project JSON for archival and sharing.
-- **UI in 20+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Bulgarian, Finnish, Esperanto, Interlingua, Toki Pona, and more.
+
+### Translation assistance (BYO key)
+
+- **LLM translate-and-align** — bring your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Google Gemini](https://aistudio.google.com/app/apikey) key (stored only in your browser's localStorage, never sent anywhere except the chosen provider).
+- **Multi-target in one call** — pick one or more target languages and the tool requests parallel translations, fills in interlinear glosses for each new row, and auto-connects matching tokens across rows by gloss bucket.
+- **Custom target codes** — accepts any BCP-47 tag, so conlangs and rare locales work too.
+- **Configurable provider + model** in the Settings dialog, with a combobox of suggested model IDs.
+
+### Persistence, examples, export
+
+- **localStorage autosave** — refreshing or closing the browser preserves your work.
+- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
+- **About dialog** with attribution, links, and version info.
+- **Export** as SVG (vector), PNG (raster), PDF, or full project JSON for archival and sharing. Filenames are auto-generated from the first row's text and locale list.
+
+### Localization & SEO
+
+- **UI in 30+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Bulgarian, Finnish, Esperanto, Interlingua, Toki Pona, and more.
 - **SEO-ready** with localized metadata, Open Graph, JSON-LD, and an Open Graph preview image.
 
 ## How to use
 
 1. Type or paste a sentence into the input box and press **Add**. Words are split automatically using locale-aware segmentation.
-2. Click a word in one row, then a matching word in an adjacent row, then press **Confirm** to connect them. Click an already-linked word to edit its color group.
-3. Use the pencil icon to fine-tune tokenization (merge/split tokens) and optionally fill in an interlinear gloss row.
-4. Adjust spacing, curvature, fonts, and text alignment in the Options panel.
-5. Export as SVG or PNG when you're done.
-
-For a guided tour, click the **Help** button in the header.
+2. *(Optional, BYO key)* Click **Translate** to pick one or more target languages — the tool generates rows, glosses, and tentative alignments in one go.
+3. Click a word in one row, then a matching word in an adjacent row, and press **Confirm** to connect them. Click an already-linked word to edit its color group.
+4. Use the pencil icon on any row to fine-tune tokenization (merge/split tokens) and to add or rearrange annotation tiers above and below.
+5. Adjust spacing, curvature, fonts, per-side margins, and text alignment in the **Options** panel.
+6. Export as SVG, PNG, PDF, or JSON from the **Export** menu — or load a ready-made illustration from **Examples**.
 
 ## Tech stack
 
@@ -45,7 +68,7 @@ For a guided tour, click the **Help** button in the header.
 
 ## Related tools
 
-> **TODO** — this section is a working draft. Re-verify each tool's current feature set before relying on the comparison externally; add any peers that are missing.
+> Working draft — re-verify each tool's current feature set before citing the comparison externally; add any peers that are missing.
 
 ### Authoring tools (closest peers — manual click-to-link alignment with curved connectors)
 
@@ -70,7 +93,10 @@ For a guided tour, click the **Help** button in the header.
 
 ### Feature comparison
 
-> **TODO** — survey conducted May 2026 from each tool's then-current live build, GitHub repo, and README. Cells marked `?` were not directly verifiable from the public surface and should be confirmed by the tool's author before being cited externally.
+Survey conducted May 2026 from each tool's then-current live build, GitHub repo, and README. Cells marked `?` were not directly verifiable from the public surface and should be confirmed by the tool's author before being cited externally.
+
+<details>
+<summary>Click to expand the comparison tables</summary>
 
 #### Identity & metadata
 
@@ -82,7 +108,7 @@ For a guided tour, click the **Help** button in the header.
 | Author | [@mkpoli](https://github.com/mkpoli) | [Dani Polani](https://github.com/dani-polani) / [tinygodsdev](https://github.com/tinygodsdev) | [Jounlai Cho](https://github.com/jounlai) / [Heuron Corp.](https://heuron.com/) |
 | First public release | Aug 2022 | Apr 2026 | Mar 2026 |
 | Repo created | 2022-08-23 | 2026-04-18 | 2026-03-12 |
-| License | MIT (pending [#71](https://github.com/mkpoli/word-order/pull/71)) | MIT | MIT (README only — no `LICENSE` file in repo) |
+| License | MIT | MIT | MIT (README only — no `LICENSE` file in repo) |
 | GitHub stars (May 2026) | 13 | 1 | 5 |
 | Tech stack | SvelteKit 2 · Svelte 4 · TS · Vite 5 · Vercel | SvelteKit · Vite 8 · Docker | Static HTML/JS · D3 · no build |
 | Build step required | ✅ Vite | ✅ Vite | ❌ static files |
@@ -118,14 +144,14 @@ For a guided tour, click the **Help** button in the header.
 | Language metadata (family / typology / IPA) | ❌ | ❌ | ✅ extensive |
 | Mobile responsive | ? | ? | ✅ |
 | Keyboard navigation | ? | ? | ✅ arrow keys, random |
-| Guided tour / Help | ✅ (Help button) | ❌ | ❌ |
+| Guided tour / Help | ❌ | ❌ | ❌ |
 
 #### Persistence & sharing
 
 | Feature | Word Order Illustrator | Bitext Align | LangMap |
 |---|---|---|---|
 | Autosave (localStorage) | ✅ | ? | n/a |
-| Multiple workspaces / tabs | ✅ (per-tab autosave) | ❌ | n/a |
+| Multiple workspaces / tabs | ❌ | ❌ | n/a |
 | URL share (state in hash) | ❌ | ✅ | ✅ |
 | Social share buttons | ❌ | ✅ | ✅ X / Facebook / LINE |
 | Export SVG | ✅ vector | ✅ vector | ✅ |
@@ -135,6 +161,8 @@ For a guided tour, click the **Help** button in the header.
 | Export JSON (project archive) | ✅ | ❌ | ❌ |
 | Export CSV | ❌ | ❌ | ✅ |
 | SEO (OG image, JSON-LD) | ✅ | ❌ | ❌ |
+
+</details>
 
 ## Developing
 
@@ -170,7 +198,12 @@ Missing keys fall back to the base locale (English), so translations can be incr
 
 ## Contributing
 
-Issues and pull requests welcome at <https://github.com/mkpoli/word-order/>.
+Issues and pull requests are welcome — <https://github.com/mkpoli/word-order/>.
+
+- **Bug reports**: include the live-demo URL with your `?` state if you can reproduce there, plus browser + OS. Screenshots help when the issue is visual.
+- **PRs**: please run `bun run lint`, `bun run check`, and `bun run test` before opening. If you touch user-visible strings, follow the [Adding a new UI language](#adding-a-new-ui-language) instructions and run `bun run paraglide:compile`.
+- **Commit style**: this repo uses [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, etc.) — your PR's commits should follow suit.
+- **New examples** for the gallery are a great low-friction way to contribute: edit `src/lib/examples.ts`.
 
 ## Author
 
