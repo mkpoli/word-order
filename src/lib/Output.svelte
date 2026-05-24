@@ -400,15 +400,15 @@
 					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
 						{#each tokens as token, j}
 							{@const word = token.text}
-							{@const hasAboveLanes = sentence.lanesAbove > 0 && isContent(word)}
-							{@const hasBelowLanes = sentence.lanesBelow > 0 && isContent(word)}
+							{@const hasAboveLanes = sentence.lanesAbove > 0}
+							{@const hasBelowLanes = sentence.lanesBelow > 0}
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
 								{#if hasAboveLanes}
 									<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
 										{#each Array(sentence.lanesAbove) as _, laneIndex}
 											<span class="annotation-line annotation-above">
-												{token.annotationsAbove[laneIndex] ?? ''}
+												{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
 											</span>
 										{/each}
 									</span>
@@ -463,7 +463,7 @@
 									<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
 										{#each Array(sentence.lanesBelow) as _, laneIndex}
 											<span class="annotation-line annotation-below">
-												{token.annotationsBelow[laneIndex] ?? ''}
+												{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
 											</span>
 										{/each}
 									</span>
