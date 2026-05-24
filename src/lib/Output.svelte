@@ -239,8 +239,19 @@
 
 	// Dragging output margins from the canvas edge.
 	type MarginSide = keyof Margin;
-	let marginDrag: { side: MarginSide; startPos: number; startValue: number } | null = null;
+	let marginDrag: { side: MarginSide; startPos: number; startMargin: Margin } | null = null;
 	const MARGIN_MAX = 200;
+
+	const OPPOSITE: Record<MarginSide, MarginSide> = {
+		top: 'bottom',
+		bottom: 'top',
+		left: 'right',
+		right: 'left'
+	};
+
+	function clampMargin(v: number): number {
+		return Math.max(0, Math.min(MARGIN_MAX, Math.round(v)));
+	}
 
 	function startMarginDrag(side: MarginSide, e: PointerEvent) {
 		if (mode === 'edit' || modifying !== -1 || draggingIndex !== -1) return;
@@ -250,24 +261,40 @@
 		marginDrag = {
 			side,
 			startPos: vertical ? e.clientY : e.clientX,
-			startValue: outputMargin[side]
+			// Snapshot all four sides so modifier-key adjustments (Alt mirrors
+			// to the opposite side, Shift drives all four) apply consistent
+			// deltas regardless of which side was grabbed.
+			startMargin: { ...outputMargin }
 		};
 		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
 	}
 
 	function onMarginDragMove(e: PointerEvent) {
 		if (!marginDrag) return;
-		const { side, startPos, startValue } = marginDrag;
+		const { side, startPos, startMargin } = marginDrag;
 		const vertical = side === 'top' || side === 'bottom';
 		const current = vertical ? e.clientY : e.clientX;
 		let delta = current - startPos;
-		// Drag outward (away from the centre) to grow — matches the convention
-		// for resizing a window edge: pull the edge out, the box gets bigger.
-		// Top/left point outward toward smaller coordinates, so their delta is
-		// flipped; bottom/right outward = larger coords, no flip.
+		// Drag outward (away from the centre) to grow — top/left point outward
+		// toward smaller coordinates so their delta is flipped.
 		if (side === 'top' || side === 'left') delta = -delta;
-		const next = Math.max(0, Math.min(MARGIN_MAX, Math.round(startValue + delta)));
-		outputMargin = { ...outputMargin, [side]: next };
+
+		const next: Margin = { ...startMargin };
+		if (e.shiftKey) {
+			// Shift = grow/shrink all four sides together.
+			next.top = clampMargin(startMargin.top + delta);
+			next.right = clampMargin(startMargin.right + delta);
+			next.bottom = clampMargin(startMargin.bottom + delta);
+			next.left = clampMargin(startMargin.left + delta);
+		} else if (e.altKey) {
+			// Alt = mirror to the opposite side (symmetric pair).
+			const opp = OPPOSITE[side];
+			next[side] = clampMargin(startMargin[side] + delta);
+			next[opp] = clampMargin(startMargin[opp] + delta);
+		} else {
+			next[side] = clampMargin(startMargin[side] + delta);
+		}
+		outputMargin = next;
 	}
 
 	function endMarginDrag(e: PointerEvent) {
