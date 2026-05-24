@@ -929,6 +929,13 @@
 		overflow-y: hidden;
 		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
+		/* Centre the <output> when it fits; the flex container still scrolls
+		   horizontally when the diagram exceeds the viewport because the inner
+		   <output> uses flex-shrink: 0. Avoids relying on margin-inline:auto on
+		   <output> itself, which would bake a non-zero computed margin into
+		   exported clones and push them off to one side. */
+		display: flex;
+		justify-content: center;
 	}
 
 	.output::after {
