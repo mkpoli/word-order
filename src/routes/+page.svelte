@@ -104,6 +104,11 @@
 	let examplesOpen = false;
 	let translatePopoverOpen = false;
 
+	type RasterScale = 2 | 3 | 4 | 6;
+	const RASTER_SCALES: RasterScale[] = [2, 3, 4, 6];
+	const RASTER_SCALE_STORAGE_KEY = 'word-order:raster-scale';
+	let rasterScale: RasterScale = 2;
+
 	type PendingTranslation = {
 		abort: AbortController;
 		rowIndices: number[];
@@ -136,9 +141,15 @@
 		// mount + tick would clobber the just-populated bindings and leave the
 		// connector SVG empty until the next user interaction.
 		word_spans = sentences.map(() => []);
+
+		const storedScale = Number(window.localStorage.getItem(RASTER_SCALE_STORAGE_KEY));
+		if (RASTER_SCALES.includes(storedScale as RasterScale)) rasterScale = storedScale as RasterScale;
+
 		mounted = true;
 		await tick();
 	});
+
+	$: if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
 
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
@@ -367,10 +378,7 @@
 		const controller = new AbortController();
 		pendingTranslation = { abort: controller, rowIndices, targets: [...targets] };
 
-		const timeoutId = setTimeout(
-			() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)),
-			TRANSLATE_TIMEOUT_MS
-		);
+		const timeoutId = setTimeout(() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)), TRANSLATE_TIMEOUT_MS);
 
 		void runTranslate(controller, rowIndices, targets, sourcesSnapshot, startIdx, timeoutId);
 	}
@@ -663,7 +671,7 @@
 
 	async function exportPng() {
 		try {
-			const png = await exportPngBlob();
+			const png = await exportPngBlob(rasterScale);
 			if (png) save(png, 'image/png', exportFilename('png'));
 		} catch (err) {
 			console.error('Export PNG failed:', err);
@@ -678,7 +686,7 @@
 			return;
 		}
 		try {
-			const scale = 2;
+			const scale = rasterScale;
 			const dataUrl = await domToImage.toPng(output, {
 				width: output.clientWidth * scale,
 				height: output.clientHeight * scale,
@@ -826,6 +834,14 @@
 				<iconify-icon icon="mdi:file-pdf-box" inline="true" />
 				PDF
 			</button>
+			<div class="export-scale-row">
+				<label for="raster-scale-select">{$LL.menu.rasterScale()}</label>
+				<select id="raster-scale-select" bind:value={rasterScale} disabled={mode === 'edit'}>
+					{#each RASTER_SCALES as s (s)}
+						<option value={s}>{s}×</option>
+					{/each}
+				</select>
+			</div>
 		</div>
 	</div>
 	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
@@ -865,7 +881,13 @@
 			<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={retryTranslate} aria-label={$LL.translate.retry()}>
 				<iconify-icon icon="mdi:refresh" inline="true" />
 			</button>
-			<button type="button" class="translate-slot-action" title={$LL.translate.dismissError()} on:click={dismissTranslateError} aria-label={$LL.translate.dismissError()}>
+			<button
+				type="button"
+				class="translate-slot-action"
+				title={$LL.translate.dismissError()}
+				on:click={dismissTranslateError}
+				aria-label={$LL.translate.dismissError()}
+			>
 				<iconify-icon icon="material-symbols:close-rounded" inline="true" />
 			</button>
 		</div>
@@ -933,12 +955,8 @@
 						const src = sentences[sentence];
 						wordsBeforeModify = getSentenceWords(src);
 						editingText = wordsBeforeModify.join('|');
-						annotationsAboveBeforeModify = Array.from({ length: src.lanesAbove }, (_, lane) =>
-							src.tokens.map((t) => t.annotationsAbove[lane] ?? '')
-						);
-						annotationsBelowBeforeModify = Array.from({ length: src.lanesBelow }, (_, lane) =>
-							src.tokens.map((t) => t.annotationsBelow[lane] ?? '')
-						);
+						annotationsAboveBeforeModify = Array.from({ length: src.lanesAbove }, (_, lane) => src.tokens.map((t) => t.annotationsAbove[lane] ?? ''));
+						annotationsBelowBeforeModify = Array.from({ length: src.lanesBelow }, (_, lane) => src.tokens.map((t) => t.annotationsBelow[lane] ?? ''));
 						editingAnnotationsAbove = annotationsAboveBeforeModify.map((lane) => [...lane]);
 						editingAnnotationsBelow = annotationsBelowBeforeModify.map((lane) => [...lane]);
 						editingShowGloss = src.showGloss;
@@ -1419,6 +1437,38 @@
 	}
 
 	.export-menu button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	.export-scale-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6em;
+		padding: 0.4em 0.85em 0.2em;
+		margin-top: 0.25em;
+		border-top: 1px solid #eee;
+		font-size: 0.85em;
+		color: #555;
+	}
+
+	.export-scale-row label {
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.export-scale-row select {
+		font: inherit;
+		font-weight: bold;
+		padding: 0.15em 0.35em;
+		border-radius: 0.25em;
+		border: 1px solid #ccc;
+		background: white;
+		color: #333;
+	}
+
+	.export-scale-row select:disabled {
 		opacity: 0.5;
 		cursor: default;
 	}
