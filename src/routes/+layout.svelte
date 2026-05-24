@@ -62,6 +62,9 @@
 		--color-border-soft: #232a33;
 		--color-hover: #2a323d;
 		--color-shadow: rgb(0 0 0 / 0.5);
+		/* Inactive button text/border needs to be visible against the
+		   dark page bg; lift to a mid-grey instead of the near-black light default. */
+		--color-inactive: rgb(170 178 188);
 	}
 
 	@media (prefers-color-scheme: dark) {
@@ -78,6 +81,7 @@
 			--color-border-soft: #232a33;
 			--color-hover: #2a323d;
 			--color-shadow: rgb(0 0 0 / 0.5);
+			--color-inactive: rgb(170 178 188);
 		}
 	}
 
