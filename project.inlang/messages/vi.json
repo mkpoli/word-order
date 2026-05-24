@@ -34,9 +34,9 @@
 	"input_add": "Thêm",
 	"input_modify": "Sửa",
 	"input_guidance": "Từ sẽ được tách tự động bằng cách phân đoạn theo ngôn ngữ khi có thể, hoặc dựa vào khoảng trắng và dấu câu. Dùng {delimiter} để kiểm soát chi tiết hơn, ví dụ {example}",
-	"input_gloss": "Chú giải liên dòng",
-	"input_gloss_empty": "Thêm từ trước để nhập chú giải.",
-	"input_gloss_placeholder": "Chú giải",
+	"input_gloss": "Chú thích",
+	"input_gloss_empty": "Thêm từ trước để nhập chú thích.",
+	"input_gloss_placeholder": "Chú thích",
 	"token_editor_tokens": "Mảnh từ",
 	"token_editor_merge_selected": "Gộp mục đã chọn",
 	"token_editor_split_at_boundary": "Tách mảnh tại ranh giới này",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Dịch các câu hiện có sang nhiều ngôn ngữ khác (dùng khóa API của bạn).",
 	"translate_retry": "Thử lại",
 	"translate_cost_notice": "Mỗi yêu cầu được tính phí vào tài khoản {provider} của bạn. Các mô hình rẻ thường đủ dùng.",
-	"settings_model_hint": "Chọn một gợi ý hoặc nhập bất kỳ ID mô hình nào nhà cung cấp chấp nhận."
+	"settings_model_hint": "Chọn một gợi ý hoặc nhập bất kỳ ID mô hình nào nhà cung cấp chấp nhận.",
+	"input_lane_above": "Phía trên {n}",
+	"input_lane_below": "Phía dưới {n}",
+	"input_word_row": "Từ",
+	"input_add_lane_above": "Thêm dòng phía trên",
+	"input_add_lane_below": "Thêm dòng phía dưới",
+	"input_remove_lane": "Xoá dòng"
 }

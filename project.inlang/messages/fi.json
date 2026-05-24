@@ -92,5 +92,14 @@
 	"aria_margin_top": "Yläreunus",
 	"aria_margin_bottom": "Alareunus",
 	"aria_margin_left": "Vasen reunus",
-	"aria_margin_right": "Oikea reunus"
+	"aria_margin_right": "Oikea reunus",
+	"input_gloss": "Merkinnät",
+	"input_gloss_empty": "Lisää ensin sanoja merkintöjen kirjoittamista varten.",
+	"input_gloss_placeholder": "Merkintä",
+	"input_lane_above": "Yllä {n}",
+	"input_lane_below": "Alla {n}",
+	"input_word_row": "Sana",
+	"input_add_lane_above": "Lisää rivi ylle",
+	"input_add_lane_below": "Lisää rivi alle",
+	"input_remove_lane": "Poista rivi"
 }

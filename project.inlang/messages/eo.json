@@ -34,9 +34,9 @@
 	"input_add": "Aldoni",
 	"input_modify": "Modifi",
 	"input_guidance": "Vortoj aŭtomate dividiĝas per lingvokonscia segmentado kiam ĝi disponeblas, aŭ laŭ spacoj kaj interpunkcio kiel rezervo. Uzu {delimiter} por pli fajna rego, ekzemple {example}",
-	"input_gloss": "Interlinia gloso",
-	"input_gloss_empty": "Unue aldonu vortojn por enigi glosojn.",
-	"input_gloss_placeholder": "Gloso",
+	"input_gloss": "Notoj",
+	"input_gloss_empty": "Aldonu unue vortojn por enmeti notojn.",
+	"input_gloss_placeholder": "Noto",
 	"token_editor_tokens": "Tokenoj",
 	"token_editor_merge_selected": "Kunigi elektitajn",
 	"token_editor_split_at_boundary": "Dividi tokenon ĉe limo",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Traduki ekzistantajn frazojn al pliaj lingvoj (uzas vian API-ŝlosilon).",
 	"translate_retry": "Reprovi",
 	"translate_cost_notice": "Ĉiu peto estas fakturita al via propra {provider}-konto. Pli malmultekostaj modeloj kutime sufiĉas.",
-	"settings_model_hint": "Elektu sugeston aŭ tajpu ajnan modelan ID, kiun la provizanto akceptas."
+	"settings_model_hint": "Elektu sugeston aŭ tajpu ajnan modelan ID, kiun la provizanto akceptas.",
+	"input_lane_above": "Supre {n}",
+	"input_lane_below": "Sube {n}",
+	"input_word_row": "Vorto",
+	"input_add_lane_above": "Aldoni linion supre",
+	"input_add_lane_below": "Aldoni linion sube",
+	"input_remove_lane": "Forigi linion"
 }

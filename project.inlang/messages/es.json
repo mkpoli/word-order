@@ -34,9 +34,9 @@
 	"input_add": "Anadir",
 	"input_modify": "Modificar",
 	"input_guidance": "Las palabras se separan automaticamente con segmentacion adaptada al idioma cuando esta disponible, o por espacios y puntuacion como alternativa. Usa {delimiter} para un control mas preciso; por ejemplo, {example}",
-	"input_gloss": "Glosa interlineal",
-	"input_gloss_empty": "Anade palabras primero para introducir glosas.",
-	"input_gloss_placeholder": "Glosa",
+	"input_gloss": "Anotaciones",
+	"input_gloss_empty": "Añada palabras primero para introducir anotaciones.",
+	"input_gloss_placeholder": "Anotación",
 	"token_editor_tokens": "Tokens",
 	"token_editor_merge_selected": "Unir seleccion",
 	"token_editor_split_at_boundary": "Dividir token en este punto",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Traducir las frases existentes a más idiomas (usa su clave API).",
 	"translate_retry": "Reintentar",
 	"translate_cost_notice": "Cada solicitud se cobra a su propia cuenta de {provider}. Los modelos económicos suelen ser suficientes.",
-	"settings_model_hint": "Elija una sugerencia o escriba cualquier ID de modelo que acepte el proveedor."
+	"settings_model_hint": "Elija una sugerencia o escriba cualquier ID de modelo que acepte el proveedor.",
+	"input_lane_above": "Arriba {n}",
+	"input_lane_below": "Abajo {n}",
+	"input_word_row": "Palabra",
+	"input_add_lane_above": "Añadir línea arriba",
+	"input_add_lane_below": "Añadir línea abajo",
+	"input_remove_lane": "Quitar línea"
 }

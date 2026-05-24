@@ -34,9 +34,9 @@
 	"input_add": "Ajouter",
 	"input_modify": "Modifier",
 	"input_guidance": "Les mots sont découpés automatiquement avec une segmentation adaptée à la langue quand elle est disponible, sinon avec les espaces et la ponctuation. Utilisez {delimiter} pour un découpage plus précis. Exemple : {example}",
-	"input_gloss": "Glose interlineaire",
-	"input_gloss_empty": "Ajoutez d'abord des mots pour saisir des gloses.",
-	"input_gloss_placeholder": "Glose",
+	"input_gloss": "Annotations",
+	"input_gloss_empty": "Ajoutez d'abord des mots pour saisir des annotations.",
+	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "Tokens",
 	"token_editor_merge_selected": "Fusionner la selection",
 	"token_editor_split_at_boundary": "Scinder le token a cette limite",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Traduire les phrases existantes vers d'autres langues (utilise votre clé API).",
 	"translate_retry": "Réessayer",
 	"translate_cost_notice": "Chaque requête est facturée sur votre propre compte {provider}. Les modèles moins chers conviennent généralement.",
-	"settings_model_hint": "Choisissez une suggestion ou saisissez n'importe quel ID de modèle accepté par le fournisseur."
+	"settings_model_hint": "Choisissez une suggestion ou saisissez n'importe quel ID de modèle accepté par le fournisseur.",
+	"input_lane_above": "Au-dessus {n}",
+	"input_lane_below": "En dessous {n}",
+	"input_word_row": "Mot",
+	"input_add_lane_above": "Ajouter une ligne au-dessus",
+	"input_add_lane_below": "Ajouter une ligne en dessous",
+	"input_remove_lane": "Supprimer la ligne"
 }

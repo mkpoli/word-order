@@ -34,9 +34,9 @@
 	"input_add": "o pana",
 	"input_modify": "o ante",
 	"input_guidance": "ilo li ken la, ona li kipisi e toki kepeken nasin pi toki ni. ilo li ken ala la, ona li kipisi lon weka pi nimi tu en lon sitelen pini. sina wile kipisi pona la, o kepeken {delimiter}. sama ni: {example}",
-	"input_gloss": "toki ante lon insa sitelen",
-	"input_gloss_empty": "o pana e nimi la sina ken pana e toki ante.",
-	"input_gloss_placeholder": "toki ante",
+	"input_gloss": "Annotations",
+	"input_gloss_empty": "Add words first to enter annotations.",
+	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "nimi kipisi",
 	"token_editor_merge_selected": "o wan e ijo ni",
 	"token_editor_split_at_boundary": "o tu e ijo lon ni",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Translate existing sentences to more languages (uses your API key).",
 	"translate_retry": "Retry",
 	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this.",
-	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts."
+	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts.",
+	"input_lane_above": "Above {n}",
+	"input_lane_below": "Below {n}",
+	"input_word_row": "Word",
+	"input_add_lane_above": "Add line above",
+	"input_add_lane_below": "Add line below",
+	"input_remove_lane": "Remove line"
 }

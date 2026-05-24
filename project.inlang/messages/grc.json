@@ -34,9 +34,9 @@
 	"input_add": "Πρόσθες",
 	"input_modify": "Μετάβαλε",
 	"input_guidance": "Αἱ λέξεις αὐτομάτως τέμνονται κατὰ τὴν γλῶσσαν, ἐὰν δυνατόν ᾖ· εἰ δὲ μή, κατὰ διαστήματα καὶ σημεῖα στίξεως. Χρῶ τῷ {delimiter} εἰς λεπτοτέραν ἀκρίβειαν, οἷον {example}",
-	"input_gloss": "Γλῶσσα μεσόστιχος",
-	"input_gloss_empty": "Πρῶτον λέξεις πρόσθες ἵνα γλώσσας εἰσάγῃς.",
-	"input_gloss_placeholder": "Γλῶσσα",
+	"input_gloss": "Annotations",
+	"input_gloss_empty": "Add words first to enter annotations.",
+	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "Τμήματα",
 	"token_editor_merge_selected": "Σύναψον τὰ ἐκλελεγμένα",
 	"token_editor_split_at_boundary": "Τέμε τὸ τμῆμα ἐνταῦθα",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Translate existing sentences to more languages (uses your API key).",
 	"translate_retry": "Retry",
 	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this.",
-	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts."
+	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts.",
+	"input_lane_above": "Above {n}",
+	"input_lane_below": "Below {n}",
+	"input_word_row": "Word",
+	"input_add_lane_above": "Add line above",
+	"input_add_lane_below": "Add line below",
+	"input_remove_lane": "Remove line"
 }

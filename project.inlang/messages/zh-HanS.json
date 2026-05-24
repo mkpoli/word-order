@@ -34,9 +34,9 @@
 	"input_add": "添加",
 	"input_modify": "修改",
 	"input_guidance": "支持时会按语言自动分词，否则回退为空格和标点分词。使用{delimiter}可以进一步精细分隔，例如{example}",
-	"input_gloss": "行间注释",
-	"input_gloss_empty": "请先添加词语再输入注释。",
-	"input_gloss_placeholder": "注释",
+	"input_gloss": "标注",
+	"input_gloss_empty": "请先添加词语，然后再输入标注。",
+	"input_gloss_placeholder": "标注",
 	"token_editor_tokens": "词元",
 	"token_editor_merge_selected": "合并所选",
 	"token_editor_split_at_boundary": "在此处分割词元",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "将现有句子翻译为更多语言（使用您自己的 API 密钥）。",
 	"translate_retry": "重试",
 	"translate_cost_notice": "每次请求都会从您自己的 {provider} 账户扣费。建议先试试更便宜的模型。",
-	"settings_model_hint": "从建议中选择，或输入服务商支持的任意模型 ID。"
+	"settings_model_hint": "从建议中选择，或输入服务商支持的任意模型 ID。",
+	"input_lane_above": "上方 {n}",
+	"input_lane_below": "下方 {n}",
+	"input_word_row": "词",
+	"input_add_lane_above": "在上方添加一行",
+	"input_add_lane_below": "在下方添加一行",
+	"input_remove_lane": "移除该行"
 }
