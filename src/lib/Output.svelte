@@ -650,12 +650,22 @@
 	.annotations-above,
 	.annotations-below {
 		display: flex;
-		flex-direction: column;
 		text-align: center;
 		line-height: 1.2;
 		letter-spacing: 0.02em;
 		color: rgb(86 92 120);
 		pointer-events: none;
+	}
+
+	/* Above stack reads from word outward: lane 0 sits just above the word
+	   (closest), lane N-1 at the top (furthest). column-reverse renders
+	   the first-iterated lane at the bottom of the flex container. */
+	.annotations-above {
+		flex-direction: column-reverse;
+	}
+
+	.annotations-below {
+		flex-direction: column;
 	}
 
 	.annotation-line {
