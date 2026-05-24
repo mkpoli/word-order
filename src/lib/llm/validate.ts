@@ -78,6 +78,19 @@ export function validate(raw: LlmRawResponse, request: TranslateRequest): Valida
 		if (!isStringArray(t.tokens)) {
 			throw new LlmError(`Translation ${i} has invalid tokens`);
 		}
+
+		// Reject obviously concatenated output for space-using languages: the LLM
+		// occasionally returns a single multi-word token like "IchkannGlasessen…"
+		// for German. Better to surface as an error than render a single giant token.
+		if (localeUsesSpaces(requested.lang)) {
+			const tooLong = t.tokens.find((tok) => tok.length > 25);
+			if (tooLong) {
+				throw new LlmError(
+					`Translation for ${requested.lang} looks malformed (single token "${tooLong.slice(0, 30)}…" — model ignored the per-word tokenisation rule). Try again or switch to a stronger model.`
+				);
+			}
+		}
+
 		const rawGlosses = isStringArray(t.glosses) ? t.glosses : [];
 		// Pad/truncate glosses to match tokens length.
 		const glosses = t.tokens.map((_, j) => rawGlosses[j] ?? '');
