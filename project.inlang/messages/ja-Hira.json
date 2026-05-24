@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "カスタムコード（れい: ko-Kore, en-US）",
 	"translate_add_custom": "ついか",
 	"translate_remove_custom": "けす",
-	"translate_cancel": "やめる"
+	"translate_cancel": "やめる",
+	"input_translate": "ほんやく",
+	"input_translate_hint": "いまある文をほかのことばにほんやくします（APIキーがひつようです）。",
+	"translate_retry": "もういちど",
+	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントにおかねがかかります。やすいモデルでもじゅうぶんなことがおおいです。"
 }

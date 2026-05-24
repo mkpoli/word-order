@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Mã tuỳ chỉnh (vd. ko-Kore, en-US)",
 	"translate_add_custom": "Thêm",
 	"translate_remove_custom": "Xoá",
-	"translate_cancel": "Huỷ"
+	"translate_cancel": "Huỷ",
+	"input_translate": "Dịch",
+	"input_translate_hint": "Dịch các câu hiện có sang nhiều ngôn ngữ khác (dùng khóa API của bạn).",
+	"translate_retry": "Thử lại",
+	"translate_cost_notice": "Mỗi yêu cầu được tính phí vào tài khoản {provider} của bạn. Các mô hình rẻ thường đủ dùng."
 }

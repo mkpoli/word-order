@@ -10,7 +10,6 @@ export const MAX_SOURCE_TOKENS = 120;
 
 export type TranslateResult = {
 	sentences: Sentence[];
-	groups: number[][][];
 };
 
 export async function translateAndAlign(
@@ -38,6 +37,9 @@ export async function translateAndAlign(
 	const raw = await provider.call(request, { apiKey, model, signal });
 	const validated = validate(raw, request);
 
-	const sentences: Sentence[] = validated.translations.map((t) => createSentence(t.lang, t.tokens));
-	return { sentences, groups: validated.alignment_groups };
+	const sentences: Sentence[] = validated.translations.map((t) => {
+		const showGloss = t.glosses.some((g) => g.trim().length > 0);
+		return createSentence(t.lang, t.tokens, t.glosses, showGloss);
+	});
+	return { sentences };
 }

@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Custom code (e.g. ko-Kore, en-US)",
 	"translate_add_custom": "Add",
 	"translate_remove_custom": "Remove",
-	"translate_cancel": "Cancel"
+	"translate_cancel": "Cancel",
+	"input_translate": "Translate",
+	"input_translate_hint": "Translate existing sentences to more languages (uses your API key).",
+	"translate_retry": "Retry",
+	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this."
 }

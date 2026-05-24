@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "カスタムコード (例: ko-Kore, en-US)",
 	"translate_add_custom": "追加",
 	"translate_remove_custom": "削除",
-	"translate_cancel": "キャンセル"
+	"translate_cancel": "キャンセル",
+	"input_translate": "翻訳",
+	"input_translate_hint": "既存の文をさらに多くの言語に翻訳します（APIキーが必要です）。",
+	"translate_retry": "再試行",
+	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントへ課金されます。安いモデルでも十分なことが多いです。"
 }

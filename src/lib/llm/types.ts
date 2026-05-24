@@ -5,6 +5,8 @@ export type TranslateRequest = {
 		lang: string;
 		text: string;
 		tokens: string[];
+		/** Per-token glosses; same length as tokens. Empty string for non-content tokens or where the user didn't gloss. */
+		glosses: string[];
 	}>;
 	targets: Array<{
 		lang: string;
@@ -15,11 +17,11 @@ export type TranslateRequest = {
 export type LlmTranslation = {
 	lang: string;
 	tokens: string[];
+	glosses: string[];
 };
 
 export type LlmRawResponse = {
 	translations: LlmTranslation[];
-	alignment_groups: number[][][];
 };
 
 export type ProviderCallContext = {

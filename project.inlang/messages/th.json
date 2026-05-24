@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "รหัสกำหนดเอง (เช่น ko-Kore, en-US)",
 	"translate_add_custom": "เพิ่ม",
 	"translate_remove_custom": "ลบ",
-	"translate_cancel": "ยกเลิก"
+	"translate_cancel": "ยกเลิก",
+	"input_translate": "แปล",
+	"input_translate_hint": "แปลประโยคที่มีอยู่ไปยังภาษาอื่นเพิ่มเติม (ใช้คีย์ API ของคุณ)",
+	"translate_retry": "ลองอีกครั้ง",
+	"translate_cost_notice": "แต่ละคำขอจะคิดเงินจากบัญชี {provider} ของคุณเอง โมเดลราคาถูกมักเพียงพอ"
 }

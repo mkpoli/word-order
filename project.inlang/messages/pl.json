@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Kod własny (np. ko-Kore, en-US)",
 	"translate_add_custom": "Dodaj",
 	"translate_remove_custom": "Usuń",
-	"translate_cancel": "Anuluj"
+	"translate_cancel": "Anuluj",
+	"input_translate": "Tłumacz",
+	"input_translate_hint": "Przetłumacz istniejące zdania na inne języki (używa twojego klucza API).",
+	"translate_retry": "Ponów",
+	"translate_cost_notice": "Każde zapytanie obciąża twoje konto {provider}. Tańsze modele zwykle wystarczają."
 }

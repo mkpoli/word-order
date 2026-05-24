@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Свой код (напр. ko-Kore, en-US)",
 	"translate_add_custom": "Добавить",
 	"translate_remove_custom": "Удалить",
-	"translate_cancel": "Отмена"
+	"translate_cancel": "Отмена",
+	"input_translate": "Перевод",
+	"input_translate_hint": "Перевести существующие предложения на другие языки (используется ваш API-ключ).",
+	"translate_retry": "Повторить",
+	"translate_cost_notice": "Каждый запрос списывается с вашего аккаунта {provider}. Более дешёвые модели обычно справляются."
 }

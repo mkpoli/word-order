@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Código personalizado (ex. ko-Kore, en-US)",
 	"translate_add_custom": "Adicionar",
 	"translate_remove_custom": "Remover",
-	"translate_cancel": "Cancelar"
+	"translate_cancel": "Cancelar",
+	"input_translate": "Traduzir",
+	"input_translate_hint": "Traduzir as frases existentes para mais idiomas (usa sua chave de API).",
+	"translate_retry": "Tentar novamente",
+	"translate_cost_notice": "Cada solicitação é cobrada na sua própria conta {provider}. Modelos mais baratos costumam bastar."
 }

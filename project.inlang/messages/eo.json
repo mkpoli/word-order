@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Propra kodo (ekz. ko-Kore, en-US)",
 	"translate_add_custom": "Aldoni",
 	"translate_remove_custom": "Forigi",
-	"translate_cancel": "Nuligi"
+	"translate_cancel": "Nuligi",
+	"input_translate": "Traduki",
+	"input_translate_hint": "Traduki ekzistantajn frazojn al pliaj lingvoj (uzas vian API-ŝlosilon).",
+	"translate_retry": "Reprovi",
+	"translate_cost_notice": "Ĉiu peto estas fakturita al via propra {provider}-konto. Pli malmultekostaj modeloj kutime sufiĉas."
 }

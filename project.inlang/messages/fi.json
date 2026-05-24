@@ -83,5 +83,9 @@
 	"translate_custom_placeholder": "Oma koodi (esim. ko-Kore, en-US)",
 	"translate_add_custom": "Lisää",
 	"translate_remove_custom": "Poista",
-	"translate_cancel": "Peruuta"
+	"translate_cancel": "Peruuta",
+	"input_translate": "Käännä",
+	"input_translate_hint": "Käännä olemassa olevat lauseet muille kielille (käyttää API-avaintasi).",
+	"translate_retry": "Yritä uudelleen",
+	"translate_cost_notice": "Jokainen pyyntö veloitetaan omalta {provider}-tililtäsi. Halvemmat mallit riittävät yleensä."
 }
