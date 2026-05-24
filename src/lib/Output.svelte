@@ -10,6 +10,7 @@
 	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
+	import type { Margin } from '$lib/types';
 
 	const dispatch = createEventDispatcher<{
 		connect: {
@@ -65,6 +66,7 @@
 	export let fontSize: number;
 	export let glossFontSize: number;
 	export let spaceWidth: number;
+	export let outputMargin: Margin = { top: 0, right: 0, bottom: 0, left: 0 };
 	export let mode: Mode = 'view';
 
 	export let output: HTMLOutputElement;
@@ -79,6 +81,13 @@
 	$: if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 
 	$: if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && spaceWidth !== undefined && $locale)
+		tick().then(() => {
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+		});
+
+	// Redraw when outputMargin changes — padding shifts every token, so connector
+	// endpoints need to be recomputed.
+	$: if (mounted && !loading && outputMargin)
 		tick().then(() => {
 			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 		});
@@ -121,9 +130,17 @@
 						const rectB1 = spanB1.getBoundingClientRect();
 						const rectB2 = spanB2.getBoundingClientRect();
 
-						let x1 = (rectA1.left + rectA2.right) / 2 - rectOutput.left;
+						// min/max instead of left/right ordering so RTL rows
+						// (where rectA1 is visually to the right of rectA2) still
+						// midpoint the *visual* span, not the gap between tokens.
+						const aLeft = Math.min(rectA1.left, rectA2.left);
+						const aRight = Math.max(rectA1.right, rectA2.right);
+						const bLeft = Math.min(rectB1.left, rectB2.left);
+						const bRight = Math.max(rectB1.right, rectB2.right);
+
+						let x1 = (aLeft + aRight) / 2 - rectOutput.left;
 						let y1 = getBottomEndpoint(sentences[j], spanA1, spanA2, rectOutput);
-						let x2 = (rectB1.left + rectB2.right) / 2 - rectOutput.left;
+						let x2 = (bLeft + bRight) / 2 - rectOutput.left;
 						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
 
 						const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
@@ -236,6 +253,72 @@
 	let draggingPosition = { x: 0, y: 0 };
 	let draggingOffset = { x: 0, y: 0 };
 	let draggers: HTMLDivElement[] = [];
+
+	// Dragging output margins from the canvas edge.
+	type MarginSide = keyof Margin;
+	let marginDrag: { side: MarginSide; startPos: number; startMargin: Margin } | null = null;
+	const MARGIN_MAX = 200;
+
+	const OPPOSITE: Record<MarginSide, MarginSide> = {
+		top: 'bottom',
+		bottom: 'top',
+		left: 'right',
+		right: 'left'
+	};
+
+	function clampMargin(v: number): number {
+		return Math.max(0, Math.min(MARGIN_MAX, Math.round(v)));
+	}
+
+	function startMarginDrag(side: MarginSide, e: PointerEvent) {
+		if (mode === 'edit' || modifying !== -1 || draggingIndex !== -1) return;
+		e.preventDefault();
+		e.stopPropagation();
+		const vertical = side === 'top' || side === 'bottom';
+		marginDrag = {
+			side,
+			startPos: vertical ? e.clientY : e.clientX,
+			// Snapshot all four sides so modifier-key adjustments (Alt mirrors
+			// to the opposite side, Shift drives all four) apply consistent
+			// deltas regardless of which side was grabbed.
+			startMargin: { ...outputMargin }
+		};
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+	}
+
+	function onMarginDragMove(e: PointerEvent) {
+		if (!marginDrag) return;
+		const { side, startPos, startMargin } = marginDrag;
+		const vertical = side === 'top' || side === 'bottom';
+		const current = vertical ? e.clientY : e.clientX;
+		let delta = current - startPos;
+		// Drag outward (away from the centre) to grow — top/left point outward
+		// toward smaller coordinates so their delta is flipped.
+		if (side === 'top' || side === 'left') delta = -delta;
+
+		const next: Margin = { ...startMargin };
+		if (e.shiftKey) {
+			// Shift = grow/shrink all four sides together.
+			next.top = clampMargin(startMargin.top + delta);
+			next.right = clampMargin(startMargin.right + delta);
+			next.bottom = clampMargin(startMargin.bottom + delta);
+			next.left = clampMargin(startMargin.left + delta);
+		} else if (e.altKey) {
+			// Alt = mirror to the opposite side (symmetric pair).
+			const opp = OPPOSITE[side];
+			next[side] = clampMargin(startMargin[side] + delta);
+			next[opp] = clampMargin(startMargin[opp] + delta);
+		} else {
+			next[side] = clampMargin(startMargin[side] + delta);
+		}
+		outputMargin = next;
+	}
+
+	function endMarginDrag(e: PointerEvent) {
+		if (!marginDrag) return;
+		(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+		marginDrag = null;
+	}
 
 	function dragstart(l: number, e: PointerEvent) {
 		draggingIndex = l;
@@ -387,7 +470,119 @@
 	class:bold={fontStyle === 'bold' || fontStyle === 'bold-italic'}
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
+	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	class:margin-adjusting={marginDrag !== null}
 >
+	<!-- Visual bands (pink tint + blueprint dimension annotation). Non-
+	     interactive — they only show when one of the blue edge strips is
+	     hovered or a drag is active, and all four sides reveal together. -->
+	<div class="margin-band margin-band-top" class:active={marginDrag?.side === 'top'} style:height={`${outputMargin.top}px`} aria-hidden="true">
+		{#if outputMargin.top >= 14}
+			<svg class="dim-svg" width="20" height={outputMargin.top}>
+				<line x1="10" y1="0" x2="10" y2={outputMargin.top} class="dim-line" />
+				<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
+				<polygon points={`6,${outputMargin.top - 6} 14,${outputMargin.top - 6} 10,${outputMargin.top}`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.top > 0}<span class="dim-label">{outputMargin.top}px</span>{/if}
+	</div>
+	<div class="margin-band margin-band-bottom" class:active={marginDrag?.side === 'bottom'} style:height={`${outputMargin.bottom}px`} aria-hidden="true">
+		{#if outputMargin.bottom >= 14}
+			<svg class="dim-svg" width="20" height={outputMargin.bottom}>
+				<line x1="10" y1="0" x2="10" y2={outputMargin.bottom} class="dim-line" />
+				<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
+				<polygon points={`6,${outputMargin.bottom - 6} 14,${outputMargin.bottom - 6} 10,${outputMargin.bottom}`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.bottom > 0}<span class="dim-label">{outputMargin.bottom}px</span>{/if}
+	</div>
+	<div class="margin-band margin-band-left" class:active={marginDrag?.side === 'left'} style:width={`${outputMargin.left}px`} aria-hidden="true">
+		{#if outputMargin.left >= 14}
+			<svg class="dim-svg" width={outputMargin.left} height="20">
+				<line x1="0" y1="10" x2={outputMargin.left} y2="10" class="dim-line" />
+				<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
+				<polygon points={`${outputMargin.left - 6},6 ${outputMargin.left - 6},14 ${outputMargin.left},10`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.left > 0}<span class="dim-label">{outputMargin.left}px</span>{/if}
+	</div>
+	<div class="margin-band margin-band-right" class:active={marginDrag?.side === 'right'} style:width={`${outputMargin.right}px`} aria-hidden="true">
+		{#if outputMargin.right >= 14}
+			<svg class="dim-svg" width={outputMargin.right} height="20">
+				<line x1="0" y1="10" x2={outputMargin.right} y2="10" class="dim-line" />
+				<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
+				<polygon points={`${outputMargin.right - 6},6 ${outputMargin.right - 6},14 ${outputMargin.right},10`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.right > 0}<span class="dim-label">{outputMargin.right}px</span>{/if}
+	</div>
+
+	<!-- Thin blue edge strips — the ONLY hover target. Hovering or dragging
+	     any one of these lights up all four bands and all four edges at
+	     once via :has() / .margin-adjusting on <output>. -->
+	{#if mode !== 'edit' && modifying === -1}
+		<div
+			class="margin-edge margin-edge-top"
+			class:active={marginDrag?.side === 'top'}
+			role="slider"
+			tabindex="-1"
+			aria-label={$LL.aria.marginTop()}
+			aria-valuenow={outputMargin.top}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`${$LL.aria.marginTop()}: ${outputMargin.top}px`}
+			on:pointerdown={(e) => startMarginDrag('top', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		></div>
+		<div
+			class="margin-edge margin-edge-bottom"
+			class:active={marginDrag?.side === 'bottom'}
+			role="slider"
+			tabindex="-1"
+			aria-label={$LL.aria.marginBottom()}
+			aria-valuenow={outputMargin.bottom}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`${$LL.aria.marginBottom()}: ${outputMargin.bottom}px`}
+			on:pointerdown={(e) => startMarginDrag('bottom', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		></div>
+		<div
+			class="margin-edge margin-edge-left"
+			class:active={marginDrag?.side === 'left'}
+			role="slider"
+			tabindex="-1"
+			aria-label={$LL.aria.marginLeft()}
+			aria-valuenow={outputMargin.left}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`${$LL.aria.marginLeft()}: ${outputMargin.left}px`}
+			on:pointerdown={(e) => startMarginDrag('left', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		></div>
+		<div
+			class="margin-edge margin-edge-right"
+			class:active={marginDrag?.side === 'right'}
+			role="slider"
+			tabindex="-1"
+			aria-label={$LL.aria.marginRight()}
+			aria-valuenow={outputMargin.right}
+			aria-valuemin="0"
+			aria-valuemax={MARGIN_MAX}
+			title={`${$LL.aria.marginRight()}: ${outputMargin.right}px`}
+			on:pointerdown={(e) => startMarginDrag('right', e)}
+			on:pointermove={onMarginDragMove}
+			on:pointerup={endMarginDrag}
+			on:pointercancel={endMarginDrag}
+		></div>
+	{/if}
+
 	{#if !loading}
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
@@ -700,14 +895,181 @@
 		column-gap: 1em;
 		row-gap: 0.65em;
 		width: fit-content;
-		/* Centers within the scrollable .output wrapper when content fits;
-		   when content overflows, the wrapper scrolls horizontally instead of
-		   pushing the page off-screen. */
-		margin-inline: auto;
+		/* No margin-inline:auto here — leaving it on <output> would bake a
+		   non-zero computed margin into the clone produced by dom-to-image /
+		   dom-to-svg, shifting exports off-centre to the right. Centring is
+		   handled by the .output-scroll wrapper instead. */
+		flex-shrink: 0;
 	}
 
 	svg {
 		pointer-events: none;
+	}
+
+	/* --- Direct margin manipulation -------------------------------------- */
+
+	/* Pink visual bands — one per side, cover the corresponding padding
+	   region, host the blueprint dimension annotation. Non-interactive
+	   (pointer-events: none) so the sentence area underneath stays
+	   accessible. Tint and dim fade in together when any .margin-edge
+	   strip below is hovered, or when a drag is active. */
+	.margin-band {
+		position: absolute;
+		background: rgb(228 67 175 / 0);
+		transition: background 140ms ease;
+		pointer-events: none;
+		z-index: 4;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.margin-band-top {
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.margin-band-bottom {
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.margin-band-left {
+		top: 0;
+		bottom: 0;
+		left: 0;
+	}
+
+	.margin-band-right {
+		top: 0;
+		bottom: 0;
+		right: 0;
+	}
+
+	output:has(.margin-edge:hover) .margin-band,
+	output.margin-adjusting .margin-band {
+		background: rgb(228 67 175 / 0.18);
+	}
+
+	/* Blue edge strips — the ONLY hover target. Thin 8px at the very outer
+	   edge, ns-resize / ew-resize cursor, pointer-capturing for drag. */
+	.margin-edge {
+		position: absolute;
+		background: transparent;
+		transition: background 140ms ease;
+		z-index: 5;
+		touch-action: none;
+	}
+
+	.margin-edge-top {
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 8px;
+		cursor: ns-resize;
+	}
+
+	.margin-edge-bottom {
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 8px;
+		cursor: ns-resize;
+	}
+
+	.margin-edge-left {
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 8px;
+		cursor: ew-resize;
+	}
+
+	.margin-edge-right {
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 8px;
+		cursor: ew-resize;
+	}
+
+	/* All four edges highlight together when any one is hovered, or when
+	   any side is being dragged. */
+	output:has(.margin-edge:hover) .margin-edge,
+	output.margin-adjusting .margin-edge {
+		background: rgb(46 91 255 / 0.5);
+	}
+
+	/* The actively-dragged side reads slightly darker. */
+	.margin-edge.active {
+		background: rgb(33 56 199 / 0.75);
+	}
+
+	/* Dim svg + label fade in alongside the band tint, all four together. */
+	.dim-svg,
+	.dim-label {
+		opacity: 0;
+		transition: opacity 140ms ease;
+		pointer-events: none;
+	}
+
+	output:has(.margin-edge:hover) .dim-svg,
+	output:has(.margin-edge:hover) .dim-label,
+	output.margin-adjusting .dim-svg,
+	output.margin-adjusting .dim-label {
+		opacity: 1;
+	}
+
+	.dim-svg {
+		display: block;
+		overflow: visible;
+	}
+
+	.dim-line {
+		stroke: rgb(33 56 199 / 0.7);
+		stroke-width: 1;
+		fill: none;
+	}
+
+	.dim-arrowhead {
+		fill: rgb(33 56 199 / 0.85);
+		stroke: none;
+	}
+
+	.dim-label {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 0.7rem;
+		font-weight: 600;
+		font-feature-settings:
+			'tnum' 1,
+			'lnum' 1;
+		letter-spacing: 0.01em;
+		color: rgb(20 36 130);
+		background: rgb(255 255 255 / 0.92);
+		padding: 0.05em 0.4em;
+		border-radius: 0.25em;
+		white-space: nowrap;
+		box-shadow: 0 0 0 1px rgb(33 56 199 / 0.15);
+	}
+
+	.margin-band.active .dim-line {
+		stroke: rgb(33 56 199);
+		stroke-width: 1.25;
+	}
+
+	.margin-band.active .dim-arrowhead {
+		fill: rgb(33 56 199);
+	}
+
+	.margin-band.active .dim-label {
+		background: rgb(33 56 199);
+		color: white;
+		box-shadow: 0 4px 14px rgb(15 23 42 / 0.18);
 	}
 
 	.edit-dialog {
@@ -949,6 +1311,23 @@
 		border-radius: 0.1em;
 		width: 1.5em;
 		height: 1.5em;
+		/* z-index keeps chrome above the margin bands / edges where they
+		   overlap, so a hovered sentence's controls win pointer events at
+		   the boundaries. */
+		position: relative;
+		z-index: 8;
+	}
+
+	/* Close the 1em grid gap around the chrome cells so dragger sits snug
+	   against the language tag and the action buttons sit snug against the
+	   sentence and each other. */
+	.dragger {
+		margin-inline-end: -0.65em;
+	}
+
+	.modify,
+	.delete {
+		margin-inline-start: -0.65em;
 	}
 
 	.action:hover {
@@ -983,7 +1362,7 @@
 
 	output.modifying-sentence .sentence:not(.modifying) > .tag,
 	output.modifying-sentence .sentence:not(.modifying) > .sentence-body,
-	output.modifying-sentence svg {
+	output.modifying-sentence > svg {
 		opacity: 0.3;
 	}
 
