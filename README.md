@@ -82,7 +82,7 @@ For a guided tour, click the **Help** button in the header.
 | Author | [@mkpoli](https://github.com/mkpoli) | [Dani Polani](https://github.com/dani-polani) / [tinygodsdev](https://github.com/tinygodsdev) | [Jounlai Cho](https://github.com/jounlai) / [Heuron Corp.](https://heuron.com/) |
 | First public release | Aug 2022 | Apr 2026 | Mar 2026 |
 | Repo created | 2022-08-23 | 2026-04-18 | 2026-03-12 |
-| License | none in repo (see "[A note on rights](#a-note-on-rights)") | MIT | MIT (README only — no `LICENSE` file in repo) |
+| License | MIT (pending [#71](https://github.com/mkpoli/word-order/pull/71)) | MIT | MIT (README only — no `LICENSE` file in repo) |
 | GitHub stars (May 2026) | 13 | 1 | 5 |
 | Tech stack | SvelteKit 2 · Svelte 4 · TS · Vite 5 · Vercel | SvelteKit · Vite 8 · Docker | Static HTML/JS · D3 · no build |
 | Build step required | ✅ Vite | ✅ Vite | ❌ static files |
