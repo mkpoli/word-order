@@ -427,8 +427,6 @@
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
 	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
-	style:--margin-left={`${outputMargin.left}px`}
-	style:--margin-right={`${outputMargin.right}px`}
 	class:margin-adjusting={marginDrag !== null}
 >
 	<!-- Visual bands (pink tint + blueprint dimension annotation). Non-
@@ -1235,32 +1233,21 @@
 		border-radius: 0.1em;
 		width: 1.5em;
 		height: 1.5em;
-		/* Editing chrome sits outside the diagram's padded "frame" so the
-		   margin band reads as pure framing. Each chrome cell keeps its grid
-		   row alignment but visually shifts onto the output's border edge:
-		   dragger goes left by the full left padding, modify/delete go right
-		   by the full right padding. z-index keeps them above margin
-		   overlays / handles / dimension annotations. */
+		/* z-index keeps chrome above the margin bands / edges where they
+		   overlap, so a hovered sentence's controls win pointer events at
+		   the boundaries. */
 		position: relative;
 		z-index: 8;
 	}
 
+	/* Close the 1em grid gap around the chrome cells so dragger sits snug
+	   against the language tag and the action buttons sit snug against the
+	   sentence and each other. */
 	.dragger {
-		left: calc(-1 * var(--margin-left, 0px));
+		margin-inline-end: -0.65em;
 	}
 
 	.modify,
-	.delete {
-		left: var(--margin-right, 0px);
-	}
-
-	/* Close the 1em grid gap on the right-hand chrome side so the action
-	   buttons sit snug against the sentence and each other. Pulls each
-	   right-hand cell most of a column-gap leftward. */
-	.modify {
-		margin-inline-start: -0.65em;
-	}
-
 	.delete {
 		margin-inline-start: -0.65em;
 	}
