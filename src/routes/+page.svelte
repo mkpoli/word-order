@@ -197,26 +197,37 @@
 		return [...lane.slice(0, word), v, v, ...lane.slice(word + 1)];
 	}
 
-	function buildEditedSentence(lang: string, words: string[]): Sentence {
+	function buildEditedSentence(lang: string, words: string[], above: string[][], below: string[][], showGloss: boolean): Sentence {
 		const tokens: SentenceToken[] = words.map((text, tokenIndex) => ({
 			text,
-			annotationsAbove: editingAnnotationsAbove.map((lane) => lane[tokenIndex] ?? ''),
-			annotationsBelow: editingAnnotationsBelow.map((lane) => lane[tokenIndex] ?? '')
+			annotationsAbove: above.map((lane) => lane[tokenIndex] ?? ''),
+			annotationsBelow: below.map((lane) => lane[tokenIndex] ?? '')
 		}));
 		return normalizeLanes({
 			lang,
 			tokens,
-			lanesAbove: editingAnnotationsAbove.length,
-			lanesBelow: editingAnnotationsBelow.length,
-			showGloss: editingShowGloss || editingAnnotationsAbove.length > 0 || editingAnnotationsBelow.length > 0
+			lanesAbove: above.length,
+			lanesBelow: below.length,
+			showGloss: showGloss || above.length > 0 || below.length > 0
 		});
 	}
 
+	// Pass editingAnnotations* explicitly so Svelte tracks them as reactive deps —
+	// if they were only read inside buildEditedSentence, nested mutations from the
+	// lane editor (annotationsAbove[i][j] = x) wouldn't re-trigger this block.
 	$: previewSentences =
 		modifying === -1
 			? sentences
 			: sentences.map((sentence, index) =>
-					index === modifying ? buildEditedSentence(sentence.lang, editingText.split(/[|]/u).filter(Boolean)) : sentence
+					index === modifying
+						? buildEditedSentence(
+								sentence.lang,
+								editingText.split(/[|]/u).filter(Boolean),
+								editingAnnotationsAbove,
+								editingAnnotationsBelow,
+								editingShowGloss
+							)
+						: sentence
 				);
 
 	function cancelUnchangedEdit() {

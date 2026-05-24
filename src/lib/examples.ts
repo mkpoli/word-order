@@ -23,6 +23,22 @@ function s(lang: string, tokens: string[], glosses: string[] = [], below: string
 	};
 }
 
+/** Multi-lane sentence helper. `above` and `below` are each an ordered list of
+ *  lanes (closest to the word first), where each lane is a per-token string[]. */
+function m(lang: string, tokens: string[], above: string[][] = [], below: string[][] = []): Sentence {
+	return {
+		lang,
+		lanesAbove: above.length,
+		lanesBelow: below.length,
+		showGloss: above.length > 0 || below.length > 0,
+		tokens: tokens.map((text, i) => ({
+			text,
+			annotationsAbove: above.map((lane) => lane[i] ?? ''),
+			annotationsBelow: below.map((lane) => lane[i] ?? '')
+		}))
+	};
+}
+
 export const EXAMPLES: Example[] = [
 	{
 		id: 'glass',
@@ -211,6 +227,38 @@ export const EXAMPLES: Example[] = [
 				['我', '读', '书', '。'],
 				['1SG', 'read', 'book', ''],
 				['wǒ', 'dú', 'shū', '']
+			),
+			s('en', ['I', ' ', 'read', ' ', 'a', ' ', 'book', '.'], ['1SG', '', 'read', '', 'INDF', '', 'book', ''])
+		],
+		equivalency: [
+			[[0], [0], [0]],
+			[[4], [1], [2]],
+			[[2], [2], [6]]
+		]
+	},
+	{
+		id: 'two-level-annotation',
+		name: 'Two-level annotation',
+		sentences: [
+			// JP: gloss + kana reading above the word, Hepburn romaji below.
+			m(
+				'ja',
+				['私', 'は', '本', 'を', '読む', '。'],
+				[
+					['1SG', 'TOP', 'book', 'ACC', 'read', ''],
+					['わたし', 'は', 'ほん', 'を', 'よむ', '']
+				],
+				[['watashi', 'wa', 'hon', 'o', 'yomu', '']]
+			),
+			// ZH: gloss above, Pinyin + IPA below.
+			m(
+				'zh-HanS',
+				['我', '读', '书', '。'],
+				[['1SG', 'read', 'book', '']],
+				[
+					['wǒ', 'dú', 'shū', ''],
+					['wɔ˨˩˦', 'tu˧˥', 'ʂu˥', '']
+				]
 			),
 			s('en', ['I', ' ', 'read', ' ', 'a', ' ', 'book', '.'], ['1SG', '', 'read', '', 'INDF', '', 'book', ''])
 		],
