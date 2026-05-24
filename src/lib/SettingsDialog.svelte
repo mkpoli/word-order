@@ -53,8 +53,6 @@
 				</button>
 			</header>
 
-			<p class="lede">{$LL.settings.tagline()}</p>
-
 			<div class="field">
 				<label for="settings-provider">{$LL.settings.provider()}</label>
 				<select id="settings-provider" value={$llmSettings.provider} on:change={onProviderChange}>
@@ -82,7 +80,6 @@
 						<option value={m}></option>
 					{/each}
 				</datalist>
-				<p class="field-hint">{$LL.settings.modelHint()}</p>
 			</div>
 
 			<div class="field">
@@ -165,13 +162,6 @@
 		background: rgb(24 33 61 / 0.08);
 	}
 
-	.lede {
-		font-size: 1.05em;
-		color: rgb(45 55 80);
-		margin: 0.6em 0 1em;
-		line-height: 1.5;
-	}
-
 	.field {
 		display: grid;
 		gap: 0.35em;
@@ -198,13 +188,6 @@
 	.field input:focus {
 		outline: 2px solid rgb(46 91 255 / 0.4);
 		outline-offset: -1px;
-	}
-
-	.field-hint {
-		font-size: 0.82em;
-		color: rgb(74 82 112);
-		margin: 0;
-		line-height: 1.4;
 	}
 
 	.key-row {

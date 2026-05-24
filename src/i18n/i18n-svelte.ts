@@ -45,7 +45,6 @@ const createLL = () => ({
 		glossEmpty: m.input_gloss_empty,
 		glossPlaceholder: m.input_gloss_placeholder,
 		translate: m.input_translate,
-		translateHint: m.input_translate_hint,
 		laneAbove: m.input_lane_above,
 		laneBelow: m.input_lane_below,
 		wordRow: m.input_word_row,
@@ -108,10 +107,8 @@ const createLL = () => ({
 	settings: {
 		title: m.settings_title,
 		close: m.settings_close,
-		tagline: m.settings_tagline,
 		provider: m.settings_provider,
 		model: m.settings_model,
-		modelHint: m.settings_model_hint,
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,

@@ -39,7 +39,6 @@
 	"input_gloss_empty": "Add words first to enter annotations.",
 	"input_gloss_placeholder": "Annotation",
 	"input_translate": "Translate",
-	"input_translate_hint": "Translate existing sentences to more languages (uses your API key).",
 	"input_lane_above": "Above {n}",
 	"input_lane_below": "Below {n}",
 	"input_word_row": "Word",
@@ -80,14 +79,12 @@
 	"about_links": "Links",
 	"settings_title": "Settings",
 	"settings_close": "Close",
-	"settings_tagline": "Bring your own API key. Translations and alignments are generated directly from your browser.",
 	"settings_provider": "Provider",
 	"settings_model": "Model",
-	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts.",
 	"settings_api_key": "API key",
 	"settings_show": "Show",
 	"settings_hide": "Hide",
-	"settings_privacy": "Your API key is stored only in this browser (localStorage) and sent directly to the chosen provider — never to our servers.",
+	"settings_privacy": "API key stays in this browser; sent only to the chosen provider.",
 	"translate_button": "Translate & align",
 	"translate_title": "Translate & align",
 	"translate_close": "Close",
@@ -105,5 +102,5 @@
 	"translate_remove_custom": "Remove",
 	"translate_cancel": "Cancel",
 	"translate_retry": "Retry",
-	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this."
+	"translate_cost_notice": "Uses your {provider} account — cheaper models are usually fine."
 }
