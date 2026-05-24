@@ -10,7 +10,7 @@ Paste sentences in any languages, click matching words across rows, and the tool
 
 ## Features
 
-- **Locale-aware tokenization** — CJK, Thai, and other unspaced scripts split correctly; use `|` to override.
+- **Locale-aware tokenization** — CJK, Thai, and other unspaced scripts are auto-segmented; use `|` to fix the cases where the segmenter guesses wrong.
 - **Curved connectors** with tunable curvature, line width, gap, and endpoint correction.
 - **Multi-tier annotations above and below each word** — gloss, IPA, morphemes, as many tiers as you need.
 - **Ruby annotations** (`<ruby>漢<rt>かん</rt></ruby>`) render inline in source text and in any annotation tier.
