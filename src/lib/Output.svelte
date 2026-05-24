@@ -438,6 +438,56 @@
 	<div class="margin-overlay left" style:width={`${outputMargin.left}px`} class:active={marginDrag?.side === 'left'} aria-hidden="true"></div>
 	<div class="margin-overlay right" style:width={`${outputMargin.right}px`} class:active={marginDrag?.side === 'right'} aria-hidden="true"></div>
 
+	<!-- Blueprint-style dimension annotations: line + arrowheads + centered value. -->
+	{#if outputMargin.top > 0}
+		<div class="margin-dim margin-dim-top" class:active={marginDrag?.side === 'top'} style:height={`${outputMargin.top}px`} aria-hidden="true">
+			{#if outputMargin.top >= 14}
+				<svg class="dim-svg" width="20" height={outputMargin.top}>
+					<line x1="10" y1="0" x2="10" y2={outputMargin.top} class="dim-line" />
+					<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
+					<polygon points={`6,${outputMargin.top - 6} 14,${outputMargin.top - 6} 10,${outputMargin.top}`} class="dim-arrowhead" />
+				</svg>
+			{/if}
+			<span class="dim-label">{outputMargin.top}px</span>
+		</div>
+	{/if}
+	{#if outputMargin.bottom > 0}
+		<div class="margin-dim margin-dim-bottom" class:active={marginDrag?.side === 'bottom'} style:height={`${outputMargin.bottom}px`} aria-hidden="true">
+			{#if outputMargin.bottom >= 14}
+				<svg class="dim-svg" width="20" height={outputMargin.bottom}>
+					<line x1="10" y1="0" x2="10" y2={outputMargin.bottom} class="dim-line" />
+					<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
+					<polygon points={`6,${outputMargin.bottom - 6} 14,${outputMargin.bottom - 6} 10,${outputMargin.bottom}`} class="dim-arrowhead" />
+				</svg>
+			{/if}
+			<span class="dim-label">{outputMargin.bottom}px</span>
+		</div>
+	{/if}
+	{#if outputMargin.left > 0}
+		<div class="margin-dim margin-dim-left" class:active={marginDrag?.side === 'left'} style:width={`${outputMargin.left}px`} aria-hidden="true">
+			{#if outputMargin.left >= 14}
+				<svg class="dim-svg" width={outputMargin.left} height="20">
+					<line x1="0" y1="10" x2={outputMargin.left} y2="10" class="dim-line" />
+					<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
+					<polygon points={`${outputMargin.left - 6},6 ${outputMargin.left - 6},14 ${outputMargin.left},10`} class="dim-arrowhead" />
+				</svg>
+			{/if}
+			<span class="dim-label">{outputMargin.left}px</span>
+		</div>
+	{/if}
+	{#if outputMargin.right > 0}
+		<div class="margin-dim margin-dim-right" class:active={marginDrag?.side === 'right'} style:width={`${outputMargin.right}px`} aria-hidden="true">
+			{#if outputMargin.right >= 14}
+				<svg class="dim-svg" width={outputMargin.right} height="20">
+					<line x1="0" y1="10" x2={outputMargin.right} y2="10" class="dim-line" />
+					<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
+					<polygon points={`${outputMargin.right - 6},6 ${outputMargin.right - 6},14 ${outputMargin.right},10`} class="dim-arrowhead" />
+				</svg>
+			{/if}
+			<span class="dim-label">{outputMargin.right}px</span>
+		</div>
+	{/if}
+
 	<!-- Drag handles, one per side. Disabled (display:none via CSS class)
 	     during sentence editing / reorder so they don't steal those gestures. -->
 	{#if mode !== 'edit' && modifying === -1}
@@ -456,7 +506,6 @@
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
 		>
-			{#if marginDrag?.side === 'top'}<span class="margin-badge">{outputMargin.top}px</span>{/if}
 		</div>
 		<div
 			class="margin-handle bottom"
@@ -473,7 +522,6 @@
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
 		>
-			{#if marginDrag?.side === 'bottom'}<span class="margin-badge">{outputMargin.bottom}px</span>{/if}
 		</div>
 		<div
 			class="margin-handle left"
@@ -490,7 +538,6 @@
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
 		>
-			{#if marginDrag?.side === 'left'}<span class="margin-badge">{outputMargin.left}px</span>{/if}
 		</div>
 		<div
 			class="margin-handle right"
@@ -507,7 +554,6 @@
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
 		>
-			{#if marginDrag?.side === 'right'}<span class="margin-badge">{outputMargin.right}px</span>{/if}
 		</div>
 	{/if}
 
@@ -891,41 +937,100 @@
 		background: rgb(46 91 255 / 0.5);
 	}
 
-	.margin-badge {
+	/* Blueprint-style dimension annotation: thin line, arrowheads at both
+	   ends, value centred. Lives in the corresponding padding band and
+	   fades in along with the margin handles on hover, becoming fully
+	   opaque while that side is being dragged. */
+	.margin-dim {
 		position: absolute;
-		background: rgb(33 56 199);
-		color: white;
-		font-size: 0.72rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		z-index: 7;
+		opacity: 0;
+		transition: opacity 140ms ease;
+	}
+
+	.margin-dim-top {
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.margin-dim-bottom {
+		bottom: 0;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.margin-dim-left {
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.margin-dim-right {
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	output:hover .margin-dim,
+	output.margin-adjusting .margin-dim,
+	.margin-dim.active {
+		opacity: 1;
+	}
+
+	.dim-svg {
+		display: block;
+		overflow: visible;
+	}
+
+	.dim-line {
+		stroke: rgb(33 56 199 / 0.7);
+		stroke-width: 1;
+		fill: none;
+	}
+
+	.dim-arrowhead {
+		fill: rgb(33 56 199 / 0.85);
+		stroke: none;
+	}
+
+	.dim-label {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 0.7rem;
 		font-weight: 600;
-		padding: 0.2em 0.55em;
+		font-feature-settings:
+			'tnum' 1,
+			'lnum' 1;
+		letter-spacing: 0.01em;
+		color: rgb(20 36 130);
+		background: rgb(255 255 255 / 0.92);
+		padding: 0.05em 0.4em;
 		border-radius: 0.25em;
 		white-space: nowrap;
-		pointer-events: none;
+		box-shadow: 0 0 0 1px rgb(33 56 199 / 0.15);
+	}
+
+	.margin-dim.active .dim-line,
+	output.margin-adjusting .margin-dim.active .dim-line {
+		stroke: rgb(33 56 199);
+		stroke-width: 1.25;
+	}
+
+	.margin-dim.active .dim-arrowhead {
+		fill: rgb(33 56 199);
+	}
+
+	.margin-dim.active .dim-label {
+		background: rgb(33 56 199);
+		color: white;
 		box-shadow: 0 4px 14px rgb(15 23 42 / 0.18);
-	}
-
-	.margin-handle.top .margin-badge {
-		top: calc(100% + 0.4em);
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
-	.margin-handle.bottom .margin-badge {
-		bottom: calc(100% + 0.4em);
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
-	.margin-handle.left .margin-badge {
-		left: calc(100% + 0.4em);
-		top: 50%;
-		transform: translateY(-50%);
-	}
-
-	.margin-handle.right .margin-badge {
-		right: calc(100% + 0.4em);
-		top: 50%;
-		transform: translateY(-50%);
 	}
 
 	.edit-dialog {
