@@ -94,7 +94,7 @@
 	"translate_cancel": "Annuler",
 	"input_translate": "Traduire",
 	"translate_retry": "Réessayer",
-	"translate_cost_notice": "Utilise votre compte {provider} — les modèles moins chers conviennent généralement.",
+	"translate_cost_notice": "Utilisez votre compte {provider} — les modèles moins chers conviennent généralement.",
 	"input_lane_above": "Au-dessus {n}",
 	"input_lane_below": "En dessous {n}",
 	"input_word_row": "Mot",
