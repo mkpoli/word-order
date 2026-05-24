@@ -83,5 +83,10 @@
 	"translate_open_settings": "Ayarları aç",
 	"translate_too_long": "Cümle çok uzun ({count} jeton; en çok {max}).",
 	"translate_dismiss_error": "Kapat",
-	"output_translate_row": "Diğer dillere çevir"
+	"menu_translate": "Çevir",
+	"translate_from_sources": "{count} cümleden: {langs}",
+	"translate_custom_placeholder": "Özel kod (örn. ko-Kore, en-US)",
+	"translate_add_custom": "Ekle",
+	"translate_remove_custom": "Kaldır",
+	"translate_cancel": "İptal"
 }

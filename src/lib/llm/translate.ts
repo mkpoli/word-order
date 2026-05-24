@@ -18,8 +18,13 @@ export async function translateAndAlign(
 	settings: LlmSettings = get(llmSettings),
 	signal?: AbortSignal
 ): Promise<TranslateResult> {
-	if (request.source.tokens.length > MAX_SOURCE_TOKENS) {
-		throw new LlmError(`Source sentence is too long (${request.source.tokens.length} tokens, max ${MAX_SOURCE_TOKENS}).`);
+	if (request.sources.length === 0) {
+		throw new LlmError('No source sentences.');
+	}
+	for (const [i, s] of request.sources.entries()) {
+		if (s.tokens.length > MAX_SOURCE_TOKENS) {
+			throw new LlmError(`Source sentence ${i + 1} (${s.lang}) is too long (${s.tokens.length} tokens, max ${MAX_SOURCE_TOKENS}).`);
+		}
 	}
 	if (request.targets.length === 0) {
 		throw new LlmError('No target languages selected.');

@@ -83,5 +83,10 @@
 	"translate_open_settings": "Abrir ajustes",
 	"translate_too_long": "Frase demasiado larga ({count} tokens; máx. {max}).",
 	"translate_dismiss_error": "Descartar",
-	"output_translate_row": "Traducir a otros idiomas"
+	"menu_translate": "Traducir",
+	"translate_from_sources": "desde {count} frases: {langs}",
+	"translate_custom_placeholder": "Código personalizado (p. ej. ko-Kore, en-US)",
+	"translate_add_custom": "Añadir",
+	"translate_remove_custom": "Quitar",
+	"translate_cancel": "Cancelar"
 }

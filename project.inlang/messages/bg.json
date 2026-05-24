@@ -78,5 +78,10 @@
 	"translate_open_settings": "Отвори настройките",
 	"translate_too_long": "Изречението е твърде дълго ({count} токена; макс. {max}).",
 	"translate_dismiss_error": "Затвори",
-	"output_translate_row": "Преведи на други езици"
+	"menu_translate": "Преведи",
+	"translate_from_sources": "от {count} изречения: {langs}",
+	"translate_custom_placeholder": "Собствен код (напр. ko-Kore, en-US)",
+	"translate_add_custom": "Добави",
+	"translate_remove_custom": "Премахни",
+	"translate_cancel": "Отказ"
 }

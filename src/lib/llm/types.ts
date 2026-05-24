@@ -1,11 +1,11 @@
 import type { ProviderId } from '$lib/settings';
 
 export type TranslateRequest = {
-	source: {
+	sources: Array<{
 		lang: string;
 		text: string;
 		tokens: string[];
-	};
+	}>;
 	targets: Array<{
 		lang: string;
 		endonym: string;

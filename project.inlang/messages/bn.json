@@ -83,5 +83,10 @@
 	"translate_open_settings": "সেটিংস খুলুন",
 	"translate_too_long": "বাক্যটি অনেক বড় ({count} টোকেন; সর্বাধিক {max})।",
 	"translate_dismiss_error": "বন্ধ করুন",
-	"output_translate_row": "অন্য ভাষায় অনুবাদ করুন"
+	"menu_translate": "অনুবাদ",
+	"translate_from_sources": "{count}টি বাক্য থেকে: {langs}",
+	"translate_custom_placeholder": "কাস্টম কোড (যেমন ko-Kore, en-US)",
+	"translate_add_custom": "যোগ করুন",
+	"translate_remove_custom": "সরান",
+	"translate_cancel": "বাতিল"
 }

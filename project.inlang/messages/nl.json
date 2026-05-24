@@ -83,5 +83,10 @@
 	"translate_open_settings": "Instellingen openen",
 	"translate_too_long": "Zin te lang ({count} tokens; max. {max}).",
 	"translate_dismiss_error": "Sluiten",
-	"output_translate_row": "Vertaal naar andere talen"
+	"menu_translate": "Vertalen",
+	"translate_from_sources": "vanuit {count} zinnen: {langs}",
+	"translate_custom_placeholder": "Eigen code (bv. ko-Kore, en-US)",
+	"translate_add_custom": "Toevoegen",
+	"translate_remove_custom": "Verwijderen",
+	"translate_cancel": "Annuleren"
 }

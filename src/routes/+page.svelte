@@ -28,7 +28,7 @@
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 	import { translateAndAlign } from '$lib/llm/translate';
-	import { getLocaleOption } from '$lib/lang';
+	import { getLocaleOptions } from '$lib/lang';
 
 	// const SENTENCES = [
 	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
@@ -101,7 +101,12 @@
 	let translateBusy = false;
 	let translateError = '';
 	let translatePopoverOpen = false;
-	let translatingSentenceIndex = -1;
+	let translateAbort: AbortController | null = null;
+	let translateStartedAt = 0;
+	let translateElapsedMs = 0;
+	let translateElapsedTimer: ReturnType<typeof setInterval> | null = null;
+
+	const TRANSLATE_TIMEOUT_MS = 120_000;
 
 	let mounted = false;
 	onMount(async () => {
@@ -242,21 +247,49 @@
 		await tick();
 	}
 
-	async function runTranslate(sourceIndex: number, targets: string[]): Promise<void> {
+	function stopTranslateTimer() {
+		if (translateElapsedTimer) {
+			clearInterval(translateElapsedTimer);
+			translateElapsedTimer = null;
+		}
+	}
+
+	function cancelTranslate() {
+		translateAbort?.abort();
+	}
+
+	async function runTranslate(targets: string[]): Promise<void> {
 		if (modifying !== -1) return;
-		if (sourceIndex < 0 || sourceIndex >= sentences.length) return;
+		if (sentences.length === 0) {
+			translateError = 'Add at least one sentence first.';
+			return;
+		}
 		translateError = '';
 		translateBusy = true;
+		translateStartedAt = Date.now();
+		translateElapsedMs = 0;
+		stopTranslateTimer();
+		translateElapsedTimer = setInterval(() => {
+			translateElapsedMs = Date.now() - translateStartedAt;
+		}, 250);
+
+		const controller = new AbortController();
+		translateAbort = controller;
+		const timeoutId = setTimeout(() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)), TRANSLATE_TIMEOUT_MS);
+
 		try {
-			const sourceSentence = sentences[sourceIndex];
-			const sourceWords = getSentenceWords(sourceSentence);
-			const result = await translateAndAlign({
-				source: { lang: sourceSentence.lang, text: sourceWords.join(''), tokens: sourceWords },
-				targets: targets.map((tag) => {
-					const opt = getLocaleOption(tag as never, $locale);
-					return { lang: tag, endonym: opt.endonym };
-				})
+			const sources = sentences.map((s) => {
+				const tokens = getSentenceWords(s);
+				return { lang: s.lang, text: tokens.join(''), tokens };
 			});
+			const result = await translateAndAlign(
+				{
+					sources,
+					targets: targets.map((tag) => ({ lang: tag, endonym: endonymFor(tag) }))
+				},
+				undefined,
+				controller.signal
+			);
 
 			const existingCount = sentences.length;
 			const newSentences = result.sentences;
@@ -273,14 +306,12 @@
 				equivalency[i] = [...equivalency[i], ...newSentences.map(() => [] as number[])];
 			}
 
-			// Append new alignment groups. The LLM emits groups in [source, target_1, ...] order;
-			// place source indices at `sourceIndex`, target indices at the appended positions,
-			// and pad everything else with [].
+			// Append new alignment groups. Groups come in [source_0...source_{S-1}, target_0...] order,
+			// matching the order we sent (and the order sentences are laid out post-append).
 			for (const group of result.groups) {
 				const row: number[][] = Array.from({ length: existingCount + newSentences.length }, () => [] as number[]);
-				row[sourceIndex] = group[0] ?? [];
-				for (let t = 0; t < newSentences.length; t++) {
-					row[existingCount + t] = group[1 + t] ?? [];
+				for (let k = 0; k < existingCount + newSentences.length; k++) {
+					row[k] = group[k] ?? [];
 				}
 				equivalency.push(row);
 			}
@@ -289,14 +320,25 @@
 			equivalency = equivalency;
 			mode = 'edit';
 			translatePopoverOpen = false;
-			translatingSentenceIndex = -1;
 
 			await tick();
 		} catch (err) {
-			translateError = err instanceof Error ? err.message : String(err);
+			translateError = controller.signal.aborted
+				? 'Cancelled.'
+				: err instanceof Error
+					? err.message
+					: String(err);
 		} finally {
+			clearTimeout(timeoutId);
+			stopTranslateTimer();
+			translateAbort = null;
 			translateBusy = false;
 		}
+	}
+
+	function endonymFor(tag: string): string {
+		const opt = getLocaleOptions($locale).find((o) => o.value === tag);
+		return opt?.endonym ?? tag;
 	}
 
 	function onconnect({ detail: { connected, connectedIndex } }: CustomEvent<{ connected: [number, number][]; connectedIndex: number }>) {
@@ -668,6 +710,19 @@
 			</button>
 		</div>
 	</div>
+	<button
+		class="about-button"
+		title={$LL.menu.translate()}
+		aria-label={$LL.menu.translate()}
+		on:click={() => {
+			translateError = '';
+			translatePopoverOpen = true;
+		}}
+		disabled={sentences.length === 0 || mode === 'edit'}
+	>
+		<iconify-icon icon="mdi:translate" />
+		{$LL.menu.translate()}
+	</button>
 	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
 		<iconify-icon icon="mdi:cog-outline" />
 		{$LL.menu.settings()}
@@ -685,18 +740,19 @@
 <SettingsDialog bind:open={settingsOpen} />
 <TranslatePopover
 	bind:open={translatePopoverOpen}
-	sourceLang={translatingSentenceIndex === -1 ? '' : (sentences[translatingSentenceIndex]?.lang ?? '')}
-	sourceTokenCount={translatingSentenceIndex === -1 ? 0 : (sentences[translatingSentenceIndex]?.tokens.length ?? 0)}
+	sourceLangs={sentences.map((s) => s.lang)}
+	sourceTokenCounts={sentences.map((s) => s.tokens.length)}
 	busy={translateBusy}
+	elapsedMs={translateElapsedMs}
 	errorMessage={translateError}
-	on:submit={({ detail }) => runTranslate(translatingSentenceIndex, detail.targets)}
+	on:submit={({ detail }) => runTranslate(detail.targets)}
+	on:cancel={cancelTranslate}
 	on:openSettings={() => {
 		translatePopoverOpen = false;
 		settingsOpen = true;
 	}}
 	on:close={() => {
 		translatePopoverOpen = false;
-		translatingSentenceIndex = -1;
 		translateError = '';
 	}}
 />
@@ -764,11 +820,6 @@
 						editingShowGloss = sentences[sentence].showGloss;
 						editingSelectionStart = -1;
 						editingSelectionEnd = -1;
-					}}
-					on:translate={({ detail: { sentence } }) => {
-						translatingSentenceIndex = sentence;
-						translateError = '';
-						translatePopoverOpen = true;
 					}}
 					on:merge={({ detail: { sentence, start, end } }) => {
 						const words = getSentenceWords(previewSentences[sentence]);

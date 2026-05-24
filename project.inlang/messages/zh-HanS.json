@@ -83,5 +83,10 @@
 	"translate_open_settings": "打开设置",
 	"translate_too_long": "句子过长（{count} 个词，上限 {max}）。",
 	"translate_dismiss_error": "关闭",
-	"output_translate_row": "翻译为其他语言"
+	"menu_translate": "翻译",
+	"translate_from_sources": "源自 {count} 个句子：{langs}",
+	"translate_custom_placeholder": "自定义代码（如 ko-Kore、en-US）",
+	"translate_add_custom": "添加",
+	"translate_remove_custom": "移除",
+	"translate_cancel": "取消"
 }

@@ -83,5 +83,10 @@
 	"translate_open_settings": "設定を開く",
 	"translate_too_long": "文が長すぎます ({count} トークン、上限 {max})。",
 	"translate_dismiss_error": "閉じる",
-	"output_translate_row": "他の言語に翻訳"
+	"menu_translate": "翻訳",
+	"translate_from_sources": "{count} 文から: {langs}",
+	"translate_custom_placeholder": "カスタムコード (例: ko-Kore, en-US)",
+	"translate_add_custom": "追加",
+	"translate_remove_custom": "削除",
+	"translate_cancel": "キャンセル"
 }
