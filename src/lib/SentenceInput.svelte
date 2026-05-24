@@ -255,7 +255,6 @@
 					<button
 						type="button"
 						class="secondary"
-						title={$LL.input.translateHint()}
 						on:click={() => dispatch('openTranslate')}
 						disabled={sentences.length === 0}
 					>
