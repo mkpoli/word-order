@@ -80,6 +80,7 @@ const createLL = () => ({
 		pdf: m.menu_pdf,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
+		settings: m.menu_settings,
 		examples: m.menu_examples
 	},
 	about: {
@@ -88,6 +89,30 @@ const createLL = () => ({
 		tagline: m.about_tagline,
 		credit: m.about_credit,
 		links: m.about_links
+	},
+	settings: {
+		title: m.settings_title,
+		close: m.settings_close,
+		tagline: m.settings_tagline,
+		provider: m.settings_provider,
+		model: m.settings_model,
+		apiKey: m.settings_api_key,
+		show: m.settings_show,
+		hide: m.settings_hide,
+		privacy: m.settings_privacy
+	},
+	translate: {
+		button: m.translate_button,
+		title: m.translate_title,
+		close: m.translate_close,
+		targets: m.translate_targets,
+		submit: m.translate_submit,
+		busy: m.translate_busy,
+		usingProvider: m.translate_using_provider,
+		noKey: m.translate_no_key,
+		openSettings: m.translate_open_settings,
+		tooLong: m.translate_too_long,
+		dismissError: m.translate_dismiss_error
 	}
 });
 

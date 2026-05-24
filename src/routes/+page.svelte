@@ -23,8 +23,11 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
+	import SettingsDialog from '$lib/SettingsDialog.svelte';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
+	import { translateAndAlign } from '$lib/llm/translate';
+	import { getLocaleOption } from '$lib/lang';
 
 	// const SENTENCES = [
 	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
@@ -92,7 +95,10 @@
 	let spaceWidth = 4;
 
 	let aboutOpen = false;
+	let settingsOpen = false;
 	let examplesOpen = false;
+	let translateBusy = false;
+	let translateError = '';
 
 	let mounted = false;
 	onMount(async () => {
@@ -231,6 +237,63 @@
 		equivalency = equivalency;
 
 		await tick();
+	}
+
+	async function ontranslate({
+		detail: { source, targets }
+	}: CustomEvent<{
+		source: { lang: string; words: string[]; glosses: string[]; showGloss: boolean };
+		targets: string[];
+	}>): Promise<void> {
+		if (modifying !== -1) return;
+		translateError = '';
+		translateBusy = true;
+		try {
+			const result = await translateAndAlign({
+				source: { lang: source.lang, text: source.words.join(''), tokens: source.words },
+				targets: targets.map((tag) => {
+					const opt = getLocaleOption(tag as never, $locale);
+					return { lang: tag, endonym: opt.endonym };
+				})
+			});
+
+			// Append source sentence first (reuses the same "Add" semantics as onsubmit).
+			const sourceSentence = createSentence(source.lang, source.words, source.glosses, source.showGloss);
+			const allNew = [sourceSentence, ...result.sentences];
+
+			// Append all new sentence rows.
+			for (const s of allNew) {
+				sentences.push(s);
+				color_map = [...color_map, new Array(s.tokens.length).fill(-1)];
+				word_spans = [...word_spans, new Array(s.tokens.length).fill(null)];
+			}
+
+			// Pad pre-existing equivalency groups with empty entries for each new sentence.
+			for (let i = 0; i < equivalency.length; i++) {
+				equivalency[i] = [...equivalency[i], ...allNew.map(() => [] as number[])];
+			}
+
+			// Append new alignment groups returned by the LLM. Each group already covers
+			// [source, target_1, ...]; pad the FRONT with empty entries for pre-existing sentences.
+			const preExistingCount = sentences.length - allNew.length;
+			for (const group of result.groups) {
+				const padded: number[][] = [...Array.from({ length: preExistingCount }, () => [] as number[]), ...group];
+				equivalency.push(padded);
+			}
+
+			sentences = sentences;
+			equivalency = equivalency;
+
+			editingText = '';
+			editingGlosses = [];
+			editingShowGloss = false;
+
+			await tick();
+		} catch (err) {
+			translateError = err instanceof Error ? err.message : String(err);
+		} finally {
+			translateBusy = false;
+		}
 	}
 
 	function onconnect({ detail: { connected, connectedIndex } }: CustomEvent<{ connected: [number, number][]; connectedIndex: number }>) {
@@ -602,6 +665,10 @@
 			</button>
 		</div>
 	</div>
+	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
+		<iconify-icon icon="mdi:cog-outline" />
+		{$LL.menu.settings()}
+	</button>
 	<button class="about-button" title={$LL.menu.about()} aria-label={$LL.menu.about()} on:click={() => (aboutOpen = true)}>
 		<iconify-icon icon="mdi:information-outline" />
 		{$LL.menu.about()}
@@ -612,6 +679,7 @@
 </header>
 
 <AboutDialog bind:open={aboutOpen} />
+<SettingsDialog bind:open={settingsOpen} />
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
@@ -710,12 +778,24 @@
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
 		<SentenceInput
 			on:submit={onsubmit}
+			on:translate={ontranslate}
+			on:openSettings={() => (settingsOpen = true)}
 			{modifying}
 			{sentences}
+			{translateBusy}
 			bind:text={editingText}
 			bind:glosses={editingGlosses}
 			bind:glossEnabled={editingShowGloss}
 		/>
+		{#if translateError}
+			<div class="translate-error" role="alert">
+				<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
+				<span>{translateError}</span>
+				<button type="button" aria-label={$LL.translate.dismissError()} on:click={() => (translateError = '')}>
+					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+				</button>
+			</div>
+		{/if}
 	</div>
 
 	<div class="params" class:editing-muted={modifying !== -1}>
@@ -1254,5 +1334,37 @@
 			flex: 0 1 16rem;
 			max-width: min(16rem, 100%);
 		}
+	}
+
+	.translate-error {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		margin: 0.6em 0 0;
+		padding: 0.6em 0.8em;
+		background: rgb(220 38 38 / 0.08);
+		border: 1px solid rgb(220 38 38 / 0.4);
+		color: rgb(140 24 24);
+		border-radius: 0.4em;
+		font-size: 0.92em;
+	}
+
+	.translate-error span {
+		flex: 1;
+		word-break: break-word;
+	}
+
+	.translate-error button {
+		appearance: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: inherit;
+		padding: 0.2em 0.35em;
+		border-radius: 0.3em;
+	}
+
+	.translate-error button:hover {
+		background: rgb(220 38 38 / 0.12);
 	}
 </style>
