@@ -30,32 +30,36 @@ Tokenisation rules (CRITICAL — read carefully):
 
 Glossing rules (the WHOLE POINT of glosses here is alignment — read this carefully):
 - "glosses" has EXACTLY the same length as "tokens". Whitespace and punctuation use "".
-- A gloss is a SHORT, BARE English lemma — lowercase, no morphology markers, no case suffixes, no Leipzig codes.
-- The SAME meaning across all target translations MUST use the EXACT same gloss string (string equality is how tokens get grouped into colour-aligned sets across rows). This is non-negotiable; it is the entire point of the glosses.
-- Prefer using the surface form of the corresponding English-source content word as the gloss when possible, lowercase (so "I can eat glass" → use "i", "can", "eat", "glass" on the matching target tokens). This anchors the new rows to the original parallel sentences.
+- A gloss is "<lemma>" OR "<lemma>.<MORPH1>[.<MORPH2>...]". The lemma is a short BARE lowercase English root word for the meaning; the optional dotted suffixes are Leipzig morphology features (ACC, DAT, NOM, 1SG, PST, NEG, etc.) when they are linguistically meaningful for that token. Leipzig suffixes are encouraged when they add real information; omit them otherwise.
 
-INCORRECT — these break alignment because the strings don't match across rows:
-  "me.DAT", "me.ACC", "me.OBJ", "me.PART"        → use just "me" in all of them
-  "can.1SG", "can.MOD"                            → just "can"
-  "eat.PST", "eat.MOD", "eat.INF"                 → just "eat"
-  "glass.ACC", "glass.PART", "glass.NOM"          → just "glass"
-  "hurt.CONN", "hurt.CONNEG", "hurt.PASS"         → just "hurt"
-  "and.NEG"                                       → use "and" on the conjunction token, "not" on the separate negation token
-  "i.TOP-i.TOP", "1SG"                            → just "i"
-  Standalone morphology labels (1SG, PST, NEG, COP, AUX, TOP, DECL, PART, ACC, DAT...)  → omit; glosses are MEANINGS, not features
+ALIGNMENT INVARIANT (non-negotiable): the LEMMA — i.e. everything BEFORE the first "." or "-" in the gloss string — MUST be IDENTICAL across all sentences for the same meaning. Tokens are grouped into one colour by comparing lemmas, so "me", "me.DAT" and "me.ACC" all align with each other, but "me" and "mir" do NOT. Reuse the same lemma string everywhere a meaning recurs.
 
-CORRECT worked example. Given parallel sources "I can eat glass." / "Ich kann Glas essen." / "Mi povas manĝi vitron.":
-  English   gloss inventory: i, can, eat, glass
+Prefer the lowercase form of the corresponding English-source content word as the lemma when possible (so for "I can eat glass" → lemma "i", "can", "eat", "glass"). This anchors the new rows to the original parallel sentences.
+
+CORRECT — Leipzig morphology is fine as long as the lemma matches across rows:
+  German "mir"     → "me.DAT"   (lemma "me")
+  Esperanto "min"  → "me.ACC"   (lemma "me")
+  Finnish "minua"  → "me.PART"  (lemma "me")
+  Korean "나를"     → "me.ACC"   (lemma "me")
+  → all four align together because the lemma is "me" in every case.
+
+INCORRECT — these break alignment because the LEMMAS differ across rows:
+  German "mir"  → "to_me"      while Esperanto "min" → "me"       (lemmas "to_me" ≠ "me")
+  Finnish "Voin" → "can.1SG"   while Italian "Posso" → "be_able.1SG"
+  Korean "나는" → "i.TOP-i.TOP" (use just "i" or "i.TOP" — no duplicated chunk after "-")
+  Standalone morphology labels with no lemma ("1SG", "NEG", "PART") → invalid; a gloss MUST start with a lemma.
+
+WORKED EXAMPLE. Parallel sources "I can eat glass." / "Ich kann Glas essen." / "Mi povas manĝi vitron." with extra targets Finnish + Korean:
   German    tokens: ["Ich"," ","kann"," ","Glas"," ","essen","."]
             glosses: ["i","","can","","glass","","eat",""]
   Esperanto tokens: ["Mi"," ","povas"," ","manĝi"," ","vitron","."]
-            glosses: ["i","","can","","eat","","glass",""]
+            glosses: ["i","","can","","eat","","glass.ACC",""]
   Finnish   tokens: ["Voin"," ","syödä"," ","lasia","."]
-            glosses: ["can","","eat","","glass",""]   (Finnish "Voin" packs "i" + "can" — gloss the dominant meaning, the verb)
+            glosses: ["can.1SG","","eat","","glass.PART",""]   (Finnish "Voin" packs "i"+"can"; gloss the verb meaning)
   Korean    tokens: ["나는"," ","유리를"," ","먹을"," ","수"," ","있다","."]
-            glosses: ["i","","glass","","eat","","can","","can",""]  (split-verb auxiliary — both tokens get "can")
+            glosses: ["i.TOP","","glass.ACC","","eat.MOD","","can","","can",""]
 
-When a single target token packs several meanings (Turkish "yiyebilirim" = eat-can-1SG, Korean "나는" = i-TOP), pick the ONE bare lemma that best captures its primary content meaning. Do not combine glosses with "." or "-".
+When a single target token packs several meanings (Turkish "yiyebilirim" = eat-can-1SG, Korean "나는" = i-TOP), pick ONE lemma capturing its primary content meaning, optionally followed by Leipzig suffixes. Do not combine multiple lemmas with "." or "-".
 
 - One translation entry per requested target, in the SAME ORDER as the request. Do NOT re-emit the source sentences.
 
