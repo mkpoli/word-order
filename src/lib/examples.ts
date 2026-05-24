@@ -7,11 +7,35 @@ export type Example = {
 	equivalency: number[][][];
 };
 
-function s(lang: string, tokens: string[], glosses: string[] = []): Sentence {
+function s(lang: string, tokens: string[], glosses: string[] = [], below: string[] = []): Sentence {
+	const lanesAbove = glosses.some(Boolean) ? 1 : 0;
+	const lanesBelow = below.some(Boolean) ? 1 : 0;
 	return {
 		lang,
-		showGloss: glosses.some(Boolean),
-		tokens: tokens.map((text, i) => ({ text, gloss: glosses[i] ?? '' }))
+		lanesAbove,
+		lanesBelow,
+		showGloss: lanesAbove > 0 || lanesBelow > 0,
+		tokens: tokens.map((text, i) => ({
+			text,
+			annotationsAbove: lanesAbove ? [glosses[i] ?? ''] : [],
+			annotationsBelow: lanesBelow ? [below[i] ?? ''] : []
+		}))
+	};
+}
+
+/** Multi-lane sentence helper. `above` and `below` are each an ordered list of
+ *  lanes (closest to the word first), where each lane is a per-token string[]. */
+function m(lang: string, tokens: string[], above: string[][] = [], below: string[][] = []): Sentence {
+	return {
+		lang,
+		lanesAbove: above.length,
+		lanesBelow: below.length,
+		showGloss: above.length > 0 || below.length > 0,
+		tokens: tokens.map((text, i) => ({
+			text,
+			annotationsAbove: above.map((lane) => lane[i] ?? ''),
+			annotationsBelow: below.map((lane) => lane[i] ?? '')
+		}))
 	};
 }
 
@@ -186,6 +210,65 @@ export const EXAMPLES: Example[] = [
 			[[4], [4], [4], [4], [4]], // 3
 			[[6], [6], [6], [6], [6]], // 4
 			[[8], [8], [8], [8], [8]] // 5
+		]
+	},
+	{
+		id: 'romanization-above-below',
+		name: 'Romanization + gloss',
+		sentences: [
+			s(
+				'ja',
+				['私', 'は', '本', 'を', '読む', '。'],
+				['1SG', 'TOP', 'book', 'ACC', 'read', ''],
+				['watashi', 'wa', 'hon', 'o', 'yomu', '']
+			),
+			s(
+				'zh-HanS',
+				['我', '读', '书', '。'],
+				['1SG', 'read', 'book', ''],
+				['wǒ', 'dú', 'shū', '']
+			),
+			s('en', ['I', ' ', 'read', ' ', 'a', ' ', 'book', '.'], ['1SG', '', 'read', '', 'INDF', '', 'book', ''])
+		],
+		equivalency: [
+			[[0], [0], [0]],
+			[[4], [1], [2]],
+			[[2], [2], [6]]
+		]
+	},
+	{
+		id: 'multi-line-annotation',
+		name: 'Multi-line annotation',
+		sentences: [
+			// JP: kana + gloss above; romaji + IPA below. Four annotation lanes total.
+			m(
+				'ja',
+				['私', 'は', '本', 'を', '読む', '。'],
+				[
+					['わたし', 'は', 'ほん', 'を', 'よむ', ''],
+					['1SG', 'TOP', 'book', 'ACC', 'read', '']
+				],
+				[
+					['watashi', 'wa', 'hon', 'o', 'yomu', ''],
+					['ɰa̠ta̠ɕi', 'ɰa̠', 'ho̞ɴ', 'o̞', 'jo̞mɯ', '']
+				]
+			),
+			// ZH: gloss above; Pinyin + IPA below.
+			m(
+				'zh-HanS',
+				['我', '读', '书', '。'],
+				[['1SG', 'read', 'book', '']],
+				[
+					['wǒ', 'dú', 'shū', ''],
+					['wɔ˨˩˦', 'tu˧˥', 'ʂu˥', '']
+				]
+			),
+			s('en', ['I', ' ', 'read', ' ', 'a', ' ', 'book', '.'], ['1SG', '', 'read', '', 'INDF', '', 'book', ''])
+		],
+		equivalency: [
+			[[0], [0], [0]],
+			[[4], [1], [2]],
+			[[2], [2], [6]]
 		]
 	},
 	{
