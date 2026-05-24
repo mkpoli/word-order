@@ -60,6 +60,12 @@ const createLL = () => ({
 	ui: {
 		selected: m.ui_selected
 	},
+	aria: {
+		marginTop: m.aria_margin_top,
+		marginBottom: m.aria_margin_bottom,
+		marginLeft: m.aria_margin_left,
+		marginRight: m.aria_margin_right
+	},
 	dialog: {
 		editing: m.dialog_editing,
 		confirm: m.dialog_confirm,
