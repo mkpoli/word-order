@@ -92,5 +92,6 @@
 	"input_translate": "Traduire",
 	"input_translate_hint": "Traduire les phrases existantes vers d'autres langues (utilise votre clé API).",
 	"translate_retry": "Réessayer",
-	"translate_cost_notice": "Chaque requête est facturée sur votre propre compte {provider}. Les modèles moins chers conviennent généralement."
+	"translate_cost_notice": "Chaque requête est facturée sur votre propre compte {provider}. Les modèles moins chers conviennent généralement.",
+	"settings_model_hint": "Choisissez une suggestion ou saisissez n'importe quel ID de modèle accepté par le fournisseur."
 }

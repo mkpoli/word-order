@@ -92,5 +92,6 @@
 	"input_translate": "Traducir",
 	"input_translate_hint": "Traducir las frases existentes a más idiomas (usa su clave API).",
 	"translate_retry": "Reintentar",
-	"translate_cost_notice": "Cada solicitud se cobra a su propia cuenta de {provider}. Los modelos económicos suelen ser suficientes."
+	"translate_cost_notice": "Cada solicitud se cobra a su propia cuenta de {provider}. Los modelos económicos suelen ser suficientes.",
+	"settings_model_hint": "Elija una sugerencia o escriba cualquier ID de modelo que acepte el proveedor."
 }

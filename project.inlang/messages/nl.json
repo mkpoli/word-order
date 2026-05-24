@@ -92,5 +92,6 @@
 	"input_translate": "Vertalen",
 	"input_translate_hint": "Vertaal bestaande zinnen naar meer talen (gebruikt je API-sleutel).",
 	"translate_retry": "Opnieuw",
-	"translate_cost_notice": "Elke aanvraag wordt op je eigen {provider}-account in rekening gebracht. Goedkopere modellen volstaan meestal."
+	"translate_cost_notice": "Elke aanvraag wordt op je eigen {provider}-account in rekening gebracht. Goedkopere modellen volstaan meestal.",
+	"settings_model_hint": "Kies een suggestie of typ een willekeurige model-ID die de aanbieder accepteert."
 }

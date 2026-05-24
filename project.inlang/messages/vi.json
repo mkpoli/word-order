@@ -92,5 +92,6 @@
 	"input_translate": "Dịch",
 	"input_translate_hint": "Dịch các câu hiện có sang nhiều ngôn ngữ khác (dùng khóa API của bạn).",
 	"translate_retry": "Thử lại",
-	"translate_cost_notice": "Mỗi yêu cầu được tính phí vào tài khoản {provider} của bạn. Các mô hình rẻ thường đủ dùng."
+	"translate_cost_notice": "Mỗi yêu cầu được tính phí vào tài khoản {provider} của bạn. Các mô hình rẻ thường đủ dùng.",
+	"settings_model_hint": "Chọn một gợi ý hoặc nhập bất kỳ ID mô hình nào nhà cung cấp chấp nhận."
 }

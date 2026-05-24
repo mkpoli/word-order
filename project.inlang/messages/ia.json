@@ -92,5 +92,6 @@
 	"input_translate": "Traducer",
 	"input_translate_hint": "Traducer le phrases existente a plus linguas (usa tu clave API).",
 	"translate_retry": "Retentar",
-	"translate_cost_notice": "Cata requesta es facturate a tu proprie conto {provider}. Le modellos plus economic usualmente suffice."
+	"translate_cost_notice": "Cata requesta es facturate a tu proprie conto {provider}. Le modellos plus economic usualmente suffice.",
+	"settings_model_hint": "Selige un suggestion o scribe qualcunque ID de modello que le provisor accepta."
 }

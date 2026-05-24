@@ -4,8 +4,23 @@ import { RESPONSE_JSON_SCHEMA, SYSTEM_PROMPT, buildUserPrompt } from '../prompt'
 export const openai: LlmProvider = {
 	id: 'openai',
 	label: 'OpenAI',
-	models: ['gpt-5-nano', 'gpt-5-mini', 'gpt-5', 'gpt-4o-mini', 'gpt-4o'],
-	defaultModel: 'gpt-5-nano',
+	models: [
+		'gpt-5.5',
+		'gpt-5.5-pro',
+		'gpt-5.4',
+		'gpt-5.4-mini',
+		'gpt-5.4-nano',
+		'gpt-5.4-pro',
+		'gpt-5',
+		'gpt-5-mini',
+		'gpt-5-nano',
+		'gpt-4.1',
+		'gpt-4.1-mini',
+		'gpt-4.1-nano',
+		'gpt-4o',
+		'gpt-4o-mini'
+	],
+	defaultModel: 'gpt-5-mini',
 	keyHint: 'sk-…',
 	async call(request, { apiKey, model, signal }) {
 		const response = await fetch('https://api.openai.com/v1/chat/completions', {

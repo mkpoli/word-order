@@ -99,6 +99,7 @@ const createLL = () => ({
 		tagline: m.settings_tagline,
 		provider: m.settings_provider,
 		model: m.settings_model,
+		modelHint: m.settings_model_hint,
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,

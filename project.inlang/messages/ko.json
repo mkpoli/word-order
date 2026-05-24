@@ -92,5 +92,6 @@
 	"input_translate": "번역",
 	"input_translate_hint": "기존 문장을 더 많은 언어로 번역합니다 (사용자 API 키 사용).",
 	"translate_retry": "다시 시도",
-	"translate_cost_notice": "요청마다 사용자 {provider} 계정에 비용이 청구됩니다. 저렴한 모델로도 충분한 경우가 많습니다."
+	"translate_cost_notice": "요청마다 사용자 {provider} 계정에 비용이 청구됩니다. 저렴한 모델로도 충분한 경우가 많습니다.",
+	"settings_model_hint": "제안 중에서 선택하거나, 공급자가 허용하는 모델 ID를 직접 입력할 수 있습니다."
 }

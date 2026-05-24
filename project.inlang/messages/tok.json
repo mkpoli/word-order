@@ -92,5 +92,6 @@
 	"input_translate": "Translate",
 	"input_translate_hint": "Translate existing sentences to more languages (uses your API key).",
 	"translate_retry": "Retry",
-	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this."
+	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this.",
+	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts."
 }

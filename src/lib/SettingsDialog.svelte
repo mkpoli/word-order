@@ -30,7 +30,7 @@
 	}
 
 	function onModelChange(e: Event) {
-		llmSettings.setModel((e.target as HTMLSelectElement).value);
+		llmSettings.setModel((e.target as HTMLInputElement | HTMLSelectElement).value);
 	}
 
 	function onKeyInput(e: Event) {
@@ -66,11 +66,23 @@
 
 			<div class="field">
 				<label for="settings-model">{$LL.settings.model()}</label>
-				<select id="settings-model" value={currentModel} on:change={onModelChange}>
+				<input
+					id="settings-model"
+					type="text"
+					list="settings-model-options"
+					placeholder={provider.defaultModel}
+					value={currentModel}
+					on:input={onModelChange}
+					on:change={onModelChange}
+					autocomplete="off"
+					spellcheck="false"
+				/>
+				<datalist id="settings-model-options">
 					{#each provider.models as m}
-						<option value={m}>{m}</option>
+						<option value={m}></option>
 					{/each}
-				</select>
+				</datalist>
+				<p class="field-hint">{$LL.settings.modelHint()}</p>
 			</div>
 
 			<div class="field">
@@ -186,6 +198,13 @@
 	.field input:focus {
 		outline: 2px solid rgb(46 91 255 / 0.4);
 		outline-offset: -1px;
+	}
+
+	.field-hint {
+		font-size: 0.82em;
+		color: rgb(74 82 112);
+		margin: 0;
+		line-height: 1.4;
 	}
 
 	.key-row {

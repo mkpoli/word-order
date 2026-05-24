@@ -92,5 +92,6 @@
 	"input_translate": "Übersetzen",
 	"input_translate_hint": "Vorhandene Sätze in weitere Sprachen übersetzen (verwendet deinen API-Schlüssel).",
 	"translate_retry": "Wiederholen",
-	"translate_cost_notice": "Jede Anfrage wird über dein eigenes {provider}-Konto abgerechnet. Günstigere Modelle reichen meist aus."
+	"translate_cost_notice": "Jede Anfrage wird über dein eigenes {provider}-Konto abgerechnet. Günstigere Modelle reichen meist aus.",
+	"settings_model_hint": "Wähle einen Vorschlag oder gib eine beliebige vom Anbieter akzeptierte Modell-ID ein."
 }

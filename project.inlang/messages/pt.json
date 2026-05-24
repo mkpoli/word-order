@@ -92,5 +92,6 @@
 	"input_translate": "Traduzir",
 	"input_translate_hint": "Traduzir as frases existentes para mais idiomas (usa sua chave de API).",
 	"translate_retry": "Tentar novamente",
-	"translate_cost_notice": "Cada solicitação é cobrada na sua própria conta {provider}. Modelos mais baratos costumam bastar."
+	"translate_cost_notice": "Cada solicitação é cobrada na sua própria conta {provider}. Modelos mais baratos costumam bastar.",
+	"settings_model_hint": "Escolha uma sugestão ou digite qualquer ID de modelo que o provedor aceite."
 }

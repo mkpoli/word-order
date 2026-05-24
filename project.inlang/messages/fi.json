@@ -87,5 +87,6 @@
 	"input_translate": "Käännä",
 	"input_translate_hint": "Käännä olemassa olevat lauseet muille kielille (käyttää API-avaintasi).",
 	"translate_retry": "Yritä uudelleen",
-	"translate_cost_notice": "Jokainen pyyntö veloitetaan omalta {provider}-tililtäsi. Halvemmat mallit riittävät yleensä."
+	"translate_cost_notice": "Jokainen pyyntö veloitetaan omalta {provider}-tililtäsi. Halvemmat mallit riittävät yleensä.",
+	"settings_model_hint": "Valitse ehdotuksista tai kirjoita mikä tahansa tarjoajan hyväksymä mallin ID."
 }

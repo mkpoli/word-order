@@ -92,5 +92,6 @@
 	"input_translate": "Traduki",
 	"input_translate_hint": "Traduki ekzistantajn frazojn al pliaj lingvoj (uzas vian API-ŝlosilon).",
 	"translate_retry": "Reprovi",
-	"translate_cost_notice": "Ĉiu peto estas fakturita al via propra {provider}-konto. Pli malmultekostaj modeloj kutime sufiĉas."
+	"translate_cost_notice": "Ĉiu peto estas fakturita al via propra {provider}-konto. Pli malmultekostaj modeloj kutime sufiĉas.",
+	"settings_model_hint": "Elektu sugeston aŭ tajpu ajnan modelan ID, kiun la provizanto akceptas."
 }
