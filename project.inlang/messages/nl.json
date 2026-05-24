@@ -34,9 +34,9 @@
 	"input_add": "Toevoegen",
 	"input_modify": "Wijzigen",
 	"input_guidance": "Woorden worden automatisch gesplitst met taalspecifieke segmentatie wanneer die beschikbaar is, anders op spaties en leestekens. Gebruik {delimiter} voor fijnere controle, bijvoorbeeld {example}",
-	"input_gloss": "Interlineaire glos",
-	"input_gloss_empty": "Voeg eerst woorden toe om glossen in te voeren.",
-	"input_gloss_placeholder": "Glos",
+	"input_gloss": "Annotaties",
+	"input_gloss_empty": "Voeg eerst woorden toe om annotaties in te voeren.",
+	"input_gloss_placeholder": "Annotatie",
 	"token_editor_tokens": "Tokens",
 	"token_editor_merge_selected": "Selectie samenvoegen",
 	"token_editor_split_at_boundary": "Token op deze grens splitsen",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Vertaal bestaande zinnen naar meer talen (gebruikt je API-sleutel).",
 	"translate_retry": "Opnieuw",
 	"translate_cost_notice": "Elke aanvraag wordt op je eigen {provider}-account in rekening gebracht. Goedkopere modellen volstaan meestal.",
-	"settings_model_hint": "Kies een suggestie of typ een willekeurige model-ID die de aanbieder accepteert."
+	"settings_model_hint": "Kies een suggestie of typ een willekeurige model-ID die de aanbieder accepteert.",
+	"input_lane_above": "Boven {n}",
+	"input_lane_below": "Onder {n}",
+	"input_word_row": "Woord",
+	"input_add_lane_above": "Regel boven toevoegen",
+	"input_add_lane_below": "Regel onder toevoegen",
+	"input_remove_lane": "Regel verwijderen"
 }

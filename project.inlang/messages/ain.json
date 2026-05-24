@@ -34,9 +34,9 @@
 	"input_add": "O",
 	"input_modify": "Nuye",
 	"input_guidance": "itak eramuan kikay an yakun ani wa isam yakun ohap aytaksay’usarayep itakpo kosiusaraye. {delimiter} a=eywanke wa na nokanno a=usaraye easkay. {example} neno ene an hi ne.",
-	"input_gloss": "Itak uturke ta a=euepeker pe",
-	"input_gloss_empty": "Itakpo a=o yak easir uepekerpe a=o easkay ruwe ne.",
-	"input_gloss_placeholder": "Uepekerpe",
+	"input_gloss": "Annotations",
+	"input_gloss_empty": "Add words first to enter annotations.",
+	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "Itakpo",
 	"token_editor_merge_selected": "A=numke p kote",
 	"token_editor_split_at_boundary": "Teta usaraye",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Translate existing sentences to more languages (uses your API key).",
 	"translate_retry": "Retry",
 	"translate_cost_notice": "Each request bills your own {provider} account. Cheaper models are usually fine for this.",
-	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts."
+	"settings_model_hint": "Pick a suggestion or type any model ID the provider accepts.",
+	"input_lane_above": "Above {n}",
+	"input_lane_below": "Below {n}",
+	"input_word_row": "Word",
+	"input_add_lane_above": "Add line above",
+	"input_add_lane_below": "Add line below",
+	"input_remove_lane": "Remove line"
 }

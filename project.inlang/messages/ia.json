@@ -34,9 +34,9 @@
 	"input_add": "Adder",
 	"input_modify": "Modificar",
 	"input_guidance": "Le parolas es dividite automaticamente con segmentation sensibile al lingua quando disponibile, o per spatios e punctuation como reserva. Usa {delimiter} pro un controlo plus precise, per exemplo {example}",
-	"input_gloss": "Glossa interlineari",
-	"input_gloss_empty": "Adde primo parolas pro inserer glossas.",
-	"input_gloss_placeholder": "Glossa",
+	"input_gloss": "Annotationes",
+	"input_gloss_empty": "Adde parolas primo pro entrar annotationes.",
+	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "Tokens",
 	"token_editor_merge_selected": "Unir le selection",
 	"token_editor_split_at_boundary": "Divider le token a iste limite",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Traducer le phrases existente a plus linguas (usa tu clave API).",
 	"translate_retry": "Retentar",
 	"translate_cost_notice": "Cata requesta es facturate a tu proprie conto {provider}. Le modellos plus economic usualmente suffice.",
-	"settings_model_hint": "Selige un suggestion o scribe qualcunque ID de modello que le provisor accepta."
+	"settings_model_hint": "Selige un suggestion o scribe qualcunque ID de modello que le provisor accepta.",
+	"input_lane_above": "Supra {n}",
+	"input_lane_below": "Infra {n}",
+	"input_word_row": "Parola",
+	"input_add_lane_above": "Adder linea supra",
+	"input_add_lane_below": "Adder linea infra",
+	"input_remove_lane": "Remover linea"
 }

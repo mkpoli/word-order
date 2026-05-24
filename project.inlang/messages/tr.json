@@ -34,9 +34,9 @@
 	"input_add": "Ekle",
 	"input_modify": "Değiştir",
 	"input_guidance": "Sözcükler, mümkün olduğunda dile duyarlı bölümleme ile otomatik ayrılır; değilse boşluklar ve noktalama kullanılır. Daha ince denetim için {delimiter} kullanın, örneğin {example}",
-	"input_gloss": "Satir arasi cozumleme",
-	"input_gloss_empty": "Cozumlemeleri girmek icin once sozcuk ekleyin.",
-	"input_gloss_placeholder": "Cozumleme",
+	"input_gloss": "Notlar",
+	"input_gloss_empty": "Not girmek için önce sözcükleri ekleyin.",
+	"input_gloss_placeholder": "Not",
 	"token_editor_tokens": "Parçalar",
 	"token_editor_merge_selected": "Seçilenleri birleştir",
 	"token_editor_split_at_boundary": "Parçayı bu sınırda böl",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Mevcut cümleleri daha fazla dile çevirin (kendi API anahtarınızı kullanır).",
 	"translate_retry": "Tekrar dene",
 	"translate_cost_notice": "Her istek kendi {provider} hesabınızdan ücretlendirilir. Daha ucuz modeller genelde yeterlidir.",
-	"settings_model_hint": "Bir öneri seçin veya sağlayıcının kabul ettiği herhangi bir model kimliğini yazın."
+	"settings_model_hint": "Bir öneri seçin veya sağlayıcının kabul ettiği herhangi bir model kimliğini yazın.",
+	"input_lane_above": "Üstte {n}",
+	"input_lane_below": "Altta {n}",
+	"input_word_row": "Sözcük",
+	"input_add_lane_above": "Üste satır ekle",
+	"input_add_lane_below": "Alta satır ekle",
+	"input_remove_lane": "Satırı kaldır"
 }

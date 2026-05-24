@@ -34,7 +34,7 @@
 	"input_add": "추가",
 	"input_modify": "수정",
 	"input_guidance": "단어는 지원되는 환경에서는 언어에 맞게 자동 분리되며, 사용할 수 없을 때는 공백과 문장 부호를 기준으로 분리됩니다. 더 세밀하게 나누려면 {delimiter}을 사용하세요. 예: {example}",
-	"input_gloss": "행간 주석",
+	"input_gloss": "주석",
 	"input_gloss_empty": "주석을 입력하려면 먼저 단어를 추가하세요.",
 	"input_gloss_placeholder": "주석",
 	"token_editor_tokens": "토큰",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "기존 문장을 더 많은 언어로 번역합니다 (사용자 API 키 사용).",
 	"translate_retry": "다시 시도",
 	"translate_cost_notice": "요청마다 사용자 {provider} 계정에 비용이 청구됩니다. 저렴한 모델로도 충분한 경우가 많습니다.",
-	"settings_model_hint": "제안 중에서 선택하거나, 공급자가 허용하는 모델 ID를 직접 입력할 수 있습니다."
+	"settings_model_hint": "제안 중에서 선택하거나, 공급자가 허용하는 모델 ID를 직접 입력할 수 있습니다.",
+	"input_lane_above": "위 {n}",
+	"input_lane_below": "아래 {n}",
+	"input_word_row": "단어",
+	"input_add_lane_above": "위에 줄 추가",
+	"input_add_lane_below": "아래에 줄 추가",
+	"input_remove_lane": "줄 제거"
 }

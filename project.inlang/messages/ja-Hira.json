@@ -34,9 +34,9 @@
 	"input_add": "たす",
 	"input_modify": "なおす",
 	"input_guidance": "ことばは、できるときは そのことばに あわせて ひとりでに わけます。できないときは、あきや くぎりの しるしで わけます。もっと こまかく わけたいときは {delimiter} を つかってください。たとえば {example}",
-	"input_gloss": "ことばの せつめい",
-	"input_gloss_empty": "ことばの せつめいを いれるには、さきに ことばを たしてください。",
-	"input_gloss_placeholder": "せつめい",
+	"input_gloss": "ちゅうしゃく",
+	"input_gloss_empty": "ちゅうしゃくをいれるには、さきにたんごをたしてください。",
+	"input_gloss_placeholder": "ちゅうしゃく",
 	"token_editor_tokens": "わけた ことば",
 	"token_editor_merge_selected": "えらんだ ものを つなげる",
 	"token_editor_split_at_boundary": "ここで わける",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "いまある文をほかのことばにほんやくします（APIキーがひつようです）。",
 	"translate_retry": "もういちど",
 	"translate_cost_notice": "リクエストごとに {provider} のあなたのアカウントにおかねがかかります。やすいモデルでもじゅうぶんなことがおおいです。",
-	"settings_model_hint": "こうほからえらぶか、プロバイダーがうけつけるモデル ID をちょくせついれられます。"
+	"settings_model_hint": "こうほからえらぶか、プロバイダーがうけつけるモデル ID をちょくせついれられます。",
+	"input_lane_above": "うえ {n}",
+	"input_lane_below": "した {n}",
+	"input_word_row": "たんご",
+	"input_add_lane_above": "うえにぎょうをついか",
+	"input_add_lane_below": "したにぎょうをついか",
+	"input_remove_lane": "ぎょうをけす"
 }

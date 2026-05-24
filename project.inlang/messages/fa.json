@@ -34,9 +34,9 @@
 	"input_add": "افزودن",
 	"input_modify": "ویرایش",
 	"input_guidance": "واژه‌ها در صورت امکان به‌طور خودکار با بخش‌بندی مناسب زبان جدا می‌شوند؛ در غیر این صورت از فاصله و نشانه‌گذاری استفاده می‌شود. برای کنترل دقیق‌تر از {delimiter} استفاده کنید، مانند {example}",
-	"input_gloss": "توضیح بین‌خطی",
-	"input_gloss_empty": "برای وارد کردن توضیح‌ها ابتدا واژه‌ها را اضافه کنید.",
-	"input_gloss_placeholder": "توضیح",
+	"input_gloss": "حاشیه‌نویسی‌ها",
+	"input_gloss_empty": "ابتدا کلمات را اضافه کنید تا حاشیه‌نویسی وارد کنید.",
+	"input_gloss_placeholder": "حاشیه‌نویسی",
 	"token_editor_tokens": "قطعه‌ها",
 	"token_editor_merge_selected": "ادغام انتخاب‌شده‌ها",
 	"token_editor_split_at_boundary": "جداسازی قطعه در این مرز",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "جملات موجود را به زبان‌های بیشتری ترجمه کنید (از کلید API شما استفاده می‌شود).",
 	"translate_retry": "تلاش مجدد",
 	"translate_cost_notice": "هر درخواست از حساب {provider} شما کسر می‌شود. مدل‌های ارزان‌تر معمولاً کافی‌اند.",
-	"settings_model_hint": "از پیشنهادها انتخاب کنید یا هر شناسهٔ مدل که ارائه‌دهنده می‌پذیرد را وارد کنید."
+	"settings_model_hint": "از پیشنهادها انتخاب کنید یا هر شناسهٔ مدل که ارائه‌دهنده می‌پذیرد را وارد کنید.",
+	"input_lane_above": "بالا {n}",
+	"input_lane_below": "پایین {n}",
+	"input_word_row": "واژه",
+	"input_add_lane_above": "افزودن خط در بالا",
+	"input_add_lane_below": "افزودن خط در پایین",
+	"input_remove_lane": "حذف خط"
 }

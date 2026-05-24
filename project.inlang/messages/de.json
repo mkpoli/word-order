@@ -34,9 +34,9 @@
 	"input_add": "Hinzufugen",
 	"input_modify": "Bearbeiten",
 	"input_guidance": "Worter werden automatisch sprachspezifisch segmentiert, wenn dies verfugbar ist, sonst anhand von Leerzeichen und Satzzeichen. Fur feinere Kontrolle verwende {delimiter}, zum Beispiel {example}",
-	"input_gloss": "Interlinearglosse",
-	"input_gloss_empty": "Fuge zuerst Worter hinzu, um Glossen einzugeben.",
-	"input_gloss_placeholder": "Glosse",
+	"input_gloss": "Annotationen",
+	"input_gloss_empty": "Füge zuerst Wörter hinzu, um Annotationen einzugeben.",
+	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "Token",
 	"token_editor_merge_selected": "Auswahl zusammenfugen",
 	"token_editor_split_at_boundary": "Token an dieser Stelle teilen",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "Vorhandene Sätze in weitere Sprachen übersetzen (verwendet deinen API-Schlüssel).",
 	"translate_retry": "Wiederholen",
 	"translate_cost_notice": "Jede Anfrage wird über dein eigenes {provider}-Konto abgerechnet. Günstigere Modelle reichen meist aus.",
-	"settings_model_hint": "Wähle einen Vorschlag oder gib eine beliebige vom Anbieter akzeptierte Modell-ID ein."
+	"settings_model_hint": "Wähle einen Vorschlag oder gib eine beliebige vom Anbieter akzeptierte Modell-ID ein.",
+	"input_lane_above": "Oben {n}",
+	"input_lane_below": "Unten {n}",
+	"input_word_row": "Wort",
+	"input_add_lane_above": "Zeile oben hinzufügen",
+	"input_add_lane_below": "Zeile unten hinzufügen",
+	"input_remove_lane": "Zeile entfernen"
 }

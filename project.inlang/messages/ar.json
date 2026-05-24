@@ -34,9 +34,9 @@
 	"input_add": "إضافة",
 	"input_modify": "تعديل",
 	"input_guidance": "تُقسَّم الكلمات تلقائيا وفق اللغة عند توفر ذلك، وإلا يُستخدم الفراغ وعلامات الترقيم كحل بديل. استخدم {delimiter} لتحكم أدق، مثل {example}",
-	"input_gloss": "شرح بين السطور",
-	"input_gloss_empty": "أضف كلمات أولاً لإدخال الشروح.",
-	"input_gloss_placeholder": "شرح",
+	"input_gloss": "تعليقات",
+	"input_gloss_empty": "أضف الكلمات أولًا لإدخال التعليقات.",
+	"input_gloss_placeholder": "تعليق",
 	"token_editor_tokens": "الرموز",
 	"token_editor_merge_selected": "دمج المحدد",
 	"token_editor_split_at_boundary": "تقسيم الرمز عند هذه النقطة",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "ترجم الجمل الموجودة إلى لغات إضافية (يستخدم مفتاح API الخاص بك).",
 	"translate_retry": "إعادة المحاولة",
 	"translate_cost_notice": "كل طلب يُحاسَب على حساب {provider} الخاص بك. النماذج الأرخص كافية في الغالب.",
-	"settings_model_hint": "اختر أحد الاقتراحات أو اكتب أي مُعرّف نموذج يقبله المزوّد."
+	"settings_model_hint": "اختر أحد الاقتراحات أو اكتب أي مُعرّف نموذج يقبله المزوّد.",
+	"input_lane_above": "أعلى {n}",
+	"input_lane_below": "أسفل {n}",
+	"input_word_row": "كلمة",
+	"input_add_lane_above": "إضافة سطر أعلى",
+	"input_add_lane_below": "إضافة سطر أسفل",
+	"input_remove_lane": "إزالة السطر"
 }

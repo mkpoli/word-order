@@ -34,9 +34,9 @@
 	"input_add": "जोड़ें",
 	"input_modify": "संशोधित करें",
 	"input_guidance": "जहां संभव हो वहां शब्द भाषा-अनुरूप विभाजन से अपने आप अलग किए जाते हैं, अन्यथा रिक्त स्थान और विराम चिह्नों का उपयोग किया जाता है। अधिक सटीक नियंत्रण के लिए {delimiter} का उपयोग करें, जैसे {example}",
-	"input_gloss": "अंतर्पंक्तीय ग्लॉस",
-	"input_gloss_empty": "ग्लॉस दर्ज करने के लिए पहले शब्द जोड़ें।",
-	"input_gloss_placeholder": "ग्लॉस",
+	"input_gloss": "टिप्पणियाँ",
+	"input_gloss_empty": "टिप्पणियाँ दर्ज करने के लिए पहले शब्द जोड़ें।",
+	"input_gloss_placeholder": "टिप्पणी",
 	"token_editor_tokens": "टोकन",
 	"token_editor_merge_selected": "चयनित को मिलाएं",
 	"token_editor_split_at_boundary": "इस बिंदु पर टोकन विभाजित करें",
@@ -97,5 +97,11 @@
 	"input_translate_hint": "मौजूदा वाक्यों का और भाषाओं में अनुवाद करें (आपकी API कुंजी का उपयोग करता है)।",
 	"translate_retry": "पुनः प्रयास",
 	"translate_cost_notice": "हर अनुरोध आपके अपने {provider} खाते से बिल किया जाता है। आमतौर पर सस्ते मॉडल भी पर्याप्त होते हैं।",
-	"settings_model_hint": "किसी सुझाव को चुनें या प्रदाता द्वारा स्वीकृत कोई भी मॉडल ID टाइप करें।"
+	"settings_model_hint": "किसी सुझाव को चुनें या प्रदाता द्वारा स्वीकृत कोई भी मॉडल ID टाइप करें।",
+	"input_lane_above": "ऊपर {n}",
+	"input_lane_below": "नीचे {n}",
+	"input_word_row": "शब्द",
+	"input_add_lane_above": "ऊपर पंक्ति जोड़ें",
+	"input_add_lane_below": "नीचे पंक्ति जोड़ें",
+	"input_remove_lane": "पंक्ति हटाएँ"
 }
