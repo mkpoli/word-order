@@ -376,20 +376,13 @@
 	{#if !loading}
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
-			{@const isPending = pendingIndices.has(i)}
-			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i} class:pending={isPending}>
-				<div class="dragger action" on:pointerdown={(e) => !isPending && dragstart(i, e)} bind:this={draggers[i]}>
+			{#if !pendingIndices.has(i)}
+			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
 				</div>
 				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
 				<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-					{#if isPending}
-						<div class="pending-body">
-							<div class="pending-bar" aria-label="loading">
-								<div class="pending-bar-inner"></div>
-							</div>
-						</div>
-					{:else}
 					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
 						{#each tokens as token, j}
 							{@const word = token.text}
@@ -447,47 +440,58 @@
 							</span>
 						{/each}
 					</span>
-					{/if}
 				</div>
-				{#if isPending}
-					<div class="cancel-translate action">
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<iconify-icon
-							icon="material-symbols:close-rounded"
-							width="1.2em"
-							height="1.2em"
-							on:click={() => dispatch('cancelTranslate')}
-						/>
-					</div>
-				{:else}
-					<div class="modify action">
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<iconify-icon
-							icon="material-symbols:edit-rounded"
-							on:click={() => {
-								dispatch('modify', {
-									sentence: i
-								});
-							}}
-						/>
-					</div>
-					<div class="delete action">
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<iconify-icon
-							icon="ic:baseline-delete-forever"
-							width="1.2em"
-							height="1.2em"
-							on:click={() => {
-								if (!confirm($LL.confirm.deleteSentence())) return;
-								dispatch('delete', {
-									sentence: i
-								});
-							}}
-						/>
-					</div>
-				{/if}
+				<div class="modify action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<iconify-icon
+						icon="material-symbols:edit-rounded"
+						on:click={() => {
+							dispatch('modify', {
+								sentence: i
+							});
+						}}
+					/>
+				</div>
+				<div class="delete action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<iconify-icon
+						icon="ic:baseline-delete-forever"
+						width="1.2em"
+						height="1.2em"
+						on:click={() => {
+							if (!confirm($LL.confirm.deleteSentence())) return;
+							dispatch('delete', {
+								sentence: i
+							});
+						}}
+					/>
+				</div>
 			</div>
+			{/if}
 		{/each}
+		{#if pendingIndices.size > 0}
+			<div class="pending-tray">
+				{#each [...pendingIndices] as i (i)}
+					{#if sentences[i]}
+						<div class="pending-row">
+							<span class="pending-tag" lang={sentences[i].lang}>{getLanguageName(sentences[i].lang, $locale)}</span>
+							<div class="pending-bar" aria-label="loading">
+								<div class="pending-bar-inner"></div>
+							</div>
+							<button
+								type="button"
+								class="pending-cancel"
+								title={$LL.translate.cancel()}
+								aria-label={$LL.translate.cancel()}
+								on:click={() => dispatch('cancelTranslate')}
+							>
+								<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+							</button>
+						</div>
+					{/if}
+				{/each}
+			</div>
+		{/if}
 		{#if modifying !== -1}
 			<div class="token-edit-dialog visible" use:draggable bind:this={tokenEditDialog}>
 				<div class="token-edit-topbar">
@@ -949,34 +953,34 @@
 		color: #e00020;
 	}
 
-	.cancel-translate {
-		cursor: pointer;
-		color: rgb(74 82 112);
-		opacity: 1 !important;
-	}
-
-	.cancel-translate:hover {
-		color: #e00020;
-	}
-
-	.sentence.pending {
-		opacity: 0.85;
-	}
-
-	.sentence.pending .tag {
-		opacity: 0.7;
-	}
-
-	.pending-body {
+	.pending-tray {
+		grid-column: 1 / -1;
 		display: flex;
+		flex-direction: column;
+		gap: 0.35em;
+		padding: 0.6em 0.8em;
+		margin-top: 0.4em;
+		background: rgb(46 91 255 / 0.04);
+		border: 1px dashed rgb(46 91 255 / 0.25);
+		border-radius: 0.5em;
+	}
+
+	.pending-row {
+		display: grid;
+		grid-template-columns: minmax(6em, max-content) 1fr auto;
 		align-items: center;
-		min-height: 1.6em;
-		padding: 0.25em 0;
+		gap: 0.65em;
+		font-size: 0.9em;
+		color: rgb(45 55 80);
+	}
+
+	.pending-tag {
+		font-weight: 600;
+		color: rgb(33 56 199);
+		white-space: nowrap;
 	}
 
 	.pending-bar {
-		flex: 1;
-		max-width: 18em;
 		height: 4px;
 		background: rgb(46 91 255 / 0.12);
 		border-radius: 2px;
@@ -1002,6 +1006,23 @@
 		100% {
 			left: 100%;
 		}
+	}
+
+	.pending-cancel {
+		appearance: none;
+		background: none;
+		border: none;
+		padding: 0.15em 0.3em;
+		cursor: pointer;
+		color: rgb(74 82 112);
+		border-radius: 0.25em;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.pending-cancel:hover {
+		background: rgb(24 33 61 / 0.08);
+		color: #e00020;
 	}
 
 	output.modifying-sentence {
