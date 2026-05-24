@@ -83,6 +83,10 @@ Issues and pull requests welcome at <https://github.com/mkpoli/word-order/>.
 
 Created by [@mkpoli](https://mkpo.li/) — [Twitter](https://twitter.com/mkpoli/) · [GitHub](https://github.com/mkpoli).
 
-## A note on rights
+## License
+
+Source code is released under the [MIT License](LICENSE) © 2022–2026 mkpoli.
+
+### A note on rights
 
 This application doesn't claim rights over the illustrations you create with it. How you use or share them is entirely up to you. Sharing the tool itself is appreciated.
