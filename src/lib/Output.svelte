@@ -429,18 +429,59 @@
 	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
 	style:--margin-left={`${outputMargin.left}px`}
 	style:--margin-right={`${outputMargin.right}px`}
+	class:margin-adjusting={marginDrag !== null}
 >
-	<!-- Per-side edge zones. Each combines the hoverable margin band, the
-	     drag-grab target, and the blueprint dimension annotation. The zone
-	     extends across the full margin band so cursor change + tint + drag
-	     only fire when the pointer is actually in that side's margin area
-	     (or its 8px minimum hit strip when the margin is 0). Sentence area
-	     is left alone. -->
+	<!-- Visual bands (pink tint + blueprint dimension annotation). Non-
+	     interactive — they only show when one of the blue edge strips is
+	     hovered or a drag is active, and all four sides reveal together. -->
+	<div class="margin-band margin-band-top" class:active={marginDrag?.side === 'top'} style:height={`${outputMargin.top}px`} aria-hidden="true">
+		{#if outputMargin.top >= 14}
+			<svg class="dim-svg" width="20" height={outputMargin.top}>
+				<line x1="10" y1="0" x2="10" y2={outputMargin.top} class="dim-line" />
+				<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
+				<polygon points={`6,${outputMargin.top - 6} 14,${outputMargin.top - 6} 10,${outputMargin.top}`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.top > 0}<span class="dim-label">{outputMargin.top}px</span>{/if}
+	</div>
+	<div class="margin-band margin-band-bottom" class:active={marginDrag?.side === 'bottom'} style:height={`${outputMargin.bottom}px`} aria-hidden="true">
+		{#if outputMargin.bottom >= 14}
+			<svg class="dim-svg" width="20" height={outputMargin.bottom}>
+				<line x1="10" y1="0" x2="10" y2={outputMargin.bottom} class="dim-line" />
+				<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
+				<polygon points={`6,${outputMargin.bottom - 6} 14,${outputMargin.bottom - 6} 10,${outputMargin.bottom}`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.bottom > 0}<span class="dim-label">{outputMargin.bottom}px</span>{/if}
+	</div>
+	<div class="margin-band margin-band-left" class:active={marginDrag?.side === 'left'} style:width={`${outputMargin.left}px`} aria-hidden="true">
+		{#if outputMargin.left >= 14}
+			<svg class="dim-svg" width={outputMargin.left} height="20">
+				<line x1="0" y1="10" x2={outputMargin.left} y2="10" class="dim-line" />
+				<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
+				<polygon points={`${outputMargin.left - 6},6 ${outputMargin.left - 6},14 ${outputMargin.left},10`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.left > 0}<span class="dim-label">{outputMargin.left}px</span>{/if}
+	</div>
+	<div class="margin-band margin-band-right" class:active={marginDrag?.side === 'right'} style:width={`${outputMargin.right}px`} aria-hidden="true">
+		{#if outputMargin.right >= 14}
+			<svg class="dim-svg" width={outputMargin.right} height="20">
+				<line x1="0" y1="10" x2={outputMargin.right} y2="10" class="dim-line" />
+				<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
+				<polygon points={`${outputMargin.right - 6},6 ${outputMargin.right - 6},14 ${outputMargin.right},10`} class="dim-arrowhead" />
+			</svg>
+		{/if}
+		{#if outputMargin.right > 0}<span class="dim-label">{outputMargin.right}px</span>{/if}
+	</div>
+
+	<!-- Thin blue edge strips — the ONLY hover target. Hovering or dragging
+	     any one of these lights up all four bands and all four edges at
+	     once via :has() / .margin-adjusting on <output>. -->
 	{#if mode !== 'edit' && modifying === -1}
 		<div
 			class="margin-edge margin-edge-top"
 			class:active={marginDrag?.side === 'top'}
-			style:height={`${Math.max(8, outputMargin.top)}px`}
 			role="slider"
 			tabindex="-1"
 			aria-label={$LL.aria.marginTop()}
@@ -452,22 +493,10 @@
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
-		>
-			{#if outputMargin.top >= 14}
-				<svg class="dim-svg" width="20" height={outputMargin.top} aria-hidden="true">
-					<line x1="10" y1="0" x2="10" y2={outputMargin.top} class="dim-line" />
-					<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
-					<polygon points={`6,${outputMargin.top - 6} 14,${outputMargin.top - 6} 10,${outputMargin.top}`} class="dim-arrowhead" />
-				</svg>
-			{/if}
-			{#if outputMargin.top > 0}
-				<span class="dim-label" aria-hidden="true">{outputMargin.top}px</span>
-			{/if}
-		</div>
+		></div>
 		<div
 			class="margin-edge margin-edge-bottom"
 			class:active={marginDrag?.side === 'bottom'}
-			style:height={`${Math.max(8, outputMargin.bottom)}px`}
 			role="slider"
 			tabindex="-1"
 			aria-label={$LL.aria.marginBottom()}
@@ -479,22 +508,10 @@
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
-		>
-			{#if outputMargin.bottom >= 14}
-				<svg class="dim-svg" width="20" height={outputMargin.bottom} aria-hidden="true">
-					<line x1="10" y1="0" x2="10" y2={outputMargin.bottom} class="dim-line" />
-					<polygon points="6,6 14,6 10,0" class="dim-arrowhead" />
-					<polygon points={`6,${outputMargin.bottom - 6} 14,${outputMargin.bottom - 6} 10,${outputMargin.bottom}`} class="dim-arrowhead" />
-				</svg>
-			{/if}
-			{#if outputMargin.bottom > 0}
-				<span class="dim-label" aria-hidden="true">{outputMargin.bottom}px</span>
-			{/if}
-		</div>
+		></div>
 		<div
 			class="margin-edge margin-edge-left"
 			class:active={marginDrag?.side === 'left'}
-			style:width={`${Math.max(8, outputMargin.left)}px`}
 			role="slider"
 			tabindex="-1"
 			aria-label={$LL.aria.marginLeft()}
@@ -506,22 +523,10 @@
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
-		>
-			{#if outputMargin.left >= 14}
-				<svg class="dim-svg" width={outputMargin.left} height="20" aria-hidden="true">
-					<line x1="0" y1="10" x2={outputMargin.left} y2="10" class="dim-line" />
-					<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
-					<polygon points={`${outputMargin.left - 6},6 ${outputMargin.left - 6},14 ${outputMargin.left},10`} class="dim-arrowhead" />
-				</svg>
-			{/if}
-			{#if outputMargin.left > 0}
-				<span class="dim-label" aria-hidden="true">{outputMargin.left}px</span>
-			{/if}
-		</div>
+		></div>
 		<div
 			class="margin-edge margin-edge-right"
 			class:active={marginDrag?.side === 'right'}
-			style:width={`${Math.max(8, outputMargin.right)}px`}
 			role="slider"
 			tabindex="-1"
 			aria-label={$LL.aria.marginRight()}
@@ -533,18 +538,7 @@
 			on:pointermove={onMarginDragMove}
 			on:pointerup={endMarginDrag}
 			on:pointercancel={endMarginDrag}
-		>
-			{#if outputMargin.right >= 14}
-				<svg class="dim-svg" width={outputMargin.right} height="20" aria-hidden="true">
-					<line x1="0" y1="10" x2={outputMargin.right} y2="10" class="dim-line" />
-					<polygon points="6,6 6,14 0,10" class="dim-arrowhead" />
-					<polygon points={`${outputMargin.right - 6},6 ${outputMargin.right - 6},14 ${outputMargin.right},10`} class="dim-arrowhead" />
-				</svg>
-			{/if}
-			{#if outputMargin.right > 0}
-				<span class="dim-label" aria-hidden="true">{outputMargin.right}px</span>
-			{/if}
-		</div>
+		></div>
 	{/if}
 
 	{#if !loading}
@@ -838,27 +832,66 @@
 
 	/* --- Direct margin manipulation -------------------------------------- */
 
-	/* Each .margin-edge is the *whole* hot zone for one side: it covers the
-	   margin band (or a minimum 8px hit strip when margin is 0), acts as the
-	   drag-grab target, and hosts the blueprint dimension annotation. Tint
-	   and dim visibility key off the zone's own :hover / .active, so only
-	   the side whose band is actually under the cursor lights up — the
-	   sentence area is left alone. */
-	.margin-edge {
+	/* Pink visual bands — one per side, cover the corresponding padding
+	   region, host the blueprint dimension annotation. Non-interactive
+	   (pointer-events: none) so the sentence area underneath stays
+	   accessible. Tint and dim fade in together when any .margin-edge
+	   strip below is hovered, or when a drag is active. */
+	.margin-band {
 		position: absolute;
 		background: rgb(228 67 175 / 0);
 		transition: background 140ms ease;
+		pointer-events: none;
 		z-index: 4;
-		touch-action: none;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.margin-band-top {
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.margin-band-bottom {
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.margin-band-left {
+		top: 0;
+		bottom: 0;
+		left: 0;
+	}
+
+	.margin-band-right {
+		top: 0;
+		bottom: 0;
+		right: 0;
+	}
+
+	output:has(.margin-edge:hover) .margin-band,
+	output.margin-adjusting .margin-band {
+		background: rgb(228 67 175 / 0.18);
+	}
+
+	/* Blue edge strips — the ONLY hover target. Thin 8px at the very outer
+	   edge, ns-resize / ew-resize cursor, pointer-capturing for drag. */
+	.margin-edge {
+		position: absolute;
+		background: transparent;
+		transition: background 140ms ease;
+		z-index: 5;
+		touch-action: none;
 	}
 
 	.margin-edge-top {
 		top: 0;
 		left: 0;
 		right: 0;
+		height: 8px;
 		cursor: ns-resize;
 	}
 
@@ -866,74 +899,39 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
+		height: 8px;
 		cursor: ns-resize;
 	}
 
 	.margin-edge-left {
+		left: 0;
 		top: 0;
 		bottom: 0;
-		left: 0;
+		width: 8px;
 		cursor: ew-resize;
 	}
 
 	.margin-edge-right {
+		right: 0;
 		top: 0;
 		bottom: 0;
-		right: 0;
+		width: 8px;
 		cursor: ew-resize;
 	}
 
-	.margin-edge:hover,
+	/* All four edges highlight together when any one is hovered, or when
+	   any side is being dragged. */
+	output:has(.margin-edge:hover) .margin-edge,
+	output.margin-adjusting .margin-edge {
+		background: rgb(46 91 255 / 0.5);
+	}
+
+	/* The actively-dragged side reads slightly darker. */
 	.margin-edge.active {
-		background: rgb(228 67 175 / 0.18);
+		background: rgb(33 56 199 / 0.75);
 	}
 
-	/* Thin blue strip on the very outer edge — replaces the old margin
-	   handle, just rendered with a pseudo-element so we don't need a
-	   separate DOM node. */
-	.margin-edge::before {
-		content: '';
-		position: absolute;
-		background: transparent;
-		transition: background 140ms ease;
-		pointer-events: none;
-	}
-
-	.margin-edge-top::before {
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 4px;
-	}
-
-	.margin-edge-bottom::before {
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 4px;
-	}
-
-	.margin-edge-left::before {
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 4px;
-	}
-
-	.margin-edge-right::before {
-		right: 0;
-		top: 0;
-		bottom: 0;
-		width: 4px;
-	}
-
-	.margin-edge:hover::before,
-	.margin-edge.active::before {
-		background: rgb(46 91 255 / 0.55);
-	}
-
-	/* Blueprint dimension annotation children. Hidden by default; fade in
-	   when the edge zone is hovered or being dragged. */
+	/* Dim svg + label fade in alongside the band tint, all four together. */
 	.dim-svg,
 	.dim-label {
 		opacity: 0;
@@ -941,10 +939,10 @@
 		pointer-events: none;
 	}
 
-	.margin-edge:hover .dim-svg,
-	.margin-edge:hover .dim-label,
-	.margin-edge.active .dim-svg,
-	.margin-edge.active .dim-label {
+	output:has(.margin-edge:hover) .dim-svg,
+	output:has(.margin-edge:hover) .dim-label,
+	output.margin-adjusting .dim-svg,
+	output.margin-adjusting .dim-label {
 		opacity: 1;
 	}
 
@@ -983,16 +981,16 @@
 		box-shadow: 0 0 0 1px rgb(33 56 199 / 0.15);
 	}
 
-	.margin-edge.active .dim-line {
+	.margin-band.active .dim-line {
 		stroke: rgb(33 56 199);
 		stroke-width: 1.25;
 	}
 
-	.margin-edge.active .dim-arrowhead {
+	.margin-band.active .dim-arrowhead {
 		fill: rgb(33 56 199);
 	}
 
-	.margin-edge.active .dim-label {
+	.margin-band.active .dim-label {
 		background: rgb(33 56 199);
 		color: white;
 		box-shadow: 0 4px 14px rgb(15 23 42 / 0.18);
