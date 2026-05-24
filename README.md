@@ -45,11 +45,11 @@ For a guided tour, click the **Help** button in the header.
 
 ## Related tools
 
-> **TODO** — this section is a working draft. Verify each tool's current feature set and add missing peers before publishing externally.
+> **TODO** — this section is a working draft. Re-verify each tool's current feature set before relying on the comparison externally; add any peers that are missing.
 
 ### Authoring tools (closest peers — manual click-to-link alignment with curved connectors)
 
-- **[Bitext Align](https://aligner.tinygods.dev/)** ([source](https://github.com/tinygodsdev/bitext-word-alignment)) — SvelteKit. Multi-line editor with per-line LTR/RTL, gloss/IPA tiers, PNG/SVG/PDF/HTML export, URL-encoded share, light/dark theme, 3 built-in examples.
+- **[Bitext Align](https://aligner.tinygods.dev/)** ([source](https://github.com/tinygodsdev/bitext-word-alignment)) — SvelteKit. By [Dani Polani](https://github.com/dani-polani) under the [tinygodsdev](https://github.com/tinygodsdev) org. Multi-line editor with per-line LTR/RTL, gloss/IPA tiers, PNG/SVG/PDF/HTML export, URL-encoded share, light/dark theme, 3 built-in examples.
 - **[BasicCAT Bitext Aligner](https://www.basiccat.org/new-tool-bitext-aligner/)** — sentence/word aligner shipped inside a CAT translation suite.
 - **Academic prototypes** (paper-only, not always hosted):
   - **Yawat** — uses dynamic markup to keep the alignment view from getting visually busy as connections pile up.
@@ -70,38 +70,71 @@ For a guided tour, click the **Help** button in the header.
 
 ### Feature comparison
 
-> **TODO** — checkmarks below reflect a quick survey in May 2026. Re-verify against each tool's current release before relying on them.
+> **TODO** — survey conducted May 2026 from each tool's then-current live build, GitHub repo, and README. Cells marked `?` were not directly verifiable from the public surface and should be confirmed by the tool's author before being cited externally.
+
+#### Identity & metadata
+
+| | Word Order Illustrator | Bitext Align | LangMap |
+|---|---|---|---|
+| Category | Authoring | Authoring | Curated atlas |
+| Web | [word-order.mkpo.li](https://word-order.mkpo.li/) | [aligner.tinygods.dev](https://aligner.tinygods.dev/) | [langmap.heuron.com](https://langmap.heuron.com/) |
+| Repo | [mkpoli/word-order](https://github.com/mkpoli/word-order) | [tinygodsdev/bitext-word-alignment](https://github.com/tinygodsdev/bitext-word-alignment) | [jounlai/langmap](https://github.com/jounlai/langmap) |
+| Author | [@mkpoli](https://github.com/mkpoli) | [Dani Polani](https://github.com/dani-polani) / [tinygodsdev](https://github.com/tinygodsdev) | [Jounlai Cho](https://github.com/jounlai) / [Heuron Corp.](https://heuron.com/) |
+| First public release | Aug 2022 | Apr 2026 | Mar 2026 |
+| Repo created | 2022-08-23 | 2026-04-18 | 2026-03-12 |
+| License | none in repo (see "[A note on rights](#a-note-on-rights)") | MIT | MIT (README only — no `LICENSE` file in repo) |
+| GitHub stars (May 2026) | 13 | 1 | 5 |
+| Tech stack | SvelteKit 2 · Svelte 4 · TS · Vite 5 · Vercel | SvelteKit · Vite 8 · Docker | Static HTML/JS · D3 · no build |
+| Build step required | ✅ Vite | ✅ Vite | ❌ static files |
+
+#### Alignment authoring
 
 | Feature | Word Order Illustrator | Bitext Align | LangMap |
 |---|---|---|---|
-| Author | [@mkpoli](https://github.com/mkpoli) | [tinygodsdev](https://github.com/tinygodsdev) | [Jounlai Cho](https://github.com/jounlai) / [Heuron Corp.](https://heuron.com/) |
-| Web | [word-order.mkpo.li](https://word-order.mkpo.li/) | [aligner.tinygods.dev](https://aligner.tinygods.dev/) | [langmap.heuron.com](https://langmap.heuron.com/) |
-| Repo | [mkpoli/word-order](https://github.com/mkpoli/word-order) | [tinygodsdev/bitext-word-alignment](https://github.com/tinygodsdev/bitext-word-alignment) | [jounlai/langmap](https://github.com/jounlai/langmap) |
-| Tech stack | SvelteKit 2 · Svelte 4 · TS · Vite 5 · Vercel | SvelteKit · Vite 8 · Docker | Static HTML/JS · D3 · no build |
-| Category | Authoring | Authoring | Curated atlas |
-| First public release | Aug 2022 | TBD | TBD |
-| License | (TBD — repo) | (TBD) | MIT |
 | Manual click-to-link alignment | ✅ | ✅ | n/a (pre-aligned) |
 | Curved Bézier connectors | ✅ tunable | ✅ tunable | ✅ |
+| Connector parameters exposed | curvature, line width, gap, straight length, endpoint correction | style, colors, tokens, fonts | minimal |
 | `Intl.Segmenter` tokenization (CJK / Thai) | ✅ | ❌ whitespace + manual join | n/a |
 | `<ruby>` (furigana / pinyin / zhuyin) | ✅ tokens & glosses | ❌ | ❌ |
-| Interlinear gloss tier | ✅ | ✅ | ❌ |
+| Interlinear gloss tier | ✅ | ✅ extra tier | ❌ |
 | Per-token merge / split dialog | ✅ | partial | ❌ |
 | Per-line RTL / LTR toggle | implicit (BCP-47) | ✅ explicit | ✅ |
 | Multiple sentences (> 2 rows) | ✅ | ✅ | ✅ |
 | Drag to reorder rows | ✅ | ✅ | ✅ |
+| Delete row | ✅ | ✅ | ✅ |
+| Reorder color groups | ✅ | ? | n/a |
 | Scramble equivalency view | ✅ | ❌ | ❌ |
 | LLM translate + auto-align (BYO key) | ✅ | ❌ | ❌ |
-| Built-in examples | 10+ | 3 | 100 |
+
+#### Content & presentation
+
+| Feature | Word Order Illustrator | Bitext Align | LangMap |
+|---|---|---|---|
+| Built-in examples | 10+ | 3 | 100 sentences × 223 langs |
 | UI languages | 32 | 1 (EN) | 21 |
 | Light / dark theme | ❌ | ✅ | ✅ |
+| Font customization | ✅ family / style / size | ✅ Fonts panel | font size only |
+| Color palette customization | ✅ OKLCH auto + Settings | ✅ Colors panel | ❌ fixed |
+| Language metadata (family / typology / IPA) | ❌ | ❌ | ✅ extensive |
+| Mobile responsive | ? | ? | ✅ |
+| Keyboard navigation | ? | ? | ✅ arrow keys, random |
+| Guided tour / Help | ✅ (Help button) | ❌ | ❌ |
+
+#### Persistence & sharing
+
+| Feature | Word Order Illustrator | Bitext Align | LangMap |
+|---|---|---|---|
+| Autosave (localStorage) | ✅ | ? | n/a |
+| Multiple workspaces / tabs | ✅ (per-tab autosave) | ❌ | n/a |
 | URL share (state in hash) | ❌ | ✅ | ✅ |
-| Export SVG | ✅ | ✅ | ✅ |
+| Social share buttons | ❌ | ✅ | ✅ X / Facebook / LINE |
+| Export SVG | ✅ vector | ✅ vector | ✅ |
 | Export PNG | ✅ (2× fixed) | ✅ (2×–6× picker) | ✅ |
 | Export PDF | ✅ | ✅ | ❌ |
 | Export HTML | ❌ | ✅ | ❌ |
 | Export JSON (project archive) | ✅ | ❌ | ❌ |
-| Language metadata (family / typology) | ❌ | ❌ | ✅ |
+| Export CSV | ❌ | ❌ | ✅ |
+| SEO (OG image, JSON-LD) | ✅ | ❌ | ❌ |
 
 ## Developing
 
