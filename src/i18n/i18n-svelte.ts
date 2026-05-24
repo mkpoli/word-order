@@ -44,6 +44,8 @@ const createLL = () => ({
 		gloss: m.input_gloss,
 		glossEmpty: m.input_gloss_empty,
 		glossPlaceholder: m.input_gloss_placeholder,
+		translate: m.input_translate,
+		translateHint: m.input_translate_hint,
 		laneAbove: m.input_lane_above,
 		laneBelow: m.input_lane_below,
 		wordRow: m.input_word_row,
@@ -92,6 +94,8 @@ const createLL = () => ({
 		pdf: m.menu_pdf,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
+		settings: m.menu_settings,
+		translate: m.menu_translate,
 		examples: m.menu_examples
 	},
 	about: {
@@ -100,6 +104,38 @@ const createLL = () => ({
 		tagline: m.about_tagline,
 		credit: m.about_credit,
 		links: m.about_links
+	},
+	settings: {
+		title: m.settings_title,
+		close: m.settings_close,
+		tagline: m.settings_tagline,
+		provider: m.settings_provider,
+		model: m.settings_model,
+		modelHint: m.settings_model_hint,
+		apiKey: m.settings_api_key,
+		show: m.settings_show,
+		hide: m.settings_hide,
+		privacy: m.settings_privacy
+	},
+	translate: {
+		button: m.translate_button,
+		title: m.translate_title,
+		close: m.translate_close,
+		targets: m.translate_targets,
+		submit: m.translate_submit,
+		busy: m.translate_busy,
+		usingProvider: m.translate_using_provider,
+		noKey: m.translate_no_key,
+		openSettings: m.translate_open_settings,
+		tooLong: m.translate_too_long,
+		dismissError: m.translate_dismiss_error,
+		fromSources: m.translate_from_sources,
+		customPlaceholder: m.translate_custom_placeholder,
+		addCustom: m.translate_add_custom,
+		removeCustom: m.translate_remove_custom,
+		cancel: m.translate_cancel,
+		retry: m.translate_retry,
+		costNotice: m.translate_cost_notice
 	}
 });
 

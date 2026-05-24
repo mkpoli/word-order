@@ -59,6 +59,7 @@
 			annotationsBelow: string[][];
 			showGloss: boolean;
 		};
+		openTranslate: void;
 	}>();
 
 	let empty = false;
@@ -226,28 +227,43 @@
 		<div class="buttons">
 			<input type="text" bind:value={lang} id="lang" />
 			<label for="lang">{displayName}</label>
-			<button
-				on:click={() => {
-					const w = getWords(text);
-					if (w.length === 0) {
-						empty = true;
-						return;
-					}
-					text = '';
-					const nextAbove = fitLanes(annotationsAbove, w.length);
-					const nextBelow = fitLanes(annotationsBelow, w.length);
-					dispatch('submit', {
-						lang,
-						words: w,
-						annotationsAbove: nextAbove,
-						annotationsBelow: nextBelow,
-						showGloss: glossEnabled || hasAnyLane
-					});
-				}}
-			>
-				<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
-				{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
-			</button>
+			<div class="primary-actions">
+				<button
+					class="primary"
+					on:click={() => {
+						const w = getWords(text);
+						if (w.length === 0) {
+							empty = true;
+							return;
+						}
+						text = '';
+						const nextAbove = fitLanes(annotationsAbove, w.length);
+						const nextBelow = fitLanes(annotationsBelow, w.length);
+						dispatch('submit', {
+							lang,
+							words: w,
+							annotationsAbove: nextAbove,
+							annotationsBelow: nextBelow,
+							showGloss: glossEnabled || hasAnyLane
+						});
+					}}
+				>
+					<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
+					{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
+				</button>
+				{#if modifying === -1}
+					<button
+						type="button"
+						class="secondary"
+						title={$LL.input.translateHint()}
+						on:click={() => dispatch('openTranslate')}
+						disabled={sentences.length === 0}
+					>
+						<iconify-icon icon="mdi:translate" width="1.2em" height="1.2em" />
+						{$LL.input.translate()}
+					</button>
+				{/if}
+			</div>
 		</div>
 		<div class="guidance">
 			<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
@@ -521,10 +537,33 @@
 		display: contents;
 	}
 
-	.buttons > button,
-	button[type='submit'] {
-		width: 100%;
+	.primary-actions {
 		grid-area: b;
+		display: flex;
+		gap: 0.5em;
+		width: 100%;
+	}
+
+	.primary-actions button {
+		width: auto;
+		flex: 1;
+	}
+
+	.primary-actions .secondary {
+		flex: 0 1 auto;
+		background: white;
+		color: rgb(33 56 199);
+		border: 1px solid rgb(46 91 255 / 0.4);
+	}
+
+	.primary-actions .secondary:hover:not(:disabled) {
+		background: rgb(46 91 255 / 0.06);
+		opacity: 1;
+	}
+
+	.primary-actions .secondary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	.guidance {

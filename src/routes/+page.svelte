@@ -12,7 +12,7 @@
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
-	import { createSentence, getSentenceWords, normalizeLanes } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 	import { EXAMPLES, type Example } from '$lib/examples';
 
@@ -23,9 +23,15 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
+	import SettingsDialog from '$lib/SettingsDialog.svelte';
+	import TranslatePopover from '$lib/TranslatePopover.svelte';
 	import type { Margin } from '$lib/types';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
+	import { translateAndAlign } from '$lib/llm/translate';
+	import type { TranslateRequest } from '$lib/llm/types';
+	import { addGlossAlignments } from '$lib/gloss-align';
+	import { getLocaleOptions } from '$lib/lang';
 
 	// const SENTENCES = [
 	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
@@ -94,7 +100,22 @@
 	let outputMargin: Margin = { top: 40, right: 32, bottom: 40, left: 32 };
 
 	let aboutOpen = false;
+	let settingsOpen = false;
 	let examplesOpen = false;
+	let translatePopoverOpen = false;
+
+	type PendingTranslation = {
+		abort: AbortController;
+		rowIndices: number[];
+		targets: string[];
+	};
+
+	let pendingTranslation: PendingTranslation | null = null;
+	let translateError: { message: string; targets: string[] } | null = null;
+
+	const TRANSLATE_TIMEOUT_MS = 120_000;
+
+	$: pendingSentenceSet = new Set<number>(pendingTranslation?.rowIndices ?? []);
 
 	let mounted = false;
 	onMount(async () => {
@@ -119,8 +140,9 @@
 		await tick();
 	});
 
-	// Autosave on any change to sentences or equivalency.
-	$: if (mounted) saveDoc({ schemaVersion: 1, sentences, equivalency });
+	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
+	// so we don't persist the empty placeholder rows.
+	$: if (mounted && !pendingTranslation) saveDoc({ schemaVersion: 1, sentences, equivalency });
 
 	$: if (mounted) calculate_color_map(equivalency);
 	function calculate_color_map(equivalency: number[][][]) {
@@ -306,6 +328,135 @@
 		equivalency = equivalency;
 
 		await tick();
+	}
+
+	function buildSources(): TranslateRequest['sources'] {
+		return sentences
+			.filter((_, i) => !pendingSentenceSet.has(i))
+			.map((s) => {
+				const tokens = getSentenceWords(s);
+				const glosses = getSentenceGlosses(s);
+				return { lang: s.lang, text: tokens.join(''), tokens, glosses };
+			});
+	}
+
+	function startTranslate(targets: string[]) {
+		if (modifying !== -1) return;
+		if (pendingTranslation) return;
+		if (sentences.length === 0) return;
+
+		translatePopoverOpen = false;
+		translateError = null;
+		const sourcesSnapshot = buildSources();
+
+		// Append placeholder rows (empty tokens) for each target. Output renders them with a loading bar.
+		const startIdx = sentences.length;
+		const rowIndices: number[] = [];
+		for (const tag of targets) {
+			sentences.push(createSentence(tag, [], [], false));
+			color_map = [...color_map, []];
+			word_spans = [...word_spans, []];
+			rowIndices.push(sentences.length - 1);
+		}
+		for (let i = 0; i < equivalency.length; i++) {
+			equivalency[i] = [...equivalency[i], ...targets.map(() => [] as number[])];
+		}
+		sentences = sentences;
+		equivalency = equivalency;
+
+		const controller = new AbortController();
+		pendingTranslation = { abort: controller, rowIndices, targets: [...targets] };
+
+		const timeoutId = setTimeout(
+			() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)),
+			TRANSLATE_TIMEOUT_MS
+		);
+
+		void runTranslate(controller, rowIndices, targets, sourcesSnapshot, startIdx, timeoutId);
+	}
+
+	async function runTranslate(
+		controller: AbortController,
+		rowIndices: number[],
+		targets: string[],
+		sourcesSnapshot: TranslateRequest['sources'],
+		startIdx: number,
+		timeoutId: ReturnType<typeof setTimeout>
+	): Promise<void> {
+		try {
+			const result = await translateAndAlign(
+				{
+					sources: sourcesSnapshot,
+					targets: targets.map((tag) => ({ lang: tag, endonym: endonymFor(tag) }))
+				},
+				undefined,
+				controller.signal
+			);
+
+			// Replace each placeholder with its real translation.
+			for (let k = 0; k < rowIndices.length; k++) {
+				const idx = rowIndices[k];
+				const translation = result.sentences[k];
+				if (!translation) continue;
+				sentences[idx] = translation;
+				color_map[idx] = new Array(translation.tokens.length).fill(-1);
+				word_spans[idx] = new Array(translation.tokens.length).fill(null);
+			}
+
+			// Build alignments from shared glosses across all sentences.
+			equivalency = addGlossAlignments(sentences, equivalency, rowIndices);
+			sentences = sentences;
+			color_map = color_map;
+			word_spans = word_spans;
+
+			pendingTranslation = null;
+			if (mode === 'view') mode = 'edit';
+
+			await tick();
+		} catch (err) {
+			// Roll back the placeholder rows we appended.
+			const removeCount = rowIndices.length;
+			sentences.splice(startIdx, removeCount);
+			color_map.splice(startIdx, removeCount);
+			word_spans.splice(startIdx, removeCount);
+			for (let i = 0; i < equivalency.length; i++) {
+				equivalency[i].splice(startIdx, removeCount);
+			}
+			sentences = sentences;
+			equivalency = equivalency;
+			color_map = color_map;
+			word_spans = word_spans;
+
+			if (!controller.signal.aborted) {
+				translateError = {
+					message: err instanceof Error ? err.message : String(err),
+					targets: [...targets]
+				};
+			}
+			pendingTranslation = null;
+		} finally {
+			clearTimeout(timeoutId);
+		}
+	}
+
+	function cancelPendingTranslation() {
+		pendingTranslation?.abort.abort();
+	}
+
+	function retryTranslate() {
+		if (!translateError) return;
+		const targets = translateError.targets;
+		translateError = null;
+		startTranslate(targets);
+	}
+
+	function dismissTranslateError() {
+		translateError = null;
+	}
+
+	function endonymFor(tag: string): string {
+		const opt = getLocaleOptions($locale).find((o) => o.value === tag);
+		return opt?.endonym ?? tag;
 	}
 
 	function onconnect({ detail: { connected, connectedIndex } }: CustomEvent<{ connected: [number, number][]; connectedIndex: number }>) {
@@ -677,6 +828,10 @@
 			</button>
 		</div>
 	</div>
+	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
+		<iconify-icon icon="mdi:cog-outline" />
+		{$LL.menu.settings()}
+	</button>
 	<button class="about-button" title={$LL.menu.about()} aria-label={$LL.menu.about()} on:click={() => (aboutOpen = true)}>
 		<iconify-icon icon="mdi:information-outline" />
 		{$LL.menu.about()}
@@ -687,6 +842,35 @@
 </header>
 
 <AboutDialog bind:open={aboutOpen} />
+<SettingsDialog bind:open={settingsOpen} />
+<TranslatePopover
+	bind:open={translatePopoverOpen}
+	sourceLangs={sentences.map((s) => s.lang)}
+	sourceTokenCounts={sentences.map((s) => s.tokens.length)}
+	on:submit={({ detail }) => startTranslate(detail.targets)}
+	on:openSettings={() => {
+		translatePopoverOpen = false;
+		settingsOpen = true;
+	}}
+	on:close={() => (translatePopoverOpen = false)}
+/>
+
+{#if translateError}
+	<div class="translate-progress" role="alert">
+		<div class="translate-slot errored">
+			<span class="translate-slot-lang">
+				<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
+			</span>
+			<span class="translate-slot-error" title={translateError.message}>{translateError.message}</span>
+			<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={retryTranslate} aria-label={$LL.translate.retry()}>
+				<iconify-icon icon="mdi:refresh" inline="true" />
+			</button>
+			<button type="button" class="translate-slot-action" title={$LL.translate.dismissError()} on:click={dismissTranslateError} aria-label={$LL.translate.dismissError()}>
+				<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+			</button>
+		</div>
+	</div>
+{/if}
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
@@ -696,6 +880,7 @@
 					sentences={previewSentences}
 					{color_map}
 					{equivalency}
+					pendingIndices={pendingSentenceSet}
 					{alignment}
 					bind:lines
 					{colors}
@@ -760,6 +945,7 @@
 						editingSelectionStart = -1;
 						editingSelectionEnd = -1;
 					}}
+					on:cancelTranslate={cancelPendingTranslation}
 					on:merge={({ detail: { sentence, start, end } }) => {
 						const words = getSentenceWords(previewSentences[sentence]);
 						const merged = words.slice(start, end + 1).join('');
@@ -786,6 +972,7 @@
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
 		<SentenceInput
 			on:submit={onsubmit}
+			on:openTranslate={() => (translatePopoverOpen = true)}
 			{modifying}
 			{sentences}
 			bind:text={editingText}
@@ -1338,5 +1525,109 @@
 			flex: 0 1 16rem;
 			max-width: min(16rem, 100%);
 		}
+	}
+
+	.translate-progress {
+		position: fixed;
+		bottom: 1.2em;
+		right: 1.2em;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+		z-index: 800;
+		max-width: min(24em, calc(100vw - 2em));
+	}
+
+	.translate-slot {
+		display: grid;
+		grid-template-columns: auto 1fr auto auto auto;
+		align-items: center;
+		gap: 0.6em;
+		background: white;
+		border: 1px solid rgb(46 91 255 / 0.3);
+		border-radius: 0.5em;
+		padding: 0.55em 0.8em;
+		box-shadow: 0 6px 20px rgb(23 36 78 / 0.18);
+		font-size: 0.9em;
+		color: rgb(45 55 80);
+	}
+
+	.translate-slot.errored {
+		border-color: rgb(220 38 38 / 0.5);
+		background: rgb(220 38 38 / 0.06);
+		color: rgb(140 24 24);
+	}
+
+	.translate-slot-lang {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		font-weight: 600;
+		color: rgb(33 56 199);
+	}
+
+	.translate-slot.errored .translate-slot-lang {
+		color: rgb(140 24 24);
+	}
+
+	.translate-bar {
+		width: 100%;
+		height: 4px;
+		background: rgb(46 91 255 / 0.12);
+		border-radius: 2px;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.translate-bar-inner {
+		position: absolute;
+		top: 0;
+		left: -40%;
+		width: 40%;
+		height: 100%;
+		background: linear-gradient(to right, rgb(73 132 255), rgb(44 71 255));
+		border-radius: 2px;
+		animation: translate-bar-slide 1.2s ease-in-out infinite;
+	}
+
+	@keyframes translate-bar-slide {
+		0% {
+			left: -40%;
+		}
+		100% {
+			left: 100%;
+		}
+	}
+
+	.translate-slot-time {
+		font-variant-numeric: tabular-nums;
+		font-size: 0.85em;
+		color: rgb(74 82 112);
+	}
+
+	.translate-slot-error {
+		font-size: 0.88em;
+		word-break: break-word;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+
+	.translate-slot-action {
+		appearance: none;
+		background: none;
+		border: none;
+		padding: 0.15em 0.3em;
+		cursor: pointer;
+		color: inherit;
+		border-radius: 0.3em;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.translate-slot-action:hover {
+		background: rgb(24 33 61 / 0.08);
 	}
 </style>
