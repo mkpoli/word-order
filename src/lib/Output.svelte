@@ -26,6 +26,9 @@
 		modify: {
 			sentence: number;
 		};
+		translate: {
+			sentence: number;
+		};
 		merge: {
 			sentence: number;
 			start: number;
@@ -437,6 +440,17 @@
 							</span>
 						{/each}
 					</span>
+				</div>
+				<div class="translate action" title={$LL.output.translateRow()}>
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<iconify-icon
+						icon="mdi:translate"
+						on:click={() => {
+							dispatch('translate', {
+								sentence: i
+							});
+						}}
+					/>
 				</div>
 				<div class="modify action">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -913,7 +927,8 @@
 	}
 
 	.modifying-sentence .modify,
-	.modifying-sentence .delete {
+	.modifying-sentence .delete,
+	.modifying-sentence .translate {
 		visibility: hidden;
 	}
 
@@ -924,6 +939,11 @@
 	.delete {
 		cursor: pointer;
 		color: #e00020;
+	}
+
+	.translate {
+		cursor: pointer;
+		color: rgb(33 56 199);
 	}
 
 	output.modifying-sentence {

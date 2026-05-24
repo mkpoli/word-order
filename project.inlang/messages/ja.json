@@ -82,5 +82,6 @@
 	"translate_no_key": "{provider} のAPIキーが設定されていません。",
 	"translate_open_settings": "設定を開く",
 	"translate_too_long": "文が長すぎます ({count} トークン、上限 {max})。",
-	"translate_dismiss_error": "閉じる"
+	"translate_dismiss_error": "閉じる",
+	"output_translate_row": "他の言語に翻訳"
 }

@@ -6,16 +6,12 @@
 	import type { Sentence } from './types';
 	import { createSentenceTokens, getSentenceGlosses, getSentenceWords } from './types';
 	import Word from './Word.svelte';
-	import TranslatePopover from './TranslatePopover.svelte';
 
 	export let modifying: number;
 	export let sentences: Sentence[];
 	export let text = '';
 	export let glosses: string[] = [];
 	export let glossEnabled = false;
-	export let translateBusy = false;
-
-	let translateOpen = false;
 
 	let lang = 'en';
 	let displayName = 'English';
@@ -52,11 +48,6 @@
 			glosses: string[];
 			showGloss: boolean;
 		};
-		translate: {
-			source: { lang: string; words: string[]; glosses: string[]; showGloss: boolean };
-			targets: string[];
-		};
-		openSettings: void;
 	}>();
 
 	let empty = false;
@@ -81,24 +72,6 @@
 	}
 
 	$: glossTokens = createSentenceTokens(getWords(text), glosses);
-	$: sourceTokenCount = modifying === -1 ? getWords(text).length : 0;
-
-	function openTranslate() {
-		const words = getWords(text);
-		if (words.length === 0) {
-			empty = true;
-			return;
-		}
-		translateOpen = true;
-	}
-
-	function onTranslateSubmit({ detail }: CustomEvent<{ targets: string[] }>) {
-		const words = getWords(text);
-		if (words.length === 0) return;
-		const nextGlosses = words.map((_, index) => glosses[index] ?? '');
-		const source = { lang, words, glosses: nextGlosses, showGloss: glossEnabled || nextGlosses.some(Boolean) };
-		dispatch('translate', { source, targets: detail.targets });
-	}
 </script>
 
 <fieldset class:editing={modifying !== -1}>
@@ -157,16 +130,6 @@
 				<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
 				{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
 			</button>
-			{#if modifying === -1}
-				<button type="button" class="translate-btn" on:click={openTranslate} disabled={translateBusy}>
-					{#if translateBusy}
-						<iconify-icon icon="mdi:loading" width="1.2em" height="1.2em" />
-					{:else}
-						<iconify-icon icon="mdi:translate" width="1.2em" height="1.2em" />
-					{/if}
-					{$LL.translate.button()}
-				</button>
-			{/if}
 		</div>
 		<div class="guidance">
 			<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
@@ -191,19 +154,6 @@
 		</div>
 	</div>
 </fieldset>
-
-<TranslatePopover
-	bind:open={translateOpen}
-	sourceLang={lang}
-	{sourceTokenCount}
-	busy={translateBusy}
-	on:submit={onTranslateSubmit}
-	on:openSettings={() => {
-		translateOpen = false;
-		dispatch('openSettings');
-	}}
-	on:close={() => (translateOpen = false)}
-/>
 
 <style>
 	fieldset {
@@ -231,10 +181,9 @@
 			't t t'
 			'g g g'
 			'l n b'
-			'x x x'
 			'i i i';
 
-		grid-template-rows: 1fr auto auto auto auto;
+		grid-template-rows: 1fr auto auto auto;
 
 		gap: 1em;
 
@@ -325,23 +274,6 @@
 		grid-area: b;
 	}
 
-	.translate-btn {
-		grid-area: x;
-		background: white;
-		color: rgb(33 56 199);
-		border: 1px solid rgb(46 91 255 / 0.45);
-	}
-
-	.translate-btn:hover {
-		background: rgb(46 91 255 / 0.06);
-		opacity: 1;
-	}
-
-	.translate-btn:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
 	.guidance {
 		background: rgb(0, 123, 255, 0.1);
 		padding: 1em 0.8em;
@@ -391,7 +323,6 @@
 				'n n n'
 				'l l l'
 				'b b b'
-				'x x x'
 				'i i i';
 		}
 
