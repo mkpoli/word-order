@@ -1284,7 +1284,7 @@
 
 	output.modifying-sentence .sentence:not(.modifying) > .tag,
 	output.modifying-sentence .sentence:not(.modifying) > .sentence-body,
-	output.modifying-sentence svg {
+	output.modifying-sentence > svg {
 		opacity: 0.3;
 	}
 
