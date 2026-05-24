@@ -28,13 +28,35 @@ Tokenisation rules (CRITICAL — read carefully):
 - For scripts without spaces (Chinese, Japanese, Thai, Khmer, Lao, Burmese): break on natural morpheme/word units; do NOT insert spaces.
   - Example for "我能吃玻璃。": ["我", "能", "吃", "玻璃", "。"]
 
-Glossing rules:
-- "glosses" has EXACTLY the same length as "tokens".
-- For whitespace and punctuation tokens, use an empty string "".
-- For content tokens (nouns, verbs, adjectives, adverbs, pronouns, content particles), provide a short gloss.
-- Glosses are the alignment vehicle: tokens across different sentences that share the SAME gloss string will be visually grouped together. So whenever a target token expresses the same meaning as a source token that already has a gloss, reuse that exact gloss string.
-- If sources do not provide a gloss for a meaning, invent a short canonical gloss in English (lowercase lemma, e.g. "eat", "glass", "can") and use it consistently across all targets in this response. When the meaning corresponds 1:1 to a content word in an English-script source sentence, prefer the lowercase lemma of that source word as the gloss (e.g. for "I can eat glass" → use "i", "can", "eat", "glass" as the glosses on the matching target tokens) — this helps connect the new translations to the original rows.
-- Follow Leipzig glossing conventions where applicable (1SG, PST, NEG, COP, AUX, etc.).
+Glossing rules (the WHOLE POINT of glosses here is alignment — read this carefully):
+- "glosses" has EXACTLY the same length as "tokens". Whitespace and punctuation use "".
+- A gloss is a SHORT, BARE English lemma — lowercase, no morphology markers, no case suffixes, no Leipzig codes.
+- The SAME meaning across all target translations MUST use the EXACT same gloss string (string equality is how tokens get grouped into colour-aligned sets across rows). This is non-negotiable; it is the entire point of the glosses.
+- Prefer using the surface form of the corresponding English-source content word as the gloss when possible, lowercase (so "I can eat glass" → use "i", "can", "eat", "glass" on the matching target tokens). This anchors the new rows to the original parallel sentences.
+
+INCORRECT — these break alignment because the strings don't match across rows:
+  "me.DAT", "me.ACC", "me.OBJ", "me.PART"        → use just "me" in all of them
+  "can.1SG", "can.MOD"                            → just "can"
+  "eat.PST", "eat.MOD", "eat.INF"                 → just "eat"
+  "glass.ACC", "glass.PART", "glass.NOM"          → just "glass"
+  "hurt.CONN", "hurt.CONNEG", "hurt.PASS"         → just "hurt"
+  "and.NEG"                                       → use "and" on the conjunction token, "not" on the separate negation token
+  "i.TOP-i.TOP", "1SG"                            → just "i"
+  Standalone morphology labels (1SG, PST, NEG, COP, AUX, TOP, DECL, PART, ACC, DAT...)  → omit; glosses are MEANINGS, not features
+
+CORRECT worked example. Given parallel sources "I can eat glass." / "Ich kann Glas essen." / "Mi povas manĝi vitron.":
+  English   gloss inventory: i, can, eat, glass
+  German    tokens: ["Ich"," ","kann"," ","Glas"," ","essen","."]
+            glosses: ["i","","can","","glass","","eat",""]
+  Esperanto tokens: ["Mi"," ","povas"," ","manĝi"," ","vitron","."]
+            glosses: ["i","","can","","eat","","glass",""]
+  Finnish   tokens: ["Voin"," ","syödä"," ","lasia","."]
+            glosses: ["can","","eat","","glass",""]   (Finnish "Voin" packs "i" + "can" — gloss the dominant meaning, the verb)
+  Korean    tokens: ["나는"," ","유리를"," ","먹을"," ","수"," ","있다","."]
+            glosses: ["i","","glass","","eat","","can","","can",""]  (split-verb auxiliary — both tokens get "can")
+
+When a single target token packs several meanings (Turkish "yiyebilirim" = eat-can-1SG, Korean "나는" = i-TOP), pick the ONE bare lemma that best captures its primary content meaning. Do not combine glosses with "." or "-".
+
 - One translation entry per requested target, in the SAME ORDER as the request. Do NOT re-emit the source sentences.
 
 Other:
