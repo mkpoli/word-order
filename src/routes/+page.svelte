@@ -1455,6 +1455,7 @@
 
 	.export-scale-row label {
 		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	.export-scale-row select {
