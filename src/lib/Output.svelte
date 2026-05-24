@@ -36,6 +36,7 @@
 			word: number;
 			offset: number;
 		};
+		cancelTranslate: void;
 	}>();
 
 	// Data
@@ -51,6 +52,7 @@
 	export let loading: boolean;
 	export let editingSelectionStart = -1;
 	export let editingSelectionEnd = -1;
+	export let pendingIndices: Set<number> = new Set();
 
 	// Parameters
 	export let verticalGap: number;
@@ -374,12 +376,20 @@
 	{#if !loading}
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
-			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
-				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+			{@const isPending = pendingIndices.has(i)}
+			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i} class:pending={isPending}>
+				<div class="dragger action" on:pointerdown={(e) => !isPending && dragstart(i, e)} bind:this={draggers[i]}>
 					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
 				</div>
 				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
 				<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
+					{#if isPending}
+						<div class="pending-body">
+							<div class="pending-bar" aria-label="loading">
+								<div class="pending-bar-inner"></div>
+							</div>
+						</div>
+					{:else}
 					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
 						{#each tokens as token, j}
 							{@const word = token.text}
@@ -437,32 +447,45 @@
 							</span>
 						{/each}
 					</span>
+					{/if}
 				</div>
-				<div class="modify action">
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<iconify-icon
-						icon="material-symbols:edit-rounded"
-						on:click={() => {
-							dispatch('modify', {
-								sentence: i
-							});
-						}}
-					/>
-				</div>
-				<div class="delete action">
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<iconify-icon
-						icon="ic:baseline-delete-forever"
-						width="1.2em"
-						height="1.2em"
-						on:click={() => {
-							if (!confirm($LL.confirm.deleteSentence())) return;
-							dispatch('delete', {
-								sentence: i
-							});
-						}}
-					/>
-				</div>
+				{#if isPending}
+					<div class="cancel-translate action">
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<iconify-icon
+							icon="material-symbols:close-rounded"
+							width="1.2em"
+							height="1.2em"
+							on:click={() => dispatch('cancelTranslate')}
+						/>
+					</div>
+				{:else}
+					<div class="modify action">
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<iconify-icon
+							icon="material-symbols:edit-rounded"
+							on:click={() => {
+								dispatch('modify', {
+									sentence: i
+								});
+							}}
+						/>
+					</div>
+					<div class="delete action">
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<iconify-icon
+							icon="ic:baseline-delete-forever"
+							width="1.2em"
+							height="1.2em"
+							on:click={() => {
+								if (!confirm($LL.confirm.deleteSentence())) return;
+								dispatch('delete', {
+									sentence: i
+								});
+							}}
+						/>
+					</div>
+				{/if}
 			</div>
 		{/each}
 		{#if modifying !== -1}
@@ -924,6 +947,61 @@
 	.delete {
 		cursor: pointer;
 		color: #e00020;
+	}
+
+	.cancel-translate {
+		cursor: pointer;
+		color: rgb(74 82 112);
+		opacity: 1 !important;
+	}
+
+	.cancel-translate:hover {
+		color: #e00020;
+	}
+
+	.sentence.pending {
+		opacity: 0.85;
+	}
+
+	.sentence.pending .tag {
+		opacity: 0.7;
+	}
+
+	.pending-body {
+		display: flex;
+		align-items: center;
+		min-height: 1.6em;
+		padding: 0.25em 0;
+	}
+
+	.pending-bar {
+		flex: 1;
+		max-width: 18em;
+		height: 4px;
+		background: rgb(46 91 255 / 0.12);
+		border-radius: 2px;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.pending-bar-inner {
+		position: absolute;
+		top: 0;
+		left: -40%;
+		width: 40%;
+		height: 100%;
+		background: linear-gradient(to right, rgb(73 132 255), rgb(44 71 255));
+		border-radius: 2px;
+		animation: output-pending-slide 1.2s ease-in-out infinite;
+	}
+
+	@keyframes output-pending-slide {
+		0% {
+			left: -40%;
+		}
+		100% {
+			left: 100%;
+		}
 	}
 
 	output.modifying-sentence {
