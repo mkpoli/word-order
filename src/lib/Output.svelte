@@ -10,7 +10,7 @@
 	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
-	import type { Margin } from '$lib/ui/MarginInput.svelte';
+	import type { Margin } from '$lib/types';
 
 	const dispatch = createEventDispatcher<{
 		connect: {

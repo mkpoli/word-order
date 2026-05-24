@@ -3,6 +3,8 @@ export type Alignment = 'left' | 'right' | 'center';
 export type FontFamily = 'default' | 'sans-serif' | 'serif' | 'monospace';
 export type FontStyle = 'normal' | 'italic' | 'bold' | 'bold-italic';
 
+export type Margin = { top: number; right: number; bottom: number; left: number };
+
 export type SentenceToken = {
 	text: string;
 	gloss: string;
