@@ -10,16 +10,16 @@ Paste sentences in any languages, click matching words across rows, and the tool
 
 ## Features
 
-- **Locale-aware tokenization** — CJK, Thai, and other unspaced scripts are auto-segmented; use `|` to fix the cases where the segmenter guesses wrong.
-- **Curved connectors** with tunable curvature, line width, gap, and endpoint correction.
-- **Multi-tier annotations above and below each word** — gloss, IPA, morphemes, as many tiers as you need.
-- **Ruby annotations** (`<ruby>漢<rt>かん</rt></ruby>`) render inline in source text and in any annotation tier.
-- **Per-token merge and split** at any grapheme boundary.
-- **Scramble equivalency** — one click reorders the color groups to show how much a translation reshuffles meaning.
-- **BYO-key LLM translate-and-align** — supply your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Gemini](https://aistudio.google.com/app/apikey) key (stored only in localStorage). Translate into one or more targets at once with auto-glossing and auto-alignment; any BCP-47 code works as a target.
-- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
-- **localStorage autosave** and **export** as SVG, PNG, PDF, or re-importable JSON.
-- **UI in 30+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Esperanto, Interlingua, and Toki Pona.
+- 🔤 **Locale-aware tokenization** — CJK, Thai, and other unspaced scripts are auto-segmented; use `|` to fix the cases where the segmenter guesses wrong.
+- 〰️ **Curved connectors** with tunable curvature, line width, gap, and endpoint correction.
+- 🏷️ **Multi-tier annotations above and below each word** — gloss, IPA, morphemes, as many tiers as you need.
+- 🈁 **Ruby annotations** (`<ruby>漢<rt>かん</rt></ruby>`) render inline in source text and in any annotation tier.
+- ✂️ **Per-token merge and split** at any grapheme boundary.
+- 🎲 **Scramble equivalency** — one click reorders the color groups to show how much a translation reshuffles meaning.
+- 🤖 **BYO-key LLM translate-and-align** — supply your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Gemini](https://aistudio.google.com/app/apikey) key (stored only in localStorage). Translate into one or more targets at once with auto-glossing and auto-alignment; any BCP-47 code works as a target.
+- 📚 **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
+- 💾 **localStorage autosave** and **export** as SVG, PNG, PDF, or re-importable JSON.
+- 🌐 **UI in 30+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Esperanto, Interlingua, and Toki Pona.
 
 ## How to use
 
