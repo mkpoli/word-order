@@ -8,41 +8,18 @@
 
 Paste sentences in any languages, click matching words across rows, and the tool draws curved connectors. Reordered translations, one-to-many mappings, and many-to-one mappings all stay readable.
 
-## Who is it for?
+## Features
 
-- **Translators** documenting how phrasing reshuffles across a pair.
-- **Language learners** seeing where their L1 intuition diverges from a new language.
-- **Conlangers** showing off word order, agglutination, or polypersonal agreement.
-- **Linguists and teachers** preparing Leipzig-style interlinear handouts and slides.
-
-## What you can do
-
-### Build the alignment
-
-- **Paste text in any language and it just splits correctly** — Chinese, Japanese, Thai, and other space-free scripts get tokenized automatically. Use `|` if you want to override where a word starts or ends.
-- **Click matching words across rows** to draw curved connectors between them. One-to-many, many-to-one, and crossing lines all stay readable.
-- **Mix any number of scripts and directions** — LTR and RTL rows happily sit next to each other; mid-row script changes work too.
-- **Split or merge any token down to the character** when the automatic segmentation doesn't match how you want to align.
-
-### Annotate
-
-- **Stack as many annotation lines as you want above or below each word** — pinyin on top, IPA below, gloss below that, a morpheme breakdown next to it. Leipzig-style displays come naturally.
-- **Add furigana, pinyin, or zhuyin** using `<ruby>` markup inline — works inside both the source text and any annotation tier.
-
-### Translate without leaving the app *(bring your own API key)*
-
-- **Generate a translation row in one click** using your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Google Gemini](https://aistudio.google.com/app/apikey) key. Keys live only in your browser's localStorage and are sent only to the provider you chose.
-- **Translate into several target languages at once** — pick a list and the rows come back in parallel.
-- **Glosses are filled in automatically**, and matching tokens across the new rows are pre-connected by their shared gloss so you can start refining instead of clicking from scratch.
-- **Any BCP-47 code works as a target**, so conlangs and rare locales aren't blocked by what the model lists.
-
-### Compare and export
-
-- **Hit "Scramble"** to randomly reorder the color groups — a one-button way to show students how much a translation reshuffles meaning.
-- **Load a ready-made illustration** from the Examples menu — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
-- **Your work is saved automatically** — refreshing or closing the tab won't lose it.
-- **Export as SVG, PNG, PDF, or a JSON project file.** The JSON re-imports later for archival and sharing. Filenames are auto-named after the first row's text and the language list.
-- **Switch the app's UI between 30+ languages** — including Ainu, Korean Hanja, Esperanto, Interlingua, and Toki Pona.
+- **Locale-aware tokenization** — CJK, Thai, and other unspaced scripts split correctly; use `|` to override.
+- **Curved connectors** with tunable curvature, line width, gap, and endpoint correction.
+- **Multi-tier annotations above and below each word** — gloss, IPA, morphemes, as many tiers as you need.
+- **Ruby annotations** (`<ruby>漢<rt>かん</rt></ruby>`) render inline in source text and in any annotation tier.
+- **Per-token merge and split** at any grapheme boundary.
+- **Scramble equivalency** — one click reorders the color groups to show how much a translation reshuffles meaning.
+- **BYO-key LLM translate-and-align** — supply your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Gemini](https://aistudio.google.com/app/apikey) key (stored only in localStorage). Translate into one or more targets at once with auto-glossing and auto-alignment; any BCP-47 code works as a target.
+- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
+- **localStorage autosave** and **export** as SVG, PNG, PDF, or re-importable JSON.
+- **UI in 30+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Esperanto, Interlingua, and Toki Pona.
 
 ## How to use
 
