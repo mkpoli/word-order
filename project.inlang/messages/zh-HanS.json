@@ -80,7 +80,7 @@
 	"translate_title": "翻译并对齐",
 	"translate_close": "关闭",
 	"translate_targets": "目标语言",
-	"translate_submit": "翻译并对齐 ({count})",
+	"translate_submit": "翻译并对齐（{count}）",
 	"translate_busy": "翻译中……",
 	"translate_using_provider": "使用 {provider}",
 	"translate_no_key": "尚未为 {provider} 设置 API 密钥。",

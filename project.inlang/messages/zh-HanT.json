@@ -80,7 +80,7 @@
 	"translate_title": "翻譯並對齊",
 	"translate_close": "關閉",
 	"translate_targets": "目標語言",
-	"translate_submit": "翻譯並對齊 ({count})",
+	"translate_submit": "翻譯並對齊（{count}）",
 	"translate_busy": "翻譯中……",
 	"translate_using_provider": "使用 {provider}",
 	"translate_no_key": "尚未為 {provider} 設定 API 金鑰。",
