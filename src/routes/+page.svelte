@@ -23,7 +23,7 @@
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
-	import type { Margin } from '$lib/ui/MarginInput.svelte';
+	import type { Margin } from '$lib/types';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 
