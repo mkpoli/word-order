@@ -68,6 +68,7 @@
 	"menu_svg": "Export SVG",
 	"menu_png": "Export PNG",
 	"menu_pdf": "Export PDF",
+	"menu_raster_scale": "Raster scale:",
 	"menu_scramble": "Scramble colors",
 	"menu_examples": "Examples",
 	"menu_about": "About",
