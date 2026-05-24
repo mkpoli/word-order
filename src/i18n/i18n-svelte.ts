@@ -113,6 +113,9 @@ const createLL = () => ({
 		openSettings: m.translate_open_settings,
 		tooLong: m.translate_too_long,
 		dismissError: m.translate_dismiss_error
+	},
+	output: {
+		translateRow: m.output_translate_row
 	}
 });
 

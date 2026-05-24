@@ -62,9 +62,9 @@
 	"about_tagline": "Μηχανὴ διαδικτυακὴ πρὸς γραφὴν διαγραμμάτων τῆς ὁμοιώσεως καὶ τάξεως λέξεων μεταξὺ πολλῶν γλωσσῶν.",
 	"about_credit": "Πρώτη ἰδέα ὑπὸ {author} — πρώτη ἔκδοσις μηνὶ Αὐγούστῳ ἔτους ΒΚΒʹ, ἔκτοτε ηὐξήθη.",
 	"about_links": "Σύνδεσμοι",
-	"menu_settings": "Settings",
-	"settings_title": "Settings",
-	"settings_close": "Close",
+	"menu_settings": "Διατάξεις",
+	"settings_title": "Διατάξεις",
+	"settings_close": "Κλεῖσαι",
 	"settings_tagline": "Bring your own API key. Translations and alignments are generated directly from your browser.",
 	"settings_provider": "Provider",
 	"settings_model": "Model",
@@ -74,7 +74,7 @@
 	"settings_privacy": "Your API key is stored only in this browser (localStorage) and sent directly to the chosen provider — never to our servers.",
 	"translate_button": "Translate & align",
 	"translate_title": "Translate & align",
-	"translate_close": "Close",
+	"translate_close": "Κλεῖσαι",
 	"translate_targets": "Target languages",
 	"translate_submit": "Translate & align ({count})",
 	"translate_busy": "Translating…",
@@ -82,5 +82,6 @@
 	"translate_no_key": "No API key set for {provider}.",
 	"translate_open_settings": "Open Settings",
 	"translate_too_long": "Sentence too long ({count} tokens; max {max}).",
-	"translate_dismiss_error": "Dismiss"
+	"translate_dismiss_error": "Dismiss",
+	"output_translate_row": "Translate to other languages"
 }

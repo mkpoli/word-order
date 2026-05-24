@@ -10,6 +10,7 @@
 	export let sourceLang: string;
 	export let sourceTokenCount: number;
 	export let busy = false;
+	export let errorMessage = '';
 
 	const DEFAULT_TARGETS = ['en', 'ja', 'zh-HanS'];
 
@@ -98,6 +99,13 @@
 						{/each}
 					</div>
 				</fieldset>
+			{/if}
+
+			{#if errorMessage}
+				<div class="error" role="alert">
+					<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
+					<span>{errorMessage}</span>
+				</div>
 			{/if}
 
 			<div class="actions">
@@ -255,6 +263,24 @@
 	.exonym {
 		color: rgb(74 82 112);
 		font-size: 0.84em;
+	}
+
+	.error {
+		display: flex;
+		gap: 0.5em;
+		align-items: flex-start;
+		background: rgb(220 38 38 / 0.08);
+		border: 1px solid rgb(220 38 38 / 0.4);
+		color: rgb(140 24 24);
+		font-size: 0.92em;
+		padding: 0.7em 0.85em;
+		margin-bottom: 0.9em;
+		border-radius: 0.4em;
+		word-break: break-word;
+	}
+
+	.error span {
+		flex: 1;
 	}
 
 	.actions {

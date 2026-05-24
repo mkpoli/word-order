@@ -84,5 +84,6 @@
 	"translate_no_key": "No API key set for {provider}.",
 	"translate_open_settings": "Open Settings",
 	"translate_too_long": "Sentence too long ({count} tokens; max {max}).",
-	"translate_dismiss_error": "Dismiss"
+	"translate_dismiss_error": "Dismiss",
+	"output_translate_row": "Translate to other languages"
 }

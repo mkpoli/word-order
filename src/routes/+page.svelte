@@ -24,6 +24,7 @@
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
 	import SettingsDialog from '$lib/SettingsDialog.svelte';
+	import TranslatePopover from '$lib/TranslatePopover.svelte';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 	import { translateAndAlign } from '$lib/llm/translate';
@@ -99,6 +100,8 @@
 	let examplesOpen = false;
 	let translateBusy = false;
 	let translateError = '';
+	let translatePopoverOpen = false;
+	let translatingSentenceIndex = -1;
 
 	let mounted = false;
 	onMount(async () => {
@@ -239,54 +242,54 @@
 		await tick();
 	}
 
-	async function ontranslate({
-		detail: { source, targets }
-	}: CustomEvent<{
-		source: { lang: string; words: string[]; glosses: string[]; showGloss: boolean };
-		targets: string[];
-	}>): Promise<void> {
+	async function runTranslate(sourceIndex: number, targets: string[]): Promise<void> {
 		if (modifying !== -1) return;
+		if (sourceIndex < 0 || sourceIndex >= sentences.length) return;
 		translateError = '';
 		translateBusy = true;
 		try {
+			const sourceSentence = sentences[sourceIndex];
+			const sourceWords = getSentenceWords(sourceSentence);
 			const result = await translateAndAlign({
-				source: { lang: source.lang, text: source.words.join(''), tokens: source.words },
+				source: { lang: sourceSentence.lang, text: sourceWords.join(''), tokens: sourceWords },
 				targets: targets.map((tag) => {
 					const opt = getLocaleOption(tag as never, $locale);
 					return { lang: tag, endonym: opt.endonym };
 				})
 			});
 
-			// Append source sentence first (reuses the same "Add" semantics as onsubmit).
-			const sourceSentence = createSentence(source.lang, source.words, source.glosses, source.showGloss);
-			const allNew = [sourceSentence, ...result.sentences];
+			const existingCount = sentences.length;
+			const newSentences = result.sentences;
 
-			// Append all new sentence rows.
-			for (const s of allNew) {
+			// Append target sentence rows.
+			for (const s of newSentences) {
 				sentences.push(s);
 				color_map = [...color_map, new Array(s.tokens.length).fill(-1)];
 				word_spans = [...word_spans, new Array(s.tokens.length).fill(null)];
 			}
 
-			// Pad pre-existing equivalency groups with empty entries for each new sentence.
+			// Pad pre-existing equivalency groups with empty entries for each new target sentence.
 			for (let i = 0; i < equivalency.length; i++) {
-				equivalency[i] = [...equivalency[i], ...allNew.map(() => [] as number[])];
+				equivalency[i] = [...equivalency[i], ...newSentences.map(() => [] as number[])];
 			}
 
-			// Append new alignment groups returned by the LLM. Each group already covers
-			// [source, target_1, ...]; pad the FRONT with empty entries for pre-existing sentences.
-			const preExistingCount = sentences.length - allNew.length;
+			// Append new alignment groups. The LLM emits groups in [source, target_1, ...] order;
+			// place source indices at `sourceIndex`, target indices at the appended positions,
+			// and pad everything else with [].
 			for (const group of result.groups) {
-				const padded: number[][] = [...Array.from({ length: preExistingCount }, () => [] as number[]), ...group];
-				equivalency.push(padded);
+				const row: number[][] = Array.from({ length: existingCount + newSentences.length }, () => [] as number[]);
+				row[sourceIndex] = group[0] ?? [];
+				for (let t = 0; t < newSentences.length; t++) {
+					row[existingCount + t] = group[1 + t] ?? [];
+				}
+				equivalency.push(row);
 			}
 
 			sentences = sentences;
 			equivalency = equivalency;
-
-			editingText = '';
-			editingGlosses = [];
-			editingShowGloss = false;
+			mode = 'edit';
+			translatePopoverOpen = false;
+			translatingSentenceIndex = -1;
 
 			await tick();
 		} catch (err) {
@@ -680,6 +683,23 @@
 
 <AboutDialog bind:open={aboutOpen} />
 <SettingsDialog bind:open={settingsOpen} />
+<TranslatePopover
+	bind:open={translatePopoverOpen}
+	sourceLang={translatingSentenceIndex === -1 ? '' : (sentences[translatingSentenceIndex]?.lang ?? '')}
+	sourceTokenCount={translatingSentenceIndex === -1 ? 0 : (sentences[translatingSentenceIndex]?.tokens.length ?? 0)}
+	busy={translateBusy}
+	errorMessage={translateError}
+	on:submit={({ detail }) => runTranslate(translatingSentenceIndex, detail.targets)}
+	on:openSettings={() => {
+		translatePopoverOpen = false;
+		settingsOpen = true;
+	}}
+	on:close={() => {
+		translatePopoverOpen = false;
+		translatingSentenceIndex = -1;
+		translateError = '';
+	}}
+/>
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
@@ -745,6 +765,11 @@
 						editingSelectionStart = -1;
 						editingSelectionEnd = -1;
 					}}
+					on:translate={({ detail: { sentence } }) => {
+						translatingSentenceIndex = sentence;
+						translateError = '';
+						translatePopoverOpen = true;
+					}}
 					on:merge={({ detail: { sentence, start, end } }) => {
 						const words = getSentenceWords(previewSentences[sentence]);
 						const glosses = getSentenceGlosses(previewSentences[sentence]);
@@ -778,24 +803,12 @@
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
 		<SentenceInput
 			on:submit={onsubmit}
-			on:translate={ontranslate}
-			on:openSettings={() => (settingsOpen = true)}
 			{modifying}
 			{sentences}
-			{translateBusy}
 			bind:text={editingText}
 			bind:glosses={editingGlosses}
 			bind:glossEnabled={editingShowGloss}
 		/>
-		{#if translateError}
-			<div class="translate-error" role="alert">
-				<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
-				<span>{translateError}</span>
-				<button type="button" aria-label={$LL.translate.dismissError()} on:click={() => (translateError = '')}>
-					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
-				</button>
-			</div>
-		{/if}
 	</div>
 
 	<div class="params" class:editing-muted={modifying !== -1}>
@@ -1336,35 +1349,4 @@
 		}
 	}
 
-	.translate-error {
-		display: flex;
-		align-items: center;
-		gap: 0.5em;
-		margin: 0.6em 0 0;
-		padding: 0.6em 0.8em;
-		background: rgb(220 38 38 / 0.08);
-		border: 1px solid rgb(220 38 38 / 0.4);
-		color: rgb(140 24 24);
-		border-radius: 0.4em;
-		font-size: 0.92em;
-	}
-
-	.translate-error span {
-		flex: 1;
-		word-break: break-word;
-	}
-
-	.translate-error button {
-		appearance: none;
-		background: none;
-		border: none;
-		cursor: pointer;
-		color: inherit;
-		padding: 0.2em 0.35em;
-		border-radius: 0.3em;
-	}
-
-	.translate-error button:hover {
-		background: rgb(220 38 38 / 0.12);
-	}
 </style>
