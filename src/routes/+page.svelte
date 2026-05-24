@@ -735,7 +735,6 @@
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
-			bind:outputMargin
 		/>
 	</div>
 
