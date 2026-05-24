@@ -37,6 +37,7 @@
 			word: number;
 			offset: number;
 		};
+		cancelTranslate: void;
 	}>();
 
 	// Data
@@ -52,6 +53,7 @@
 	export let loading: boolean;
 	export let editingSelectionStart = -1;
 	export let editingSelectionEnd = -1;
+	export let pendingIndices: Set<number> = new Set();
 
 	// Parameters
 	export let verticalGap: number;
@@ -586,6 +588,7 @@
 	{#if !loading}
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
+			{#if !pendingIndices.has(i)}
 			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
 				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
@@ -693,7 +696,31 @@
 					/>
 				</div>
 			</div>
+			{/if}
 		{/each}
+		{#if pendingIndices.size > 0}
+			<div class="pending-tray">
+				{#each [...pendingIndices] as i (i)}
+					{#if sentences[i]}
+						<div class="pending-row">
+							<span class="pending-tag" lang={sentences[i].lang}>{getLanguageName(sentences[i].lang, $locale)}</span>
+							<div class="pending-bar" aria-label="loading">
+								<div class="pending-bar-inner"></div>
+							</div>
+							<button
+								type="button"
+								class="pending-cancel"
+								title={$LL.translate.cancel()}
+								aria-label={$LL.translate.cancel()}
+								on:click={() => dispatch('cancelTranslate')}
+							>
+								<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+							</button>
+						</div>
+					{/if}
+				{/each}
+			</div>
+		{/if}
 		{#if modifying !== -1}
 			<div class="token-edit-dialog visible" use:draggable bind:this={tokenEditDialog}>
 				<div class="token-edit-topbar">
@@ -1353,6 +1380,78 @@
 
 	.delete {
 		cursor: pointer;
+		color: #e00020;
+	}
+
+	.pending-tray {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35em;
+		padding: 0.6em 0.8em;
+		margin-top: 0.4em;
+		background: rgb(46 91 255 / 0.04);
+		border: 1px dashed rgb(46 91 255 / 0.25);
+		border-radius: 0.5em;
+	}
+
+	.pending-row {
+		display: grid;
+		grid-template-columns: minmax(6em, max-content) 1fr auto;
+		align-items: center;
+		gap: 0.65em;
+		font-size: 0.9em;
+		color: rgb(45 55 80);
+	}
+
+	.pending-tag {
+		font-weight: 600;
+		color: rgb(33 56 199);
+		white-space: nowrap;
+	}
+
+	.pending-bar {
+		height: 4px;
+		background: rgb(46 91 255 / 0.12);
+		border-radius: 2px;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.pending-bar-inner {
+		position: absolute;
+		top: 0;
+		left: -40%;
+		width: 40%;
+		height: 100%;
+		background: linear-gradient(to right, rgb(73 132 255), rgb(44 71 255));
+		border-radius: 2px;
+		animation: output-pending-slide 1.2s ease-in-out infinite;
+	}
+
+	@keyframes output-pending-slide {
+		0% {
+			left: -40%;
+		}
+		100% {
+			left: 100%;
+		}
+	}
+
+	.pending-cancel {
+		appearance: none;
+		background: none;
+		border: none;
+		padding: 0.15em 0.3em;
+		cursor: pointer;
+		color: rgb(74 82 112);
+		border-radius: 0.25em;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.pending-cancel:hover {
+		background: rgb(24 33 61 / 0.08);
 		color: #e00020;
 	}
 
