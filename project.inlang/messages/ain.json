@@ -34,7 +34,7 @@
 	"input_add": "O",
 	"input_modify": "Nuye",
 	"input_guidance": "itak eramuan kikay an yakun ani wa isam yakun ohap aytaksay’usarayep itakpo kosiusaraye. {delimiter} a=eywanke wa na nokanno a=usaraye easkay. {example} neno ene an hi ne.",
-	"input_gloss": "Annotations",
+	"input_gloss": "Itak a=euepeker pe",
 	"input_gloss_empty": "Add words first to enter annotations.",
 	"input_gloss_placeholder": "Annotation",
 	"token_editor_tokens": "Itakpo",
