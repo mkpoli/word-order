@@ -91,7 +91,7 @@
 	let fontSize: number;
 	let glossFontSize = 11;
 	let spaceWidth = 4;
-	let outputMargin: Margin = { top: 0, right: 0, bottom: 0, left: 0 };
+	let outputMargin: Margin = { top: 40, right: 32, bottom: 40, left: 32 };
 
 	let aboutOpen = false;
 	let examplesOpen = false;
