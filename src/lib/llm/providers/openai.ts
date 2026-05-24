@@ -20,7 +20,7 @@ export const openai: LlmProvider = {
 		'gpt-4o',
 		'gpt-4o-mini'
 	],
-	defaultModel: 'gpt-5-mini',
+	defaultModel: 'gpt-5.4-nano',
 	keyHint: 'sk-…',
 	async call(request, { apiKey, model, signal }) {
 		const response = await fetch('https://api.openai.com/v1/chat/completions', {
