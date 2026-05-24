@@ -2,7 +2,7 @@
 
 > A bitext word-alignment and word-order illustrator for translators, language learners, conlangers, and linguists.
 
-**Live demo:** <https://word-order.mkpo.li/>
+**Live demo:** <https://word-order.mkpo.li/> · **First published:** August 2022
 
 ![Preview of the Word Order Illustrator with linked words across two languages.](static/og-image.png)
 
@@ -42,6 +42,66 @@ For a guided tour, click the **Help** button in the header.
 - [`colorjs.io`](https://colorjs.io/) for OKLCH color palette generation
 - [Iconify](https://iconify.design/) for icons
 - Deployed on [Vercel](https://vercel.com/)
+
+## Related tools
+
+> **TODO** — this section is a working draft. Verify each tool's current feature set and add missing peers before publishing externally.
+
+### Authoring tools (closest peers — manual click-to-link alignment with curved connectors)
+
+- **[Bitext Align](https://aligner.tinygods.dev/)** ([source](https://github.com/tinygodsdev/bitext-word-alignment)) — SvelteKit. Multi-line editor with per-line LTR/RTL, gloss/IPA tiers, PNG/SVG/PDF/HTML export, URL-encoded share, light/dark theme, 3 built-in examples.
+- **[BasicCAT Bitext Aligner](https://www.basiccat.org/new-tool-bitext-aligner/)** — sentence/word aligner shipped inside a CAT translation suite.
+- **Academic prototypes** (paper-only, not always hosted):
+  - **Yawat** — uses dynamic markup to keep the alignment view from getting visually busy as connections pile up.
+  - **[Line-a-line](https://www.academia.edu/49114010/)** — drag-and-drop alignment for under-resourced parallel corpora.
+  - **CLUE-Aligner** — manual annotation of contiguous and non-contiguous multiword expressions.
+  - **[SWIFT Aligner](https://www.researchgate.net/publication/263765021)** — visualization + alignment + morpho-syntactic cross-language transfer in one GUI.
+
+### Curated atlases (browse pre-aligned data — not for authoring your own)
+
+- **[LangMap](https://langmap.heuron.com/)** ([source](https://github.com/jounlai/langmap)) — 100 sentences × 223 languages of hand-aligned word-order data, plus a 957-language word atlas with IPA and a D3 family tree.
+
+### Interlinear gloss formatters (adjacent category — they typeset glosses, they don't align across rows)
+
+- **[Leipzig.js](https://bdchauvette.net/leipzig.js/)** ([source](https://github.com/bdchauvette/leipzig.js/)) — JS library for embedding Leipzig-style glosses in HTML.
+- **[Gloss My Gloss](https://neonnaut.github.io/)** — browser tool that formats glosses into aligned columns with abbreviation tooltips.
+- **[leipzig-glossing (Typst)](https://typst.app/universe/package/leipzig-glossing/)** — Typst package for typesetting glosses in documents.
+- **[FieldWorks Language Explorer](https://software.sil.org/fieldworks/)** — SIL's desktop suite for full interlinear text annotation with a persistent lexicon.
+
+### Feature comparison
+
+> **TODO** — checkmarks below reflect a quick survey in May 2026. Re-verify against each tool's current release before relying on them.
+
+| Feature | Word Order Illustrator | Bitext Align | LangMap |
+|---|---|---|---|
+| Author | [@mkpoli](https://github.com/mkpoli) | [tinygodsdev](https://github.com/tinygodsdev) | [Jounlai Cho](https://github.com/jounlai) / [Heuron Corp.](https://heuron.com/) |
+| Web | [word-order.mkpo.li](https://word-order.mkpo.li/) | [aligner.tinygods.dev](https://aligner.tinygods.dev/) | [langmap.heuron.com](https://langmap.heuron.com/) |
+| Repo | [mkpoli/word-order](https://github.com/mkpoli/word-order) | [tinygodsdev/bitext-word-alignment](https://github.com/tinygodsdev/bitext-word-alignment) | [jounlai/langmap](https://github.com/jounlai/langmap) |
+| Tech stack | SvelteKit 2 · Svelte 4 · TS · Vite 5 · Vercel | SvelteKit · Vite 8 · Docker | Static HTML/JS · D3 · no build |
+| Category | Authoring | Authoring | Curated atlas |
+| First public release | Aug 2022 | TBD | TBD |
+| License | (TBD — repo) | (TBD) | MIT |
+| Manual click-to-link alignment | ✅ | ✅ | n/a (pre-aligned) |
+| Curved Bézier connectors | ✅ tunable | ✅ tunable | ✅ |
+| `Intl.Segmenter` tokenization (CJK / Thai) | ✅ | ❌ whitespace + manual join | n/a |
+| `<ruby>` (furigana / pinyin / zhuyin) | ✅ tokens & glosses | ❌ | ❌ |
+| Interlinear gloss tier | ✅ | ✅ | ❌ |
+| Per-token merge / split dialog | ✅ | partial | ❌ |
+| Per-line RTL / LTR toggle | implicit (BCP-47) | ✅ explicit | ✅ |
+| Multiple sentences (> 2 rows) | ✅ | ✅ | ✅ |
+| Drag to reorder rows | ✅ | ✅ | ✅ |
+| Scramble equivalency view | ✅ | ❌ | ❌ |
+| LLM translate + auto-align (BYO key) | ✅ | ❌ | ❌ |
+| Built-in examples | 10+ | 3 | 100 |
+| UI languages | 32 | 1 (EN) | 21 |
+| Light / dark theme | ❌ | ✅ | ✅ |
+| URL share (state in hash) | ❌ | ✅ | ✅ |
+| Export SVG | ✅ | ✅ | ✅ |
+| Export PNG | ✅ (2× fixed) | ✅ (2×–6× picker) | ✅ |
+| Export PDF | ✅ | ✅ | ❌ |
+| Export HTML | ❌ | ✅ | ❌ |
+| Export JSON (project archive) | ✅ | ❌ | ❌ |
+| Language metadata (family / typology) | ❌ | ❌ | ✅ |
 
 ## Developing
 
