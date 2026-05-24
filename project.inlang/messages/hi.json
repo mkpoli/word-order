@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "कस्टम कोड (जैसे ko-Kore, en-US)",
 	"translate_add_custom": "जोड़ें",
 	"translate_remove_custom": "हटाएँ",
-	"translate_cancel": "रद्द करें"
+	"translate_cancel": "रद्द करें",
+	"input_translate": "अनुवाद",
+	"input_translate_hint": "मौजूदा वाक्यों का और भाषाओं में अनुवाद करें (आपकी API कुंजी का उपयोग करता है)।",
+	"translate_retry": "पुनः प्रयास",
+	"translate_cost_notice": "हर अनुरोध आपके अपने {provider} खाते से बिल किया जाता है। आमतौर पर सस्ते मॉडल भी पर्याप्त होते हैं।"
 }

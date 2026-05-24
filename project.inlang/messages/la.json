@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Codex personalis (e.g. ko-Kore, en-US)",
 	"translate_add_custom": "Addere",
 	"translate_remove_custom": "Removere",
-	"translate_cancel": "Cancellare"
+	"translate_cancel": "Cancellare",
+	"input_translate": "Vertere",
+	"input_translate_hint": "Sententias existentes in plures linguas vertere (clavem API tuam adhibet).",
+	"translate_retry": "Iterum conari",
+	"translate_cost_notice": "Quaeque petitio computatur in ratione tua {provider}. Exemplaria viliora plerumque sufficiunt."
 }

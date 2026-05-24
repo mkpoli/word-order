@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "কাস্টম কোড (যেমন ko-Kore, en-US)",
 	"translate_add_custom": "যোগ করুন",
 	"translate_remove_custom": "সরান",
-	"translate_cancel": "বাতিল"
+	"translate_cancel": "বাতিল",
+	"input_translate": "অনুবাদ",
+	"input_translate_hint": "বিদ্যমান বাক্যগুলোকে আরও ভাষায় অনুবাদ করুন (আপনার API কী ব্যবহার করে)।",
+	"translate_retry": "আবার চেষ্টা",
+	"translate_cost_notice": "প্রতিটি অনুরোধ আপনার নিজস্ব {provider} অ্যাকাউন্টে চার্জ হয়। সস্তা মডেলই সাধারণত যথেষ্ট।"
 }

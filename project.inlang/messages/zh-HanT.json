@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "自訂代碼（如 ko-Kore、en-US）",
 	"translate_add_custom": "新增",
 	"translate_remove_custom": "移除",
-	"translate_cancel": "取消"
+	"translate_cancel": "取消",
+	"input_translate": "翻譯",
+	"input_translate_hint": "將現有句子翻譯為更多語言（使用您自己的 API 金鑰）。",
+	"translate_retry": "重試",
+	"translate_cost_notice": "每次請求都會從您自己的 {provider} 帳戶扣費。建議先試試較便宜的模型。"
 }

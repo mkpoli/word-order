@@ -9,15 +9,11 @@
 	export let open = false;
 	export let sourceLangs: string[] = [];
 	export let sourceTokenCounts: number[] = [];
-	export let busy = false;
-	export let elapsedMs = 0;
-	export let errorMessage = '';
 
 	const DEFAULT_TARGETS = ['en', 'ja', 'zh-HanS'];
 
 	const dispatch = createEventDispatcher<{
 		submit: { targets: string[] };
-		cancel: void;
 		openSettings: void;
 		close: void;
 	}>();
@@ -69,21 +65,12 @@
 	}
 
 	function onSubmit() {
-		if (busy || selected.size === 0 || keyMissing || tooLong) return;
+		if (selected.size === 0 || keyMissing || tooLong) return;
 		dispatch('submit', { targets: Array.from(selected) });
 	}
 
 	function onkeydown(e: KeyboardEvent) {
-		if (!open) return;
-		if (e.key === 'Escape') {
-			if (busy) dispatch('cancel');
-			else dispatch('close');
-		}
-	}
-
-	function fmtElapsed(ms: number): string {
-		const s = Math.floor(ms / 1000);
-		return `${s}s`;
+		if (open && e.key === 'Escape') dispatch('close');
 	}
 
 	// Custom chips = selected entries that aren't in the known options list and aren't sources.
@@ -93,14 +80,14 @@
 <svelte:window on:keydown={onkeydown} />
 
 {#if open}
-	<div class="backdrop" on:click={() => !busy && dispatch('close')} role="presentation">
+	<div class="backdrop" on:click={() => dispatch('close')} role="presentation">
 		<div class="popover" role="dialog" aria-modal="true" aria-labelledby="translate-popover-title" on:click|stopPropagation>
 			<header>
 				<h2 id="translate-popover-title">
 					<iconify-icon icon="mdi:translate" inline="true" />
 					{$LL.translate.title()}
 				</h2>
-				<button class="dismiss" type="button" aria-label={$LL.translate.close()} on:click={() => dispatch('close')} disabled={busy}>
+				<button class="dismiss" type="button" aria-label={$LL.translate.close()} on:click={() => dispatch('close')}>
 					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
 				</button>
 			</header>
@@ -110,6 +97,11 @@
 				{#if sourceLangs.length > 0}
 					· {$LL.translate.fromSources({ count: String(sourceLangs.length), langs: sourceSummary })}
 				{/if}
+			</p>
+
+			<p class="cost">
+				<iconify-icon icon="mdi:credit-card-outline" inline="true" />
+				<span>{$LL.translate.costNotice({ provider: provider.label })}</span>
 			</p>
 
 			{#if keyMissing}
@@ -126,7 +118,7 @@
 					<span>{$LL.translate.tooLong({ count: String(tooLong), max: String(MAX_SOURCE_TOKENS) })}</span>
 				</div>
 			{:else}
-				<fieldset class="targets" disabled={busy}>
+				<fieldset class="targets">
 					<legend>{$LL.translate.targets()}</legend>
 					<div class="chips">
 						{#each options as opt}
@@ -159,29 +151,11 @@
 				</fieldset>
 			{/if}
 
-			{#if errorMessage}
-				<div class="error" role="alert">
-					<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
-					<span>{errorMessage}</span>
-				</div>
-			{/if}
-
 			<div class="actions">
-				{#if busy}
-					<span class="elapsed" aria-live="polite">{fmtElapsed(elapsedMs)}</span>
-					<button type="button" class="cancel" on:click={() => dispatch('cancel')}>
-						{$LL.translate.cancel()}
-					</button>
-					<button type="button" class="submit" disabled>
-						<iconify-icon icon="mdi:loading" inline="true" />
-						{$LL.translate.busy()}
-					</button>
-				{:else}
-					<button type="button" class="submit" on:click={onSubmit} disabled={selected.size === 0 || keyMissing || !!tooLong}>
-						<iconify-icon icon="mdi:translate" inline="true" />
-						{$LL.translate.submit({ count: String(selected.size) })}
-					</button>
-				{/if}
+				<button type="button" class="submit" on:click={onSubmit} disabled={selected.size === 0 || keyMissing || !!tooLong}>
+					<iconify-icon icon="mdi:translate" inline="true" />
+					{$LL.translate.submit({ count: String(selected.size) })}
+				</button>
 			</div>
 		</div>
 	</div>
@@ -241,15 +215,28 @@
 		background: rgb(24 33 61 / 0.08);
 	}
 
-	.dismiss:disabled {
-		opacity: 0.4;
-		cursor: not-allowed;
-	}
-
 	.muted {
 		color: rgb(74 82 112);
 		font-size: 0.9em;
+		margin: 0 0 0.5em;
+	}
+
+	.cost {
+		display: flex;
+		gap: 0.5em;
+		align-items: flex-start;
+		background: rgb(46 91 255 / 0.06);
+		border: 1px solid rgb(46 91 255 / 0.15);
+		color: rgb(45 55 80);
+		font-size: 0.85em;
+		padding: 0.55em 0.75em;
 		margin: 0 0 0.9em;
+		border-radius: 0.4em;
+		line-height: 1.5;
+	}
+
+	.cost span {
+		flex: 1;
 	}
 
 	.warn {
@@ -283,10 +270,6 @@
 		border-radius: 0.5em;
 		padding: 0.8em 0.85em;
 		margin: 0 0 0.9em;
-	}
-
-	.targets[disabled] {
-		opacity: 0.6;
 	}
 
 	.targets legend {
@@ -382,51 +365,9 @@
 		cursor: not-allowed;
 	}
 
-	.error {
-		display: flex;
-		gap: 0.5em;
-		align-items: flex-start;
-		background: rgb(220 38 38 / 0.08);
-		border: 1px solid rgb(220 38 38 / 0.4);
-		color: rgb(140 24 24);
-		font-size: 0.92em;
-		padding: 0.7em 0.85em;
-		margin-bottom: 0.9em;
-		border-radius: 0.4em;
-		word-break: break-word;
-	}
-
-	.error span {
-		flex: 1;
-	}
-
 	.actions {
 		display: flex;
 		justify-content: flex-end;
-		align-items: center;
-		gap: 0.5em;
-	}
-
-	.elapsed {
-		color: rgb(74 82 112);
-		font-size: 0.88em;
-		font-variant-numeric: tabular-nums;
-		margin-right: auto;
-	}
-
-	.cancel {
-		appearance: none;
-		background: white;
-		color: rgb(74 82 112);
-		border: 1px solid rgb(46 91 255 / 0.3);
-		font-weight: 600;
-		border-radius: 0.35em;
-		padding: 0.55em 1.1em;
-		cursor: pointer;
-	}
-
-	.cancel:hover {
-		background: rgb(46 91 255 / 0.06);
 	}
 
 	.submit {

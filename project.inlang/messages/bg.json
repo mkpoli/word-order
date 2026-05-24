@@ -83,5 +83,9 @@
 	"translate_custom_placeholder": "Собствен код (напр. ko-Kore, en-US)",
 	"translate_add_custom": "Добави",
 	"translate_remove_custom": "Премахни",
-	"translate_cancel": "Отказ"
+	"translate_cancel": "Отказ",
+	"input_translate": "Преведи",
+	"input_translate_hint": "Преведете съществуващите изречения на повече езици (използва вашия API ключ).",
+	"translate_retry": "Опитай отново",
+	"translate_cost_notice": "Всяка заявка се таксува от вашия акаунт в {provider}. По-евтините модели обикновено са достатъчни."
 }

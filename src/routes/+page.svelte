@@ -28,6 +28,8 @@
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 	import { translateAndAlign } from '$lib/llm/translate';
+	import type { TranslateRequest } from '$lib/llm/types';
+	import { addGlossAlignments } from '$lib/gloss-align';
 	import { getLocaleOptions } from '$lib/lang';
 
 	// const SENTENCES = [
@@ -98,13 +100,21 @@
 	let aboutOpen = false;
 	let settingsOpen = false;
 	let examplesOpen = false;
-	let translateBusy = false;
-	let translateError = '';
 	let translatePopoverOpen = false;
-	let translateAbort: AbortController | null = null;
-	let translateStartedAt = 0;
-	let translateElapsedMs = 0;
-	let translateElapsedTimer: ReturnType<typeof setInterval> | null = null;
+
+	type TranslateSlot = {
+		id: string;
+		lang: string;
+		endonym: string;
+		status: 'pending' | 'error';
+		startedAt: number;
+		elapsedMs: number;
+		errorMessage?: string;
+		abort: AbortController;
+	};
+
+	let translateSlots: TranslateSlot[] = [];
+	let translateTimer: ReturnType<typeof setInterval> | null = null;
 
 	const TRANSLATE_TIMEOUT_MS = 120_000;
 
@@ -247,93 +257,129 @@
 		await tick();
 	}
 
-	function stopTranslateTimer() {
-		if (translateElapsedTimer) {
-			clearInterval(translateElapsedTimer);
-			translateElapsedTimer = null;
-		}
-	}
-
-	function cancelTranslate() {
-		translateAbort?.abort();
-	}
-
-	async function runTranslate(targets: string[]): Promise<void> {
-		if (modifying !== -1) return;
-		if (sentences.length === 0) {
-			translateError = 'Add at least one sentence first.';
-			return;
-		}
-		translateError = '';
-		translateBusy = true;
-		translateStartedAt = Date.now();
-		translateElapsedMs = 0;
-		stopTranslateTimer();
-		translateElapsedTimer = setInterval(() => {
-			translateElapsedMs = Date.now() - translateStartedAt;
+	function ensureTranslateTimer() {
+		if (translateTimer) return;
+		translateTimer = setInterval(() => {
+			const now = Date.now();
+			let anyPending = false;
+			for (const slot of translateSlots) {
+				if (slot.status === 'pending') {
+					slot.elapsedMs = now - slot.startedAt;
+					anyPending = true;
+				}
+			}
+			if (!anyPending) {
+				clearInterval(translateTimer!);
+				translateTimer = null;
+			}
+			translateSlots = translateSlots;
 		}, 250);
+	}
 
-		const controller = new AbortController();
-		translateAbort = controller;
-		const timeoutId = setTimeout(() => controller.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)), TRANSLATE_TIMEOUT_MS);
+	function cancelTranslateSlot(id: string) {
+		const slot = translateSlots.find((s) => s.id === id);
+		if (!slot) return;
+		slot.abort.abort();
+	}
+
+	function dismissTranslateSlot(id: string) {
+		translateSlots = translateSlots.filter((s) => s.id !== id);
+	}
+
+	function buildSources(): TranslateRequest['sources'] {
+		return sentences.map((s) => {
+			const tokens = getSentenceWords(s);
+			const glosses = getSentenceGlosses(s);
+			return { lang: s.lang, text: tokens.join(''), tokens, glosses };
+		});
+	}
+
+	function startTranslate(targets: string[]) {
+		if (modifying !== -1) return;
+		if (sentences.length === 0) return;
+
+		translatePopoverOpen = false;
+		const sourcesSnapshot = buildSources();
+
+		const newSlots: TranslateSlot[] = targets.map((tag) => ({
+			id: crypto.randomUUID(),
+			lang: tag,
+			endonym: endonymFor(tag),
+			status: 'pending',
+			startedAt: Date.now(),
+			elapsedMs: 0,
+			abort: new AbortController()
+		}));
+
+		translateSlots = [...translateSlots, ...newSlots];
+		ensureTranslateTimer();
+
+		for (const slot of newSlots) {
+			void runOneTranslation(slot, sourcesSnapshot);
+		}
+	}
+
+	async function runOneTranslation(slot: TranslateSlot, sourcesSnapshot: TranslateRequest['sources']): Promise<void> {
+		const timeoutId = setTimeout(
+			() => slot.abort.abort(new Error(`Timed out after ${TRANSLATE_TIMEOUT_MS / 1000}s`)),
+			TRANSLATE_TIMEOUT_MS
+		);
 
 		try {
-			const sources = sentences.map((s) => {
-				const tokens = getSentenceWords(s);
-				return { lang: s.lang, text: tokens.join(''), tokens };
-			});
 			const result = await translateAndAlign(
-				{
-					sources,
-					targets: targets.map((tag) => ({ lang: tag, endonym: endonymFor(tag) }))
-				},
+				{ sources: sourcesSnapshot, targets: [{ lang: slot.lang, endonym: slot.endonym }] },
 				undefined,
-				controller.signal
+				slot.abort.signal
 			);
+			const newSentence = result.sentences[0];
+			if (!newSentence) throw new Error('No translation returned');
 
-			const existingCount = sentences.length;
-			const newSentences = result.sentences;
+			// Append the new row.
+			sentences.push(newSentence);
+			const newIdx = sentences.length - 1;
+			color_map = [...color_map, new Array(newSentence.tokens.length).fill(-1)];
+			word_spans = [...word_spans, new Array(newSentence.tokens.length).fill(null)];
 
-			// Append target sentence rows.
-			for (const s of newSentences) {
-				sentences.push(s);
-				color_map = [...color_map, new Array(s.tokens.length).fill(-1)];
-				word_spans = [...word_spans, new Array(s.tokens.length).fill(null)];
-			}
-
-			// Pad pre-existing equivalency groups with empty entries for each new target sentence.
+			// Pad pre-existing equivalency groups with empty entries for the new sentence.
 			for (let i = 0; i < equivalency.length; i++) {
-				equivalency[i] = [...equivalency[i], ...newSentences.map(() => [] as number[])];
+				equivalency[i] = [...equivalency[i], [] as number[]];
 			}
 
-			// Append new alignment groups. Groups come in [source_0...source_{S-1}, target_0...] order,
-			// matching the order we sent (and the order sentences are laid out post-append).
-			for (const group of result.groups) {
-				const row: number[][] = Array.from({ length: existingCount + newSentences.length }, () => [] as number[]);
-				for (let k = 0; k < existingCount + newSentences.length; k++) {
-					row[k] = group[k] ?? [];
-				}
-				equivalency.push(row);
-			}
-
+			// Derive new alignment groups from shared gloss text across sentences.
+			equivalency = addGlossAlignments(sentences, equivalency, [newIdx]);
 			sentences = sentences;
-			equivalency = equivalency;
-			mode = 'edit';
-			translatePopoverOpen = false;
+
+			// Remove this slot — done.
+			translateSlots = translateSlots.filter((s) => s.id !== slot.id);
+			// Auto-enter edit mode when the first translation lands, so user can tweak.
+			if (mode === 'view') mode = 'edit';
 
 			await tick();
 		} catch (err) {
-			translateError = controller.signal.aborted
-				? 'Cancelled.'
-				: err instanceof Error
-					? err.message
-					: String(err);
+			if (slot.abort.signal.aborted) {
+				// Cancellation: drop the slot quietly.
+				translateSlots = translateSlots.filter((s) => s.id !== slot.id);
+			} else {
+				slot.status = 'error';
+				slot.errorMessage = err instanceof Error ? err.message : String(err);
+				translateSlots = translateSlots;
+			}
 		} finally {
 			clearTimeout(timeoutId);
-			stopTranslateTimer();
-			translateAbort = null;
-			translateBusy = false;
 		}
+	}
+
+	function retryTranslateSlot(id: string) {
+		const slot = translateSlots.find((s) => s.id === id);
+		if (!slot || slot.status !== 'error') return;
+		slot.status = 'pending';
+		slot.startedAt = Date.now();
+		slot.elapsedMs = 0;
+		slot.errorMessage = undefined;
+		slot.abort = new AbortController();
+		translateSlots = translateSlots;
+		ensureTranslateTimer();
+		void runOneTranslation(slot, buildSources());
 	}
 
 	function endonymFor(tag: string): string {
@@ -710,19 +756,6 @@
 			</button>
 		</div>
 	</div>
-	<button
-		class="about-button"
-		title={$LL.menu.translate()}
-		aria-label={$LL.menu.translate()}
-		on:click={() => {
-			translateError = '';
-			translatePopoverOpen = true;
-		}}
-		disabled={sentences.length === 0 || mode === 'edit'}
-	>
-		<iconify-icon icon="mdi:translate" />
-		{$LL.menu.translate()}
-	</button>
 	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
 		<iconify-icon icon="mdi:cog-outline" />
 		{$LL.menu.settings()}
@@ -742,20 +775,43 @@
 	bind:open={translatePopoverOpen}
 	sourceLangs={sentences.map((s) => s.lang)}
 	sourceTokenCounts={sentences.map((s) => s.tokens.length)}
-	busy={translateBusy}
-	elapsedMs={translateElapsedMs}
-	errorMessage={translateError}
-	on:submit={({ detail }) => runTranslate(detail.targets)}
-	on:cancel={cancelTranslate}
+	on:submit={({ detail }) => startTranslate(detail.targets)}
 	on:openSettings={() => {
 		translatePopoverOpen = false;
 		settingsOpen = true;
 	}}
-	on:close={() => {
-		translatePopoverOpen = false;
-		translateError = '';
-	}}
+	on:close={() => (translatePopoverOpen = false)}
 />
+
+{#if translateSlots.length > 0}
+	<div class="translate-progress" role="status" aria-live="polite">
+		{#each translateSlots as slot (slot.id)}
+			<div class="translate-slot" class:errored={slot.status === 'error'}>
+				<span class="translate-slot-lang">
+					<iconify-icon icon="mdi:translate" inline="true" />
+					<span lang={slot.lang}>{slot.endonym}</span>
+				</span>
+				{#if slot.status === 'pending'}
+					<div class="translate-bar" aria-label="loading">
+						<div class="translate-bar-inner"></div>
+					</div>
+					<span class="translate-slot-time">{Math.floor(slot.elapsedMs / 1000)}s</span>
+					<button type="button" class="translate-slot-action" title={$LL.translate.cancel()} on:click={() => cancelTranslateSlot(slot.id)} aria-label={$LL.translate.cancel()}>
+						<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+					</button>
+				{:else}
+					<span class="translate-slot-error" title={slot.errorMessage}>{slot.errorMessage}</span>
+					<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={() => retryTranslateSlot(slot.id)} aria-label={$LL.translate.retry()}>
+						<iconify-icon icon="mdi:refresh" inline="true" />
+					</button>
+					<button type="button" class="translate-slot-action" title={$LL.translate.dismissError()} on:click={() => dismissTranslateSlot(slot.id)} aria-label={$LL.translate.dismissError()}>
+						<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+					</button>
+				{/if}
+			</div>
+		{/each}
+	</div>
+{/if}
 
 <main>
 	<div class="output" class:editing-active={modifying !== -1} bind:this={outputContainer}>
@@ -854,6 +910,7 @@
 	<div class="input" class:editing-active={modifying !== -1} bind:this={inputContainer}>
 		<SentenceInput
 			on:submit={onsubmit}
+			on:openTranslate={() => (translatePopoverOpen = true)}
 			{modifying}
 			{sentences}
 			bind:text={editingText}
@@ -1400,4 +1457,107 @@
 		}
 	}
 
+	.translate-progress {
+		position: fixed;
+		bottom: 1.2em;
+		right: 1.2em;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+		z-index: 800;
+		max-width: min(24em, calc(100vw - 2em));
+	}
+
+	.translate-slot {
+		display: grid;
+		grid-template-columns: auto 1fr auto auto auto;
+		align-items: center;
+		gap: 0.6em;
+		background: white;
+		border: 1px solid rgb(46 91 255 / 0.3);
+		border-radius: 0.5em;
+		padding: 0.55em 0.8em;
+		box-shadow: 0 6px 20px rgb(23 36 78 / 0.18);
+		font-size: 0.9em;
+		color: rgb(45 55 80);
+	}
+
+	.translate-slot.errored {
+		border-color: rgb(220 38 38 / 0.5);
+		background: rgb(220 38 38 / 0.06);
+		color: rgb(140 24 24);
+	}
+
+	.translate-slot-lang {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		font-weight: 600;
+		color: rgb(33 56 199);
+	}
+
+	.translate-slot.errored .translate-slot-lang {
+		color: rgb(140 24 24);
+	}
+
+	.translate-bar {
+		width: 100%;
+		height: 4px;
+		background: rgb(46 91 255 / 0.12);
+		border-radius: 2px;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.translate-bar-inner {
+		position: absolute;
+		top: 0;
+		left: -40%;
+		width: 40%;
+		height: 100%;
+		background: linear-gradient(to right, rgb(73 132 255), rgb(44 71 255));
+		border-radius: 2px;
+		animation: translate-bar-slide 1.2s ease-in-out infinite;
+	}
+
+	@keyframes translate-bar-slide {
+		0% {
+			left: -40%;
+		}
+		100% {
+			left: 100%;
+		}
+	}
+
+	.translate-slot-time {
+		font-variant-numeric: tabular-nums;
+		font-size: 0.85em;
+		color: rgb(74 82 112);
+	}
+
+	.translate-slot-error {
+		font-size: 0.88em;
+		word-break: break-word;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+
+	.translate-slot-action {
+		appearance: none;
+		background: none;
+		border: none;
+		padding: 0.15em 0.3em;
+		cursor: pointer;
+		color: inherit;
+		border-radius: 0.3em;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.translate-slot-action:hover {
+		background: rgb(24 33 61 / 0.08);
+	}
 </style>

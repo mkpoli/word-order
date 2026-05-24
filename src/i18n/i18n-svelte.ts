@@ -43,7 +43,9 @@ const createLL = () => ({
 		guidance: m.input_guidance,
 		gloss: m.input_gloss,
 		glossEmpty: m.input_gloss_empty,
-		glossPlaceholder: m.input_gloss_placeholder
+		glossPlaceholder: m.input_gloss_placeholder,
+		translate: m.input_translate,
+		translateHint: m.input_translate_hint
 	},
 	tokenEditor: {
 		tokens: m.token_editor_tokens,
@@ -118,7 +120,9 @@ const createLL = () => ({
 		customPlaceholder: m.translate_custom_placeholder,
 		addCustom: m.translate_add_custom,
 		removeCustom: m.translate_remove_custom,
-		cancel: m.translate_cancel
+		cancel: m.translate_cancel,
+		retry: m.translate_retry,
+		costNotice: m.translate_cost_notice
 	}
 });
 

@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Kode khusus (mis. ko-Kore, en-US)",
 	"translate_add_custom": "Tambah",
 	"translate_remove_custom": "Hapus",
-	"translate_cancel": "Batal"
+	"translate_cancel": "Batal",
+	"input_translate": "Terjemah",
+	"input_translate_hint": "Terjemahkan kalimat yang ada ke bahasa lain (menggunakan kunci API Anda).",
+	"translate_retry": "Coba lagi",
+	"translate_cost_notice": "Setiap permintaan dibebankan ke akun {provider} Anda sendiri. Model yang lebih murah biasanya cukup."
 }

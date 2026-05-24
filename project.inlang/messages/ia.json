@@ -88,5 +88,9 @@
 	"translate_custom_placeholder": "Codice personal (ex. ko-Kore, en-US)",
 	"translate_add_custom": "Adder",
 	"translate_remove_custom": "Remover",
-	"translate_cancel": "Cancellar"
+	"translate_cancel": "Cancellar",
+	"input_translate": "Traducer",
+	"input_translate_hint": "Traducer le phrases existente a plus linguas (usa tu clave API).",
+	"translate_retry": "Retentar",
+	"translate_cost_notice": "Cata requesta es facturate a tu proprie conto {provider}. Le modellos plus economic usualmente suffice."
 }
