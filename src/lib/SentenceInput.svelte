@@ -3,21 +3,24 @@
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import { tokenizeSentence } from './tokenize';
-	import type { Sentence } from './types';
-	import { createSentenceTokens, getSentenceGlosses, getSentenceWords } from './types';
+	import type { AnnotationPosition, Sentence } from './types';
+	import { getSentenceWords } from './types';
 	import Word from './Word.svelte';
 
 	export let modifying: number;
 	export let sentences: Sentence[];
 	export let text = '';
-	export let glosses: string[] = [];
+	/** annotationsAbove[laneIndex][tokenIndex] — top lane first. */
+	export let annotationsAbove: string[][] = [];
+	/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
+	export let annotationsBelow: string[][] = [];
 	export let glossEnabled = false;
 
 	let lang = 'en';
 	let displayName = 'English';
 
 	$: displayName = getLanguageName(lang, $locale);
-	$: syncGlosses(text, glosses);
+	$: syncLanes(text);
 
 	let previousLang = 'en';
 
@@ -28,15 +31,22 @@
 	function onmodifyingchange(modifying: number) {
 		if (modifying !== -1) {
 			previousLang = lang;
-			lang = sentences[modifying].lang;
-			text = getSentenceWords(sentences[modifying]).join('|');
-			glosses = [...getSentenceGlosses(sentences[modifying])];
-			glossEnabled = sentences[modifying].showGloss || glosses.some(Boolean);
+			const sentence = sentences[modifying];
+			lang = sentence.lang;
+			text = getSentenceWords(sentence).join('|');
+			annotationsAbove = Array.from({ length: sentence.lanesAbove }, (_, laneIndex) =>
+				sentence.tokens.map((t) => t.annotationsAbove[laneIndex] ?? '')
+			);
+			annotationsBelow = Array.from({ length: sentence.lanesBelow }, (_, laneIndex) =>
+				sentence.tokens.map((t) => t.annotationsBelow[laneIndex] ?? '')
+			);
+			glossEnabled = sentence.showGloss || sentence.lanesAbove > 0 || sentence.lanesBelow > 0;
 			textArea.focus();
 		} else {
 			lang = previousLang;
 			text = '';
-			glosses = [];
+			annotationsAbove = [];
+			annotationsBelow = [];
 			glossEnabled = false;
 		}
 	}
@@ -45,7 +55,8 @@
 		submit: {
 			lang: string;
 			words: string[];
-			glosses: string[];
+			annotationsAbove: string[][];
+			annotationsBelow: string[][];
 			showGloss: boolean;
 		};
 		openTranslate: void;
@@ -57,22 +68,65 @@
 		return modifying === -1 ? tokenizeSentence(value, lang) : value.split(/[|]/u).filter(Boolean);
 	}
 
-	function syncGlosses(value: string, currentGlosses: string[]) {
+	function fitLanes(lanes: string[][], tokenCount: number): string[][] {
+		return lanes.map((lane) => {
+			const next = new Array(tokenCount).fill('');
+			for (let i = 0; i < Math.min(lane.length, tokenCount); i++) next[i] = lane[i] ?? '';
+			return next;
+		});
+	}
+
+	function syncLanes(value: string) {
 		const words = getWords(value);
-		const nextGlosses = words.map((_, index) => currentGlosses[index] ?? '');
+		const nextAbove = fitLanes(annotationsAbove, words.length);
+		const nextBelow = fitLanes(annotationsBelow, words.length);
 
-		if (nextGlosses.length === currentGlosses.length && nextGlosses.every((gloss, index) => gloss === currentGlosses[index])) {
-			return;
+		if (sameShape(nextAbove, annotationsAbove)) {
+			// no-op
+		} else {
+			annotationsAbove = nextAbove;
 		}
+		if (sameShape(nextBelow, annotationsBelow)) {
+			// no-op
+		} else {
+			annotationsBelow = nextBelow;
+		}
+	}
 
-		glosses = nextGlosses;
+	function sameShape(a: string[][], b: string[][]): boolean {
+		if (a.length !== b.length) return false;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i].length !== b[i].length) return false;
+			for (let j = 0; j < a[i].length; j++) {
+				if (a[i][j] !== b[i][j]) return false;
+			}
+		}
+		return true;
 	}
 
 	function isGlossableToken(word: string): boolean {
 		return !word.match(/^(\s|\p{P}+)$/u);
 	}
 
-	$: glossTokens = createSentenceTokens(getWords(text), glosses);
+	function addLane(position: AnnotationPosition) {
+		const words = getWords(text);
+		const newLane = new Array(words.length).fill('');
+		if (position === 'above') annotationsAbove = [...annotationsAbove, newLane];
+		else annotationsBelow = [...annotationsBelow, newLane];
+		glossEnabled = true;
+	}
+
+	function removeLane(position: AnnotationPosition, laneIndex: number) {
+		if (position === 'above') annotationsAbove = annotationsAbove.filter((_, i) => i !== laneIndex);
+		else annotationsBelow = annotationsBelow.filter((_, i) => i !== laneIndex);
+	}
+
+	$: words = getWords(text);
+	$: glossableTokens = words
+		.map((word, tokenIndex) => ({ word, tokenIndex }))
+		.filter(({ word }) => isGlossableToken(word));
+	$: reversedAboveIndices = annotationsAbove.map((_, i) => i).reverse();
+	$: hasAnyLane = annotationsAbove.length > 0 || annotationsBelow.length > 0;
 </script>
 
 <fieldset class:editing={modifying !== -1}>
@@ -97,18 +151,75 @@
 				{$LL.input.gloss()}
 			</summary>
 			<div class="gloss-content">
-				{#if glossTokens.length === 0}
+				{#if glossableTokens.length === 0}
 					<p class="gloss-empty">{$LL.input.glossEmpty()}</p>
 				{:else}
-					<div class="gloss-grid">
-						{#each glossTokens as token, index}
-							{#if isGlossableToken(token.text)}
-								<label class="gloss-field" for={`gloss-${index}`}>
-									<span class="gloss-word" {lang}><Word word={token.text} /></span>
-									<input id={`gloss-${index}`} type="text" bind:value={glosses[index]} placeholder={$LL.input.glossPlaceholder()} />
-								</label>
-							{/if}
-						{/each}
+					<div class="lane-scroll">
+						<div class="lane-grid" style="--n: {glossableTokens.length}">
+							<button type="button" class="lane-add lane-add-above" on:click={() => addLane('above')}>
+								<span class="lane-add-label">
+									<iconify-icon icon="mdi:plus" inline="true" />
+									{$LL.input.addLaneAbove()}
+								</span>
+							</button>
+
+							<!-- Above lanes render top-to-bottom in REVERSE index order so
+								"Above 1" = closest to word (just above WORD), "Above N" = furthest. -->
+							{#each reversedAboveIndices as laneIndex (`above-${laneIndex}`)}
+								<span class="lane-label">{$LL.input.laneAbove({ n: laneIndex + 1 })}</span>
+								{#each glossableTokens as { tokenIndex } (tokenIndex)}
+									<input
+										type="text"
+										class="lane-input"
+										bind:value={annotationsAbove[laneIndex][tokenIndex]}
+										placeholder={$LL.input.glossPlaceholder()}
+									/>
+								{/each}
+								<button
+									type="button"
+									class="lane-remove"
+									title={$LL.input.removeLane()}
+									aria-label={$LL.input.removeLane()}
+									on:click={() => removeLane('above', laneIndex)}
+								>
+									<iconify-icon icon="mdi:close" inline="true" />
+								</button>
+							{/each}
+
+							<span class="lane-label lane-label-word">{$LL.input.wordRow()}</span>
+							{#each glossableTokens as { word, tokenIndex } (tokenIndex)}
+								<span class="word-cell" {lang}><Word {word} /></span>
+							{/each}
+							<span class="lane-corner" aria-hidden="true"></span>
+
+							{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
+								<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
+								{#each glossableTokens as { tokenIndex } (tokenIndex)}
+									<input
+										type="text"
+										class="lane-input"
+										bind:value={annotationsBelow[laneIndex][tokenIndex]}
+										placeholder={$LL.input.glossPlaceholder()}
+									/>
+								{/each}
+								<button
+									type="button"
+									class="lane-remove"
+									title={$LL.input.removeLane()}
+									aria-label={$LL.input.removeLane()}
+									on:click={() => removeLane('below', laneIndex)}
+								>
+									<iconify-icon icon="mdi:close" inline="true" />
+								</button>
+							{/each}
+
+							<button type="button" class="lane-add lane-add-below" on:click={() => addLane('below')}>
+								<span class="lane-add-label">
+									<iconify-icon icon="mdi:plus" inline="true" />
+									{$LL.input.addLaneBelow()}
+								</span>
+							</button>
+						</div>
 					</div>
 				{/if}
 			</div>
@@ -120,14 +231,21 @@
 				<button
 					class="primary"
 					on:click={() => {
-						const words = getWords(text);
-						if (words.length === 0) {
+						const w = getWords(text);
+						if (w.length === 0) {
 							empty = true;
 							return;
 						}
 						text = '';
-						const nextGlosses = words.map((_, index) => glosses[index] ?? '');
-						dispatch('submit', { lang, words, glosses: nextGlosses, showGloss: glossEnabled || nextGlosses.some(Boolean) });
+						const nextAbove = fitLanes(annotationsAbove, w.length);
+						const nextBelow = fitLanes(annotationsBelow, w.length);
+						dispatch('submit', {
+							lang,
+							words: w,
+							annotationsAbove: nextAbove,
+							annotationsBelow: nextBelow,
+							showGloss: glossEnabled || hasAnyLane
+						});
 					}}
 				>
 					<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
@@ -252,23 +370,161 @@
 		padding: 0 1em 1em;
 	}
 
-	.gloss-grid {
-		display: grid;
-		gap: 0.75em;
-		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+	/* Horizontal scroll lives on this wrapper so wide sentences scroll within
+	   the panel instead of clipping or pushing the whole input column wider.
+	   Thin always-visible scrollbar so users see the affordance. */
+	.lane-scroll {
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
+		padding-bottom: 0.15em;
+		scrollbar-width: thin;
+		scrollbar-color: rgb(44 71 255 / 30%) transparent;
 	}
 
-	.gloss-field {
-		display: grid;
-		gap: 0.35em;
+	.lane-scroll::-webkit-scrollbar {
+		height: 6px;
 	}
 
-	.gloss-word {
-		display: block;
-		font-size: 0.92em;
+	.lane-scroll::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.lane-scroll::-webkit-scrollbar-thumb {
+		background: rgb(44 71 255 / 25%);
+		border-radius: 3px;
+	}
+
+	.lane-scroll::-webkit-scrollbar-thumb:hover {
+		background: rgb(44 71 255 / 45%);
+	}
+
+	/* Single aligned grid: [label] N×[input] [×]. Lane rows, word row, and
+	   add-buttons all live in the same grid so columns line up across rows —
+	   matching the actual output diagram. Each input column sizes to
+	   max(word width, current input value width); field-sizing: content on
+	   the inputs is what lets the column shrink when values are short. */
+	.lane-grid {
+		display: grid;
+		grid-template-columns: max-content repeat(var(--n, 1), max-content) auto;
+		min-width: max-content;
+		gap: 0.35em 0.45em;
+		align-items: center;
+		padding: 0;
+	}
+
+	.lane-label {
+		font-size: 0.74em;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: rgb(74 89 142);
+		padding: 0.2em 0.5em 0.2em 0.1em;
+		white-space: nowrap;
+		/* Pin to the left so you can still see "Above 1 / Word / Below 2" when
+		   scrolling horizontally through a long sentence. */
+		position: sticky;
+		left: 0;
+		background: rgb(249 251 255);
+		z-index: 1;
+	}
+
+	.lane-label-word {
+		color: rgb(33 56 199);
+	}
+
+	.lane-input {
+		/* Auto-size to the input's value (Chrome/Edge 123+, recent FF/Safari).
+		   In older browsers the input keeps its default intrinsic width, which
+		   is still functional, just wider than ideal. */
+		field-sizing: content;
+		padding: 0.28em 0.45em;
+		border: 1px solid rgb(44 71 255 / 20%);
+		border-radius: 0.3em;
+		background: white;
+		font: inherit;
+		font-size: 0.9em;
+		min-width: 2.5ch;
+		max-width: 16em;
+		box-sizing: content-box;
+		text-align: center;
+	}
+
+	.lane-input:focus {
+		outline: none;
+		border-color: rgb(44 71 255 / 55%);
+		box-shadow: 0 0 0 2px rgb(44 71 255 / 12%);
+	}
+
+	.word-cell {
+		text-align: center;
+		font-size: 1.05em;
 		font-weight: 600;
-		color: rgb(60 67 96);
-		word-break: break-word;
+		color: rgb(33 51 110);
+		padding: 0.35em 0.2em;
+		background: rgb(46 91 255 / 0.06);
+		border-radius: 0.25em;
+	}
+
+	.lane-remove {
+		appearance: none;
+		width: 1.5em;
+		height: 1.5em;
+		border: 1px solid rgb(220 60 60 / 25%);
+		background: white;
+		border-radius: 999px;
+		color: rgb(170 30 30);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		padding: 0;
+		justify-self: center;
+	}
+
+	.lane-remove:hover {
+		background: rgb(220 60 60 / 12%);
+	}
+
+	/* Flat full-width bars at the top and bottom of the stack. The label inside
+	   sticks to the left so it stays visible even when the user scrolls right. */
+	.lane-add {
+		appearance: none;
+		grid-column: 1 / -1;
+		justify-self: stretch;
+		display: block;
+		width: 100%;
+		padding: 0.3em 0;
+		border: none;
+		border-radius: 0;
+		background: rgb(46 91 255 / 0.06);
+		color: rgb(33 56 199);
+		font: inherit;
+		font-size: 0.78em;
+		font-weight: 600;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.lane-add-above {
+		border-bottom: 1px dashed rgb(44 71 255 / 25%);
+	}
+
+	.lane-add-below {
+		border-top: 1px dashed rgb(44 71 255 / 25%);
+	}
+
+	.lane-add:hover {
+		background: rgb(46 91 255 / 0.13);
+	}
+
+	.lane-add-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3em;
+		padding: 0 0.6em;
+		position: sticky;
+		left: 0;
 	}
 
 	.gloss-empty {
@@ -279,10 +535,6 @@
 
 	.buttons {
 		display: contents;
-		/* align-items: center;
-		gap: 1em;
-
-		 */
 	}
 
 	.primary-actions {
@@ -355,6 +607,21 @@
 		opacity: 0.8;
 	}
 
+	.lane-remove,
+	.lane-add {
+		background: white;
+		color: inherit;
+		font-weight: 600;
+	}
+
+	.lane-add {
+		color: rgb(33 56 199);
+	}
+
+	.lane-remove {
+		color: rgb(170 30 30);
+	}
+
 	@media (max-width: 700px) {
 		.input-form {
 			grid-template-areas:
@@ -366,8 +633,15 @@
 				'i i i';
 		}
 
-		button {
+		.buttons > button,
+		button[type='submit'] {
 			width: 100%;
+		}
+
+		.lane-grid {
+			/* On narrow screens columns can shrink to their min so the editor
+			   stays scrollable within the panel rather than wrapping. */
+			grid-template-columns: max-content repeat(var(--n, 1), minmax(3.2em, 1fr)) auto;
 		}
 	}
 

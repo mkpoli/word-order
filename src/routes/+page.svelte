@@ -11,8 +11,8 @@
 	import { page } from '$app/stores';
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
-	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData } from '$lib/types';
-	import { createSentence, getSentenceGlosses, getSentenceWords } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
+	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 	import { EXAMPLES, type Example } from '$lib/examples';
 
@@ -25,6 +25,7 @@
 	import SentenceInput from '$lib/SentenceInput.svelte';
 	import SettingsDialog from '$lib/SettingsDialog.svelte';
 	import TranslatePopover from '$lib/TranslatePopover.svelte';
+	import type { Margin } from '$lib/types';
 	import { remapSentenceConnections } from '$lib/sentence-edit';
 	import { save, open } from '$lib/file';
 	import { translateAndAlign } from '$lib/llm/translate';
@@ -96,6 +97,7 @@
 	let fontSize: number;
 	let glossFontSize = 11;
 	let spaceWidth = 4;
+	let outputMargin: Margin = { top: 40, right: 32, bottom: 40, left: 32 };
 
 	let aboutOpen = false;
 	let settingsOpen = false;
@@ -185,27 +187,81 @@
 
 	let lines: Line[] = [];
 	let editingText = '';
-	let editingGlosses: string[] = [];
+	let editingAnnotationsAbove: string[][] = [];
+	let editingAnnotationsBelow: string[][] = [];
 	let editingShowGloss = false;
-	let glossesBeforeModify: string[] = [];
+	let annotationsAboveBeforeModify: string[][] = [];
+	let annotationsBelowBeforeModify: string[][] = [];
 	let editingSelectionStart = -1;
 	let editingSelectionEnd = -1;
 	let outputContainer: HTMLDivElement;
 	let inputContainer: HTMLDivElement;
 
+	function sameLanes(a: string[][], b: string[][]): boolean {
+		if (a.length !== b.length) return false;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i].length !== b[i].length) return false;
+			for (let j = 0; j < a[i].length; j++) {
+				if (a[i][j] !== b[i][j]) return false;
+			}
+		}
+		return true;
+	}
+
+	function mergeLaneValues(lane: string[], start: number, end: number): string[] {
+		const merged = lane
+			.slice(start, end + 1)
+			.filter(Boolean)
+			.join('-');
+		return [...lane.slice(0, start), merged, ...lane.slice(end + 1)];
+	}
+
+	function splitLaneValues(lane: string[], word: number): string[] {
+		const v = lane[word] ?? '';
+		return [...lane.slice(0, word), v, v, ...lane.slice(word + 1)];
+	}
+
+	function buildEditedSentence(lang: string, words: string[], above: string[][], below: string[][], showGloss: boolean): Sentence {
+		const tokens: SentenceToken[] = words.map((text, tokenIndex) => ({
+			text,
+			annotationsAbove: above.map((lane) => lane[tokenIndex] ?? ''),
+			annotationsBelow: below.map((lane) => lane[tokenIndex] ?? '')
+		}));
+		return normalizeLanes({
+			lang,
+			tokens,
+			lanesAbove: above.length,
+			lanesBelow: below.length,
+			showGloss: showGloss || above.length > 0 || below.length > 0
+		});
+	}
+
+	// Pass editingAnnotations* explicitly so Svelte tracks them as reactive deps —
+	// if they were only read inside buildEditedSentence, nested mutations from the
+	// lane editor (annotationsAbove[i][j] = x) wouldn't re-trigger this block.
 	$: previewSentences =
 		modifying === -1
 			? sentences
 			: sentences.map((sentence, index) =>
-					index === modifying ? createSentence(sentence.lang, editingText.split(/[|]/u).filter(Boolean), editingGlosses, editingShowGloss) : sentence
+					index === modifying
+						? buildEditedSentence(
+								sentence.lang,
+								editingText.split(/[|]/u).filter(Boolean),
+								editingAnnotationsAbove,
+								editingAnnotationsBelow,
+								editingShowGloss
+							)
+						: sentence
 				);
 
 	function cancelUnchangedEdit() {
 		modifying = -1;
 		editingText = '';
-		editingGlosses = [];
+		editingAnnotationsAbove = [];
+		editingAnnotationsBelow = [];
 		editingShowGloss = false;
-		glossesBeforeModify = [];
+		annotationsAboveBeforeModify = [];
+		annotationsBelowBeforeModify = [];
 		editingSelectionStart = -1;
 		editingSelectionEnd = -1;
 		wordsBeforeModify = [];
@@ -219,9 +275,26 @@
 	}
 
 	async function onsubmit({
-		detail: { lang, words, glosses, showGloss }
-	}: CustomEvent<{ lang: string; words: string[]; glosses: string[]; showGloss: boolean }>): Promise<void> {
-		const sentence = createSentence(lang, words, glosses, showGloss);
+		detail: { lang, words, annotationsAbove, annotationsBelow, showGloss }
+	}: CustomEvent<{
+		lang: string;
+		words: string[];
+		annotationsAbove: string[][];
+		annotationsBelow: string[][];
+		showGloss: boolean;
+	}>): Promise<void> {
+		const tokens: SentenceToken[] = words.map((text, tokenIndex) => ({
+			text,
+			annotationsAbove: annotationsAbove.map((lane) => lane[tokenIndex] ?? ''),
+			annotationsBelow: annotationsBelow.map((lane) => lane[tokenIndex] ?? '')
+		}));
+		const sentence: Sentence = normalizeLanes({
+			lang,
+			tokens,
+			lanesAbove: annotationsAbove.length,
+			lanesBelow: annotationsBelow.length,
+			showGloss: showGloss || annotationsAbove.length > 0 || annotationsBelow.length > 0
+		});
 
 		if (modifying !== -1) {
 			// Modifying existing sentence
@@ -233,9 +306,11 @@
 
 			modifying = -1;
 			editingText = '';
-			editingGlosses = [];
+			editingAnnotationsAbove = [];
+			editingAnnotationsBelow = [];
 			editingShowGloss = false;
-			glossesBeforeModify = [];
+			annotationsAboveBeforeModify = [];
+			annotationsBelowBeforeModify = [];
 			editingSelectionStart = -1;
 			editingSelectionEnd = -1;
 			wordsBeforeModify = [];
@@ -657,8 +732,8 @@
 		if (shouldKeepSentenceEdit(e.target)) return;
 		if (editingText !== wordsBeforeModify.join('|')) return;
 		if (editingShowGloss !== sentences[modifying].showGloss) return;
-		if (editingGlosses.length !== glossesBeforeModify.length) return;
-		if (editingGlosses.some((gloss, index) => gloss !== (glossesBeforeModify[index] ?? ''))) return;
+		if (!sameLanes(editingAnnotationsAbove, annotationsAboveBeforeModify)) return;
+		if (!sameLanes(editingAnnotationsBelow, annotationsBelowBeforeModify)) return;
 		cancelUnchangedEdit();
 	}}
 	on:keydown={(e) => {
@@ -820,6 +895,7 @@
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
+					bind:outputMargin
 					{loading}
 					{modifying}
 					{editingSelectionStart}
@@ -854,37 +930,37 @@
 					}}
 					on:modify={({ detail: { sentence } }) => {
 						modifying = sentence;
-						wordsBeforeModify = getSentenceWords(sentences[sentence]);
+						const src = sentences[sentence];
+						wordsBeforeModify = getSentenceWords(src);
 						editingText = wordsBeforeModify.join('|');
-						glossesBeforeModify = [...getSentenceGlosses(sentences[sentence])];
-						editingGlosses = [...glossesBeforeModify];
-						editingShowGloss = sentences[sentence].showGloss;
+						annotationsAboveBeforeModify = Array.from({ length: src.lanesAbove }, (_, lane) =>
+							src.tokens.map((t) => t.annotationsAbove[lane] ?? '')
+						);
+						annotationsBelowBeforeModify = Array.from({ length: src.lanesBelow }, (_, lane) =>
+							src.tokens.map((t) => t.annotationsBelow[lane] ?? '')
+						);
+						editingAnnotationsAbove = annotationsAboveBeforeModify.map((lane) => [...lane]);
+						editingAnnotationsBelow = annotationsBelowBeforeModify.map((lane) => [...lane]);
+						editingShowGloss = src.showGloss;
 						editingSelectionStart = -1;
 						editingSelectionEnd = -1;
 					}}
 					on:cancelTranslate={cancelPendingTranslation}
 					on:merge={({ detail: { sentence, start, end } }) => {
 						const words = getSentenceWords(previewSentences[sentence]);
-						const glosses = getSentenceGlosses(previewSentences[sentence]);
 						const merged = words.slice(start, end + 1).join('');
 						editingText = [...words.slice(0, start), merged, ...words.slice(end + 1)].join('|');
-						editingGlosses = [
-							...glosses.slice(0, start),
-							glosses
-								.slice(start, end + 1)
-								.filter(Boolean)
-								.join('-'),
-							...glosses.slice(end + 1)
-						];
+						editingAnnotationsAbove = editingAnnotationsAbove.map((lane) => mergeLaneValues(lane, start, end));
+						editingAnnotationsBelow = editingAnnotationsBelow.map((lane) => mergeLaneValues(lane, start, end));
 						editingSelectionStart = start;
 						editingSelectionEnd = start;
 					}}
 					on:split={({ detail: { sentence, word, offset } }) => {
 						const words = getSentenceWords(previewSentences[sentence]);
-						const glosses = getSentenceGlosses(previewSentences[sentence]);
 						const token = words[word];
 						editingText = [...words.slice(0, word), token.slice(0, offset), token.slice(offset), ...words.slice(word + 1)].filter(Boolean).join('|');
-						editingGlosses = [...glosses.slice(0, word), glosses[word] ?? '', glosses[word] ?? '', ...glosses.slice(word + 1)];
+						editingAnnotationsAbove = editingAnnotationsAbove.map((lane) => splitLaneValues(lane, word));
+						editingAnnotationsBelow = editingAnnotationsBelow.map((lane) => splitLaneValues(lane, word));
 						editingSelectionStart = word;
 						editingSelectionEnd = word + 1;
 					}}
@@ -900,7 +976,8 @@
 			{modifying}
 			{sentences}
 			bind:text={editingText}
-			bind:glosses={editingGlosses}
+			bind:annotationsAbove={editingAnnotationsAbove}
+			bind:annotationsBelow={editingAnnotationsBelow}
 			bind:glossEnabled={editingShowGloss}
 		/>
 	</div>
@@ -1112,6 +1189,13 @@
 		overflow-y: hidden;
 		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
+		/* Centre the <output> when it fits; the flex container still scrolls
+		   horizontally when the diagram exceeds the viewport because the inner
+		   <output> uses flex-shrink: 0. Avoids relying on margin-inline:auto on
+		   <output> itself, which would bake a non-zero computed margin into
+		   exported clones and push them off to one side. */
+		display: flex;
+		justify-content: center;
 	}
 
 	.output::after {
