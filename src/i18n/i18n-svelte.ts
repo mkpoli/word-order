@@ -45,7 +45,13 @@ const createLL = () => ({
 		glossEmpty: m.input_gloss_empty,
 		glossPlaceholder: m.input_gloss_placeholder,
 		translate: m.input_translate,
-		translateHint: m.input_translate_hint
+		translateHint: m.input_translate_hint,
+		laneAbove: m.input_lane_above,
+		laneBelow: m.input_lane_below,
+		wordRow: m.input_word_row,
+		addLaneAbove: m.input_add_lane_above,
+		addLaneBelow: m.input_add_lane_below,
+		removeLane: m.input_remove_lane
 	},
 	tokenEditor: {
 		tokens: m.token_editor_tokens,
@@ -61,6 +67,12 @@ const createLL = () => ({
 	},
 	ui: {
 		selected: m.ui_selected
+	},
+	aria: {
+		marginTop: m.aria_margin_top,
+		marginBottom: m.aria_margin_bottom,
+		marginLeft: m.aria_margin_left,
+		marginRight: m.aria_margin_right
 	},
 	dialog: {
 		editing: m.dialog_editing,

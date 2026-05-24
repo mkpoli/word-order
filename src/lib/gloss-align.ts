@@ -1,4 +1,11 @@
-import type { Sentence } from './types';
+import type { Sentence, SentenceToken } from './types';
+
+function tokenAnnotations(tok: SentenceToken): string[] {
+	const annots: string[] = [];
+	for (const a of tok.annotationsAbove) if (a) annots.push(a);
+	for (const a of tok.annotationsBelow) if (a) annots.push(a);
+	return annots;
+}
 
 function normalize(s: string): string {
 	return s
@@ -53,14 +60,18 @@ export function addGlossAlignments(
 	const buckets = new Map<string, Array<[number, number]>>();
 	for (const [si, sentence] of sentences.entries()) {
 		for (const [ti, tok] of sentence.tokens.entries()) {
-			const key = normalizeGlossKey(tok.gloss);
-			if (!key) continue;
-			let bucket = buckets.get(key);
-			if (!bucket) {
-				bucket = [];
-				buckets.set(key, bucket);
+			const seen = new Set<string>();
+			for (const annot of tokenAnnotations(tok)) {
+				const key = normalizeGlossKey(annot);
+				if (!key || seen.has(key)) continue;
+				seen.add(key);
+				let bucket = buckets.get(key);
+				if (!bucket) {
+					bucket = [];
+					buckets.set(key, bucket);
+				}
+				bucket.push([si, ti]);
 			}
-			bucket.push([si, ti]);
 		}
 	}
 
@@ -78,8 +89,9 @@ export function addGlossAlignments(
 			for (const ti of group[si]) {
 				const tok = sentence.tokens[ti];
 				if (!tok) continue;
-				const g = tok.gloss.trim();
-				if (g) {
+				for (const annot of tokenAnnotations(tok)) {
+					const g = annot.trim();
+					if (!g) continue;
 					labels.add(g);
 					labels.add(g.toLowerCase());
 					labels.add(normalizeGlossKey(g));
