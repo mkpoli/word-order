@@ -15,45 +15,43 @@ Paste sentences in any languages, click matching words across rows, and the tool
 - **Conlangers** showing off word order, agglutination, or polypersonal agreement.
 - **Linguists and teachers** preparing Leipzig-style interlinear handouts and slides.
 
-## Features
+## What you can do
 
-### Editor & rendering
+### Build the alignment
 
-- **Locale-aware tokenization** via `Intl.Segmenter` — CJK, Thai, and other unspaced scripts split correctly out of the box. Use `|` for finer manual control.
-- **Curved connectors** with adjustable curvature, line width, gap, straight segments, and endpoint correction.
-- **Multi-tier annotations** — stack any number of gloss / IPA / morpheme lines **above and below** each word for full Leipzig-style displays.
-- **Ruby annotations** — `<ruby>漢<rt>かん</rt></ruby>` works inside both sentence text and glosses, so furigana, pinyin, and zhuyin render correctly.
-- **Per-token edit dialog** — merge selected tokens, split at any grapheme boundary, or merge into a neighbor.
-- **Figma-style per-side margin control** — adjust top, right, bottom, and left padding of the canvas independently for tight social-share crops.
-- **Scramble equivalency** — instantly reorder the color groups to visualize how often translations rearrange information.
+- **Paste text in any language and it just splits correctly** — Chinese, Japanese, Thai, and other space-free scripts get tokenized automatically. Use `|` if you want to override where a word starts or ends.
+- **Click matching words across rows** to draw curved connectors between them. One-to-many, many-to-one, and crossing lines all stay readable.
+- **Mix any number of scripts and directions** — LTR and RTL rows happily sit next to each other; mid-row script changes work too.
+- **Split or merge any token down to the character** when the automatic segmentation doesn't match how you want to align.
 
-### Translation assistance (BYO key)
+### Annotate
 
-- **LLM translate-and-align** — bring your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Google Gemini](https://aistudio.google.com/app/apikey) key (stored only in your browser's localStorage, never sent anywhere except the chosen provider).
-- **Multi-target in one call** — pick one or more target languages and the tool requests parallel translations, fills in interlinear glosses for each new row, and auto-connects matching tokens across rows by gloss bucket.
-- **Custom target codes** — accepts any BCP-47 tag, so conlangs and rare locales work too.
-- **Configurable provider + model** in the Settings dialog, with a combobox of suggested model IDs.
+- **Stack as many annotation lines as you want above or below each word** — pinyin on top, IPA below, gloss below that, a morpheme breakdown next to it. Leipzig-style displays come naturally.
+- **Add furigana, pinyin, or zhuyin** using `<ruby>` markup inline — works inside both the source text and any annotation tier.
 
-### Persistence, examples, export
+### Translate without leaving the app *(bring your own API key)*
 
-- **localStorage autosave** — refreshing or closing the browser preserves your work.
-- **Examples gallery** — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
-- **About dialog** with attribution, links, and version info.
-- **Export** as SVG (vector), PNG (raster), PDF, or full project JSON for archival and sharing. Filenames are auto-generated from the first row's text and locale list.
+- **Generate a translation row in one click** using your own [OpenAI](https://platform.openai.com/), [Anthropic](https://console.anthropic.com/), or [Google Gemini](https://aistudio.google.com/app/apikey) key. Keys live only in your browser's localStorage and are sent only to the provider you chose.
+- **Translate into several target languages at once** — pick a list and the rows come back in parallel.
+- **Glosses are filled in automatically**, and matching tokens across the new rows are pre-connected by their shared gloss so you can start refining instead of clicking from scratch.
+- **Any BCP-47 code works as a target**, so conlangs and rare locales aren't blocked by what the model lists.
 
-### Localization & SEO
+### Compare and export
 
-- **UI in 30+ languages** via [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) — including Ainu, Korean Hanja, Bulgarian, Finnish, Esperanto, Interlingua, Toki Pona, and more.
-- **SEO-ready** with localized metadata, Open Graph, JSON-LD, and an Open Graph preview image.
+- **Hit "Scramble"** to randomly reorder the color groups — a one-button way to show students how much a translation reshuffles meaning.
+- **Load a ready-made illustration** from the Examples menu — SOV vs SVO, RTL scripts, Romance pro-drop, multi-script CJK, Turkish interlinear gloss, Ainu polysynthesis, Genesis 1:1 across Hebrew / Koine Greek / Latin / English, and more.
+- **Your work is saved automatically** — refreshing or closing the tab won't lose it.
+- **Export as SVG, PNG, PDF, or a JSON project file.** The JSON re-imports later for archival and sharing. Filenames are auto-named after the first row's text and the language list.
+- **Switch the app's UI between 30+ languages** — including Ainu, Korean Hanja, Esperanto, Interlingua, and Toki Pona.
 
 ## How to use
 
-1. Type or paste a sentence into the input box and press **Add**. Words are split automatically using locale-aware segmentation.
-2. *(Optional, BYO key)* Click **Translate** to pick one or more target languages — the tool generates rows, glosses, and tentative alignments in one go.
-3. Click a word in one row, then a matching word in an adjacent row, and press **Confirm** to connect them. Click an already-linked word to edit its color group.
-4. Use the pencil icon on any row to fine-tune tokenization (merge/split tokens) and to add or rearrange annotation tiers above and below.
-5. Adjust spacing, curvature, fonts, per-side margins, and text alignment in the **Options** panel.
-6. Export as SVG, PNG, PDF, or JSON from the **Export** menu — or load a ready-made illustration from **Examples**.
+1. Type or paste a sentence into the input box and press **Add**.
+2. *(Optional)* If you've added an API key in **Settings**, click **Translate** to pick target languages — the tool fills in translated rows, glosses, and tentative alignments for you.
+3. Click a word in one row, then a matching word in another, and press **Confirm** to connect them. Clicking an already-linked word lets you edit its color group.
+4. Use the pencil icon on any row to fine-tune tokenization or add annotation tiers above and below.
+5. Tweak spacing, curvature, fonts, and text alignment in the **Options** panel.
+6. Export from the **Export** menu — or load a ready-made example from **Examples**.
 
 ## Tech stack
 
