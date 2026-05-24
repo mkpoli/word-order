@@ -94,7 +94,7 @@
 	"translate_cancel": "Cancelar",
 	"input_translate": "Traducir",
 	"translate_retry": "Reintentar",
-	"translate_cost_notice": "Usa su cuenta de {provider} — los modelos más baratos suelen ser suficientes.",
+	"translate_cost_notice": "Usa tu cuenta de {provider} — los modelos más baratos suelen ser suficientes.",
 	"input_lane_above": "Arriba {n}",
 	"input_lane_below": "Abajo {n}",
 	"input_word_row": "Palabra",
