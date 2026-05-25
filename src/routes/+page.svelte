@@ -1197,19 +1197,18 @@
 			transform 180ms ease,
 			opacity 180ms ease,
 			filter 180ms ease;
-
-		/* TODO(#56-followup): the rendered diagram itself is intentionally pinned
-		   to the light palette so PNG/SVG/PDF exports look consistent regardless
-		   of the author's UI theme. Once we ship background-customization
-		   (related: #48 palettes, possibly a new "canvas bg" picker), revisit
-		   this and let the canvas honour the active theme — or, better,
-		   honour an explicit per-document background choice.
-		   Scoped to the inner <output> element so the wrapper (which extends to
-		   the column gap on wide layouts) still picks up the page background. */
-		color-scheme: light;
 	}
 
+	/* TODO(#56-followup): the rendered diagram itself is intentionally pinned
+	   to the light palette so PNG/SVG/PDF exports look consistent regardless
+	   of the author's UI theme. Once we ship background-customization
+	   (related: #48 palettes, possibly a new "canvas bg" picker), revisit and
+	   let the canvas honour the active theme — or, better, an explicit
+	   per-document background choice.
+	   Scoped to the inner <output> element so the .output wrapper still picks
+	   up the page palette (used by the rim shadow below). */
 	.output :global(output) {
+		color-scheme: light;
 		--color-bg: #ffffff;
 		--color-surface: #ffffff;
 		--color-surface-elevated: #ffffff;
@@ -1223,6 +1222,12 @@
 		--color-accent-text: rgb(33 56 199);
 		background: #ffffff;
 		color: #222222;
+		/* Rim sits on the page palette (not pinned-light) so it's visible
+		   against the dark page background too. */
+		border-radius: 0.4em;
+		box-shadow:
+			0 1px 3px 0 var(--page-shadow, rgb(0 0 0 / 0.18)),
+			0 0 0 1px var(--page-border-soft, #eeeeee);
 	}
 
 	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
@@ -1374,7 +1379,7 @@
 	.menu button {
 		appearance: none;
 		padding: 0.5em 1em;
-		border: none;
+		border: 1px solid var(--color-border-soft);
 		border-radius: 0.2em;
 
 		font-weight: bold;
@@ -1383,7 +1388,7 @@
 		background-color: var(--color-surface);
 		color: var(--color-text);
 
-		box-shadow: 1px 1px 5px 0 var(--color-shadow);
+		box-shadow: 0 1px 3px 0 var(--color-shadow);
 
 		display: flex;
 		align-items: center;
@@ -1393,6 +1398,7 @@
 
 	.menu button:not(:disabled):hover {
 		background-color: var(--color-hover);
+		border-color: var(--color-border);
 	}
 
 	.export-dropdown {
