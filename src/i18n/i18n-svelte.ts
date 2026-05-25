@@ -90,6 +90,8 @@ const createLL = () => ({
 		export: m.menu_export,
 		share: m.menu_share,
 		shareCopied: m.menu_share_copied,
+		shareLong: m.menu_share_long,
+		shareLongShort: m.menu_share_long_short,
 		svg: m.menu_svg,
 		png: m.menu_png,
 		pdf: m.menu_pdf,

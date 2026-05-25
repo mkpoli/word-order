@@ -16,7 +16,7 @@
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
-	import { buildShareUrl, decodeDocFromUrl, readPayloadFromUrl } from '$lib/share';
+	import { buildShareUrl, decodeDocFromUrl, isShareUrlLong, readPayloadFromUrl } from '$lib/share';
 	import { EXAMPLES, type Example } from '$lib/examples';
 
 	// Components
@@ -129,8 +129,10 @@
 	let pendingTranslation = $state<PendingTranslation | null>(null);
 	let translateError: { message: string; targets: string[] } | null = $state(null);
 
-	let shareCopied = $state(false);
-	let shareCopiedTimer: ReturnType<typeof setTimeout> | null = null;
+	type ShareFeedback = 'copied' | 'long' | null;
+	let shareFeedback: ShareFeedback = $state(null);
+	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
+	let shareUrlLength = $state(0);
 
 	async function copyShareLink() {
 		try {
@@ -139,12 +141,18 @@
 			// Also reflect the share state in the address bar so a refresh resolves
 			// to exactly what the user just copied.
 			window.history.replaceState(null, '', url);
-			shareCopied = true;
-			if (shareCopiedTimer) clearTimeout(shareCopiedTimer);
-			shareCopiedTimer = setTimeout(() => {
-				shareCopied = false;
-				shareCopiedTimer = null;
-			}, 1800);
+			shareUrlLength = url.length;
+			shareFeedback = isShareUrlLong(url) ? 'long' : 'copied';
+			if (shareFeedbackTimer) clearTimeout(shareFeedbackTimer);
+			// Long-URL warning sticks around longer than the standard "Copied!"
+			// flash since it carries an actionable message.
+			shareFeedbackTimer = setTimeout(
+				() => {
+					shareFeedback = null;
+					shareFeedbackTimer = null;
+				},
+				shareFeedback === 'long' ? 5000 : 1800
+			);
 		} catch (err) {
 			console.error('Copy share link failed:', err);
 		}
@@ -871,9 +879,19 @@ ${svgString}
 		<iconify-icon icon="uil:import"></iconify-icon>
 		{$LL.menu.import()}</button
 	>
-	<button disabled={mode === 'edit'} title={shareCopied ? $LL.menu.shareCopied() : $LL.menu.share()} onclick={copyShareLink}>
-		<iconify-icon icon={shareCopied ? 'mdi:check' : 'mdi:link-variant'}></iconify-icon>
-		{shareCopied ? $LL.menu.shareCopied() : $LL.menu.share()}
+	<button
+		disabled={mode === 'edit'}
+		class:share-long={shareFeedback === 'long'}
+		title={shareFeedback === 'long'
+			? $LL.menu.shareLong({ length: shareUrlLength })
+			: shareFeedback === 'copied'
+				? $LL.menu.shareCopied()
+				: $LL.menu.share()}
+		onclick={copyShareLink}
+	>
+		<iconify-icon icon={shareFeedback === 'long' ? 'mdi:alert-outline' : shareFeedback === 'copied' ? 'mdi:check' : 'mdi:link-variant'}
+		></iconify-icon>
+		{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
 	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>

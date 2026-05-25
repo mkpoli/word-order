@@ -66,6 +66,8 @@
 	"menu_export": "Export",
 	"menu_share": "Copy link",
 	"menu_share_copied": "Copied!",
+	"menu_share_long": "Copied — but the URL is {length} chars; some chat platforms may truncate it. Consider Export → JSON for very long diagrams.",
+	"menu_share_long_short": "Copied (long URL)",
 	"menu_svg": "Export SVG",
 	"menu_png": "Export PNG",
 	"menu_pdf": "Export PDF",
