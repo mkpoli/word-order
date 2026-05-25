@@ -16,6 +16,7 @@
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
+	import { buildShareUrl, decodeDocFromUrl, readPayloadFromUrl } from '$lib/share';
 	import { EXAMPLES, type Example } from '$lib/examples';
 
 	// Components
@@ -128,6 +129,27 @@
 	let pendingTranslation = $state<PendingTranslation | null>(null);
 	let translateError: { message: string; targets: string[] } | null = $state(null);
 
+	let shareCopied = $state(false);
+	let shareCopiedTimer: ReturnType<typeof setTimeout> | null = null;
+
+	async function copyShareLink() {
+		try {
+			const url = await buildShareUrl(window.location.origin, { schemaVersion: 1, sentences, equivalency });
+			await navigator.clipboard.writeText(url);
+			// Also reflect the share state in the address bar so a refresh resolves
+			// to exactly what the user just copied.
+			window.history.replaceState(null, '', url);
+			shareCopied = true;
+			if (shareCopiedTimer) clearTimeout(shareCopiedTimer);
+			shareCopiedTimer = setTimeout(() => {
+				shareCopied = false;
+				shareCopiedTimer = null;
+			}, 1800);
+		} catch (err) {
+			console.error('Copy share link failed:', err);
+		}
+	}
+
 	const TRANSLATE_TIMEOUT_MS = 120_000;
 
 	let mounted = $state(false);
@@ -136,12 +158,24 @@
 		verticalGap = Math.round(2 * rem);
 		lineGap = Math.round(0.3 * rem);
 
-		// Restore the user's last illustration from localStorage. If nothing is stored,
-		// keep the seeded sample sentences/equivalency above as the first-visit default.
-		const doc = loadDoc();
-		if (doc) {
-			sentences = doc.sentences;
-			equivalency = doc.equivalency;
+		// 1. URL hash (#d=…) wins over localStorage so a shared link is
+		//    instantly viewable on someone else's browser, regardless of what
+		//    they had saved locally. 2. Otherwise restore the user's last
+		//    illustration from localStorage. 3. Otherwise keep the seeded
+		//    sample sentences/equivalency as the first-visit default.
+		const sharePayload = readPayloadFromUrl();
+		if (sharePayload) {
+			const shared = await decodeDocFromUrl(sharePayload);
+			if (shared) {
+				sentences = shared.sentences;
+				equivalency = shared.equivalency;
+			}
+		} else {
+			const doc = loadDoc();
+			if (doc) {
+				sentences = doc.sentences;
+				equivalency = doc.equivalency;
+			}
 		}
 
 		// Initialise word_spans to the right shape BEFORE Output mounts so its
@@ -837,6 +871,10 @@ ${svgString}
 		<iconify-icon icon="uil:import"></iconify-icon>
 		{$LL.menu.import()}</button
 	>
+	<button disabled={mode === 'edit'} title={shareCopied ? $LL.menu.shareCopied() : $LL.menu.share()} onclick={copyShareLink}>
+		<iconify-icon icon={shareCopied ? 'mdi:check' : 'mdi:link-variant'}></iconify-icon>
+		{shareCopied ? $LL.menu.shareCopied() : $LL.menu.share()}
+	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button

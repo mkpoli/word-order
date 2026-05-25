@@ -64,6 +64,8 @@
 	"menu_new": "New",
 	"menu_import": "Import",
 	"menu_export": "Export",
+	"menu_share": "Copy link",
+	"menu_share_copied": "Copied!",
 	"menu_svg": "Export SVG",
 	"menu_png": "Export PNG",
 	"menu_pdf": "Export PDF",
