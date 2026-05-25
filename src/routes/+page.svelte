@@ -738,6 +738,39 @@
 		closeExportMenu();
 	}
 
+	function exportText() {
+		// Plain-text representation of the alignment for contexts that can't
+		// render the SVG (chat, email, code review). Each content token gets
+		// a Unicode-subscript suffix matching its equivalency-entry index, so
+		// the reader can mentally re-link tokens across sentences.
+		// Unaligned tokens (-1 in color_map) and whitespace/punctuation tokens
+		// stay un-marked.
+		const SUBSCRIPTS = '₀₁₂₃₄₅₆₇₈₉';
+		const toSubscript = (n: number) =>
+			String(n)
+				.split('')
+				.map((d) => SUBSCRIPTS[Number(d)] ?? d)
+				.join('');
+
+		const lines = sentences.map((sentence, sentenceIndex) => {
+			const label = sentence.displayName ?? sentence.lang;
+			const parts = sentence.tokens.map((token, tokenIndex) => {
+				const text = token.text;
+				const group = color_map[sentenceIndex]?.[tokenIndex] ?? -1;
+				// Whitespace renders as itself; punctuation as itself; only "content"
+				// tokens (the same ones the UI lets you align) get the marker.
+				if (/^\s+$/u.test(text)) return text;
+				if (/^\p{P}+$/u.test(text)) return text;
+				if (group < 0) return text;
+				return `${text}${toSubscript(group + 1)}`;
+			});
+			return `${label}:\t${parts.join('')}`;
+		});
+
+		save(lines.join('\n') + '\n', 'text/plain;charset=utf-8', exportFilename('txt'));
+		closeExportMenu();
+	}
+
 	function buildSvgString(): string | null {
 		if (!output) return null;
 		const serializer = new XMLSerializer();
@@ -1084,6 +1117,10 @@ ${svgString}
 			<button type="button" disabled={mode === 'edit'} onclick={exportTsv}>
 				<iconify-icon icon="mdi:table" inline="true"></iconify-icon>
 				TSV
+			</button>
+			<button type="button" disabled={mode === 'edit'} onclick={exportText}>
+				<iconify-icon icon="mdi:text" inline="true"></iconify-icon>
+				Text
 			</button>
 			<button type="button" disabled={mode === 'edit'} onclick={exportSvg}>
 				<iconify-icon icon="mdi:vector-square" inline="true"></iconify-icon>
