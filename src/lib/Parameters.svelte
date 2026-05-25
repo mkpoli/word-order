@@ -6,6 +6,7 @@
 
 	import { LL } from '$i18n/i18n-svelte';
 	import type { Alignment, FontFamily, FontStyle } from '$lib/types';
+	import { PALETTES, DEFAULT_PALETTE, type PaletteId, pickNColors, oklchToHex } from '$lib/color';
 
 	interface Props {
 		verticalGap?: number;
@@ -20,6 +21,7 @@
 		fontSize?: number;
 		glossFontSize?: number;
 		spaceWidth?: number;
+		palette?: PaletteId;
 	}
 
 	let {
@@ -34,8 +36,16 @@
 		fontStyle = $bindable('normal'),
 		fontSize = $bindable(15),
 		glossFontSize = $bindable(11),
-		spaceWidth = $bindable(4)
+		spaceWidth = $bindable(4),
+		palette = $bindable(DEFAULT_PALETTE)
 	}: Props = $props();
+
+	// Five-swatch preview rendered next to the dropdown so users can see what
+	// they're picking. Five samples is enough to show the hue/lightness story
+	// without crowding the panel.
+	const PALETTE_PREVIEWS: Record<PaletteId, string[]> = Object.fromEntries(
+		PALETTES.map(({ id }) => [id, pickNColors(5, false, id).map(oklchToHex)])
+	) as Record<PaletteId, string[]>;
 
 	run(() => {
 		lineGap = Math.min(lineGap, verticalGap / 2);
@@ -166,6 +176,30 @@
 	<RangeSlider bind:value={spaceWidth} id="space-width" min={0} max={40} suffix=" px" />
 </fieldset>
 
+<fieldset>
+	<legend>
+		<iconify-icon icon="mdi:palette-outline" inline="true"></iconify-icon>
+		{$LL.params.colors()}
+	</legend>
+
+	<label for="palette">
+		<iconify-icon icon="mdi:palette-swatch-outline" inline="true"></iconify-icon>
+		{$LL.params.palette()}
+	</label>
+	<div class="palette-row">
+		<select id="palette" name="palette" bind:value={palette}>
+			{#each PALETTES as { id } (id)}
+				<option value={id}>{$LL.params.paletteNames[id]()}</option>
+			{/each}
+		</select>
+		<span class="palette-preview" aria-hidden="true">
+			{#each PALETTE_PREVIEWS[palette] as hex (hex)}
+				<span class="swatch" style:background={hex}></span>
+			{/each}
+		</span>
+	</div>
+</fieldset>
+
 <style>
 	.alignment {
 		display: grid;
@@ -236,5 +270,33 @@
 		color: var(--color-text);
 		border: 1px solid var(--color-border);
 		border-radius: 0.2em;
+	}
+
+	.palette-row {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		gap: 0.5em;
+		margin: 0 0.5em;
+	}
+
+	.palette-row > select {
+		margin: 0;
+	}
+
+	.palette-preview {
+		display: inline-flex;
+		gap: 2px;
+		padding: 2px;
+		border: 1px solid var(--color-border);
+		border-radius: 0.2em;
+		background: var(--color-surface);
+	}
+
+	.swatch {
+		display: inline-block;
+		width: 0.9em;
+		height: 0.9em;
+		border-radius: 2px;
 	}
 </style>
