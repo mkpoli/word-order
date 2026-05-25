@@ -488,12 +488,7 @@
 		{/if}
 		{#if outputMargin.top > 0}<span class="dim-label">{outputMargin.top}px</span>{/if}
 	</div>
-	<div
-		class="margin-band margin-band-bottom"
-		class:active={marginDrag?.side === 'bottom'}
-		style:height={`${outputMargin.bottom}px`}
-		aria-hidden="true"
-	>
+	<div class="margin-band margin-band-bottom" class:active={marginDrag?.side === 'bottom'} style:height={`${outputMargin.bottom}px`} aria-hidden="true">
 		{#if outputMargin.bottom >= 14}
 			<svg class="dim-svg" width="20" height={outputMargin.bottom}>
 				<line x1="10" y1="0" x2="10" y2={outputMargin.bottom} class="dim-line" />
@@ -594,113 +589,113 @@
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
 			{#if !pendingIndices.has(i)}
-				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
-					<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
-						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
-					</div>
-					<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
-					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
-							{#each tokens as token, j}
-								{@const word = token.text}
-								{@const hasAboveLanes = sentence.lanesAbove > 0}
-								{@const hasBelowLanes = sentence.lanesBelow > 0}
-								<!-- svelte-ignore a11y-click-events-have-key-events -->
-								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
-									{#if hasAboveLanes}
-										<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
-											{#each Array(sentence.lanesAbove) as _, laneIndex}
-												<span class="annotation-line annotation-above">
-													{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
-												</span>
-											{/each}
-										</span>
-									{/if}
-									<span
-										class="word"
-										class:whitespace={isWhitespace(word)}
-										class:content={isContent(word)}
-										class:editing={mode === 'edit'}
-										class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
-										class:connected={connecting.some(([l, w]) => l == i && w == j)}
-										style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
-										style:color={colors[color_map[i][j]]}
-										on:click={() => {
-											if (i === modifying) {
-												selectEditingWord(i, j);
+			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
+				</div>
+				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
+				<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
+					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
+						{#each tokens as token, j}
+							{@const word = token.text}
+							{@const hasAboveLanes = sentence.lanesAbove > 0}
+							{@const hasBelowLanes = sentence.lanesBelow > 0}
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
+								{#if hasAboveLanes}
+									<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
+										{#each Array(sentence.lanesAbove) as _, laneIndex}
+											<span class="annotation-line annotation-above">
+												{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
+											</span>
+										{/each}
+									</span>
+								{/if}
+								<span
+									class="word"
+									class:whitespace={isWhitespace(word)}
+									class:content={isContent(word)}
+									class:editing={mode === 'edit'}
+									class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
+									class:connected={connecting.some(([l, w]) => l == i && w == j)}
+									style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
+									style:color={colors[color_map[i][j]]}
+									on:click={() => {
+										if (i === modifying) {
+											selectEditingWord(i, j);
+											return;
+										}
+
+										if (!isContent(word)) return;
+
+										const entryIndex = color_map[i][j];
+
+										if (mode === 'view') {
+											mode = 'edit';
+
+											if (entryIndex !== -1) {
+												connected = [];
+												for (let [i, words] of equivalency[entryIndex].entries()) {
+													for (let word of words) {
+														connected.push([i, word]);
+													}
+												}
+
+												connecting = connected.map(([l, w]) => [l, w]);
+												connectedIndex = entryIndex;
 												return;
 											}
+										}
 
-											if (!isContent(word)) return;
-
-											const entryIndex = color_map[i][j];
-
-											if (mode === 'view') {
-												mode = 'edit';
-
-												if (entryIndex !== -1) {
-													connected = [];
-													for (let [i, words] of equivalency[entryIndex].entries()) {
-														for (let word of words) {
-															connected.push([i, word]);
-														}
-													}
-
-													connecting = connected.map(([l, w]) => [l, w]);
-													connectedIndex = entryIndex;
-													return;
-												}
-											}
-
-											if (connecting.some(([l, w]) => l == i && w == j)) {
-												connecting = connecting.filter(([l, w]) => l != i || w != j);
-											} else {
-												connecting = [...connecting, [i, j]];
-											}
-										}}
-										bind:this={word_spans[i][j]}
-									>
-										<Word {word} />
-									</span>
-									{#if hasBelowLanes}
-										<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
-											{#each Array(sentence.lanesBelow) as _, laneIndex}
-												<span class="annotation-line annotation-below">
-													{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
-												</span>
-											{/each}
-										</span>
-									{/if}
+										if (connecting.some(([l, w]) => l == i && w == j)) {
+											connecting = connecting.filter(([l, w]) => l != i || w != j);
+										} else {
+											connecting = [...connecting, [i, j]];
+										}
+									}}
+									bind:this={word_spans[i][j]}
+								>
+									<Word {word} />
 								</span>
-							{/each}
-						</span>
-					</div>
-					<div class="modify action">
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<iconify-icon
-							icon="material-symbols:edit-rounded"
-							on:click={() => {
-								dispatch('modify', {
-									sentence: i
-								});
-							}}
-						/>
-					</div>
-					<div class="delete action">
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<iconify-icon
-							icon="ic:baseline-delete-forever"
-							width="1.2em"
-							height="1.2em"
-							on:click={() => {
-								if (!confirm($LL.confirm.deleteSentence())) return;
-								dispatch('delete', {
-									sentence: i
-								});
-							}}
-						/>
-					</div>
+								{#if hasBelowLanes}
+									<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
+										{#each Array(sentence.lanesBelow) as _, laneIndex}
+											<span class="annotation-line annotation-below">
+												{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
+											</span>
+										{/each}
+									</span>
+								{/if}
+							</span>
+						{/each}
+					</span>
 				</div>
+				<div class="modify action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<iconify-icon
+						icon="material-symbols:edit-rounded"
+						on:click={() => {
+							dispatch('modify', {
+								sentence: i
+							});
+						}}
+					/>
+				</div>
+				<div class="delete action">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<iconify-icon
+						icon="ic:baseline-delete-forever"
+						width="1.2em"
+						height="1.2em"
+						on:click={() => {
+							if (!confirm($LL.confirm.deleteSentence())) return;
+							dispatch('delete', {
+								sentence: i
+							});
+						}}
+					/>
+				</div>
+			</div>
 			{/if}
 		{/each}
 		{#if pendingIndices.size > 0}
@@ -902,11 +897,11 @@
 	}
 
 	.word.content:hover {
-		background-color: var(--color-hover);
+		background-color: #eee;
 	}
 
 	.word.editing:not(.connected) {
-		background-color: var(--color-border);
+		background-color: #ccc;
 	}
 	.word.editing.connected {
 		outline: 1px solid #e00000;
@@ -1188,7 +1183,7 @@
 		padding: 0.28em 0.62em;
 		border: 1px solid rgb(44 71 255 / 18%);
 		border-radius: 999px;
-		background: var(--color-surface);
+		background: white;
 		color: rgb(33 56 199);
 		font: inherit;
 		font-size: 0.86em;
@@ -1224,7 +1219,7 @@
 		appearance: none;
 		border: 1px solid rgb(44 71 255 / 35%);
 		border-radius: 999px;
-		background: var(--color-surface);
+		background: white;
 		color: rgb(44 71 255);
 		padding: 0.15em 0.38em;
 		line-height: 1;
@@ -1308,7 +1303,7 @@
 
 	.edit-dialog .confirm {
 		border: 1px solid rgb(44 71 255 / 18%);
-		background: var(--color-surface);
+		background: white;
 		color: rgb(33 56 199);
 	}
 
@@ -1363,7 +1358,7 @@
 	}
 
 	.action:hover {
-		background-color: var(--color-hover);
+		background-color: #eee;
 	}
 
 	.sentence:hover > .action {
