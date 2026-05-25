@@ -119,6 +119,10 @@ const createLL = () => ({
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,
+		keyChecking: m.settings_key_checking,
+		keyValid: m.settings_key_valid,
+		keyInvalid: m.settings_key_invalid,
+		keyNetworkError: m.settings_key_network_error,
 		privacy: m.settings_privacy
 	},
 	theme: {

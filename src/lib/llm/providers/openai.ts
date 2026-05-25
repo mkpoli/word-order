@@ -63,5 +63,22 @@ export const openai: LlmProvider = {
 		} catch (err) {
 			throw new LlmError('OpenAI returned non-JSON content', err);
 		}
+	},
+	async validateKey(apiKey, signal) {
+		try {
+			const r = await fetch('https://api.openai.com/v1/models', {
+				method: 'GET',
+				headers: { authorization: `Bearer ${apiKey}` },
+				signal
+			});
+			if (r.ok) return { status: 'valid' };
+			if (r.status === 401 || r.status === 403) {
+				const text = await r.text().catch(() => r.statusText);
+				return { status: 'invalid', reason: text || `${r.status}` };
+			}
+			return { status: 'network-error' };
+		} catch {
+			return { status: 'network-error' };
+		}
 	}
 };
