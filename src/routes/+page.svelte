@@ -16,6 +16,7 @@
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
+	import { buildShareUrl, decodeDocFromUrl, isShareUrlLong, readPayloadFromUrl } from '$lib/share';
 	import { EXAMPLES, type Example } from '$lib/examples';
 
 	// Components
@@ -128,6 +129,36 @@
 	let pendingTranslation = $state<PendingTranslation | null>(null);
 	let translateError: { message: string; targets: string[] } | null = $state(null);
 
+	type ShareFeedback = 'copied' | 'long' | null;
+	let shareFeedback: ShareFeedback = $state(null);
+	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
+	let shareUrlLength = $state(0);
+	let shareLoadError = $state(false);
+
+	async function copyShareLink() {
+		try {
+			const url = await buildShareUrl(window.location.origin, { schemaVersion: 1, sentences, equivalency });
+			await navigator.clipboard.writeText(url);
+			// Also reflect the share state in the address bar so a refresh resolves
+			// to exactly what the user just copied.
+			window.history.replaceState(null, '', url);
+			shareUrlLength = url.length;
+			shareFeedback = isShareUrlLong(url) ? 'long' : 'copied';
+			if (shareFeedbackTimer) clearTimeout(shareFeedbackTimer);
+			// Long-URL warning sticks around longer than the standard "Copied!"
+			// flash since it carries an actionable message.
+			shareFeedbackTimer = setTimeout(
+				() => {
+					shareFeedback = null;
+					shareFeedbackTimer = null;
+				},
+				shareFeedback === 'long' ? 5000 : 1800
+			);
+		} catch (err) {
+			console.error('Copy share link failed:', err);
+		}
+	}
+
 	const TRANSLATE_TIMEOUT_MS = 120_000;
 
 	let mounted = $state(false);
@@ -136,12 +167,32 @@
 		verticalGap = Math.round(2 * rem);
 		lineGap = Math.round(0.3 * rem);
 
-		// Restore the user's last illustration from localStorage. If nothing is stored,
-		// keep the seeded sample sentences/equivalency above as the first-visit default.
-		const doc = loadDoc();
-		if (doc) {
-			sentences = doc.sentences;
-			equivalency = doc.equivalency;
+		// 1. URL hash (#d=…) wins over localStorage so a shared link is
+		//    instantly viewable on someone else's browser, regardless of what
+		//    they had saved locally. 2. Otherwise restore the user's last
+		//    illustration from localStorage. 3. Otherwise keep the seeded
+		//    sample sentences/equivalency as the first-visit default.
+		const sharePayload = readPayloadFromUrl();
+		if (sharePayload) {
+			const shared = await decodeDocFromUrl(sharePayload);
+			if (shared) {
+				sentences = shared.sentences;
+				equivalency = shared.equivalency;
+			} else {
+				// The URL had `#d=…` / `?d=…` but the payload was unreadable —
+				// truncated copy-paste, tampered link, or a future format we
+				// don't understand. Surface a one-shot toast so the user knows
+				// why they're seeing the sample doc instead of the shared one,
+				// and clear the bad hash so the address bar reflects reality.
+				shareLoadError = true;
+				history.replaceState(null, '', window.location.pathname + window.location.search);
+			}
+		} else {
+			const doc = loadDoc();
+			if (doc) {
+				sentences = doc.sentences;
+				equivalency = doc.equivalency;
+			}
 		}
 
 		// Initialise word_spans to the right shape BEFORE Output mounts so its
@@ -785,6 +836,16 @@ ${svgString}
 	}}
 />
 
+{#if shareLoadError}
+	<div class="share-load-error" role="alert">
+		<iconify-icon icon="mdi:link-off" inline="true"></iconify-icon>
+		<span>{$LL.menu.shareLoadError()}</span>
+		<button type="button" class="dismiss" aria-label={$LL.menu.shareLoadErrorDismiss()} onclick={() => (shareLoadError = false)}>
+			<iconify-icon icon="mdi:close" inline="true"></iconify-icon>
+		</button>
+	</div>
+{/if}
+
 <header class="menu" class:editing-context={modifying !== -1}>
 	<button
 		disabled={mode === 'edit'}
@@ -837,6 +898,20 @@ ${svgString}
 		<iconify-icon icon="uil:import"></iconify-icon>
 		{$LL.menu.import()}</button
 	>
+	<button
+		disabled={mode === 'edit'}
+		class:share-long={shareFeedback === 'long'}
+		title={shareFeedback === 'long'
+			? $LL.menu.shareLong({ length: shareUrlLength })
+			: shareFeedback === 'copied'
+				? $LL.menu.shareCopied()
+				: $LL.menu.share()}
+		onclick={copyShareLink}
+	>
+		<iconify-icon icon={shareFeedback === 'long' ? 'mdi:alert-outline' : shareFeedback === 'copied' ? 'mdi:check' : 'mdi:link-variant'}
+		></iconify-icon>
+		{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
+	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button
@@ -1402,6 +1477,36 @@ ${svgString}
 		padding: 1em;
 		justify-content: flex-start;
 		align-items: stretch;
+	}
+
+	.share-load-error {
+		display: flex;
+		align-items: center;
+		gap: 0.6em;
+		margin: 0.6em 1em 0;
+		padding: 0.55em 0.85em;
+		background: rgb(220 60 60 / 0.08);
+		border: 1px solid rgb(220 60 60 / 0.3);
+		color: var(--color-text);
+		font-size: 0.92em;
+		border-radius: 0.4em;
+	}
+	.share-load-error :global(iconify-icon) {
+		color: rgb(180 40 40);
+		font-size: 1.1em;
+	}
+	.share-load-error .dismiss {
+		margin-inline-start: auto;
+		appearance: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: var(--color-text-muted);
+		padding: 0.1em 0.3em;
+		border-radius: 0.2em;
+	}
+	.share-load-error .dismiss:hover {
+		background: var(--color-hover);
 	}
 
 	.menu-locale {
