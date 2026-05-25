@@ -3,6 +3,7 @@
 
 	import { oklchToHex, pickNColors, DEFAULT_PALETTE, PALETTES, type PaletteId } from '$lib/color';
 	import { applyPreviewColors, type DragPreview } from '$lib/equivalency-preview';
+	import { loadParams, saveParams } from '$lib/persisted-params';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -94,10 +95,11 @@
 		}
 		return cm;
 	});
-	const PALETTE_STORAGE_KEY = 'word-order:palette';
 	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
-	const LINE_STYLE_STORAGE_KEY = 'word-order:line-style';
 	const LINE_STYLES: LineStyle[] = ['solid', 'dashed', 'dotted'];
+	const ALIGNMENTS: Alignment[] = ['left', 'center', 'right'];
+	const FONT_FAMILIES: FontFamily[] = ['default', 'sans-serif', 'serif', 'monospace'];
+	const FONT_STYLES: FontStyle[] = ['normal', 'italic', 'bold', 'bold-italic'];
 	let palette: PaletteId = $state(DEFAULT_PALETTE);
 	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
 	// Bound by <Equivalency> while a drag is in progress; null when idle. Mirrors
@@ -131,7 +133,6 @@
 
 	type RasterScale = 2 | 3 | 4 | 6;
 	const RASTER_SCALES: RasterScale[] = [2, 3, 4, 6];
-	const RASTER_SCALE_STORAGE_KEY = 'word-order:raster-scale';
 	let rasterScale: RasterScale = $state(2);
 
 	type PendingTranslation = {
@@ -236,14 +237,36 @@
 		// connector SVG empty until the next user interaction.
 		word_spans = sentences.map(() => []);
 
-		const storedScale = Number(window.localStorage.getItem(RASTER_SCALE_STORAGE_KEY));
-		if (RASTER_SCALES.includes(storedScale as RasterScale)) rasterScale = storedScale as RasterScale;
-
-		const storedPalette = window.localStorage.getItem(PALETTE_STORAGE_KEY);
-		if (storedPalette && PALETTE_IDS.includes(storedPalette as PaletteId)) palette = storedPalette as PaletteId;
-
-		const storedLineStyle = window.localStorage.getItem(LINE_STYLE_STORAGE_KEY);
-		if (storedLineStyle && LINE_STYLES.includes(storedLineStyle as LineStyle)) lineStyle = storedLineStyle as LineStyle;
+		// Unified persisted parameter snapshot: replaces the per-key reads
+		// (raster scale, palette, line style) and adds restore for every
+		// other appearance / text / margin knob the user touches. Values are
+		// guarded with explicit shape/enum checks so a hand-edited or
+		// corrupt blob can't crash the page.
+		const stored = loadParams();
+		if (typeof stored.verticalGap === 'number') verticalGap = stored.verticalGap;
+		if (typeof stored.lineGap === 'number') lineGap = stored.lineGap;
+		if (typeof stored.lineWidth === 'number') lineWidth = stored.lineWidth;
+		if (stored.lineStyle && LINE_STYLES.includes(stored.lineStyle)) lineStyle = stored.lineStyle;
+		if (typeof stored.straightLength === 'number') straightLength = stored.straightLength;
+		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
+		if (typeof stored.curvature === 'number') curvature = stored.curvature;
+		if (stored.alignment && ALIGNMENTS.includes(stored.alignment)) alignment = stored.alignment;
+		if (stored.fontFamily && FONT_FAMILIES.includes(stored.fontFamily)) fontFamily = stored.fontFamily;
+		if (stored.fontStyle && FONT_STYLES.includes(stored.fontStyle)) fontStyle = stored.fontStyle;
+		if (typeof stored.fontSize === 'number') fontSize = stored.fontSize;
+		if (typeof stored.glossFontSize === 'number') glossFontSize = stored.glossFontSize;
+		if (typeof stored.spaceWidth === 'number') spaceWidth = stored.spaceWidth;
+		if (typeof stored.letterSpacing === 'number') letterSpacing = stored.letterSpacing;
+		if (stored.palette && PALETTE_IDS.includes(stored.palette)) palette = stored.palette;
+		if (typeof stored.rasterScale === 'number' && RASTER_SCALES.includes(stored.rasterScale as RasterScale)) {
+			rasterScale = stored.rasterScale as RasterScale;
+		}
+		if (stored.outputMargin && typeof stored.outputMargin === 'object') {
+			const m = stored.outputMargin;
+			if (typeof m.top === 'number' && typeof m.right === 'number' && typeof m.bottom === 'number' && typeof m.left === 'number') {
+				outputMargin = m;
+			}
+		}
 
 		mounted = true;
 		await tick();
@@ -946,14 +969,30 @@ ${svgString}
 		equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
 	});
 	let pendingSentenceSet = $derived(new Set<number>(pendingTranslation?.rowIndices ?? []));
+	// Persist every appearance / parameter knob in a single localStorage
+	// blob so the next visit restores the user's full setup, not just the
+	// three fields that used to have dedicated keys.
 	run(() => {
-		if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
-	});
-	run(() => {
-		if (mounted) window.localStorage.setItem(PALETTE_STORAGE_KEY, palette);
-	});
-	run(() => {
-		if (mounted) window.localStorage.setItem(LINE_STYLE_STORAGE_KEY, lineStyle);
+		if (!mounted) return;
+		saveParams({
+			verticalGap,
+			lineGap,
+			lineWidth,
+			lineStyle,
+			straightLength,
+			endpointCorrection,
+			curvature,
+			alignment,
+			fontFamily,
+			fontStyle,
+			fontSize,
+			glossFontSize,
+			spaceWidth,
+			letterSpacing,
+			palette,
+			rasterScale,
+			outputMargin
+		});
 	});
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
