@@ -33,7 +33,18 @@ const createLL = () => ({
 		boldItalic: m.params_bold_italic,
 		fontSize: m.params_font_size,
 		glossFontSize: m.params_gloss_font_size,
-		spaceWidth: m.params_space_width
+		spaceWidth: m.params_space_width,
+		colors: m.params_colors,
+		palette: m.params_palette,
+		paletteNames: {
+			spectrum: m.params_palette_spectrum,
+			pastel: m.params_palette_pastel,
+			vivid: m.params_palette_vivid,
+			warm: m.params_palette_warm,
+			cool: m.params_palette_cool,
+			'mono-blue': m.params_palette_mono_blue,
+			'mono-warm': m.params_palette_mono_warm
+		}
 	},
 	input: {
 		input: m.input_input,
