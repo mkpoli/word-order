@@ -49,18 +49,16 @@ test('theme toggle cycles system → light → dark', async ({ page }) => {
 
 test('output canvas stays light in both themes (export consistency)', async ({ page }) => {
 	await page.goto('/');
-	// Wait for SvelteKit hydration to mount the Output component; the page's
-	// `{#if mounted}` gate means querySelector('output') returns null until
-	// onMount finishes its async work.
-	await page.waitForSelector('output');
+	// Use the locator API instead of a one-shot querySelector inside evaluate:
+	// locators auto-retry until the element exists, so we don't race a transient
+	// post-hydration state where waitForSelector resolved but the next bare
+	// evaluate ran before the rerender settled.
+	const output = page.locator('output').first();
+	await output.waitFor({ state: 'attached' });
 
 	for (const theme of ['light', 'dark'] as const) {
 		await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
-		const canvasBg = await page.evaluate(() => {
-			const el = document.querySelector('output');
-			return el ? getComputedStyle(el).backgroundColor : null;
-		});
-		expect(canvasBg, `output canvas bg in ${theme} theme`).toBe('rgb(255, 255, 255)');
+		await expect(output).toHaveCSS('background-color', 'rgb(255, 255, 255)');
 	}
 });
 
