@@ -438,7 +438,16 @@
 		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	});
 	run(() => {
-		if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && spaceWidth !== undefined && $locale)
+		if (
+			!loading &&
+			alignment &&
+			fontFamily &&
+			fontStyle &&
+			fontSize !== undefined &&
+			glossFontSize !== undefined &&
+			spaceWidth !== undefined &&
+			$locale
+		)
 			tick().then(() => {
 				lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 			});
