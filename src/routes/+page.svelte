@@ -1206,7 +1206,7 @@
 	   let the canvas honour the active theme — or, better, an explicit
 	   per-document background choice.
 	   Scoped to the inner <output> element so the .output wrapper still picks
-	   up the page palette (used by the rim shadow on .output-scroll below). */
+	   up the page palette (used by the rim shadow). */
 	.output :global(output) {
 		color-scheme: light;
 		--color-bg: #ffffff;
@@ -1222,13 +1222,19 @@
 		--color-accent-text: rgb(33 56 199);
 		background: #ffffff;
 		color: #222222;
+		/* Rim hugs the actual diagram width, not the full column. Lives on
+		   <output> rather than .output-scroll so it doesn't extend to the
+		   viewport edges when the diagram is narrower than the column. */
+		border-radius: 0.4em;
+		box-shadow:
+			0 1px 3px 0 var(--page-shadow, rgb(0 0 0 / 0.18)),
+			0 0 0 1px var(--page-border-soft, #eeeeee);
 	}
 
 	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
 	   so .output's overflow stays visible and the ::after editing indicator
-	   below the box can render. The rim (border-radius + box-shadow) also
-	   lives here so it hugs the visible canvas area and the shadow doesn't
-	   get clipped by overflow:hidden the way it does on the inner <output>. */
+	   below the box can render. Padding gives the inner <output>'s rim shadow
+	   room to render before .output-scroll's overflow clips it. */
 	.output-scroll {
 		overflow-x: auto;
 		overflow-y: hidden;
@@ -1241,11 +1247,7 @@
 		   exported clones and push them off to one side. */
 		display: flex;
 		justify-content: center;
-		background: #ffffff;
-		border-radius: 0.4em;
-		box-shadow:
-			0 1px 3px 0 var(--page-shadow, rgb(0 0 0 / 0.18)),
-			0 0 0 1px var(--page-border-soft, #eeeeee);
+		padding: 6px 6px 8px;
 	}
 
 	.output::after {
