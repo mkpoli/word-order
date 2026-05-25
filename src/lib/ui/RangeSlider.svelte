@@ -344,7 +344,8 @@
 	}}
 />
 
-<style global>
+<style>
+	:global {
 	.rangeSlider {
 		--slider-thickness: 0.5em;
 
@@ -502,5 +503,6 @@
 	}
 	.rangeSlider.disabled .rangeNub {
 		background-color: var(--color-slider);
+	}
 	}
 </style>
