@@ -100,5 +100,12 @@
 	"input_word_row": "Từ",
 	"input_add_lane_above": "Thêm dòng phía trên",
 	"input_add_lane_below": "Thêm dòng phía dưới",
-	"input_remove_lane": "Xoá dòng"
+	"input_remove_lane": "Xoá dòng",
+	"confirm_import": "Nhập tệp này? Các câu và liên kết hiện tại của bạn sẽ bị thay thế.",
+	"menu_raster_scale": "Tỉ lệ ảnh:",
+	"params_gloss_font_size": "Cỡ chữ chú thích",
+	"theme_label": "Giao diện",
+	"theme_system": "Hệ thống",
+	"theme_light": "Sáng",
+	"theme_dark": "Tối"
 }

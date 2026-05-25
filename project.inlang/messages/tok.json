@@ -100,5 +100,12 @@
 	"input_word_row": "nimi",
 	"input_add_lane_above": "o pana e linja sewi",
 	"input_add_lane_below": "o pana e linja anpa",
-	"input_remove_lane": "o weka e linja"
+	"input_remove_lane": "o weka e linja",
+	"confirm_import": "o pana e lipu ni? toki sina en kulupu sina pi tenpo ni li weka.",
+	"menu_raster_scale": "suli sitelen:",
+	"params_gloss_font_size": "suli sitelen pi sona toki",
+	"theme_label": "kule lipu",
+	"theme_system": "kule pi ilo sina",
+	"theme_light": "kule walo",
+	"theme_dark": "kule pimeja"
 }

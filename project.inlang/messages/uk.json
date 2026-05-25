@@ -100,5 +100,12 @@
 	"input_word_row": "Слово",
 	"input_add_lane_above": "Додати рядок зверху",
 	"input_add_lane_below": "Додати рядок знизу",
-	"input_remove_lane": "Видалити рядок"
+	"input_remove_lane": "Видалити рядок",
+	"confirm_import": "Імпортувати цей файл? Поточні речення та зв'язки буде замінено.",
+	"menu_raster_scale": "Масштаб зображення:",
+	"params_gloss_font_size": "Розмір шрифту глоси",
+	"theme_label": "Тема",
+	"theme_system": "Системна",
+	"theme_light": "Світла",
+	"theme_dark": "Темна"
 }

@@ -98,5 +98,14 @@
 	"input_word_row": "Sana",
 	"input_add_lane_above": "Lisää rivi ylle",
 	"input_add_lane_below": "Lisää rivi alle",
-	"input_remove_lane": "Poista rivi"
+	"input_remove_lane": "Poista rivi",
+	"confirm_import": "Tuodaanko tämä tiedosto? Nykyiset lauseet ja yhteydet korvataan.",
+	"menu_raster_scale": "Rasterin skaala:",
+	"params_gloss_font_size": "Glossin fonttikoko",
+	"params_line_width": "Viivan paksuus",
+	"params_space_width": "Välilyönnin leveys",
+	"theme_label": "Teema",
+	"theme_system": "Järjestelmä",
+	"theme_light": "Vaalea",
+	"theme_dark": "Tumma"
 }

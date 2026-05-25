@@ -100,5 +100,12 @@
 	"input_word_row": "শব্দ",
 	"input_add_lane_above": "উপরে লাইন যোগ করুন",
 	"input_add_lane_below": "নিচে লাইন যোগ করুন",
-	"input_remove_lane": "লাইন সরান"
+	"input_remove_lane": "লাইন সরান",
+	"confirm_import": "এই ফাইলটি আমদানি করবেন? আপনার বর্তমান বাক্য ও সংযোগগুলি প্রতিস্থাপিত হবে।",
+	"menu_raster_scale": "র‍্যাস্টার স্কেল:",
+	"params_gloss_font_size": "ব্যাখ্যার ফন্ট আকার",
+	"theme_label": "থিম",
+	"theme_system": "সিস্টেম",
+	"theme_light": "হালকা",
+	"theme_dark": "গাঢ়"
 }
