@@ -1,11 +1,11 @@
 import adapter from '@sveltejs/adapter-vercel';
-import preprocess from 'svelte-preprocess';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
-	preprocess: preprocess(),
+	// Svelte 5 + vitePreprocess handles <script lang="ts"> natively; no
+	// svelte-preprocess needed.
+	preprocess: vitePreprocess(),
 
 	kit: {
 		adapter: adapter(),

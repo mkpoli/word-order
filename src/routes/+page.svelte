@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { oklchToHex, pickNColors } from '$lib/color';
 	import { onMount, tick } from 'svelte';
 
@@ -39,7 +41,7 @@
 	// 	['ja', '私はガラスを食べられます。それは私を傷つけません。']
 	// ];
 
-	let sentences: Sentence[] = [
+	let sentences: Sentence[] = $state([
 		createSentence('en', ['I', ' ', 'can', ' ', 'eat', ' ', 'glass', ' ', 'and', ' ', 'it', ' ', 'doesn’t', ' ', 'hurt', ' ', 'me', '.']),
 		createSentence('zh-HanS', ['我', '能', '吞下', '玻璃', '而', '不', '伤', '身体', '。']),
 		createSentence('zh-HanT', ['我', '能', '吞下', '玻璃', '而', '不', '傷', '身體', '。']),
@@ -59,9 +61,9 @@
 			'ません',
 			'。'
 		])
-	];
+	]);
 
-	let equivalency: number[][][] = [
+	let equivalency: number[][][] = $state([
 		[[0], [0], [0], [0, 1]],
 		[[2], [1], [1], [5]],
 		[[4], [2], [2], [4]],
@@ -72,42 +74,39 @@
 		[[14], [6], [6], [11]],
 		[[16], [], [], [9, 10]],
 		[[], [7], [7], []]
-	];
+	]);
 
-	let mode: Mode = 'view';
+	let mode: Mode = $state('view');
 	let goldenHue = 0;
 
-	// Prevent empty entry from existing
-	$: equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
-
-	let color_map: number[][] = [];
-	let colors: string[] = [];
-	let word_spans: HTMLSpanElement[][];
+	let color_map: number[][] = $state([]);
+	let colors: string[] = $state([]);
+	let word_spans: HTMLSpanElement[][] = $state([]);
 
 	// Parameters
-	let verticalGap: number;
-	let lineGap: number;
-	let lineWidth = 1;
-	let straightLength: number;
-	let endpointCorrection: number;
-	let curvature = 1;
-	let alignment: Alignment;
-	let fontFamily: FontFamily;
-	let fontStyle: FontStyle;
-	let fontSize: number;
-	let glossFontSize = 11;
-	let spaceWidth = 4;
-	let outputMargin: Margin = { top: 40, right: 32, bottom: 40, left: 32 };
+	let verticalGap = $state(0);
+	let lineGap = $state(0);
+	let lineWidth = $state(1);
+	let straightLength = $state(0);
+	let endpointCorrection = $state(0);
+	let curvature = $state(1);
+	let alignment: Alignment = $state('center');
+	let fontFamily: FontFamily = $state('default');
+	let fontStyle: FontStyle = $state('normal');
+	let fontSize = $state(15);
+	let glossFontSize = $state(11);
+	let spaceWidth = $state(4);
+	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
-	let aboutOpen = false;
-	let settingsOpen = false;
-	let examplesOpen = false;
-	let translatePopoverOpen = false;
+	let aboutOpen = $state(false);
+	let settingsOpen = $state(false);
+	let examplesOpen = $state(false);
+	let translatePopoverOpen = $state(false);
 
 	type RasterScale = 2 | 3 | 4 | 6;
 	const RASTER_SCALES: RasterScale[] = [2, 3, 4, 6];
 	const RASTER_SCALE_STORAGE_KEY = 'word-order:raster-scale';
-	let rasterScale: RasterScale = 2;
+	let rasterScale: RasterScale = $state(2);
 
 	type PendingTranslation = {
 		abort: AbortController;
@@ -115,14 +114,12 @@
 		targets: string[];
 	};
 
-	let pendingTranslation: PendingTranslation | null = null;
-	let translateError: { message: string; targets: string[] } | null = null;
+	let pendingTranslation = $state<PendingTranslation | null>(null);
+	let translateError: { message: string; targets: string[] } | null = $state(null);
 
 	const TRANSLATE_TIMEOUT_MS = 120_000;
 
-	$: pendingSentenceSet = new Set<number>(pendingTranslation?.rowIndices ?? []);
-
-	let mounted = false;
+	let mounted = $state(false);
 	onMount(async () => {
 		const rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
 		verticalGap = Math.round(2 * rem);
@@ -149,13 +146,6 @@
 		await tick();
 	});
 
-	$: if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
-
-	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
-	// so we don't persist the empty placeholder rows.
-	$: if (mounted && !pendingTranslation) saveDoc({ schemaVersion: 1, sentences, equivalency });
-
-	$: if (mounted) calculate_color_map(equivalency);
 	function calculate_color_map(equivalency: number[][][]) {
 		color_map = sentences.map((sentence) => new Array(sentence.tokens.length).fill(-1));
 		for (let [i, entry] of equivalency.entries()) {
@@ -192,21 +182,19 @@
 		return defaultStep;
 	}
 
-	$: colors = pickNColors(equivalency.length, false).map(oklchToHex);
-
 	// LINE_COORDINATES
 
-	let lines: Line[] = [];
-	let editingText = '';
-	let editingAnnotationsAbove: string[][] = [];
-	let editingAnnotationsBelow: string[][] = [];
-	let editingShowGloss = false;
-	let annotationsAboveBeforeModify: string[][] = [];
-	let annotationsBelowBeforeModify: string[][] = [];
-	let editingSelectionStart = -1;
-	let editingSelectionEnd = -1;
-	let outputContainer: HTMLDivElement;
-	let inputContainer: HTMLDivElement;
+	let lines: Line[] = $state([]);
+	let editingText = $state('');
+	let editingAnnotationsAbove: string[][] = $state([]);
+	let editingAnnotationsBelow: string[][] = $state([]);
+	let editingShowGloss = $state(false);
+	let annotationsAboveBeforeModify: string[][] = $state([]);
+	let annotationsBelowBeforeModify: string[][] = $state([]);
+	let editingSelectionStart = $state(-1);
+	let editingSelectionEnd = $state(-1);
+	let outputContainer: HTMLDivElement | undefined = $state();
+	let inputContainer: HTMLDivElement | undefined = $state();
 
 	function sameLanes(a: string[][], b: string[][]): boolean {
 		if (a.length !== b.length) return false;
@@ -246,24 +234,6 @@
 			showGloss: showGloss || above.length > 0 || below.length > 0
 		});
 	}
-
-	// Pass editingAnnotations* explicitly so Svelte tracks them as reactive deps —
-	// if they were only read inside buildEditedSentence, nested mutations from the
-	// lane editor (annotationsAbove[i][j] = x) wouldn't re-trigger this block.
-	$: previewSentences =
-		modifying === -1
-			? sentences
-			: sentences.map((sentence, index) =>
-					index === modifying
-						? buildEditedSentence(
-								sentence.lang,
-								editingText.split(/[|]/u).filter(Boolean),
-								editingAnnotationsAbove,
-								editingAnnotationsBelow,
-								editingShowGloss
-							)
-						: sentence
-				);
 
 	function cancelUnchangedEdit() {
 		modifying = -1;
@@ -509,10 +479,10 @@
 		equivalency = equivalency;
 	}
 
-	let modifying = -1;
-	let wordsBeforeModify: string[] = [];
+	let modifying = $state(-1);
+	let wordsBeforeModify: string[] = $state([]);
 
-	let loading = false;
+	let loading = $state(false);
 
 	function getBodyBackgroundColor(): string {
 		if (typeof document === 'undefined') return 'white';
@@ -548,9 +518,9 @@
 		await replaceDoc(docFromExample(example));
 	}
 
-	let exportOpen = false;
-	let exportWrapper: HTMLDivElement;
-	let exportTrigger: HTMLButtonElement;
+	let exportOpen = $state(false);
+	let exportWrapper: HTMLDivElement | undefined = $state();
+	let exportTrigger: HTMLButtonElement | undefined = $state();
 	let exportCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
 	function openExportMenu() {
@@ -580,8 +550,8 @@
 		if (restoreFocus && exportTrigger) exportTrigger.focus();
 	}
 
-	let examplesWrapper: HTMLDivElement;
-	let examplesTrigger: HTMLButtonElement;
+	let examplesWrapper: HTMLDivElement | undefined = $state();
+	let examplesTrigger: HTMLButtonElement | undefined = $state();
 	let examplesCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
 	function openExamplesMenu() {
@@ -714,22 +684,61 @@
 		}
 	}
 
-	let output: HTMLOutputElement;
-	$: canonicalUrl = getCanonicalUrl($page.url.origin);
-	$: ogImageUrl = getOgImageUrl($page.url.origin);
-	$: metaTitle = $LL.meta.title();
-	$: metaDescription = $LL.meta.description();
-	$: metaKeywords = $LL.meta.keywords();
-	$: metaImageAlt = $LL.meta.imageAlt();
-	$: jsonLd = getJsonLd($page.url.origin, {
-		name: metaTitle,
-		description: metaDescription,
-		locale: $locale
+	let output: HTMLOutputElement | undefined = $state();
+	// Prevent empty entry from existing
+	run(() => {
+		equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
 	});
+	let pendingSentenceSet = $derived(new Set<number>(pendingTranslation?.rowIndices ?? []));
+	run(() => {
+		if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
+	});
+	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
+	// so we don't persist the empty placeholder rows.
+	run(() => {
+		if (mounted && !pendingTranslation) saveDoc({ schemaVersion: 1, sentences, equivalency });
+	});
+	run(() => {
+		if (mounted) calculate_color_map(equivalency);
+	});
+	run(() => {
+		colors = pickNColors(equivalency.length, false).map(oklchToHex);
+	});
+	// Pass editingAnnotations* explicitly so Svelte tracks them as reactive deps —
+	// if they were only read inside buildEditedSentence, nested mutations from the
+	// lane editor (annotationsAbove[i][j] = x) wouldn't re-trigger this block.
+	let previewSentences = $derived(
+		modifying === -1
+			? sentences
+			: sentences.map((sentence, index) =>
+					index === modifying
+						? buildEditedSentence(
+								sentence.lang,
+								editingText.split(/[|]/u).filter(Boolean),
+								editingAnnotationsAbove,
+								editingAnnotationsBelow,
+								editingShowGloss
+							)
+						: sentence
+				)
+	);
+	let canonicalUrl = $derived(getCanonicalUrl($page.url.origin));
+	let ogImageUrl = $derived(getOgImageUrl($page.url.origin));
+	let metaTitle = $derived($LL.meta.title());
+	let metaDescription = $derived($LL.meta.description());
+	let metaKeywords = $derived($LL.meta.keywords());
+	let metaImageAlt = $derived($LL.meta.imageAlt());
+	let jsonLd = $derived(
+		getJsonLd($page.url.origin, {
+			name: metaTitle,
+			description: metaDescription,
+			locale: $locale
+		})
+	);
 </script>
 
 <svelte:window
-	on:pointerdown={(e) => {
+	onpointerdown={(e) => {
 		if (exportOpen && e.target instanceof Node && exportWrapper && !exportWrapper.contains(e.target)) {
 			closeExportMenu();
 		}
@@ -744,7 +753,7 @@
 		if (!sameLanes(editingAnnotationsBelow, annotationsBelowBeforeModify)) return;
 		cancelUnchangedEdit();
 	}}
-	on:keydown={(e) => {
+	onkeydown={(e) => {
 		if (e.key === 'Escape' && exportOpen) closeExportMenu(true);
 		if (e.key === 'Escape' && examplesOpen) closeExamplesMenu(true);
 	}}
@@ -753,23 +762,23 @@
 <header class="menu" class:editing-context={modifying !== -1}>
 	<button
 		disabled={mode === 'edit'}
-		on:click={() => {
+		onclick={() => {
 			if (!confirm($LL.confirm.new())) return;
 
 			sentences = [];
 			equivalency = [];
 		}}
 	>
-		<iconify-icon icon="eos-icons:content-new" />
+		<iconify-icon icon="eos-icons:content-new"></iconify-icon>
 		{$LL.menu.new()}
 	</button>
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="examples-dropdown"
 		class:open={examplesOpen}
 		bind:this={examplesWrapper}
-		on:mouseenter={openExamplesMenu}
-		on:mouseleave={scheduleExamplesClose}
+		onmouseenter={openExamplesMenu}
+		onmouseleave={scheduleExamplesClose}
 	>
 		<button
 			class="examples-trigger"
@@ -777,16 +786,16 @@
 			aria-haspopup="true"
 			aria-expanded={examplesOpen}
 			bind:this={examplesTrigger}
-			on:click={() => (examplesOpen ? closeExamplesMenu() : openExamplesMenu())}
-			on:focus={openExamplesMenu}
+			onclick={() => (examplesOpen ? closeExamplesMenu() : openExamplesMenu())}
+			onfocus={openExamplesMenu}
 		>
-			<iconify-icon icon="mdi:bookshelf" />
+			<iconify-icon icon="mdi:bookshelf"></iconify-icon>
 			{$LL.menu.examples()}
-			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron" />
+			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron"></iconify-icon>
 		</button>
 		<div class="examples-menu" role="group" aria-label={$LL.menu.examples()}>
 			{#each EXAMPLES as example (example.id)}
-				<button type="button" disabled={mode === 'edit'} on:click={() => loadExample(example)}>
+				<button type="button" disabled={mode === 'edit'} onclick={() => loadExample(example)}>
 					<span class="example-name">{example.name}</span>
 					<span class="example-langs">{example.sentences.map((s) => s.lang).join(' · ')}</span>
 				</button>
@@ -795,43 +804,43 @@
 	</div>
 	<button
 		disabled={mode === 'edit'}
-		on:click={() => {
+		onclick={() => {
 			open(load);
 		}}
 	>
-		<iconify-icon icon="uil:import" />
+		<iconify-icon icon="uil:import"></iconify-icon>
 		{$LL.menu.import()}</button
 	>
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} on:mouseenter={openExportMenu} on:mouseleave={scheduleExportClose}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button
 			class="export-trigger"
 			disabled={mode === 'edit'}
 			aria-haspopup="true"
 			aria-expanded={exportOpen}
 			bind:this={exportTrigger}
-			on:click={() => (exportOpen ? closeExportMenu() : openExportMenu())}
-			on:focus={openExportMenu}
+			onclick={() => (exportOpen ? closeExportMenu() : openExportMenu())}
+			onfocus={openExportMenu}
 		>
-			<iconify-icon icon="uil:export" />
+			<iconify-icon icon="uil:export"></iconify-icon>
 			{$LL.menu.export()}
-			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron" />
+			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron"></iconify-icon>
 		</button>
 		<div class="export-menu" role="group" aria-label={$LL.menu.export()}>
-			<button type="button" disabled={mode === 'edit'} on:click={exportJson}>
-				<iconify-icon icon="mdi:code-braces" inline="true" />
+			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
+				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
 			</button>
-			<button type="button" disabled={mode === 'edit'} on:click={exportSvg}>
-				<iconify-icon icon="mdi:vector-square" inline="true" />
+			<button type="button" disabled={mode === 'edit'} onclick={exportSvg}>
+				<iconify-icon icon="mdi:vector-square" inline="true"></iconify-icon>
 				SVG
 			</button>
-			<button type="button" disabled={mode === 'edit'} on:click={exportPng}>
-				<iconify-icon icon="mdi:image-outline" inline="true" />
+			<button type="button" disabled={mode === 'edit'} onclick={exportPng}>
+				<iconify-icon icon="mdi:image-outline" inline="true"></iconify-icon>
 				PNG
 			</button>
-			<button type="button" disabled={mode === 'edit'} on:click={exportPdf}>
-				<iconify-icon icon="mdi:file-pdf-box" inline="true" />
+			<button type="button" disabled={mode === 'edit'} onclick={exportPdf}>
+				<iconify-icon icon="mdi:file-pdf-box" inline="true"></iconify-icon>
 				PDF
 			</button>
 			<div class="export-scale-row">
@@ -844,12 +853,12 @@
 			</div>
 		</div>
 	</div>
-	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
-		<iconify-icon icon="mdi:cog-outline" />
+	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} onclick={() => (settingsOpen = true)}>
+		<iconify-icon icon="mdi:cog-outline"></iconify-icon>
 		{$LL.menu.settings()}
 	</button>
-	<button class="about-button" title={$LL.menu.about()} aria-label={$LL.menu.about()} on:click={() => (aboutOpen = true)}>
-		<iconify-icon icon="mdi:information-outline" />
+	<button class="about-button" title={$LL.menu.about()} aria-label={$LL.menu.about()} onclick={() => (aboutOpen = true)}>
+		<iconify-icon icon="mdi:information-outline"></iconify-icon>
 		{$LL.menu.about()}
 	</button>
 	<div class="menu-locale">
@@ -875,20 +884,20 @@
 	<div class="translate-progress" role="alert">
 		<div class="translate-slot errored">
 			<span class="translate-slot-lang">
-				<iconify-icon icon="mdi:alert-circle-outline" inline="true" />
+				<iconify-icon icon="mdi:alert-circle-outline" inline="true"></iconify-icon>
 			</span>
 			<span class="translate-slot-error" title={translateError.message}>{translateError.message}</span>
-			<button type="button" class="translate-slot-action" title={$LL.translate.retry()} on:click={retryTranslate} aria-label={$LL.translate.retry()}>
-				<iconify-icon icon="mdi:refresh" inline="true" />
+			<button type="button" class="translate-slot-action" title={$LL.translate.retry()} onclick={retryTranslate} aria-label={$LL.translate.retry()}>
+				<iconify-icon icon="mdi:refresh" inline="true"></iconify-icon>
 			</button>
 			<button
 				type="button"
 				class="translate-slot-action"
 				title={$LL.translate.dismissError()}
-				on:click={dismissTranslateError}
+				onclick={dismissTranslateError}
 				aria-label={$LL.translate.dismissError()}
 			>
-				<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+				<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 			</button>
 		</div>
 	</div>
@@ -1022,13 +1031,13 @@
 			{sentences}
 			{equivalency}
 			{colors}
-			on:reorder={({ detail: { from, to } }) => {
+			onreorder={({ from, to }) => {
 				const entry = equivalency[from];
 				equivalency.splice(from, 1);
 				equivalency.splice(to, 0, entry);
 				equivalency = equivalency;
 			}}
-			on:scramble={() => {
+			onscramble={() => {
 				const n = equivalency.length;
 				if (n <= 2) {
 					equivalency.reverse();
@@ -1084,13 +1093,13 @@
 	<p>
 		{$LL.meta.title()} (
 		<a href="https://github.com/mkpoli/word-order/" title={$LL.footer.githubRepository()} class="github-link"
-			><iconify-icon icon="mdi:github" inline="true" /></a
+			><iconify-icon icon="mdi:github" inline="true"></iconify-icon></a
 		>,
 		<a href="https://twitter.com/mkpoli/status/1562786122782380036" title={$LL.footer.announcement()} class="twitter-link"
-			><iconify-icon icon="mdi:twitter" inline="true" /></a
+			><iconify-icon icon="mdi:twitter" inline="true"></iconify-icon></a
 		>) {$LL.footer.by({ author: '@mkpoli' })} (
-		<a href="https://twitter.com/mkpoli/" class="twitter-link"><iconify-icon icon="mdi:twitter" inline="true" /></a>,
-		<a href="https://mkpo.li/" class="home-link"><iconify-icon icon="mdi:home" inline="true" /></a>
+		<a href="https://twitter.com/mkpoli/" class="twitter-link"><iconify-icon icon="mdi:twitter" inline="true"></iconify-icon></a>,
+		<a href="https://mkpo.li/" class="home-link"><iconify-icon icon="mdi:home" inline="true"></iconify-icon></a>
 		)
 	</p>
 	<p>
@@ -1121,7 +1130,7 @@
 		transition: opacity 180ms ease;
 	}
 
-	main:has(.output.editing-active)::before {
+	main:has(:global(.output.editing-active))::before {
 		opacity: 1;
 	}
 
@@ -1312,7 +1321,7 @@
 			grid-area: e;
 		}
 
-		main:has(.output.editing-active) {
+		main:has(:global(.output.editing-active)) {
 			grid-template-areas:
 				'o o o'
 				'p i e';

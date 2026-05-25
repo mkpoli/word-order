@@ -1,41 +1,53 @@
 <script lang="ts">
+	import { run, preventDefault } from 'svelte/legacy';
+
 	import { spring, type Spring } from 'svelte/motion';
 
-	export let min: number;
-	export let max: number;
-	export let step = 1;
-	export let wheelStep = (max + min) / 20;
-	export let value: number = (max + min) / 2;
+	interface Props {
+		min: number;
+		max: number;
+		step?: number;
+		wheelStep?: number;
+		value?: number;
+		reversed?: boolean;
+		hoverable?: boolean;
+		disabled?: boolean;
+		id: string;
+		prefix?: string;
+		suffix?: string;
+		formatter?: (value: number, percentage: number) => number | string;
+		precision?: number;
+		springValues?: { stiffness?: number; damping?: number };
+	}
 
-	export let reversed = false;
-	export let hoverable = true;
-	export let disabled = false;
+	let {
+		min,
+		max,
+		step = 1,
+		wheelStep = (max + min) / 20,
+		value = $bindable((max + min) / 2),
+		reversed = false,
+		hoverable = true,
+		disabled = false,
+		id,
+		prefix = '',
+		suffix = '',
+		formatter = (value: number, _percentage: number) => value,
+		precision = 2,
+		springValues = { stiffness: 0.15, damping: 0.4 }
+	}: Props = $props();
 
-	export let id: string;
-	export let prefix = '';
-	export let suffix = '';
-	export let formatter = (value: number, _percentage: number) => value;
-
-	export let precision = 2;
-	export let springValues = { stiffness: 0.15, damping: 0.4 };
-
-	let slider: HTMLDivElement;
-	let focus = false;
-	let handleActivated = false;
-	let handlePressed = false;
-	let keyboardActive = false;
+	let slider: HTMLDivElement = $state(null!);
+	let focus = $state(false);
+	let handleActivated = $state(false);
+	let handlePressed = $state(false);
+	let keyboardActive = $state(false);
 	let previousValue: number;
-	let springPositions: Spring<number[]>;
-	let percentage = 50;
+	let springPositions: Spring<number[]> = $state(null!);
+	let percentage = $state(50);
 
 	function fixFloat(value: number): number {
 		return parseFloat(value.toFixed(precision));
-	}
-
-	$: {
-		value = align(value);
-		percentage = percentOf(value);
-		springPositions = spring([percentage], springValues);
 	}
 
 	function percentOf(x: number): number {
@@ -67,9 +79,6 @@
 		}
 		return fixFloat(clamp(aligned));
 	}
-
-	$: orientationStart = reversed ? 'right' : 'left';
-	$: orientationEnd = reversed ? 'left' : 'right';
 
 	function normalisedClient(e: MouseEvent | TouchEvent): { clientX: number; clientY: number } {
 		if (e.type.includes('touch')) {
@@ -165,7 +174,8 @@
 		}
 	}
 
-	function sliderInteractStart(e: MouseEvent | TouchEvent) {
+	function sliderInteractStart(e: Event) {
+		if (!(e instanceof MouseEvent || (typeof TouchEvent !== 'undefined' && e instanceof TouchEvent))) return;
 		if (!disabled) {
 			const clientPos = normalisedClient(e);
 			// set the closest handle as active
@@ -200,11 +210,18 @@
 		}
 	}
 
-	let ctrlKey = false;
-	let shiftKey = false;
-	let altKey = false;
+	let ctrlKey = $state(false);
+	let shiftKey = $state(false);
+	let altKey = $state(false);
 
-	let activatedByWheel = false;
+	let activatedByWheel = $state(false);
+	run(() => {
+		value = align(value);
+		percentage = percentOf(value);
+		springPositions = spring([percentage], springValues);
+	});
+	let orientationStart = $derived(reversed ? 'right' : 'left');
+	let orientationEnd = $derived(reversed ? 'left' : 'right');
 </script>
 
 <div
@@ -215,11 +232,11 @@
 	class:hoverable
 	class:reversed
 	class:focus
-	on:mousedown={sliderInteractStart}
-	on:mouseup={sliderInteractEnd}
-	on:touchstart|preventDefault={sliderInteractStart}
-	on:touchend|preventDefault={sliderInteractEnd}
-	on:wheel={(e) => {
+	onmousedown={sliderInteractStart}
+	onmouseup={sliderInteractEnd}
+	ontouchstart={preventDefault(sliderInteractStart)}
+	ontouchend={preventDefault(sliderInteractEnd)}
+	onwheel={(e) => {
 		if (disabled) return;
 
 		focus = true;
@@ -230,7 +247,7 @@
 
 		e.preventDefault();
 	}}
-	on:mouseleave={() => {
+	onmouseleave={() => {
 		if (activatedByWheel) {
 			activatedByWheel = false;
 			focus = false;
@@ -243,9 +260,9 @@
 		class:active={focus}
 		class:press={handlePressed}
 		data-handle={0}
-		on:blur={sliderBlurHandle}
-		on:focus={sliderFocusHandle}
-		on:keydown={sliderKeydown}
+		onblur={sliderBlurHandle}
+		onfocus={sliderFocusHandle}
+		onkeydown={sliderKeydown}
 		style="{orientationStart}: {$springPositions[0]}%; z-index: {3};"
 		aria-valuemin={min}
 		aria-valuemax={max}
@@ -255,7 +272,7 @@
 		aria-disabled={disabled}
 		tabindex={disabled ? -1 : 0}
 	>
-		<span class="rangeNub" />
+		<span class="rangeNub"></span>
 		<span class="rangeFloat">
 			{#if prefix}<span class="rangeFloat-prefix">{prefix}</span>{/if}{formatter(value, percentOf(value))}{#if suffix}<span class="rangeFloat-suffix"
 					>{suffix}</span
@@ -266,15 +283,15 @@
 		class="rangeBar"
 		style="{orientationStart}: 0%; 
             {orientationEnd}: {100 - $springPositions[0]}%;"
-	/>
+	></span>
 </div>
 
 <svelte:window
-	on:mousedown={bodyInteractStart}
-	on:touchstart={bodyInteractStart}
-	on:mousemove={bodyInteract}
-	on:touchmove={bodyInteract}
-	on:mouseup={(e) => {
+	onmousedown={bodyInteractStart}
+	ontouchstart={bodyInteractStart}
+	onmousemove={bodyInteract}
+	ontouchmove={bodyInteract}
+	onmouseup={(e) => {
 		if (!disabled && handleActivated) {
 			const el = e.target;
 			if (el === slider || (el instanceof Element && slider.contains(el))) {
@@ -287,11 +304,11 @@
 		handleActivated = false;
 		handlePressed = false;
 	}}
-	on:touchend={() => {
+	ontouchend={() => {
 		handleActivated = false;
 		handlePressed = false;
 	}}
-	on:keydown={(e) => {
+	onkeydown={(e) => {
 		if (!disabled) {
 			if (e.key === 'Control') {
 				ctrlKey = true;
@@ -310,7 +327,7 @@
 			}
 		}
 	}}
-	on:keyup={(e) => {
+	onkeyup={(e) => {
 		if (!disabled) {
 			if (e.key === 'Control') {
 				ctrlKey = false;

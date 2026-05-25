@@ -21,14 +21,7 @@ const GEMINI_SCHEMA = toGeminiSchema(RESPONSE_JSON_SCHEMA);
 export const gemini: LlmProvider = {
 	id: 'gemini',
 	label: 'Google Gemini',
-	models: [
-		'gemini-3.5-flash',
-		'gemini-3.1-pro-preview',
-		'gemini-3.1-flash-lite',
-		'gemini-2.5-pro',
-		'gemini-2.5-flash',
-		'gemini-2.5-flash-lite'
-	],
+	models: ['gemini-3.5-flash', 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite', 'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'],
 	defaultModel: 'gemini-2.5-flash',
 	keyHint: 'AIza…',
 	async call(request, { apiKey, model, signal }) {

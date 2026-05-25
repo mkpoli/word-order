@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { parseRuby, rubyRule } from './ruby';
 
-	export let word: string;
+	interface Props {
+		word: string;
+	}
+
+	let { word }: Props = $props();
 </script>
 
 {#each word.split(rubyRule) as part}

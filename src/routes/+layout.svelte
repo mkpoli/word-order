@@ -4,7 +4,12 @@
 	import type { Locales } from '$i18n/i18n-types';
 	import { getLocaleDirection } from '$lib/lang';
 
-	export let data: { locale: Locales };
+	interface Props {
+		data: { locale: Locales };
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 
 	let { locale } = data;
 
@@ -24,7 +29,7 @@
 	setLocale(locale);
 </script>
 
-<slot />
+{@render children?.()}
 
 <style global>
 	:root {
