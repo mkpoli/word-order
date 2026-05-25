@@ -164,7 +164,9 @@ const createLL = () => ({
 		removeCustom: m.translate_remove_custom,
 		cancel: m.translate_cancel,
 		retry: m.translate_retry,
-		costNotice: m.translate_cost_notice
+		costNotice: m.translate_cost_notice,
+		usage: m.translate_usage,
+		usageDismiss: m.translate_usage_dismiss
 	}
 });
 

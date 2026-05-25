@@ -148,6 +148,15 @@
 	let pendingTranslation = $state<PendingTranslation | null>(null);
 	let translateError: { message: string; targets: string[] } | null = $state(null);
 
+	type UsageReceipt = {
+		inputTokens: number;
+		outputTokens: number;
+		provider: string;
+		model: string;
+	};
+	let lastUsage: UsageReceipt | null = $state(null);
+	let lastUsageTimer: ReturnType<typeof setTimeout> | null = null;
+
 	type ShareFeedback = 'copied' | 'long' | null;
 	let shareFeedback: ShareFeedback = $state(null);
 	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
@@ -450,6 +459,20 @@
 
 			pendingTranslation = null;
 			if (mode === 'view') mode = 'edit';
+
+			if (result.usage) {
+				lastUsage = {
+					inputTokens: result.usage.inputTokens,
+					outputTokens: result.usage.outputTokens,
+					provider: result.provider,
+					model: result.model
+				};
+				if (lastUsageTimer) clearTimeout(lastUsageTimer);
+				lastUsageTimer = setTimeout(() => {
+					lastUsage = null;
+					lastUsageTimer = null;
+				}, 12000);
+			}
 
 			await tick();
 		} catch (err) {
@@ -1031,6 +1054,33 @@ ${svgString}
 				<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 			</button>
 		</div>
+	</div>
+{/if}
+
+{#if lastUsage}
+	<div class="usage-chip" role="status">
+		<iconify-icon icon="mdi:counter" inline="true"></iconify-icon>
+		<span class="usage-chip-text">
+			{$LL.translate.usage({
+				input: lastUsage.inputTokens.toLocaleString(),
+				output: lastUsage.outputTokens.toLocaleString(),
+				model: lastUsage.model
+			})}
+		</span>
+		<button
+			type="button"
+			class="usage-chip-dismiss"
+			aria-label={$LL.translate.usageDismiss()}
+			onclick={() => {
+				lastUsage = null;
+				if (lastUsageTimer) {
+					clearTimeout(lastUsageTimer);
+					lastUsageTimer = null;
+				}
+			}}
+		>
+			<iconify-icon icon="mdi:close" inline="true"></iconify-icon>
+		</button>
 	</div>
 {/if}
 
@@ -1797,6 +1847,47 @@ ${svgString}
 		gap: 0.5em;
 		z-index: 800;
 		max-width: min(24em, calc(100vw - 2em));
+	}
+
+	.usage-chip {
+		position: fixed;
+		bottom: 1.2em;
+		right: 1.2em;
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		padding: 0.4em 0.5em 0.4em 0.85em;
+		box-shadow: 0 6px 20px var(--color-shadow);
+		font-size: 0.85em;
+		color: var(--color-text-muted);
+		font-variant-numeric: tabular-nums;
+		z-index: 700;
+		max-width: min(28em, calc(100vw - 2em));
+	}
+	.usage-chip :global(iconify-icon) {
+		color: var(--color-accent-text);
+		font-size: 1.05em;
+	}
+	.usage-chip-text {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.usage-chip-dismiss {
+		appearance: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: var(--color-text-muted);
+		padding: 0.15em 0.3em;
+		border-radius: 999px;
+		margin-inline-start: auto;
+	}
+	.usage-chip-dismiss:hover {
+		background: var(--color-hover);
 	}
 
 	.translate-slot {
