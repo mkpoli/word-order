@@ -14,7 +14,7 @@
 	import { page } from '$app/stores';
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
-	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, LineStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 	import { buildShareUrl, decodeDocFromUrl, isShareUrlLong, readPayloadFromUrl } from '$lib/share';
@@ -95,6 +95,8 @@
 	});
 	const PALETTE_STORAGE_KEY = 'word-order:palette';
 	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
+	const LINE_STYLE_STORAGE_KEY = 'word-order:line-style';
+	const LINE_STYLES: LineStyle[] = ['solid', 'dashed', 'dotted'];
 	let palette: PaletteId = $state(DEFAULT_PALETTE);
 	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
 	// Bound by <Equivalency> while a drag is in progress; null when idle. Mirrors
@@ -108,6 +110,7 @@
 	let verticalGap = $state(0);
 	let lineGap = $state(0);
 	let lineWidth = $state(1);
+	let lineStyle: LineStyle = $state('solid');
 	let straightLength = $state(0);
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
@@ -224,6 +227,9 @@
 
 		const storedPalette = window.localStorage.getItem(PALETTE_STORAGE_KEY);
 		if (storedPalette && PALETTE_IDS.includes(storedPalette as PaletteId)) palette = storedPalette as PaletteId;
+
+		const storedLineStyle = window.localStorage.getItem(LINE_STYLE_STORAGE_KEY);
+		if (storedLineStyle && LINE_STYLES.includes(storedLineStyle as LineStyle)) lineStyle = storedLineStyle as LineStyle;
 
 		mounted = true;
 		await tick();
@@ -814,6 +820,9 @@ ${svgString}
 	run(() => {
 		if (mounted) window.localStorage.setItem(PALETTE_STORAGE_KEY, palette);
 	});
+	run(() => {
+		if (mounted) window.localStorage.setItem(LINE_STYLE_STORAGE_KEY, lineStyle);
+	});
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
 	run(() => {
@@ -1089,6 +1098,7 @@ ${svgString}
 					{verticalGap}
 					{lineGap}
 					{lineWidth}
+					{lineStyle}
 					{straightLength}
 					{endpointCorrection}
 					{curvature}
@@ -1187,6 +1197,7 @@ ${svgString}
 			bind:verticalGap
 			bind:lineGap
 			bind:lineWidth
+			bind:lineStyle
 			bind:straightLength
 			bind:endpointCorrection
 			bind:curvature
