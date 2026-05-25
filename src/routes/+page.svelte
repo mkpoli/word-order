@@ -775,6 +775,66 @@ ${svgString}
 		}
 	}
 
+	type SocialPreset = { id: string; label: string; width: number; height: number };
+	// Sized for the platforms' link-card / in-feed image slots as of early 2026.
+	const SOCIAL_PRESETS: SocialPreset[] = [
+		{ id: 'twitter-card', label: 'X / Twitter (1600 × 900)', width: 1600, height: 900 },
+		{ id: 'instagram-square', label: 'Instagram square (1080 × 1080)', width: 1080, height: 1080 },
+		{ id: 'instagram-portrait', label: 'Instagram portrait (1080 × 1350)', width: 1080, height: 1350 },
+		{ id: 'facebook-link', label: 'Facebook link (1200 × 630)', width: 1200, height: 630 },
+		{ id: 'linkedin-link', label: 'LinkedIn link (1200 × 627)', width: 1200, height: 627 }
+	];
+
+	async function exportSocial(preset: SocialPreset) {
+		if (!output) return;
+		try {
+			// Render the natural-size PNG first, then composite onto a canvas of
+			// the preset dimensions so we don't have to fight the dom-to-image
+			// scale math for non-aspect-preserving targets.
+			const source = await exportPngBlob(2);
+			if (!source) return;
+
+			const sourceUrl = URL.createObjectURL(source);
+			try {
+				const img = new Image();
+				await new Promise<void>((resolve, reject) => {
+					img.onload = () => resolve();
+					img.onerror = () => reject(new Error('Image load failed'));
+					img.src = sourceUrl;
+				});
+
+				const canvas = document.createElement('canvas');
+				canvas.width = preset.width;
+				canvas.height = preset.height;
+				const ctx = canvas.getContext('2d');
+				if (!ctx) return;
+				ctx.fillStyle = getExportBackgroundColor();
+				ctx.fillRect(0, 0, preset.width, preset.height);
+
+				// Fit-contain with 5% padding so the diagram never kisses the edges.
+				const pad = 0.05;
+				const maxW = preset.width * (1 - pad * 2);
+				const maxH = preset.height * (1 - pad * 2);
+				const scale = Math.min(maxW / img.width, maxH / img.height);
+				const drawW = img.width * scale;
+				const drawH = img.height * scale;
+				const drawX = (preset.width - drawW) / 2;
+				const drawY = (preset.height - drawH) / 2;
+				ctx.imageSmoothingQuality = 'high';
+				ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+				const out = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+				if (out) save(out, 'image/png', exportFilename(`${preset.id}.png`));
+			} finally {
+				URL.revokeObjectURL(sourceUrl);
+			}
+		} catch (err) {
+			console.error(`Export social (${preset.id}) failed:`, err);
+		} finally {
+			closeExportMenu();
+		}
+	}
+
 	async function exportPdf() {
 		if (!output) {
 			closeExportMenu();
@@ -1004,6 +1064,13 @@ ${svgString}
 					{/each}
 				</select>
 			</div>
+			<div class="export-section-label">{$LL.menu.socialSection()}</div>
+			{#each SOCIAL_PRESETS as preset (preset.id)}
+				<button type="button" class="export-social" disabled={mode === 'edit'} onclick={() => exportSocial(preset)}>
+					<iconify-icon icon="mdi:share-variant-outline" inline="true"></iconify-icon>
+					{preset.label}
+				</button>
+			{/each}
 		</div>
 	</div>
 	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} onclick={() => (settingsOpen = true)}>
@@ -1721,6 +1788,22 @@ ${svgString}
 	.export-scale-row label {
 		font-weight: 600;
 		white-space: nowrap;
+	}
+
+	.export-section-label {
+		padding: 0.6em 0.85em 0.25em;
+		margin-top: 0.4em;
+		border-top: 1px solid var(--color-border-soft);
+		font-size: 0.72em;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-text-faint);
+	}
+
+	.export-menu button.export-social {
+		font-weight: normal;
+		font-size: 0.92em;
 	}
 
 	.export-scale-row select {

@@ -115,6 +115,7 @@ const createLL = () => ({
 		png: m.menu_png,
 		pdf: m.menu_pdf,
 		rasterScale: m.menu_raster_scale,
+		socialSection: m.menu_social_section,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
 		settings: m.menu_settings,
