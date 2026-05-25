@@ -133,6 +133,7 @@
 	let shareFeedback: ShareFeedback = $state(null);
 	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareUrlLength = $state(0);
+	let shareLoadError = $state(false);
 
 	async function copyShareLink() {
 		try {
@@ -177,6 +178,14 @@
 			if (shared) {
 				sentences = shared.sentences;
 				equivalency = shared.equivalency;
+			} else {
+				// The URL had `#d=…` / `?d=…` but the payload was unreadable —
+				// truncated copy-paste, tampered link, or a future format we
+				// don't understand. Surface a one-shot toast so the user knows
+				// why they're seeing the sample doc instead of the shared one,
+				// and clear the bad hash so the address bar reflects reality.
+				shareLoadError = true;
+				history.replaceState(null, '', window.location.pathname + window.location.search);
 			}
 		} else {
 			const doc = loadDoc();
@@ -827,6 +836,16 @@ ${svgString}
 	}}
 />
 
+{#if shareLoadError}
+	<div class="share-load-error" role="alert">
+		<iconify-icon icon="mdi:link-off" inline="true"></iconify-icon>
+		<span>{$LL.menu.shareLoadError()}</span>
+		<button type="button" class="dismiss" aria-label={$LL.menu.shareLoadErrorDismiss()} onclick={() => (shareLoadError = false)}>
+			<iconify-icon icon="mdi:close" inline="true"></iconify-icon>
+		</button>
+	</div>
+{/if}
+
 <header class="menu" class:editing-context={modifying !== -1}>
 	<button
 		disabled={mode === 'edit'}
@@ -1458,6 +1477,36 @@ ${svgString}
 		padding: 1em;
 		justify-content: flex-start;
 		align-items: stretch;
+	}
+
+	.share-load-error {
+		display: flex;
+		align-items: center;
+		gap: 0.6em;
+		margin: 0.6em 1em 0;
+		padding: 0.55em 0.85em;
+		background: rgb(220 60 60 / 0.08);
+		border: 1px solid rgb(220 60 60 / 0.3);
+		color: var(--color-text);
+		font-size: 0.92em;
+		border-radius: 0.4em;
+	}
+	.share-load-error :global(iconify-icon) {
+		color: rgb(180 40 40);
+		font-size: 1.1em;
+	}
+	.share-load-error .dismiss {
+		margin-inline-start: auto;
+		appearance: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: var(--color-text-muted);
+		padding: 0.1em 0.3em;
+		border-radius: 0.2em;
+	}
+	.share-load-error .dismiss:hover {
+		background: var(--color-hover);
 	}
 
 	.menu-locale {

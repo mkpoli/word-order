@@ -92,6 +92,8 @@ const createLL = () => ({
 		shareCopied: m.menu_share_copied,
 		shareLong: m.menu_share_long,
 		shareLongShort: m.menu_share_long_short,
+		shareLoadError: m.menu_share_load_error,
+		shareLoadErrorDismiss: m.menu_share_load_error_dismiss,
 		svg: m.menu_svg,
 		png: m.menu_png,
 		pdf: m.menu_pdf,
