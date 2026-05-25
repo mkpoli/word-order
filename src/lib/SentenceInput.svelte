@@ -561,12 +561,12 @@
 	}
 
 	.guidance {
-		background: rgb(0, 123, 255, 0.1);
+		background: rgb(0 123 255 / 0.1);
 		padding: 1em 0.8em;
 		border-radius: 0.2em;
-		border: 1px solid rgb(0, 123, 255);
+		border: 1px solid rgb(0 123 255 / 0.5);
 
-		color: rgb(0, 39, 80);
+		color: var(--color-text);
 
 		display: flex;
 		align-items: center;

@@ -143,7 +143,7 @@
 	header h2 {
 		margin: 0;
 		font-size: 1.25em;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
@@ -207,7 +207,7 @@
 		appearance: none;
 		background: rgb(46 91 255 / 0.08);
 		border: 1px solid rgb(46 91 255 / 0.3);
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		padding: 0 0.85em;
 		border-radius: 0.35em;
 		font-weight: 600;
@@ -225,7 +225,7 @@
 		align-items: flex-start;
 		background: rgb(46 91 255 / 0.06);
 		border: 1px solid rgb(46 91 255 / 0.15);
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		font-size: 0.88em;
 		padding: 0.7em 0.85em;
 		margin: 0.4em 0 0;

@@ -196,7 +196,7 @@
 	header h2 {
 		margin: 0;
 		font-size: 1.15em;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
@@ -260,7 +260,7 @@
 		background: none;
 		border: none;
 		padding: 0;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		font: inherit;
 		font-weight: 600;
 		cursor: pointer;
@@ -307,7 +307,7 @@
 	.chip.on {
 		background: rgb(46 91 255 / 0.12);
 		border-color: rgb(46 91 255 / 0.55);
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 	}
 
 	.chip.custom {
@@ -350,7 +350,7 @@
 		appearance: none;
 		background: rgb(46 91 255 / 0.08);
 		border: 1px solid rgb(46 91 255 / 0.3);
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		padding: 0 0.85em;
 		border-radius: 0.35em;
 		font-weight: 600;

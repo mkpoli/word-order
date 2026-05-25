@@ -45,6 +45,10 @@
 		--color-border-soft: #eeeeee;
 		--color-hover: #eeeeee;
 		--color-shadow: rgb(0 0 0 / 0.18);
+		/* Accent text for dialog headers / link buttons / chips.
+		   Light value is a deep blue that reads as accent on white;
+		   dark override lifts it so it doesn't disappear against the dark surface. */
+		--color-accent-text: rgb(33 56 199);
 
 		accent-color: var(--color-accent);
 	}
@@ -65,6 +69,7 @@
 		/* Inactive button text/border needs to be visible against the
 		   dark page bg; lift to a mid-grey instead of the near-black light default. */
 		--color-inactive: rgb(170 178 188);
+		--color-accent-text: rgb(135 165 255);
 	}
 
 	@media (prefers-color-scheme: dark) {
@@ -82,6 +87,7 @@
 			--color-hover: #2a323d;
 			--color-shadow: rgb(0 0 0 / 0.5);
 			--color-inactive: rgb(170 178 188);
+			--color-accent-text: rgb(135 165 255);
 		}
 	}
 

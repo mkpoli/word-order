@@ -1197,6 +1197,27 @@
 			transform 180ms ease,
 			opacity 180ms ease,
 			filter 180ms ease;
+
+		/* TODO(#56-followup): the output canvas is intentionally pinned to the
+		   light palette so PNG/SVG/PDF exports look consistent regardless of
+		   the author's UI theme. Once we ship background-customization
+		   (related: #48 palettes, possibly a new "canvas bg" picker), revisit
+		   this and let the canvas honour the active theme — or, better,
+		   honour an explicit per-document background choice. */
+		color-scheme: light;
+		--color-bg: #ffffff;
+		--color-surface: #ffffff;
+		--color-surface-elevated: #ffffff;
+		--color-text: #222222;
+		--color-text-muted: #555555;
+		--color-text-faint: #777777;
+		--color-border: #cccccc;
+		--color-border-soft: #eeeeee;
+		--color-hover: #eeeeee;
+		--color-shadow: rgb(0 0 0 / 0.18);
+		--color-accent-text: rgb(33 56 199);
+		background: #ffffff;
+		color: #222222;
 	}
 
 	/* Horizontal scroll lives on this inner wrapper, not on .output itself,

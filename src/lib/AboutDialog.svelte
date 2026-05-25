@@ -95,7 +95,7 @@
 	header h2 {
 		margin: 0;
 		font-size: 1.25em;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
@@ -134,7 +134,7 @@
 	}
 
 	.credit :global(a) {
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		text-decoration: none;
 		font-weight: 600;
 	}
@@ -158,7 +158,7 @@
 		border: 1px solid rgb(46 91 255 / 0.3);
 		border-radius: 0.4em;
 		text-decoration: none;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		font-weight: 600;
 		font-size: 0.9em;
 	}
