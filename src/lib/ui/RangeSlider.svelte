@@ -346,163 +346,163 @@
 
 <style>
 	:global {
-	.rangeSlider {
-		--slider-thickness: 0.5em;
+		.rangeSlider {
+			--slider-thickness: 0.5em;
 
-		--handle-size: 1.05em;
-		--hover-expand: 0.3em;
-		--click-expand: 0.5em;
+			--handle-size: 1.05em;
+			--hover-expand: 0.3em;
+			--click-expand: 0.5em;
 
-		--color-slider: #efefef;
-		--color-slider-border: #dbdbdb;
+			--color-slider: light-dark(#efefef, #2a323d);
+			--color-slider-border: light-dark(#dbdbdb, #3a4452);
 
-		--color-handle: var(--color-range-handle, #838de7);
-		--color-handle-border: var(--color-handle);
-		--color-handle-focus: var(--color-accent);
+			--color-handle: var(--color-range-handle, #838de7);
+			--color-handle-border: var(--color-handle);
+			--color-handle-focus: var(--color-accent);
 
-		--color-range: var(--color-handle-focus);
+			--color-range: var(--color-handle-focus);
 
-		--color-handle-inactive: var(--color-inactive);
-		--color-range-inactive: var(--color-handle-inactive);
+			--color-handle-inactive: var(--color-inactive);
+			--color-range-inactive: var(--color-handle-inactive);
 
-		--color-float-inactive: var(--color-handle-inactive);
-		--color-float: var(--color-handle-focus);
-		--color-float-text: #ffffff;
-	}
-	.rangeSlider {
-		position: relative;
-		border-radius: 100px;
-		height: var(--slider-thickness);
-		/* margin: 1em; */
-		margin: 0.6em 0.2em;
-		transition: opacity 0.2s ease;
-		user-select: none;
-		background-color: var(--color-slider);
-		border: 1px solid var(--color-slider-border);
-	}
-	.rangeSlider * {
-		user-select: none;
-	}
-	.rangeSlider .rangeHandle {
-		position: absolute;
-		display: block;
-		height: var(--handle-size);
-		width: var(--handle-size);
-		top: 0.25em;
-		bottom: auto;
-		transform: translateY(-50%) translateX(-50%);
-		z-index: 2;
-	}
-	.rangeSlider.reversed .rangeHandle {
-		transform: translateY(-50%) translateX(50%);
-	}
+			--color-float-inactive: var(--color-handle-inactive);
+			--color-float: var(--color-handle-focus);
+			--color-float-text: #ffffff;
+		}
+		.rangeSlider {
+			position: relative;
+			border-radius: 100px;
+			height: var(--slider-thickness);
+			/* margin: 1em; */
+			margin: 0.6em 0.2em;
+			transition: opacity 0.2s ease;
+			user-select: none;
+			background-color: var(--color-slider);
+			border: 1px solid var(--color-slider-border);
+		}
+		.rangeSlider * {
+			user-select: none;
+		}
+		.rangeSlider .rangeHandle {
+			position: absolute;
+			display: block;
+			height: var(--handle-size);
+			width: var(--handle-size);
+			top: 0.25em;
+			bottom: auto;
+			transform: translateY(-50%) translateX(-50%);
+			z-index: 2;
+		}
+		.rangeSlider.reversed .rangeHandle {
+			transform: translateY(-50%) translateX(50%);
+		}
 
-	.rangeSlider .rangeNub {
-		background-color: var(--color-handle-inactive);
-	}
-	.rangeSlider.focus .rangeNub {
-		background-color: var(--color-handle);
-	}
+		.rangeSlider .rangeNub {
+			background-color: var(--color-handle-inactive);
+		}
+		.rangeSlider.focus .rangeNub {
+			background-color: var(--color-handle);
+		}
 
-	.rangeSlider .rangeNub,
-	.rangeSlider .rangeHandle:before {
-		position: absolute;
-		left: 0;
-		top: 0;
-		display: block;
-		border-radius: 10em;
-		height: 100%;
-		width: 100%;
-		transition: box-shadow 0.2s ease;
-	}
+		.rangeSlider .rangeNub,
+		.rangeSlider .rangeHandle:before {
+			position: absolute;
+			left: 0;
+			top: 0;
+			display: block;
+			border-radius: 10em;
+			height: 100%;
+			width: 100%;
+			transition: box-shadow 0.2s ease;
+		}
 
-	.rangeSlider .rangeHandle.active .rangeNub {
-		background-color: var(--color-handle-focus);
-	}
+		.rangeSlider .rangeHandle.active .rangeNub {
+			background-color: var(--color-handle-focus);
+		}
 
-	.rangeSlider .rangeHandle:before {
-		content: '';
-		left: 1px;
-		top: 1px;
-		bottom: 1px;
-		right: 1px;
-		height: auto;
-		width: auto;
-		box-shadow: 0 0 0 0px var(--color-handle-border);
-		opacity: 0;
-	}
-	.rangeSlider.hoverable:not(.disabled) .rangeHandle:hover:before {
-		box-shadow: 0 0 0 var(--hover-expand) var(--color-handle-border);
-		opacity: 0.2;
-	}
-	.rangeSlider.hoverable:not(.disabled) .rangeHandle.press:before,
-	.rangeSlider.hoverable:not(.disabled) .rangeHandle.press:hover:before {
-		box-shadow: 0 0 0 var(--click-expand) var(--color-handle-border);
-		opacity: 0.4;
-	}
-	.rangeSlider.range .rangeHandle:nth-of-type(1) .rangeNub {
-		transform: rotate(-135deg);
-	}
-	.rangeSlider.range .rangeHandle:nth-of-type(2) .rangeNub {
-		transform: rotate(45deg);
-	}
-	.rangeSlider.range.reversed .rangeHandle:nth-of-type(1) .rangeNub {
-		transform: rotate(45deg);
-	}
-	.rangeSlider.range.reversed .rangeHandle:nth-of-type(2) .rangeNub {
-		transform: rotate(-135deg);
-	}
-	.rangeSlider .rangeFloat {
-		display: block;
-		position: absolute;
-		left: 50%;
-		top: -0.5em;
-		transform: translate(-50%, -100%);
-		font-size: 1em;
-		text-align: center;
-		opacity: 0;
-		pointer-events: none;
-		white-space: nowrap;
-		transition: all 0.2s ease;
-		font-size: 0.9em;
-		padding: 0.2em 0.4em;
-		border-radius: 0.2em;
-		color: var(--color-float-text);
-		background-color: var(--color-float-inactive);
-	}
-	.rangeSlider.focus .rangeFloat {
-		background-color: var(--color-float);
-	}
+		.rangeSlider .rangeHandle:before {
+			content: '';
+			left: 1px;
+			top: 1px;
+			bottom: 1px;
+			right: 1px;
+			height: auto;
+			width: auto;
+			box-shadow: 0 0 0 0px var(--color-handle-border);
+			opacity: 0;
+		}
+		.rangeSlider.hoverable:not(.disabled) .rangeHandle:hover:before {
+			box-shadow: 0 0 0 var(--hover-expand) var(--color-handle-border);
+			opacity: 0.2;
+		}
+		.rangeSlider.hoverable:not(.disabled) .rangeHandle.press:before,
+		.rangeSlider.hoverable:not(.disabled) .rangeHandle.press:hover:before {
+			box-shadow: 0 0 0 var(--click-expand) var(--color-handle-border);
+			opacity: 0.4;
+		}
+		.rangeSlider.range .rangeHandle:nth-of-type(1) .rangeNub {
+			transform: rotate(-135deg);
+		}
+		.rangeSlider.range .rangeHandle:nth-of-type(2) .rangeNub {
+			transform: rotate(45deg);
+		}
+		.rangeSlider.range.reversed .rangeHandle:nth-of-type(1) .rangeNub {
+			transform: rotate(45deg);
+		}
+		.rangeSlider.range.reversed .rangeHandle:nth-of-type(2) .rangeNub {
+			transform: rotate(-135deg);
+		}
+		.rangeSlider .rangeFloat {
+			display: block;
+			position: absolute;
+			left: 50%;
+			top: -0.5em;
+			transform: translate(-50%, -100%);
+			font-size: 1em;
+			text-align: center;
+			opacity: 0;
+			pointer-events: none;
+			white-space: nowrap;
+			transition: all 0.2s ease;
+			font-size: 0.9em;
+			padding: 0.2em 0.4em;
+			border-radius: 0.2em;
+			color: var(--color-float-text);
+			background-color: var(--color-float-inactive);
+		}
+		.rangeSlider.focus .rangeFloat {
+			background-color: var(--color-float);
+		}
 
-	.rangeSlider .rangeHandle.active .rangeFloat,
-	.rangeSlider.hoverable .rangeHandle:hover .rangeFloat {
-		opacity: 1;
-		top: -0.2em;
-		transform: translate(-50%, -100%);
-	}
-	.rangeSlider .rangeBar {
-		position: absolute;
-		display: block;
-		transition: background 0.2s ease;
-		border-radius: 1em;
-		height: 0.45em;
-		top: 0;
-		user-select: none;
-		z-index: 1;
-		background-color: var(--color-range-inactive);
-		box-shadow: 0 0 0 1px var(--color-range-inactive);
-	}
+		.rangeSlider .rangeHandle.active .rangeFloat,
+		.rangeSlider.hoverable .rangeHandle:hover .rangeFloat {
+			opacity: 1;
+			top: -0.2em;
+			transform: translate(-50%, -100%);
+		}
+		.rangeSlider .rangeBar {
+			position: absolute;
+			display: block;
+			transition: background 0.2s ease;
+			border-radius: 1em;
+			height: 0.45em;
+			top: 0;
+			user-select: none;
+			z-index: 1;
+			background-color: var(--color-range-inactive);
+			box-shadow: 0 0 0 1px var(--color-range-inactive);
+		}
 
-	.rangeSlider.focus .rangeBar {
-		box-shadow: 0 0 0 1px var(--color-handle-focus);
-		background-color: var(--color-range);
-	}
+		.rangeSlider.focus .rangeBar {
+			box-shadow: 0 0 0 1px var(--color-handle-focus);
+			background-color: var(--color-range);
+		}
 
-	.rangeSlider.disabled {
-		opacity: 0.5;
-	}
-	.rangeSlider.disabled .rangeNub {
-		background-color: var(--color-slider);
-	}
+		.rangeSlider.disabled {
+			opacity: 0.5;
+		}
+		.rangeSlider.disabled .rangeNub {
+			background-color: var(--color-slider);
+		}
 	}
 </style>

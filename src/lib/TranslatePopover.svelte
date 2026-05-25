@@ -187,12 +187,14 @@
 	}
 
 	.popover {
-		background: white;
+		background: var(--color-surface);
+		color: var(--color-text);
 		max-width: 36em;
 		width: 100%;
 		border-radius: 0.8em;
-		box-shadow: 0 20px 60px rgb(23 36 78 / 0.3);
+		box-shadow: 0 20px 60px var(--color-shadow);
 		padding: 1.2em 1.4em;
+		border: 1px solid var(--color-border-soft);
 	}
 
 	header {
@@ -206,7 +208,7 @@
 	header h2 {
 		margin: 0;
 		font-size: 1.15em;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
@@ -218,17 +220,17 @@
 		border: none;
 		font-size: 1.2em;
 		cursor: pointer;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		padding: 0.2em 0.4em;
 		border-radius: 0.3em;
 	}
 
 	.dismiss:hover {
-		background: rgb(24 33 61 / 0.08);
+		background: var(--color-hover);
 	}
 
 	.muted {
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		font-size: 0.9em;
 		margin: 0 0 0.5em;
 	}
@@ -239,7 +241,7 @@
 		align-items: flex-start;
 		background: rgb(46 91 255 / 0.06);
 		border: 1px solid rgb(46 91 255 / 0.15);
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		font-size: 0.85em;
 		padding: 0.55em 0.75em;
 		margin: 0 0 0.9em;
@@ -270,7 +272,7 @@
 		background: none;
 		border: none;
 		padding: 0;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		font: inherit;
 		font-weight: 600;
 		cursor: pointer;
@@ -286,7 +288,7 @@
 
 	.targets legend {
 		font-weight: 600;
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		padding: 0 0.4em;
 		font-size: 0.9em;
 	}
@@ -306,8 +308,8 @@
 		border-radius: 999px;
 		cursor: pointer;
 		font-size: 0.88em;
-		background: white;
-		color: rgb(45 55 80);
+		background: var(--color-surface);
+		color: var(--color-text);
 	}
 
 	.chip:hover {
@@ -317,7 +319,7 @@
 	.chip.on {
 		background: rgb(46 91 255 / 0.12);
 		border-color: rgb(46 91 255 / 0.55);
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 	}
 
 	.chip.custom {
@@ -335,7 +337,7 @@
 	}
 
 	.exonym {
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		font-size: 0.84em;
 	}
 
@@ -360,7 +362,7 @@
 		appearance: none;
 		background: rgb(46 91 255 / 0.08);
 		border: 1px solid rgb(46 91 255 / 0.3);
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		padding: 0 0.85em;
 		border-radius: 0.35em;
 		font-weight: 600;

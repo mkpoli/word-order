@@ -129,12 +129,14 @@
 	}
 
 	.dialog {
-		background: white;
+		background: var(--color-surface);
+		color: var(--color-text);
 		max-width: 32em;
 		width: 100%;
 		border-radius: 0.8em;
-		box-shadow: 0 20px 60px rgb(23 36 78 / 0.3);
+		box-shadow: 0 20px 60px var(--color-shadow);
 		padding: 1.4em 1.6em;
+		border: 1px solid var(--color-border-soft);
 	}
 
 	header {
@@ -148,7 +150,7 @@
 	header h2 {
 		margin: 0;
 		font-size: 1.25em;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
@@ -160,13 +162,13 @@
 		border: none;
 		font-size: 1.2em;
 		cursor: pointer;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		padding: 0.2em 0.4em;
 		border-radius: 0.3em;
 	}
 
 	.dismiss:hover {
-		background: rgb(24 33 61 / 0.08);
+		background: var(--color-hover);
 	}
 
 	.field {
@@ -178,22 +180,27 @@
 	.field label {
 		font-weight: 600;
 		font-size: 0.92em;
-		color: rgb(45 55 80);
+		color: var(--color-text);
 	}
 
 	.field select,
 	.field input {
-		padding: 0.5em 0.65em;
-		border: 1px solid rgb(46 91 255 / 0.3);
-		border-radius: 0.35em;
+		padding: 0.3em 0.5em;
+		border: 1px solid var(--color-border);
+		border-radius: 0.3em;
 		font: inherit;
-		background: white;
-		color: rgb(28 36 64);
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
+	.field select:hover,
+	.field input:hover {
+		border-color: var(--color-text-muted);
 	}
 
 	.field select:focus,
 	.field input:focus {
-		outline: 2px solid rgb(46 91 255 / 0.4);
+		outline: 2px solid var(--color-accent);
 		outline-offset: -1px;
 	}
 
@@ -212,7 +219,7 @@
 		appearance: none;
 		background: rgb(46 91 255 / 0.08);
 		border: 1px solid rgb(46 91 255 / 0.3);
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		padding: 0 0.85em;
 		border-radius: 0.35em;
 		font-weight: 600;
@@ -230,7 +237,7 @@
 		align-items: flex-start;
 		background: rgb(46 91 255 / 0.06);
 		border: 1px solid rgb(46 91 255 / 0.15);
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		font-size: 0.88em;
 		padding: 0.7em 0.85em;
 		margin: 0.4em 0 0;
