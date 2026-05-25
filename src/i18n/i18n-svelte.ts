@@ -115,6 +115,12 @@ const createLL = () => ({
 		hide: m.settings_hide,
 		privacy: m.settings_privacy
 	},
+	theme: {
+		label: m.theme_label,
+		themeSystem: m.theme_system,
+		themeLight: m.theme_light,
+		themeDark: m.theme_dark
+	},
 	translate: {
 		button: m.translate_button,
 		title: m.translate_title,

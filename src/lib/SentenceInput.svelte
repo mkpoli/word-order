@@ -122,9 +122,7 @@
 	}
 
 	$: words = getWords(text);
-	$: glossableTokens = words
-		.map((word, tokenIndex) => ({ word, tokenIndex }))
-		.filter(({ word }) => isGlossableToken(word));
+	$: glossableTokens = words.map((word, tokenIndex) => ({ word, tokenIndex })).filter(({ word }) => isGlossableToken(word));
 	$: reversedAboveIndices = annotationsAbove.map((_, i) => i).reverse();
 	$: hasAnyLane = annotationsAbove.length > 0 || annotationsBelow.length > 0;
 </script>
@@ -252,12 +250,7 @@
 					{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
 				</button>
 				{#if modifying === -1}
-					<button
-						type="button"
-						class="secondary"
-						on:click={() => dispatch('openTranslate')}
-						disabled={sentences.length === 0}
-					>
+					<button type="button" class="secondary" on:click={() => dispatch('openTranslate')} disabled={sentences.length === 0}>
 						<iconify-icon icon="mdi:translate" width="1.2em" height="1.2em" />
 						{$LL.input.translate()}
 					</button>
@@ -329,10 +322,11 @@
 	:global(code) {
 		display: inline-block;
 		margin: 0 0.2em;
-		background: rgba(255, 255, 255, 0.7);
+		background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+		color: var(--color-text);
 		border-radius: 0.2em;
 		padding: 0.3em 0.5em;
-		box-shadow: 1px 1px 5px 0 #ccc;
+		box-shadow: 1px 1px 5px 0 var(--color-shadow);
 	}
 
 	textarea {
@@ -346,7 +340,7 @@
 		grid-area: g;
 		border: 1px solid rgb(44 71 255 / 18%);
 		border-radius: 0.5em;
-		background: rgb(249 251 255 / 92%);
+		background: var(--color-surface-elevated);
 		overflow: hidden;
 	}
 
@@ -358,7 +352,7 @@
 		padding: 0.8em 1em;
 		cursor: pointer;
 		font-weight: 600;
-		color: rgb(35 51 120);
+		color: var(--color-text);
 	}
 
 	.gloss-panel summary::-webkit-details-marker {
@@ -417,14 +411,14 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: rgb(74 89 142);
+		color: var(--color-text-muted);
 		padding: 0.2em 0.5em 0.2em 0.1em;
 		white-space: nowrap;
 		/* Pin to the left so you can still see "Above 1 / Word / Below 2" when
 		   scrolling horizontally through a long sentence. */
 		position: sticky;
 		left: 0;
-		background: rgb(249 251 255);
+		background: var(--color-surface-elevated);
 		z-index: 1;
 	}
 
@@ -438,9 +432,10 @@
 		   is still functional, just wider than ideal. */
 		field-sizing: content;
 		padding: 0.28em 0.45em;
-		border: 1px solid rgb(44 71 255 / 20%);
+		border: 1px solid var(--color-border);
 		border-radius: 0.3em;
-		background: white;
+		background: var(--color-surface);
+		color: var(--color-text);
 		font: inherit;
 		font-size: 0.9em;
 		min-width: 2.5ch;
@@ -449,17 +444,21 @@
 		text-align: center;
 	}
 
+	.lane-input:hover {
+		border-color: var(--color-text-muted);
+	}
+
 	.lane-input:focus {
 		outline: none;
-		border-color: rgb(44 71 255 / 55%);
-		box-shadow: 0 0 0 2px rgb(44 71 255 / 12%);
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 2px rgb(46 91 255 / 0.18);
 	}
 
 	.word-cell {
 		text-align: center;
 		font-size: 1.05em;
 		font-weight: 600;
-		color: rgb(33 51 110);
+		color: var(--color-text);
 		padding: 0.35em 0.2em;
 		background: rgb(46 91 255 / 0.06);
 		border-radius: 0.25em;
@@ -470,9 +469,9 @@
 		width: 1.5em;
 		height: 1.5em;
 		border: 1px solid rgb(220 60 60 / 25%);
-		background: white;
+		background: var(--color-surface);
 		border-radius: 999px;
-		color: rgb(170 30 30);
+		color: rgb(220 80 80);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -550,7 +549,7 @@
 
 	.primary-actions .secondary {
 		flex: 0 1 auto;
-		background: white;
+		background: var(--color-surface);
 		color: rgb(33 56 199);
 		border: 1px solid rgb(46 91 255 / 0.4);
 	}
@@ -566,12 +565,12 @@
 	}
 
 	.guidance {
-		background: rgb(0, 123, 255, 0.1);
+		background: rgb(0 123 255 / 0.1);
 		padding: 1em 0.8em;
 		border-radius: 0.2em;
-		border: 1px solid rgb(0, 123, 255);
+		border: 1px solid rgb(0 123 255 / 0.5);
 
-		color: rgb(0, 39, 80);
+		color: var(--color-text);
 
 		display: flex;
 		align-items: center;
@@ -608,7 +607,7 @@
 
 	.lane-remove,
 	.lane-add {
-		background: white;
+		background: var(--color-surface);
 		color: inherit;
 		font-weight: 600;
 	}
