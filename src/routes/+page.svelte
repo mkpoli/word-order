@@ -79,8 +79,18 @@
 	let mode: Mode = $state('view');
 	let goldenHue = 0;
 
-	let color_map: number[][] = $state([]);
-	let colors: string[] = $state([]);
+	let color_map: number[][] = $derived.by(() => {
+		const cm: number[][] = sentences.map((sentence) => new Array(sentence.tokens.length).fill(-1));
+		for (const [i, entry] of equivalency.entries()) {
+			for (const [j, words] of entry.entries()) {
+				for (const word of words) {
+					cm[j][word] = i;
+				}
+			}
+		}
+		return cm;
+	});
+	let colors: string[] = $derived(pickNColors(equivalency.length, false).map(oklchToHex));
 	let word_spans: HTMLSpanElement[][] = $state([]);
 
 	// Parameters
@@ -145,20 +155,6 @@
 		mounted = true;
 		await tick();
 	});
-
-	function calculate_color_map(equivalency: number[][][]) {
-		color_map = sentences.map((sentence) => new Array(sentence.tokens.length).fill(-1));
-		for (let [i, entry] of equivalency.entries()) {
-			for (let [j, words] of entry.entries()) {
-				for (let word of words) {
-					// i -> index of equivalency entries (color_id)
-					// j -> index of language sentences (lang_id)
-					color_map[j][word] = i;
-				}
-			}
-		}
-		color_map = color_map;
-	}
 
 	function gcd(a: number, b: number): number {
 		let x = Math.abs(a);
@@ -298,15 +294,12 @@
 		} else {
 			// Adding new sentence
 			sentences.push(sentence);
-			color_map = [...color_map, new Array(words.length).fill(-1)];
 			word_spans = [...word_spans, new Array(words.length).fill(null)];
 
 			for (const [i, entry] of equivalency.entries()) {
 				equivalency[i] = [...entry, []];
 			}
 		}
-		sentences = sentences;
-		equivalency = equivalency;
 
 		await tick();
 	}
@@ -335,15 +328,12 @@
 		const rowIndices: number[] = [];
 		for (const tag of targets) {
 			sentences.push(createSentence(tag, [], [], false));
-			color_map = [...color_map, []];
 			word_spans = [...word_spans, []];
 			rowIndices.push(sentences.length - 1);
 		}
 		for (let i = 0; i < equivalency.length; i++) {
 			equivalency[i] = [...equivalency[i], ...targets.map(() => [] as number[])];
 		}
-		sentences = sentences;
-		equivalency = equivalency;
 
 		const controller = new AbortController();
 		pendingTranslation = { abort: controller, rowIndices, targets: [...targets] };
@@ -383,9 +373,6 @@
 
 			// Build alignments from shared glosses across all sentences.
 			equivalency = addGlossAlignments(sentences, equivalency, rowIndices);
-			sentences = sentences;
-			color_map = color_map;
-			word_spans = word_spans;
 
 			pendingTranslation = null;
 			if (mode === 'view') mode = 'edit';
@@ -400,10 +387,6 @@
 			for (let i = 0; i < equivalency.length; i++) {
 				equivalency[i].splice(startIdx, removeCount);
 			}
-			sentences = sentences;
-			equivalency = equivalency;
-			color_map = color_map;
-			word_spans = word_spans;
 
 			if (!controller.signal.aborted) {
 				translateError = {
@@ -476,7 +459,6 @@
 			}
 		}
 
-		equivalency = equivalency;
 	}
 
 	let modifying = $state(-1);
@@ -697,12 +679,6 @@
 	// so we don't persist the empty placeholder rows.
 	run(() => {
 		if (mounted && !pendingTranslation) saveDoc({ schemaVersion: 1, sentences, equivalency });
-	});
-	run(() => {
-		if (mounted) calculate_color_map(equivalency);
-	});
-	run(() => {
-		colors = pickNColors(equivalency.length, false).map(oklchToHex);
 	});
 	// Pass editingAnnotations* explicitly so Svelte tracks them as reactive deps —
 	// if they were only read inside buildEditedSentence, nested mutations from the
@@ -939,7 +915,6 @@
 						const sentence = sentences[from];
 						sentences.splice(from, 1);
 						sentences.splice(to, 0, sentence);
-						sentences = sentences;
 
 						for (const [i, entry] of equivalency.entries()) {
 							const value = entry[from];
@@ -947,17 +922,14 @@
 							entry.splice(to, 0, value);
 							equivalency[i] = entry;
 						}
-						equivalency = equivalency;
 					}}
 					on:delete={({ detail: { sentence } }) => {
 						sentences.splice(sentence, 1);
-						sentences = sentences;
 
 						for (const [i, entry] of equivalency.entries()) {
 							entry.splice(sentence, 1);
 							equivalency[i] = entry;
 						}
-						equivalency = equivalency;
 					}}
 					on:modify={({ detail: { sentence } }) => {
 						modifying = sentence;
@@ -1035,13 +1007,11 @@
 				const entry = equivalency[from];
 				equivalency.splice(from, 1);
 				equivalency.splice(to, 0, entry);
-				equivalency = equivalency;
 			}}
 			onscramble={() => {
 				const n = equivalency.length;
 				if (n <= 2) {
 					equivalency.reverse();
-					equivalency = equivalency;
 					return;
 				}
 				const coprimeN = getScrambleStep(n);
