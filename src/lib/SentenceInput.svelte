@@ -250,13 +250,7 @@
 					{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
 				</button>
 				{#if modifying === -1}
-					<button
-						type="button"
-						class="secondary"
-						title={$LL.input.translateHint()}
-						on:click={() => dispatch('openTranslate')}
-						disabled={sentences.length === 0}
-					>
+					<button type="button" class="secondary" on:click={() => dispatch('openTranslate')} disabled={sentences.length === 0}>
 						<iconify-icon icon="mdi:translate" width="1.2em" height="1.2em" />
 						{$LL.input.translate()}
 					</button>
@@ -551,7 +545,7 @@
 
 	.primary-actions .secondary {
 		flex: 0 1 auto;
-		background: white;
+		background: var(--color-surface);
 		color: rgb(33 56 199);
 		border: 1px solid rgb(46 91 255 / 0.4);
 	}
@@ -609,7 +603,7 @@
 
 	.lane-remove,
 	.lane-add {
-		background: white;
+		background: var(--color-surface);
 		color: inherit;
 		font-weight: 600;
 	}

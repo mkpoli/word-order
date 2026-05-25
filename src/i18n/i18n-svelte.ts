@@ -45,7 +45,6 @@ const createLL = () => ({
 		glossEmpty: m.input_gloss_empty,
 		glossPlaceholder: m.input_gloss_placeholder,
 		translate: m.input_translate,
-		translateHint: m.input_translate_hint,
 		laneAbove: m.input_lane_above,
 		laneBelow: m.input_lane_below,
 		wordRow: m.input_word_row,
@@ -92,6 +91,7 @@ const createLL = () => ({
 		svg: m.menu_svg,
 		png: m.menu_png,
 		pdf: m.menu_pdf,
+		rasterScale: m.menu_raster_scale,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
 		settings: m.menu_settings,
@@ -108,18 +108,18 @@ const createLL = () => ({
 	settings: {
 		title: m.settings_title,
 		close: m.settings_close,
-		tagline: m.settings_tagline,
 		provider: m.settings_provider,
 		model: m.settings_model,
-		modelHint: m.settings_model_hint,
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,
-		privacy: m.settings_privacy,
-		theme: m.settings_theme,
-		themeSystem: m.settings_theme_system,
-		themeLight: m.settings_theme_light,
-		themeDark: m.settings_theme_dark
+		privacy: m.settings_privacy
+	},
+	theme: {
+		label: m.theme_label,
+		themeSystem: m.theme_system,
+		themeLight: m.theme_light,
+		themeDark: m.theme_dark
 	},
 	translate: {
 		button: m.translate_button,

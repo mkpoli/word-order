@@ -20,6 +20,7 @@
 	import AboutDialog from '$lib/AboutDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
+	import ThemeToggle from '$lib/ThemeToggle.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
@@ -104,6 +105,11 @@
 	let examplesOpen = false;
 	let translatePopoverOpen = false;
 
+	type RasterScale = 2 | 3 | 4 | 6;
+	const RASTER_SCALES: RasterScale[] = [2, 3, 4, 6];
+	const RASTER_SCALE_STORAGE_KEY = 'word-order:raster-scale';
+	let rasterScale: RasterScale = 2;
+
 	type PendingTranslation = {
 		abort: AbortController;
 		rowIndices: number[];
@@ -136,9 +142,15 @@
 		// mount + tick would clobber the just-populated bindings and leave the
 		// connector SVG empty until the next user interaction.
 		word_spans = sentences.map(() => []);
+
+		const storedScale = Number(window.localStorage.getItem(RASTER_SCALE_STORAGE_KEY));
+		if (RASTER_SCALES.includes(storedScale as RasterScale)) rasterScale = storedScale as RasterScale;
+
 		mounted = true;
 		await tick();
 	});
+
+	$: if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
 
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
@@ -503,13 +515,11 @@
 
 	let loading = false;
 
-	function getBodyBackgroundColor(): string {
-		if (typeof document === 'undefined') return 'white';
-
-		const typedStyle = document.body.computedStyleMap?.().get('background-color');
-		if (typedStyle) return typedStyle.toString();
-
-		return window.getComputedStyle(document.body).backgroundColor || document.body.style.backgroundColor || 'white';
+	function getExportBackgroundColor(): string {
+		// Exports are forced to white regardless of the active UI theme so PNG/PDF/SVG
+		// output looks consistent whether the author is in light or dark mode. If a
+		// future feature lets users choose an export background, branch here.
+		return 'white';
 	}
 
 	async function replaceDoc(next: { sentences: Sentence[]; equivalency: number[][][] }) {
@@ -635,7 +645,7 @@
 			style: {
 				transform: `scale(${scale})`,
 				transformOrigin: 'top left',
-				'background-color': getBodyBackgroundColor()
+				'background-color': getExportBackgroundColor()
 			}
 		});
 	}
@@ -660,7 +670,7 @@
 
 	async function exportPng() {
 		try {
-			const png = await exportPngBlob();
+			const png = await exportPngBlob(rasterScale);
 			if (png) save(png, 'image/png', exportFilename('png'));
 		} catch (err) {
 			console.error('Export PNG failed:', err);
@@ -675,14 +685,14 @@
 			return;
 		}
 		try {
-			const scale = 2;
+			const scale = rasterScale;
 			const dataUrl = await domToImage.toPng(output, {
 				width: output.clientWidth * scale,
 				height: output.clientHeight * scale,
 				style: {
 					transform: `scale(${scale})`,
 					transformOrigin: 'top left',
-					'background-color': getBodyBackgroundColor()
+					'background-color': getExportBackgroundColor()
 				}
 			});
 			const widthPx = output.clientWidth;
@@ -823,6 +833,14 @@
 				<iconify-icon icon="mdi:file-pdf-box" inline="true" />
 				PDF
 			</button>
+			<div class="export-scale-row">
+				<label for="raster-scale-select">{$LL.menu.rasterScale()}</label>
+				<select id="raster-scale-select" bind:value={rasterScale} disabled={mode === 'edit'}>
+					{#each RASTER_SCALES as s (s)}
+						<option value={s}>{s}×</option>
+					{/each}
+				</select>
+			</div>
 		</div>
 	</div>
 	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} on:click={() => (settingsOpen = true)}>
@@ -834,6 +852,7 @@
 		{$LL.menu.about()}
 	</button>
 	<div class="menu-locale">
+		<ThemeToggle />
 		<LocaleSelect />
 	</div>
 </header>
@@ -1123,27 +1142,27 @@
 	}
 
 	footer a.github-link {
-		color: #181717;
+		color: light-dark(#181717, #e6eaef);
 	}
 
 	footer a.github-link:visited {
-		color: #181717;
+		color: light-dark(#181717, #e6eaef);
 	}
 
 	footer a.twitter-link {
-		color: #1d9bf0;
+		color: light-dark(#1d9bf0, #4dbcff);
 	}
 
 	footer a.twitter-link:visited {
-		color: #1d9bf0;
+		color: light-dark(#1d9bf0, #4dbcff);
 	}
 
 	footer a.home-link {
-		color: #444;
+		color: var(--color-text-muted);
 	}
 
 	footer a.home-link:visited {
-		color: #444;
+		color: var(--color-text-muted);
 	}
 
 	.params {
@@ -1319,8 +1338,11 @@
 
 	.menu-locale {
 		margin-inline-start: auto;
-		flex: 0 1 16rem;
-		max-width: 16rem;
+		display: flex;
+		align-items: stretch;
+		gap: 0.4rem;
+		flex: 0 1 18rem;
+		max-width: 18rem;
 	}
 
 	.menu button {
@@ -1419,6 +1441,38 @@
 	}
 
 	.export-menu button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	.export-scale-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6em;
+		padding: 0.4em 0.85em 0.2em;
+		margin-top: 0.25em;
+		border-top: 1px solid var(--color-border-soft);
+		font-size: 0.85em;
+		color: var(--color-text-muted);
+	}
+
+	.export-scale-row label {
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.export-scale-row select {
+		font: inherit;
+		font-weight: bold;
+		padding: 0.15em 0.35em;
+		border-radius: 0.25em;
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
+	.export-scale-row select:disabled {
 		opacity: 0.5;
 		cursor: default;
 	}
@@ -1543,7 +1597,7 @@
 		grid-template-columns: auto 1fr auto auto auto;
 		align-items: center;
 		gap: 0.6em;
-		background: white;
+		background: var(--color-surface);
 		border: 1px solid rgb(46 91 255 / 0.3);
 		border-radius: 0.5em;
 		padding: 0.55em 0.8em;
