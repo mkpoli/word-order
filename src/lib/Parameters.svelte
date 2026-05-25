@@ -1,63 +1,92 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	// Components
 	import RangeSlider from '$lib/ui/RangeSlider.svelte';
 
 	import { LL } from '$i18n/i18n-svelte';
 	import type { Alignment, FontFamily, FontStyle } from '$lib/types';
 
-	export let verticalGap = 30;
-	export let lineGap = 5;
-	export let lineWidth = 1;
-	export let straightLength = 0;
-	export let endpointCorrection = 0;
-	export let curvature = 1;
-	export let alignment: Alignment = 'center';
-	export let fontFamily: FontFamily = 'default';
-	export let fontStyle: FontStyle = 'normal';
-	export let fontSize = 15;
-	export let glossFontSize = 11;
-	export let spaceWidth = 4;
+	interface Props {
+		verticalGap?: number;
+		lineGap?: number;
+		lineWidth?: number;
+		straightLength?: number;
+		endpointCorrection?: number;
+		curvature?: number;
+		alignment?: Alignment;
+		fontFamily?: FontFamily;
+		fontStyle?: FontStyle;
+		fontSize?: number;
+		glossFontSize?: number;
+		spaceWidth?: number;
+	}
 
-	$: lineGap = Math.min(lineGap, verticalGap / 2);
-	$: lineWidth = Math.max(0.1, lineWidth);
-	$: straightLength = Math.min(straightLength, verticalGap / 2);
-	$: endpointCorrection = lineGap <= 0 || straightLength > 0 ? 0 : Math.min(endpointCorrection, lineGap);
-	$: curvature = Math.max(0, Math.min(curvature, 2));
+	let {
+		verticalGap = $bindable(30),
+		lineGap = $bindable(5),
+		lineWidth = $bindable(1),
+		straightLength = $bindable(0),
+		endpointCorrection = $bindable(0),
+		curvature = $bindable(1),
+		alignment = $bindable('center'),
+		fontFamily = $bindable('default'),
+		fontStyle = $bindable('normal'),
+		fontSize = $bindable(15),
+		glossFontSize = $bindable(11),
+		spaceWidth = $bindable(4)
+	}: Props = $props();
+
+	run(() => {
+		lineGap = Math.min(lineGap, verticalGap / 2);
+	});
+	run(() => {
+		lineWidth = Math.max(0.1, lineWidth);
+	});
+	run(() => {
+		straightLength = Math.min(straightLength, verticalGap / 2);
+	});
+	run(() => {
+		endpointCorrection = lineGap <= 0 || straightLength > 0 ? 0 : Math.min(endpointCorrection, lineGap);
+	});
+	run(() => {
+		curvature = Math.max(0, Math.min(curvature, 2));
+	});
 </script>
 
 <fieldset>
 	<legend>
-		<iconify-icon icon="gg:options" inline="true" />
+		<iconify-icon icon="gg:options" inline="true"></iconify-icon>
 		{$LL.params.options()}
 	</legend>
 
 	<label for="vertical-gap">
-		<iconify-icon icon="mdi:arrow-expand-vertical" inline="true" />
+		<iconify-icon icon="mdi:arrow-expand-vertical" inline="true"></iconify-icon>
 		{$LL.params.verticalGap()}
 	</label>
 	<RangeSlider id="vertical-gap" min={0} max={100} bind:value={verticalGap} suffix=" px" />
 	<!-- <input type="range" bind:value={verticalGap} id="vertical-gap" name="vertical-gap" min="0" max="100" /> -->
 
 	<label for="line-gap">
-		<iconify-icon icon="mdi:arrow-split-horizontal" inline="true" />
+		<iconify-icon icon="mdi:arrow-split-horizontal" inline="true"></iconify-icon>
 		{$LL.params.lineGap()}
 	</label>
 	<RangeSlider id="line-gap" min={-5} max={verticalGap / 2} bind:value={lineGap} suffix=" px" />
 
 	<label for="line-width">
-		<iconify-icon icon="mdi:vector-line" inline="true" />
+		<iconify-icon icon="mdi:vector-line" inline="true"></iconify-icon>
 		{$LL.params.lineWidth()}
 	</label>
 	<RangeSlider id="line-width" min={0.1} max={6} step={0.1} bind:value={lineWidth} suffix=" px" />
 
 	<label for="straight-length">
-		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true" />
+		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true"></iconify-icon>
 		{$LL.params.straightLength()}
 	</label>
 	<RangeSlider id="straight-length" min={0} max={verticalGap / 2} bind:value={straightLength} suffix=" px" />
 
 	<label for="endpoint-correction">
-		<iconify-icon icon="lets-icons:line" inline="true" />
+		<iconify-icon icon="lets-icons:line" inline="true"></iconify-icon>
 		{$LL.params.endpointCorrection()}
 	</label>
 	<RangeSlider
@@ -71,7 +100,7 @@
 	/>
 
 	<label for="curvature">
-		<iconify-icon icon="mdi:transit-connection-variant" inline="true" />
+		<iconify-icon icon="mdi:transit-connection-variant" inline="true"></iconify-icon>
 		{$LL.params.curvature()}
 	</label>
 	<RangeSlider id="curvature" min={0} max={2} step={0.1} bind:value={curvature} suffix="x" />
@@ -79,25 +108,25 @@
 
 <fieldset>
 	<legend>
-		<iconify-icon icon="mdi:format-font" inline="true" />
+		<iconify-icon icon="mdi:format-font" inline="true"></iconify-icon>
 		{$LL.params.text()}
 	</legend>
 
 	<label for="alignment">
-		<iconify-icon icon="mdi:format-align-justify" inline="true" />
+		<iconify-icon icon="mdi:format-align-justify" inline="true"></iconify-icon>
 		{$LL.params.textAlignment()}
 	</label>
 	<div class="alignment">
 		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
-		<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left" /></label>
+		<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left"></iconify-icon></label>
 		<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" />
-		<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center" /></label>
+		<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
 		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
-		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right" /></label>
+		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
 	</div>
 
 	<label for="font-family">
-		<iconify-icon icon="fluent:text-font-16-regular" inline="true" />
+		<iconify-icon icon="fluent:text-font-16-regular" inline="true"></iconify-icon>
 		{$LL.params.fontFamily()}
 	</label>
 	<select bind:value={fontFamily} id="font" name="font">
@@ -108,7 +137,7 @@
 	</select>
 
 	<label for="font-style">
-		<iconify-icon icon="radix-icons:font-family" inline="true" />
+		<iconify-icon icon="radix-icons:font-family" inline="true"></iconify-icon>
 		{$LL.params.fontStyle()}
 	</label>
 	<select bind:value={fontStyle} id="font-style" name="font-style">
@@ -119,19 +148,19 @@
 	</select>
 
 	<label for="font-size">
-		<iconify-icon icon="ant-design:font-size-outlined" inline="true" />
+		<iconify-icon icon="ant-design:font-size-outlined" inline="true"></iconify-icon>
 		{$LL.params.fontSize()}
 	</label>
 	<RangeSlider bind:value={fontSize} id="font-size" min={10} max={30} suffix=" px" />
 
 	<label for="gloss-font-size">
-		<iconify-icon icon="mdi:format-annotation-plus" inline="true" />
+		<iconify-icon icon="mdi:format-annotation-plus" inline="true"></iconify-icon>
 		{$LL.params.glossFontSize()}
 	</label>
 	<RangeSlider bind:value={glossFontSize} id="gloss-font-size" min={6} max={24} suffix=" px" />
 
 	<label for="space-width">
-		<iconify-icon icon="mdi:format-horizontal-align-center" inline="true" />
+		<iconify-icon icon="mdi:format-horizontal-align-center" inline="true"></iconify-icon>
 		{$LL.params.spaceWidth()}
 	</label>
 	<RangeSlider bind:value={spaceWidth} id="space-width" min={0} max={40} suffix=" px" />
@@ -208,5 +237,4 @@
 		border: 1px solid var(--color-border);
 		border-radius: 0.2em;
 	}
-
 </style>

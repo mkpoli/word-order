@@ -1,15 +1,22 @@
 <script lang="ts">
+	import { createBubbler, stopPropagation } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { LL } from '../i18n/i18n-svelte';
 	import { llmSettings, type ProviderId } from './settings';
 	import { PROVIDERS, getProvider } from './llm/providers';
 
-	export let open = false;
+	interface Props {
+		open?: boolean;
+	}
 
-	let showKey = false;
+	let { open = $bindable(false) }: Props = $props();
 
-	$: provider = getProvider($llmSettings.provider);
-	$: currentKey = $llmSettings.keys[$llmSettings.provider] ?? '';
-	$: currentModel = $llmSettings.model || provider.defaultModel;
+	let showKey = $state(false);
+
+	let provider = $derived(getProvider($llmSettings.provider));
+	let currentKey = $derived($llmSettings.keys[$llmSettings.provider] ?? '');
+	let currentModel = $derived($llmSettings.model || provider.defaultModel);
 
 	function close() {
 		open = false;
@@ -38,24 +45,24 @@
 	}
 </script>
 
-<svelte:window on:keydown={onkeydown} />
+<svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" on:click={close} role="presentation">
-		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" on:click|stopPropagation>
+	<div class="backdrop" onclick={close} role="presentation">
+		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" onclick={stopPropagation(bubble('click'))}>
 			<header>
 				<h2 id="settings-title">
-					<iconify-icon icon="mdi:cog-outline" inline="true" />
+					<iconify-icon icon="mdi:cog-outline" inline="true"></iconify-icon>
 					{$LL.settings.title()}
 				</h2>
-				<button class="dismiss" type="button" aria-label={$LL.settings.close()} on:click={close}>
-					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+				<button class="dismiss" type="button" aria-label={$LL.settings.close()} onclick={close}>
+					<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 				</button>
 			</header>
 
 			<div class="field">
 				<label for="settings-provider">{$LL.settings.provider()}</label>
-				<select id="settings-provider" value={$llmSettings.provider} on:change={onProviderChange}>
+				<select id="settings-provider" value={$llmSettings.provider} onchange={onProviderChange}>
 					{#each PROVIDERS as p}
 						<option value={p.id}>{p.label}</option>
 					{/each}
@@ -70,8 +77,8 @@
 					list="settings-model-options"
 					placeholder={provider.defaultModel}
 					value={currentModel}
-					on:input={onModelChange}
-					on:change={onModelChange}
+					oninput={onModelChange}
+					onchange={onModelChange}
 					autocomplete="off"
 					spellcheck="false"
 				/>
@@ -90,18 +97,18 @@
 						type={showKey ? 'text' : 'password'}
 						placeholder={provider.keyHint}
 						value={currentKey}
-						on:input={onKeyInput}
+						oninput={onKeyInput}
 						autocomplete="off"
 						spellcheck="false"
 					/>
-					<button type="button" class="toggle" on:click={() => (showKey = !showKey)}>
+					<button type="button" class="toggle" onclick={() => (showKey = !showKey)}>
 						{showKey ? $LL.settings.hide() : $LL.settings.show()}
 					</button>
 				</div>
 			</div>
 
 			<p class="privacy">
-				<iconify-icon icon="mdi:shield-lock-outline" inline="true" />
+				<iconify-icon icon="mdi:shield-lock-outline" inline="true"></iconify-icon>
 				<span>{$LL.settings.privacy()}</span>
 			</p>
 		</div>

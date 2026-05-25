@@ -1,14 +1,22 @@
 <script lang="ts">
+	import { run, createBubbler, stopPropagation } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { createEventDispatcher } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { LL, locale } from '../i18n/i18n-svelte';
 	import { getLanguageName, getLocaleOptions } from './lang';
 	import { llmSettings, hasKey } from './settings';
 	import { MAX_SOURCE_TOKENS } from './llm/translate';
 	import { getProvider } from './llm/providers';
 
-	export let open = false;
-	export let sourceLangs: string[] = [];
-	export let sourceTokenCounts: number[] = [];
+	interface Props {
+		open?: boolean;
+		sourceLangs?: string[];
+		sourceTokenCounts?: number[];
+	}
+
+	let { open = $bindable(false), sourceLangs = [], sourceTokenCounts = [] }: Props = $props();
 
 	const DEFAULT_TARGETS = ['en', 'ja', 'zh-HanS'];
 
@@ -18,29 +26,33 @@
 		close: void;
 	}>();
 
-	$: sourceLangSet = new Set(sourceLangs);
-	$: options = getLocaleOptions($locale).filter((opt) => !sourceLangSet.has(opt.value));
-	$: provider = getProvider($llmSettings.provider);
-	$: keyMissing = !hasKey($llmSettings);
-	$: tooLong = sourceTokenCounts.find((c) => c > MAX_SOURCE_TOKENS) ?? 0;
-	$: sourceSummary = sourceLangs.map((l) => getLanguageName(l, $locale)).join(', ');
+	let sourceLangSet = $derived(new Set(sourceLangs));
+	let options = $derived(getLocaleOptions($locale).filter((opt) => !sourceLangSet.has(opt.value)));
+	let provider = $derived(getProvider($llmSettings.provider));
+	let keyMissing = $derived(!hasKey($llmSettings));
+	let tooLong = $derived(sourceTokenCounts.find((c) => c > MAX_SOURCE_TOKENS) ?? 0);
+	let sourceSummary = $derived(sourceLangs.map((l) => getLanguageName(l, $locale)).join(', '));
 
 	// "selected" can hold both known locale codes and ad-hoc custom BCP-47 codes.
-	let selected: Set<string> = new Set();
-	let initializedFor = '';
-	let customCode = '';
+	let selected: SvelteSet<string> = new SvelteSet();
+	let initializedFor = $state('');
+	let customCode = $state('');
 
-	$: signature = `${sourceLangs.join('|')}::${$locale}`;
-	$: if (open && initializedFor !== signature) {
-		const baseDefaults = [String($locale), ...DEFAULT_TARGETS]
-			.filter((v) => v && !sourceLangSet.has(v))
-			.filter((v) => options.some((o) => o.value === v));
-		selected = new Set(baseDefaults);
-		initializedFor = signature;
-		customCode = '';
-	}
+	let signature = $derived(`${sourceLangs.join('|')}::${$locale}`);
+	run(() => {
+		if (open && initializedFor !== signature) {
+			const baseDefaults = [String($locale), ...DEFAULT_TARGETS]
+				.filter((v) => v && !sourceLangSet.has(v))
+				.filter((v) => options.some((o) => o.value === v));
+			selected = new SvelteSet(baseDefaults);
+			initializedFor = signature;
+			customCode = '';
+		}
+	});
 
-	$: if (!open) initializedFor = '';
+	run(() => {
+		if (!open) initializedFor = '';
+	});
 
 	function toggle(value: string) {
 		if (selected.has(value)) selected.delete(value);
@@ -74,21 +86,21 @@
 	}
 
 	// Custom chips = selected entries that aren't in the known options list and aren't sources.
-	$: customChips = Array.from(selected).filter((v) => !options.some((o) => o.value === v));
+	let customChips = $derived(Array.from(selected).filter((v) => !options.some((o) => o.value === v)));
 </script>
 
-<svelte:window on:keydown={onkeydown} />
+<svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" on:click={() => dispatch('close')} role="presentation">
-		<div class="popover" role="dialog" aria-modal="true" aria-labelledby="translate-popover-title" on:click|stopPropagation>
+	<div class="backdrop" onclick={() => dispatch('close')} role="presentation">
+		<div class="popover" role="dialog" aria-modal="true" aria-labelledby="translate-popover-title" onclick={stopPropagation(bubble('click'))}>
 			<header>
 				<h2 id="translate-popover-title">
-					<iconify-icon icon="mdi:translate" inline="true" />
+					<iconify-icon icon="mdi:translate" inline="true"></iconify-icon>
 					{$LL.translate.title()}
 				</h2>
-				<button class="dismiss" type="button" aria-label={$LL.translate.close()} on:click={() => dispatch('close')}>
-					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+				<button class="dismiss" type="button" aria-label={$LL.translate.close()} onclick={() => dispatch('close')}>
+					<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 				</button>
 			</header>
 
@@ -100,21 +112,21 @@
 			</p>
 
 			<p class="cost">
-				<iconify-icon icon="mdi:credit-card-outline" inline="true" />
+				<iconify-icon icon="mdi:credit-card-outline" inline="true"></iconify-icon>
 				<span>{$LL.translate.costNotice({ provider: provider.label })}</span>
 			</p>
 
 			{#if keyMissing}
 				<div class="warn">
-					<iconify-icon icon="mdi:key-alert-outline" inline="true" />
+					<iconify-icon icon="mdi:key-alert-outline" inline="true"></iconify-icon>
 					<span>{$LL.translate.noKey({ provider: provider.label })}</span>
-					<button type="button" class="link" on:click={() => dispatch('openSettings')}>
+					<button type="button" class="link" onclick={() => dispatch('openSettings')}>
 						{$LL.translate.openSettings()}
 					</button>
 				</div>
 			{:else if tooLong}
 				<div class="warn">
-					<iconify-icon icon="mdi:alert-outline" inline="true" />
+					<iconify-icon icon="mdi:alert-outline" inline="true"></iconify-icon>
 					<span>{$LL.translate.tooLong({ count: String(tooLong), max: String(MAX_SOURCE_TOKENS) })}</span>
 				</div>
 			{:else}
@@ -123,15 +135,15 @@
 					<div class="chips">
 						{#each options as opt}
 							<label class="chip" class:on={selected.has(opt.value)}>
-								<input type="checkbox" checked={selected.has(opt.value)} on:change={() => toggle(opt.value)} />
+								<input type="checkbox" checked={selected.has(opt.value)} onchange={() => toggle(opt.value)} />
 								<span class="endonym" lang={opt.tag}>{opt.endonym}</span>
 								<span class="exonym">{opt.exonym}</span>
 							</label>
 						{/each}
 						{#each customChips as code (code)}
-							<button type="button" class="chip on custom" on:click={() => toggle(code)} title={$LL.translate.removeCustom()}>
+							<button type="button" class="chip on custom" onclick={() => toggle(code)} title={$LL.translate.removeCustom()}>
 								<span class="endonym">{code}</span>
-								<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+								<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 							</button>
 						{/each}
 					</div>
@@ -140,11 +152,11 @@
 							type="text"
 							placeholder={$LL.translate.customPlaceholder()}
 							bind:value={customCode}
-							on:keydown={onCustomKey}
+							onkeydown={onCustomKey}
 							autocomplete="off"
 							spellcheck="false"
 						/>
-						<button type="button" class="add" on:click={addCustom} disabled={!customCode.trim()}>
+						<button type="button" class="add" onclick={addCustom} disabled={!customCode.trim()}>
 							{$LL.translate.addCustom()}
 						</button>
 					</div>
@@ -152,8 +164,8 @@
 			{/if}
 
 			<div class="actions">
-				<button type="button" class="submit" on:click={onSubmit} disabled={selected.size === 0 || keyMissing || !!tooLong}>
-					<iconify-icon icon="mdi:translate" inline="true" />
+				<button type="button" class="submit" onclick={onSubmit} disabled={selected.size === 0 || keyMissing || !!tooLong}>
+					<iconify-icon icon="mdi:translate" inline="true"></iconify-icon>
 					{$LL.translate.submit({ count: String(selected.size) })}
 				</button>
 			</div>

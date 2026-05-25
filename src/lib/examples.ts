@@ -216,18 +216,8 @@ export const EXAMPLES: Example[] = [
 		id: 'romanization-above-below',
 		name: 'Romanization + gloss',
 		sentences: [
-			s(
-				'ja',
-				['私', 'は', '本', 'を', '読む', '。'],
-				['1SG', 'TOP', 'book', 'ACC', 'read', ''],
-				['watashi', 'wa', 'hon', 'o', 'yomu', '']
-			),
-			s(
-				'zh-HanS',
-				['我', '读', '书', '。'],
-				['1SG', 'read', 'book', ''],
-				['wǒ', 'dú', 'shū', '']
-			),
+			s('ja', ['私', 'は', '本', 'を', '読む', '。'], ['1SG', 'TOP', 'book', 'ACC', 'read', ''], ['watashi', 'wa', 'hon', 'o', 'yomu', '']),
+			s('zh-HanS', ['我', '读', '书', '。'], ['1SG', 'read', 'book', ''], ['wǒ', 'dú', 'shū', '']),
 			s('en', ['I', ' ', 'read', ' ', 'a', ' ', 'book', '.'], ['1SG', '', 'read', '', 'INDF', '', 'book', ''])
 		],
 		equivalency: [

@@ -1,9 +1,11 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export type Line = [x1: number, y1: number, x2: number, y2: number, color: string];
 	import { draggable } from '@neodrag/svelte';
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount, tick, createEventDispatcher } from 'svelte';
 	import type { Alignment, FontFamily, FontStyle, Mode, Sentence } from '$lib/types';
 	import { getSentenceWords, sentenceHasAnyAnnotation } from '$lib/types';
@@ -40,59 +42,73 @@
 		cancelTranslate: void;
 	}>();
 
-	// Data
-	export let sentences: Sentence[];
-	export let color_map: number[][];
-	export let equivalency: number[][][];
-	export let word_spans: HTMLSpanElement[][] = sentences.map(() => []);
-	export let lines: Line[];
-	export let colors: string[];
+	interface Props {
+		// Data
+		sentences: Sentence[];
+		color_map: number[][];
+		equivalency: number[][][];
+		word_spans?: HTMLSpanElement[][];
+		lines: Line[];
+		colors: string[];
+		// States
+		modifying: number;
+		loading: boolean;
+		editingSelectionStart?: number;
+		editingSelectionEnd?: number;
+		pendingIndices?: Set<number>;
+		// Parameters
+		verticalGap: number;
+		lineGap: number;
+		lineWidth?: number;
+		straightLength: number;
+		endpointCorrection: number;
+		curvature?: number;
+		alignment?: Alignment;
+		fontFamily: FontFamily;
+		fontStyle: FontStyle;
+		fontSize: number;
+		glossFontSize: number;
+		spaceWidth: number;
+		outputMargin?: Margin;
+		mode?: Mode;
+		output: HTMLOutputElement | undefined;
+	}
 
-	// States
-	export let modifying: number;
-	export let loading: boolean;
-	export let editingSelectionStart = -1;
-	export let editingSelectionEnd = -1;
-	export let pendingIndices: Set<number> = new Set();
+	let {
+		sentences,
+		color_map,
+		equivalency,
+		word_spans = $bindable(sentences.map(() => [])),
+		lines = $bindable(),
+		colors,
+		modifying,
+		loading,
+		editingSelectionStart = -1,
+		editingSelectionEnd = -1,
+		pendingIndices = new Set(),
+		verticalGap,
+		lineGap,
+		lineWidth = 1,
+		straightLength,
+		endpointCorrection,
+		curvature = 1,
+		alignment = 'center',
+		fontFamily,
+		fontStyle,
+		fontSize,
+		glossFontSize,
+		spaceWidth,
+		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
+		mode = $bindable('view'),
+		output = $bindable()
+	}: Props = $props();
+	let tokenEditDialog: HTMLDivElement | undefined = $state();
 
-	// Parameters
-	export let verticalGap: number;
-	export let lineGap: number;
-	export let lineWidth = 1;
-	export let straightLength: number;
-	export let endpointCorrection: number;
-	export let curvature = 1;
-	export let alignment: Alignment = 'center';
-	export let fontFamily: FontFamily;
-	export let fontStyle: FontStyle;
-	export let fontSize: number;
-	export let glossFontSize: number;
-	export let spaceWidth: number;
-	export let outputMargin: Margin = { top: 0, right: 0, bottom: 0, left: 0 };
-	export let mode: Mode = 'view';
-
-	export let output: HTMLOutputElement;
-	let tokenEditDialog: HTMLDivElement;
-
-	let mounted = false;
+	let mounted = $state(false);
 
 	onMount(() => {
 		mounted = true;
 	});
-
-	$: if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
-
-	$: if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && spaceWidth !== undefined && $locale)
-		tick().then(() => {
-			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
-		});
-
-	// Redraw when outputMargin changes — padding shifts every token, so connector
-	// endpoints need to be recomputed.
-	$: if (mounted && !loading && outputMargin)
-		tick().then(() => {
-			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
-		});
 
 	function drawLines(
 		word_spans: HTMLSpanElement[][],
@@ -102,6 +118,7 @@
 		straightLength: number,
 		endpointCorrection: number
 	): Line[] {
+		if (!output) return [];
 		const rectOutput = output.getBoundingClientRect();
 
 		const lines: Line[] = [];
@@ -196,7 +213,7 @@
 		return result;
 	}
 
-	let connecting: [l: number, w: number][] = [];
+	let connecting: [l: number, w: number][] = $state([]);
 
 	function isContent(word: string) {
 		return !word.match(/^(\s|\p{P}+)$/u);
@@ -244,21 +261,21 @@
 		return Math.max(...belowStacks.map((rect) => rect.bottom)) - rectOutput.top;
 	}
 
-	let connected: [l: number, w: number][] = [];
-	let connectedIndex = -1;
-	let tokenAnchor = -1;
-	let selectedWordStart = -1;
-	let selectedWordEnd = -1;
+	let connected: [l: number, w: number][] = $state([]);
+	let connectedIndex = $state(-1);
+	let tokenAnchor = $state(-1);
+	let selectedWordStart = $state(-1);
+	let selectedWordEnd = $state(-1);
 
 	// Dragging to reorder
-	let draggingIndex = -1;
+	let draggingIndex = $state(-1);
 	let draggingPosition = { x: 0, y: 0 };
-	let draggingOffset = { x: 0, y: 0 };
-	let draggers: HTMLDivElement[] = [];
+	let draggingOffset = $state({ x: 0, y: 0 });
+	let draggers: HTMLDivElement[] = $state([]);
 
 	// Dragging output margins from the canvas edge.
 	type MarginSide = keyof Margin;
-	let marginDrag: { side: MarginSide; startPos: number; startMargin: Margin } | null = null;
+	let marginDrag: { side: MarginSide; startPos: number; startMargin: Margin } | null = $state(null);
 	const MARGIN_MAX = 200;
 
 	const OPPOSITE: Record<MarginSide, MarginSide> = {
@@ -394,25 +411,6 @@
 		selectedWordEnd = -1;
 	}
 
-	$: if (modifying === -1) {
-		resetEditingWordSelection();
-	}
-
-	$: if (
-		modifying !== -1 &&
-		editingSelectionStart !== -1 &&
-		(selectedWordStart !== editingSelectionStart || selectedWordEnd !== editingSelectionEnd)
-	) {
-		tokenAnchor = editingSelectionStart;
-		selectedWordStart = editingSelectionStart;
-		selectedWordEnd = editingSelectionEnd;
-	}
-
-	$: editingWords = modifying === -1 ? [] : (getSentenceWords(sentences[modifying]) ?? []);
-	$: if (selectedWordStart !== -1 && selectedWordEnd >= editingWords.length) {
-		resetEditingWordSelection();
-	}
-
 	function selectEditingWord(sentence: number, word: number) {
 		if (sentence !== modifying) return;
 
@@ -436,28 +434,67 @@
 		selectedWordEnd = word;
 	}
 
-	$: canMergeEditingWords = selectedWordStart !== -1 && selectedWordEnd > selectedWordStart;
-	$: hasSingleSelectedWord = selectedWordStart !== -1 && selectedWordStart === selectedWordEnd;
-	$: selectedWord = selectedWordStart !== -1 && selectedWordStart === selectedWordEnd ? editingWords[selectedWordStart] : '';
-	$: selectedWordSegments = selectedWord && !selectedWord.match(/<[^>]+>/u) ? segmentGraphemes(selectedWord) : [];
-	$: canSplitEditingWord = selectedWordSegments.length > 1;
-	$: selectedWordCount = selectedWordStart === -1 ? 0 : selectedWordEnd - selectedWordStart + 1;
-	$: canMergeSelectedWithPrev = hasSingleSelectedWord && selectedWordStart > 0;
-	$: canMergeSelectedWithNext = hasSingleSelectedWord && selectedWordStart < editingWords.length - 1;
+	run(() => {
+		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+	});
+	run(() => {
+		if (!loading && alignment && fontFamily && fontStyle && fontSize !== undefined && spaceWidth !== undefined && $locale)
+			tick().then(() => {
+				lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+			});
+	});
+	// Redraw when outputMargin changes — padding shifts every token, so connector
+	// endpoints need to be recomputed.
+	run(() => {
+		if (mounted && !loading && outputMargin)
+			tick().then(() => {
+				lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+			});
+	});
+	run(() => {
+		if (modifying === -1) {
+			resetEditingWordSelection();
+		}
+	});
+	run(() => {
+		if (
+			modifying !== -1 &&
+			editingSelectionStart !== -1 &&
+			(selectedWordStart !== editingSelectionStart || selectedWordEnd !== editingSelectionEnd)
+		) {
+			tokenAnchor = editingSelectionStart;
+			selectedWordStart = editingSelectionStart;
+			selectedWordEnd = editingSelectionEnd;
+		}
+	});
+	let editingWords = $derived(modifying === -1 ? [] : (getSentenceWords(sentences[modifying]) ?? []));
+	run(() => {
+		if (selectedWordStart !== -1 && selectedWordEnd >= editingWords.length) {
+			resetEditingWordSelection();
+		}
+	});
+	let canMergeEditingWords = $derived(selectedWordStart !== -1 && selectedWordEnd > selectedWordStart);
+	let hasSingleSelectedWord = $derived(selectedWordStart !== -1 && selectedWordStart === selectedWordEnd);
+	let selectedWord = $derived(selectedWordStart !== -1 && selectedWordStart === selectedWordEnd ? editingWords[selectedWordStart] : '');
+	let selectedWordSegments = $derived(selectedWord && !selectedWord.match(/<[^>]+>/u) ? segmentGraphemes(selectedWord) : []);
+	let canSplitEditingWord = $derived(selectedWordSegments.length > 1);
+	let selectedWordCount = $derived(selectedWordStart === -1 ? 0 : selectedWordEnd - selectedWordStart + 1);
+	let canMergeSelectedWithPrev = $derived(hasSingleSelectedWord && selectedWordStart > 0);
+	let canMergeSelectedWithNext = $derived(hasSingleSelectedWord && selectedWordStart < editingWords.length - 1);
 </script>
 
 <svelte:window
-	on:resize={async () => {
+	onresize={async () => {
 		await tick();
 		lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	}}
-	on:pointerdown={(e) => {
+	onpointerdown={(e) => {
 		if (modifying === -1 || selectedWordStart === -1) return;
 		if (shouldKeepEditingSelection(e.target)) return;
 		resetEditingWordSelection();
 	}}
-	on:pointermove={onpointermove}
-	on:pointerup={dragend}
+	{onpointermove}
+	onpointerup={dragend}
 />
 
 <output
@@ -488,7 +525,12 @@
 		{/if}
 		{#if outputMargin.top > 0}<span class="dim-label">{outputMargin.top}px</span>{/if}
 	</div>
-	<div class="margin-band margin-band-bottom" class:active={marginDrag?.side === 'bottom'} style:height={`${outputMargin.bottom}px`} aria-hidden="true">
+	<div
+		class="margin-band margin-band-bottom"
+		class:active={marginDrag?.side === 'bottom'}
+		style:height={`${outputMargin.bottom}px`}
+		aria-hidden="true"
+	>
 		{#if outputMargin.bottom >= 14}
 			<svg class="dim-svg" width="20" height={outputMargin.bottom}>
 				<line x1="10" y1="0" x2="10" y2={outputMargin.bottom} class="dim-line" />
@@ -533,10 +575,10 @@
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
 			title={`${$LL.aria.marginTop()}: ${outputMargin.top}px`}
-			on:pointerdown={(e) => startMarginDrag('top', e)}
-			on:pointermove={onMarginDragMove}
-			on:pointerup={endMarginDrag}
-			on:pointercancel={endMarginDrag}
+			onpointerdown={(e) => startMarginDrag('top', e)}
+			onpointermove={onMarginDragMove}
+			onpointerup={endMarginDrag}
+			onpointercancel={endMarginDrag}
 		></div>
 		<div
 			class="margin-edge margin-edge-bottom"
@@ -548,10 +590,10 @@
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
 			title={`${$LL.aria.marginBottom()}: ${outputMargin.bottom}px`}
-			on:pointerdown={(e) => startMarginDrag('bottom', e)}
-			on:pointermove={onMarginDragMove}
-			on:pointerup={endMarginDrag}
-			on:pointercancel={endMarginDrag}
+			onpointerdown={(e) => startMarginDrag('bottom', e)}
+			onpointermove={onMarginDragMove}
+			onpointerup={endMarginDrag}
+			onpointercancel={endMarginDrag}
 		></div>
 		<div
 			class="margin-edge margin-edge-left"
@@ -563,10 +605,10 @@
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
 			title={`${$LL.aria.marginLeft()}: ${outputMargin.left}px`}
-			on:pointerdown={(e) => startMarginDrag('left', e)}
-			on:pointermove={onMarginDragMove}
-			on:pointerup={endMarginDrag}
-			on:pointercancel={endMarginDrag}
+			onpointerdown={(e) => startMarginDrag('left', e)}
+			onpointermove={onMarginDragMove}
+			onpointerup={endMarginDrag}
+			onpointercancel={endMarginDrag}
 		></div>
 		<div
 			class="margin-edge margin-edge-right"
@@ -578,10 +620,10 @@
 			aria-valuemin="0"
 			aria-valuemax={MARGIN_MAX}
 			title={`${$LL.aria.marginRight()}: ${outputMargin.right}px`}
-			on:pointerdown={(e) => startMarginDrag('right', e)}
-			on:pointermove={onMarginDragMove}
-			on:pointerup={endMarginDrag}
-			on:pointercancel={endMarginDrag}
+			onpointerdown={(e) => startMarginDrag('right', e)}
+			onpointermove={onMarginDragMove}
+			onpointerup={endMarginDrag}
+			onpointercancel={endMarginDrag}
 		></div>
 	{/if}
 
@@ -589,113 +631,113 @@
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
 			{#if !pendingIndices.has(i)}
-			<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
-				<div class="dragger action" on:pointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
-					<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em" />
-				</div>
-				<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
-				<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-					<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
-						{#each tokens as token, j}
-							{@const word = token.text}
-							{@const hasAboveLanes = sentence.lanesAbove > 0}
-							{@const hasBelowLanes = sentence.lanesBelow > 0}
-							<!-- svelte-ignore a11y-click-events-have-key-events -->
-							<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
-								{#if hasAboveLanes}
-									<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
-										{#each Array(sentence.lanesAbove) as _, laneIndex}
-											<span class="annotation-line annotation-above">
-												{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
-											</span>
-										{/each}
-									</span>
-								{/if}
-								<span
-									class="word"
-									class:whitespace={isWhitespace(word)}
-									class:content={isContent(word)}
-									class:editing={mode === 'edit'}
-									class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
-									class:connected={connecting.some(([l, w]) => l == i && w == j)}
-									style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
-									style:color={colors[color_map[i][j]]}
-									on:click={() => {
-										if (i === modifying) {
-											selectEditingWord(i, j);
-											return;
-										}
-
-										if (!isContent(word)) return;
-
-										const entryIndex = color_map[i][j];
-
-										if (mode === 'view') {
-											mode = 'edit';
-
-											if (entryIndex !== -1) {
-												connected = [];
-												for (let [i, words] of equivalency[entryIndex].entries()) {
-													for (let word of words) {
-														connected.push([i, word]);
-													}
-												}
-
-												connecting = connected.map(([l, w]) => [l, w]);
-												connectedIndex = entryIndex;
+				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
+					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
+						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
+					</div>
+					<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
+					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
+						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
+							{#each tokens as token, j}
+								{@const word = token.text}
+								{@const hasAboveLanes = sentence.lanesAbove > 0}
+								{@const hasBelowLanes = sentence.lanesBelow > 0}
+								<!-- svelte-ignore a11y_click_events_have_key_events -->
+								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
+									{#if hasAboveLanes}
+										<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
+											{#each Array(sentence.lanesAbove) as _, laneIndex}
+												<span class="annotation-line annotation-above">
+													{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
+												</span>
+											{/each}
+										</span>
+									{/if}
+									<span
+										class="word"
+										class:whitespace={isWhitespace(word)}
+										class:content={isContent(word)}
+										class:editing={mode === 'edit'}
+										class:token-selected={i === modifying && selectedWordStart !== -1 && j >= selectedWordStart && j <= selectedWordEnd}
+										class:connected={connecting.some(([l, w]) => l == i && w == j)}
+										style:width={isWhitespace(word) ? `${Array.from(word).length * spaceWidth}px` : undefined}
+										style:color={colors[color_map[i][j]]}
+										onclick={() => {
+											if (i === modifying) {
+												selectEditingWord(i, j);
 												return;
 											}
-										}
 
-										if (connecting.some(([l, w]) => l == i && w == j)) {
-											connecting = connecting.filter(([l, w]) => l != i || w != j);
-										} else {
-											connecting = [...connecting, [i, j]];
-										}
-									}}
-									bind:this={word_spans[i][j]}
-								>
-									<Word {word} />
-								</span>
-								{#if hasBelowLanes}
-									<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
-										{#each Array(sentence.lanesBelow) as _, laneIndex}
-											<span class="annotation-line annotation-below">
-												{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
-											</span>
-										{/each}
+											if (!isContent(word)) return;
+
+											const entryIndex = color_map[i][j];
+
+											if (mode === 'view') {
+												mode = 'edit';
+
+												if (entryIndex !== -1) {
+													connected = [];
+													for (let [i, words] of equivalency[entryIndex].entries()) {
+														for (let word of words) {
+															connected.push([i, word]);
+														}
+													}
+
+													connecting = connected.map(([l, w]) => [l, w]);
+													connectedIndex = entryIndex;
+													return;
+												}
+											}
+
+											if (connecting.some(([l, w]) => l == i && w == j)) {
+												connecting = connecting.filter(([l, w]) => l != i || w != j);
+											} else {
+												connecting = [...connecting, [i, j]];
+											}
+										}}
+										bind:this={word_spans[i][j]}
+									>
+										<Word {word} />
 									</span>
-								{/if}
-							</span>
-						{/each}
-					</span>
+									{#if hasBelowLanes}
+										<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
+											{#each Array(sentence.lanesBelow) as _, laneIndex}
+												<span class="annotation-line annotation-below">
+													{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
+												</span>
+											{/each}
+										</span>
+									{/if}
+								</span>
+							{/each}
+						</span>
+					</div>
+					<div class="modify action">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<iconify-icon
+							icon="material-symbols:edit-rounded"
+							onclick={() => {
+								dispatch('modify', {
+									sentence: i
+								});
+							}}
+						></iconify-icon>
+					</div>
+					<div class="delete action">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<iconify-icon
+							icon="ic:baseline-delete-forever"
+							width="1.2em"
+							height="1.2em"
+							onclick={() => {
+								if (!confirm($LL.confirm.deleteSentence())) return;
+								dispatch('delete', {
+									sentence: i
+								});
+							}}
+						></iconify-icon>
+					</div>
 				</div>
-				<div class="modify action">
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<iconify-icon
-						icon="material-symbols:edit-rounded"
-						on:click={() => {
-							dispatch('modify', {
-								sentence: i
-							});
-						}}
-					/>
-				</div>
-				<div class="delete action">
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<iconify-icon
-						icon="ic:baseline-delete-forever"
-						width="1.2em"
-						height="1.2em"
-						on:click={() => {
-							if (!confirm($LL.confirm.deleteSentence())) return;
-							dispatch('delete', {
-								sentence: i
-							});
-						}}
-					/>
-				</div>
-			</div>
 			{/if}
 		{/each}
 		{#if pendingIndices.size > 0}
@@ -712,9 +754,9 @@
 								class="pending-cancel"
 								title={$LL.translate.cancel()}
 								aria-label={$LL.translate.cancel()}
-								on:click={() => dispatch('cancelTranslate')}
+								onclick={() => dispatch('cancelTranslate')}
 							>
-								<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+								<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 							</button>
 						</div>
 					{/if}
@@ -735,12 +777,12 @@
 							<button
 								type="button"
 								class="token-action"
-								on:click={() => {
+								onclick={() => {
 									dispatch('merge', { sentence: modifying, start: selectedWordStart, end: selectedWordEnd });
 									resetEditingWordSelection();
 								}}
 							>
-								<iconify-icon icon="mdi:arrow-collapse-horizontal" inline="true" />
+								<iconify-icon icon="mdi:arrow-collapse-horizontal" inline="true"></iconify-icon>
 								{$LL.tokenEditor.mergeSelected()}
 							</button>
 						{/if}
@@ -752,12 +794,12 @@
 							<button
 								type="button"
 								class="split-point merge-point"
-								on:click={() => {
+								onclick={() => {
 									dispatch('merge', { sentence: modifying, start: selectedWordStart - 1, end: selectedWordStart });
 									resetEditingWordSelection();
 								}}
 							>
-								<iconify-icon icon="mdi:call-merge" inline="true" />
+								<iconify-icon icon="mdi:call-merge" inline="true"></iconify-icon>
 							</button>
 						{/if}
 						{#if canSplitEditingWord}
@@ -767,7 +809,7 @@
 									<button
 										type="button"
 										class="split-point"
-										on:click={() => {
+										onclick={() => {
 											dispatch('split', {
 												sentence: modifying,
 												word: selectedWordStart,
@@ -787,12 +829,12 @@
 							<button
 								type="button"
 								class="split-point merge-point"
-								on:click={() => {
+								onclick={() => {
 									dispatch('merge', { sentence: modifying, start: selectedWordStart, end: selectedWordStart + 1 });
 									resetEditingWordSelection();
 								}}
 							>
-								<iconify-icon icon="mdi:call-merge" inline="true" />
+								<iconify-icon icon="mdi:call-merge" inline="true"></iconify-icon>
 							</button>
 						{/if}
 					</div>
@@ -814,24 +856,24 @@
 			<div class="edit-dialog-actions">
 				<button
 					class="confirm"
-					on:click={() => {
+					onclick={() => {
 						dispatch('connect', { connected: [...connecting], connectedIndex });
 						connecting = [];
 						connectedIndex = -1;
 						mode = 'view';
 					}}
 				>
-					<iconify-icon icon="material-symbols:check" inline="true" />
+					<iconify-icon icon="material-symbols:check" inline="true"></iconify-icon>
 					{$LL.dialog.confirm()}
 				</button>
 				<button
 					class="cancel"
-					on:click={() => {
+					onclick={() => {
 						connecting = [];
 						mode = 'view';
 					}}
 				>
-					<iconify-icon icon="material-symbols:cancel" inline="true" />
+					<iconify-icon icon="material-symbols:cancel" inline="true"></iconify-icon>
 					{$LL.dialog.cancel()}
 				</button>
 			</div>
@@ -975,7 +1017,7 @@
 		right: 0;
 	}
 
-	output:has(.margin-edge:hover) .margin-band,
+	output:has(:global(.margin-edge:hover)) .margin-band,
 	output.margin-adjusting .margin-band {
 		background: rgb(228 67 175 / 0.18);
 	}
@@ -1024,7 +1066,7 @@
 
 	/* All four edges highlight together when any one is hovered, or when
 	   any side is being dragged. */
-	output:has(.margin-edge:hover) .margin-edge,
+	output:has(:global(.margin-edge:hover)) .margin-edge,
 	output.margin-adjusting .margin-edge {
 		background: rgb(46 91 255 / 0.5);
 	}
@@ -1042,8 +1084,8 @@
 		pointer-events: none;
 	}
 
-	output:has(.margin-edge:hover) .dim-svg,
-	output:has(.margin-edge:hover) .dim-label,
+	output:has(:global(.margin-edge:hover)) .dim-svg,
+	output:has(:global(.margin-edge:hover)) .dim-label,
 	output.margin-adjusting .dim-svg,
 	output.margin-adjusting .dim-label {
 		opacity: 1;
