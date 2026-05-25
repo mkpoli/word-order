@@ -96,6 +96,22 @@
 	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
 	let palette: PaletteId = $state(DEFAULT_PALETTE);
 	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
+	// Bound by <Equivalency> while a drag is in progress; null when idle. Mirrors
+	// the {from, to} that onreorder would emit on drop, so we can pre-apply the
+	// same permutation to line colours without committing to the reorder.
+	let dragPreview: { from: number; to: number } | null = $state(null);
+	let displayColors: string[] = $derived.by(() => {
+		if (!dragPreview) return colors;
+		const { from, to } = dragPreview;
+		if (from === to || from < 0 || from >= colors.length) return colors;
+		return colors.map((_, i) => {
+			let newPos = i;
+			if (i === from) newPos = to;
+			else if (from < to && i > from && i <= to) newPos = i - 1;
+			else if (to < from && i >= to && i < from) newPos = i + 1;
+			return colors[newPos];
+		});
+	});
 	let word_spans: HTMLSpanElement[][] = $state([]);
 
 	// Parameters
@@ -1029,7 +1045,7 @@ ${svgString}
 					pendingIndices={pendingSentenceSet}
 					{alignment}
 					bind:lines
-					{colors}
+					colors={displayColors}
 					{verticalGap}
 					{lineGap}
 					{lineWidth}
@@ -1143,6 +1159,7 @@ ${svgString}
 			{sentences}
 			{equivalency}
 			{colors}
+			bind:dragPreview
 			onreorder={({ from, to }) => {
 				const entry = equivalency[from];
 				equivalency.splice(from, 1);
