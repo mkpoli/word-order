@@ -150,8 +150,9 @@
 		padding: 0.45rem 0.7rem;
 		border-radius: 0.2em;
 		border: none;
-		background: white;
-		box-shadow: 1px 1px 5px 0 #ccc;
+		background: var(--color-surface);
+		color: var(--color-text);
+		box-shadow: 1px 1px 5px 0 var(--color-shadow);
 		cursor: pointer;
 		user-select: none;
 		transition:
@@ -164,19 +165,19 @@
 	}
 
 	.locale-picker > summary:hover {
-		background-color: #eee;
+		background-color: var(--color-hover);
 	}
 
 	.locale-picker:has(:global(summary:focus-visible)) > summary {
 		outline: none;
-		background-color: #f4f4f4;
+		background-color: var(--color-hover);
 		box-shadow:
 			0 0 0 2px rgb(0 0 0 / 14%),
-			1px 1px 5px 0 #ccc;
+			1px 1px 5px 0 var(--color-shadow);
 	}
 
 	.locale-picker[open] > summary {
-		background-color: #f4f4f4;
+		background-color: var(--color-hover);
 	}
 
 	.locale-trigger-icon {
@@ -185,7 +186,7 @@
 		justify-content: center;
 		width: 1.3rem;
 		height: 1.3rem;
-		color: #444;
+		color: var(--color-text-muted);
 		font-size: 0.95rem;
 	}
 
@@ -201,7 +202,7 @@
 	.locale-trigger-value {
 		font-size: 0.92rem;
 		font-weight: 700;
-		color: #222;
+		color: var(--color-text);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -210,15 +211,15 @@
 	.locale-trigger-code {
 		padding: 0.14rem 0.42rem;
 		border-radius: 999px;
-		background: #f0f0f0;
-		color: #666;
+		background: var(--color-hover);
+		color: var(--color-text-muted);
 		font-size: 0.67rem;
 		font-weight: 700;
 		letter-spacing: 0.05em;
 	}
 
 	.locale-trigger-caret {
-		color: #666;
+		color: var(--color-text-muted);
 		transition: transform 180ms ease;
 	}
 
@@ -236,9 +237,9 @@
 		align-content: start;
 		padding: 0.3rem;
 		border-radius: 0.45rem;
-		border: 1px solid #ddd;
-		background: rgb(255 255 255 / 0.94);
-		box-shadow: 1px 1px 8px 0 rgb(0 0 0 / 14%);
+		border: 1px solid var(--color-border);
+		background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+		box-shadow: 1px 1px 8px 0 var(--color-shadow);
 		backdrop-filter: blur(8px);
 	}
 
@@ -261,15 +262,15 @@
 	.locale-menu button:hover,
 	.locale-menu button:focus-visible {
 		outline: none;
-		background: #f1f1f1;
+		background: var(--color-hover);
 	}
 
 	.locale-menu button:focus-visible {
-		box-shadow: inset 2px 0 0 #444;
+		box-shadow: inset 2px 0 0 var(--color-text-muted);
 	}
 
 	.locale-menu button.selected {
-		background: #f6f6f6;
+		background: var(--color-hover);
 	}
 
 	.locale-option-copy {
@@ -288,7 +289,7 @@
 	.locale-option-endonym {
 		font-size: 0.92rem;
 		font-weight: 700;
-		color: #222;
+		color: var(--color-text);
 	}
 
 	.locale-option-badge {
@@ -298,8 +299,8 @@
 		width: 1.2rem;
 		height: 1.2rem;
 		border-radius: 999px;
-		background: #ebebeb;
-		color: #444;
+		background: var(--color-hover);
+		color: var(--color-text-muted);
 		font-size: 0.8rem;
 	}
 
@@ -307,7 +308,7 @@
 		display: flex;
 		align-items: center;
 		font-size: 0.69rem;
-		color: #666;
+		color: var(--color-text-muted);
 		white-space: nowrap;
 		font-weight: 700;
 		letter-spacing: 0.04em;

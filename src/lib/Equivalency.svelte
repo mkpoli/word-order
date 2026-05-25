@@ -206,11 +206,11 @@
 		background: none;
 		cursor: pointer;
 		align-self: center;
-		color: #777;
+		color: var(--color-text-faint);
 		transition: color 0.15s ease;
 	}
 
 	.scramble-all:hover {
-		color: #333;
+		color: var(--color-text);
 	}
 </style>
