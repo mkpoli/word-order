@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { createEventDispatcher } from 'svelte';
 	import { getLanguageName } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
@@ -7,26 +9,32 @@
 	import { getSentenceWords } from './types';
 	import Word from './Word.svelte';
 
-	export let modifying: number;
-	export let sentences: Sentence[];
-	export let text = '';
-	/** annotationsAbove[laneIndex][tokenIndex] — top lane first. */
-	export let annotationsAbove: string[][] = [];
-	/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
-	export let annotationsBelow: string[][] = [];
-	export let glossEnabled = false;
+	interface Props {
+		modifying: number;
+		sentences: Sentence[];
+		text?: string;
+		/** annotationsAbove[laneIndex][tokenIndex] — top lane first. */
+		annotationsAbove?: string[][];
+		/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
+		annotationsBelow?: string[][];
+		glossEnabled?: boolean;
+	}
 
-	let lang = 'en';
-	let displayName = 'English';
+	let {
+		modifying,
+		sentences,
+		text = $bindable(''),
+		annotationsAbove = $bindable([]),
+		annotationsBelow = $bindable([]),
+		glossEnabled = $bindable(false)
+	}: Props = $props();
 
-	$: displayName = getLanguageName(lang, $locale);
-	$: syncLanes(text);
+	let lang = $state('en');
+	let displayName = $state('English');
 
 	let previousLang = 'en';
 
-	let textArea: HTMLTextAreaElement;
-
-	$: onmodifyingchange(modifying);
+	let textArea: HTMLTextAreaElement | undefined = $state();
 
 	function onmodifyingchange(modifying: number) {
 		if (modifying !== -1) {
@@ -41,7 +49,7 @@
 				sentence.tokens.map((t) => t.annotationsBelow[laneIndex] ?? '')
 			);
 			glossEnabled = sentence.showGloss || sentence.lanesAbove > 0 || sentence.lanesBelow > 0;
-			textArea.focus();
+			textArea?.focus();
 		} else {
 			lang = previousLang;
 			text = '';
@@ -62,7 +70,7 @@
 		openTranslate: void;
 	}>();
 
-	let empty = false;
+	let empty = $state(false);
 
 	function getWords(value: string): string[] {
 		return modifying === -1 ? tokenizeSentence(value, lang) : value.split(/[|]/u).filter(Boolean);
@@ -121,17 +129,24 @@
 		else annotationsBelow = annotationsBelow.filter((_, i) => i !== laneIndex);
 	}
 
-	$: words = getWords(text);
-	$: glossableTokens = words
-		.map((word, tokenIndex) => ({ word, tokenIndex }))
-		.filter(({ word }) => isGlossableToken(word));
-	$: reversedAboveIndices = annotationsAbove.map((_, i) => i).reverse();
-	$: hasAnyLane = annotationsAbove.length > 0 || annotationsBelow.length > 0;
+	run(() => {
+		displayName = getLanguageName(lang, $locale);
+	});
+	run(() => {
+		syncLanes(text);
+	});
+	run(() => {
+		onmodifyingchange(modifying);
+	});
+	let words = $derived(getWords(text));
+	let glossableTokens = $derived(words.map((word, tokenIndex) => ({ word, tokenIndex })).filter(({ word }) => isGlossableToken(word)));
+	let reversedAboveIndices = $derived(annotationsAbove.map((_, i) => i).reverse());
+	let hasAnyLane = $derived(annotationsAbove.length > 0 || annotationsBelow.length > 0);
 </script>
 
 <fieldset class:editing={modifying !== -1}>
 	<legend>
-		<iconify-icon icon="ri:input-cursor-move" inline="true" />
+		<iconify-icon icon="ri:input-cursor-move" inline="true"></iconify-icon>
 		{$LL.input.input()}
 	</legend>
 
@@ -141,13 +156,13 @@
 			class:empty
 			bind:value={text}
 			bind:this={textArea}
-			on:change={() => {
+			onchange={() => {
 				empty = false;
 			}}
 		></textarea>
 		<details class="gloss-panel" bind:open={glossEnabled}>
 			<summary>
-				<iconify-icon icon="mdi:format-annotation-plus" inline="true" />
+				<iconify-icon icon="mdi:format-annotation-plus" inline="true"></iconify-icon>
 				{$LL.input.gloss()}
 			</summary>
 			<div class="gloss-content">
@@ -156,9 +171,9 @@
 				{:else}
 					<div class="lane-scroll">
 						<div class="lane-grid" style="--n: {glossableTokens.length}">
-							<button type="button" class="lane-add lane-add-above" on:click={() => addLane('above')}>
+							<button type="button" class="lane-add lane-add-above" onclick={() => addLane('above')}>
 								<span class="lane-add-label">
-									<iconify-icon icon="mdi:plus" inline="true" />
+									<iconify-icon icon="mdi:plus" inline="true"></iconify-icon>
 									{$LL.input.addLaneAbove()}
 								</span>
 							</button>
@@ -180,9 +195,9 @@
 									class="lane-remove"
 									title={$LL.input.removeLane()}
 									aria-label={$LL.input.removeLane()}
-									on:click={() => removeLane('above', laneIndex)}
+									onclick={() => removeLane('above', laneIndex)}
 								>
-									<iconify-icon icon="mdi:close" inline="true" />
+									<iconify-icon icon="mdi:close" inline="true"></iconify-icon>
 								</button>
 							{/each}
 
@@ -192,7 +207,7 @@
 							{/each}
 							<span class="lane-corner" aria-hidden="true"></span>
 
-							{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
+							{#each annotationsBelow as _lane, laneIndex (`below-${laneIndex}`)}
 								<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
 								{#each glossableTokens as { tokenIndex } (tokenIndex)}
 									<input
@@ -207,15 +222,15 @@
 									class="lane-remove"
 									title={$LL.input.removeLane()}
 									aria-label={$LL.input.removeLane()}
-									on:click={() => removeLane('below', laneIndex)}
+									onclick={() => removeLane('below', laneIndex)}
 								>
-									<iconify-icon icon="mdi:close" inline="true" />
+									<iconify-icon icon="mdi:close" inline="true"></iconify-icon>
 								</button>
 							{/each}
 
-							<button type="button" class="lane-add lane-add-below" on:click={() => addLane('below')}>
+							<button type="button" class="lane-add lane-add-below" onclick={() => addLane('below')}>
 								<span class="lane-add-label">
-									<iconify-icon icon="mdi:plus" inline="true" />
+									<iconify-icon icon="mdi:plus" inline="true"></iconify-icon>
 									{$LL.input.addLaneBelow()}
 								</span>
 							</button>
@@ -230,7 +245,7 @@
 			<div class="primary-actions">
 				<button
 					class="primary"
-					on:click={() => {
+					onclick={() => {
 						const w = getWords(text);
 						if (w.length === 0) {
 							empty = true;
@@ -248,24 +263,19 @@
 						});
 					}}
 				>
-					<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em" />
+					<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em"></iconify-icon>
 					{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
 				</button>
 				{#if modifying === -1}
-					<button
-						type="button"
-						class="secondary"
-						on:click={() => dispatch('openTranslate')}
-						disabled={sentences.length === 0}
-					>
-						<iconify-icon icon="mdi:translate" width="1.2em" height="1.2em" />
+					<button type="button" class="secondary" onclick={() => dispatch('openTranslate')} disabled={sentences.length === 0}>
+						<iconify-icon icon="mdi:translate" width="1.2em" height="1.2em"></iconify-icon>
 						{$LL.input.translate()}
 					</button>
 				{/if}
 			</div>
 		</div>
 		<div class="guidance">
-			<iconify-icon icon="ph:info" width="1.5em" height="1.5em" />
+			<iconify-icon icon="ph:info" width="1.5em" height="1.5em"></iconify-icon>
 			<p>
 				{@html $LL.input.guidance(
 					{

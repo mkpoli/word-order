@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { LL } from '../i18n/i18n-svelte';
 	import Word from './Word.svelte';
 	import type { Sentence } from './types';
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		sentences: Sentence[];
+		equivalency: number[][][];
+		colors: string[];
+		onreorder?: (e: { from: number; to: number }) => void;
+		onscramble?: () => void;
+	}
 
-	export let sentences: Sentence[];
-	export let equivalency: number[][][];
-	export let colors: string[];
+	let { sentences, equivalency, colors, onreorder, onscramble }: Props = $props();
 
 	function buildStripeGradient(colors: string[], positions: number[]): string {
 		if (colors.length === 0) return 'none';
@@ -36,8 +40,9 @@
 		return `linear-gradient(to bottom, ${stops.join(', ')})`;
 	}
 
-	let stripePositions: number[] = [];
-	let entriesContainer: HTMLDivElement;
+	let stripePositions: number[] = $state([]);
+	let entriesContainer: HTMLDivElement | undefined = $state();
+	let equivalencyDivs: HTMLDivElement[] = $state([]);
 
 	function updateStripePositions() {
 		if (!entriesContainer || colors.length === 0) {
@@ -72,16 +77,21 @@
 		};
 	});
 
-	afterUpdate(() => {
-		updateStripePositions();
+	// Replaces the Svelte 4 afterUpdate hook — re-measure stripe positions after any
+	// re-render, since equivalencyDivs/colors changes shift the bars.
+	$effect(() => {
+		// Touch dependencies so the effect re-runs after updates.
+		void equivalency;
+		void colors;
+		void sentences;
+		tick().then(updateStripePositions);
 	});
 
-	$: stripeGradient = buildStripeGradient(colors, stripePositions);
+	let stripeGradient = $derived(buildStripeGradient(colors, stripePositions));
 
-	let draggingIndex = -1;
+	let draggingIndex = $state(-1);
 	let draggingPosition = { x: 0, y: 0 };
-	let draggingOffset = { x: 0, y: 0 };
-	let equivalencyDivs: HTMLDivElement[] = [];
+	let draggingOffset = $state({ x: 0, y: 0 });
 
 	function dragstart(l: number, e: PointerEvent) {
 		draggingIndex = l;
@@ -105,10 +115,7 @@
 			const centerBetween = (rect.top - lastBottom) / 2;
 
 			if (i !== draggingIndex && (i === 0 ? rect.top : centerBetween) <= e.clientY && rect.bottom >= e.clientY) {
-				dispatch('reorder', {
-					from: draggingIndex,
-					to: i
-				});
+				onreorder?.({ from: draggingIndex, to: i });
 				break;
 			}
 
@@ -121,8 +128,10 @@
 
 	function onpointermove(e: PointerEvent) {
 		if (draggingIndex >= 0) {
-			draggingOffset.x = e.clientX - draggingPosition.x;
-			draggingOffset.y = e.clientY - draggingPosition.y;
+			draggingOffset = {
+				x: e.clientX - draggingPosition.x,
+				y: e.clientY - draggingPosition.y
+			};
 		}
 	}
 
@@ -132,25 +141,25 @@
 	}
 </script>
 
-<svelte:window on:pointerup={dragend} on:pointermove={onpointermove} />
+<svelte:window onpointerup={dragend} {onpointermove} />
 
-<div class="color-bar" style:background-image={stripeGradient} />
+<div class="color-bar" style:background-image={stripeGradient}></div>
 <div class="entries" bind:this={entriesContainer}>
-	{#each equivalency as entry, i}
+	{#each equivalency as entry, i (i)}
 		<div
 			class="equivalency"
 			style:color={colors[i]}
-			on:pointerdown={(e) => dragstart(i, e)}
-			on:pointerup={dragend}
+			onpointerdown={(e) => dragstart(i, e)}
+			onpointerup={dragend}
 			bind:this={equivalencyDivs[i]}
 			style:transform={getTransform(i, draggingOffset)}
 		>
-			{#each entry as words, j}
+			{#each entry as words, j (j)}
 				<span class="words">
 					{#if words.length === 0}
 						<span class="word">❌</span>
 					{:else}
-						{#each words as k}
+						{#each words as k (k)}
 							<span lang={sentences[j].lang} class="word"><Word word={sentences[j].tokens[k].text} /></span>
 						{/each}
 					{/if}
@@ -159,8 +168,8 @@
 		</div>
 	{/each}
 </div>
-<button class="scramble-all" title={$LL.menu.scramble()} aria-label={$LL.menu.scramble()} on:click={() => dispatch('scramble')}>
-	<iconify-icon icon="fad:random-1dice" width="1.5em" />
+<button class="scramble-all" title={$LL.menu.scramble()} aria-label={$LL.menu.scramble()} onclick={() => onscramble?.()}>
+	<iconify-icon icon="fad:random-1dice" width="1.5em"></iconify-icon>
 </button>
 
 <style>
