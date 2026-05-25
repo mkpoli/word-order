@@ -8,11 +8,39 @@
 		sentences: Sentence[];
 		equivalency: number[][][];
 		colors: string[];
+		/** Active drag preview ({from, to} as it would be emitted on drop), or null when idle. Read by the parent so it can permute the line colors live. */
+		dragPreview?: { from: number; to: number } | null;
 		onreorder?: (e: { from: number; to: number }) => void;
 		onscramble?: () => void;
 	}
 
-	let { sentences, equivalency, colors, onreorder, onscramble }: Props = $props();
+	let { sentences, equivalency, colors, dragPreview = $bindable(null), onreorder, onscramble }: Props = $props();
+
+	/**
+	 * For each logical entry index, return the positional colour it would take
+	 * after the proposed drop. Colours are positional (colours[k] = colour at
+	 * physical position k), so an entry being moved from `from` to `to` is
+	 * re-coloured to colours[to], and entries between `from` and `to` shift one
+	 * slot to absorb the gap.
+	 */
+	function applyPreviewColors(colors: string[], preview: { from: number; to: number } | null): string[] {
+		if (!preview) return colors;
+		const { from, to } = preview;
+		if (from === to || from < 0 || from >= colors.length) return colors;
+		return colors.map((_, i) => {
+			let newPos = i;
+			if (i === from) newPos = to;
+			else if (from < to && i > from && i <= to) newPos = i - 1;
+			else if (to < from && i >= to && i < from) newPos = i + 1;
+			return colors[newPos];
+		});
+	}
+
+	// Live colour preview shared by row swatches, the colour-bar gradient, and
+	// (via the bound dragPreview) the connector lines in Output.svelte. Without
+	// this, the phantom would slide to a new slot while the lines stayed at the
+	// old colour order — visually fragmented.
+	let displayColors = $derived(applyPreviewColors(colors, dragPreview));
 
 	function buildStripeGradient(colors: string[], positions: number[]): string {
 		if (colors.length === 0) return 'none';
@@ -87,13 +115,27 @@
 		tick().then(updateStripePositions);
 	});
 
-	let stripeGradient = $derived(buildStripeGradient(colors, stripePositions));
+	let stripeGradient = $derived(buildStripeGradient(displayColors, stripePositions));
 
 	let draggingIndex = $state(-1);
 	let draggingPosition = { x: 0, y: 0 };
 	let draggingOffset = $state({ x: 0, y: 0 });
 	/** Visual drop index (0..equivalency.length); null when not dragging. */
 	let dropTargetIndex = $state<number | null>(null);
+
+	/** Visual `dropTargetIndex` mapped to the post-splice `to` index `onreorder` uses. */
+	function visualToSpliceTo(visual: number, from: number): number {
+		return visual < from ? visual : Math.max(0, visual - 1);
+	}
+
+	function syncDragPreview() {
+		if (draggingIndex < 0 || dropTargetIndex === null) {
+			dragPreview = null;
+			return;
+		}
+		const to = visualToSpliceTo(dropTargetIndex, draggingIndex);
+		dragPreview = { from: draggingIndex, to };
+	}
 
 	function dragstart(l: number, e: PointerEvent) {
 		draggingIndex = l;
@@ -103,6 +145,7 @@
 
 		draggingPosition = { x: e.clientX, y: e.clientY };
 		dropTargetIndex = l;
+		syncDragPreview();
 	}
 
 	/** Count of equivalency rows whose vertical centre sits above the cursor. */
@@ -126,14 +169,13 @@
 
 		const visual = computeDropVisualIndex(e.clientY);
 		if (visual !== draggingIndex && visual !== draggingIndex + 1) {
-			// Splice mechanics: drop AFTER current position needs visual - 1.
-			const to = visual < draggingIndex ? visual : visual - 1;
-			onreorder?.({ from: draggingIndex, to });
+			onreorder?.({ from: draggingIndex, to: visualToSpliceTo(visual, draggingIndex) });
 		}
 
 		draggingIndex = -1;
 		draggingOffset = { x: 0, y: 0 };
 		dropTargetIndex = null;
+		dragPreview = null;
 	}
 
 	function onpointermove(e: PointerEvent) {
@@ -143,6 +185,7 @@
 				y: e.clientY - draggingPosition.y
 			};
 			dropTargetIndex = computeDropVisualIndex(e.clientY);
+			syncDragPreview();
 		}
 	}
 
@@ -162,7 +205,7 @@
 		{/if}
 		<div
 			class="equivalency"
-			style:color={colors[i]}
+			style:color={displayColors[i]}
 			onpointerdown={(e) => dragstart(i, e)}
 			onpointerup={dragend}
 			bind:this={equivalencyDivs[i]}
