@@ -7,7 +7,7 @@
 	import { run } from 'svelte/legacy';
 
 	import { onMount, tick, createEventDispatcher } from 'svelte';
-	import type { Alignment, FontFamily, FontStyle, Mode, Sentence } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, LineStyle, Mode, Sentence } from '$lib/types';
 	import { getSentenceWords, sentenceHasAnyAnnotation } from '$lib/types';
 	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
@@ -64,6 +64,7 @@
 		verticalGap: number;
 		lineGap: number;
 		lineWidth?: number;
+		lineStyle?: LineStyle;
 		straightLength: number;
 		endpointCorrection: number;
 		curvature?: number;
@@ -73,6 +74,7 @@
 		fontSize: number;
 		glossFontSize: number;
 		spaceWidth: number;
+		letterSpacing?: number;
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
@@ -93,6 +95,7 @@
 		verticalGap,
 		lineGap,
 		lineWidth = 1,
+		lineStyle = 'solid',
 		straightLength,
 		endpointCorrection,
 		curvature = 1,
@@ -102,6 +105,7 @@
 		fontSize,
 		glossFontSize,
 		spaceWidth,
+		letterSpacing = 0,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
 		output = $bindable()
@@ -695,7 +699,10 @@
 								sel?.addRange(range);
 							}}
 							onblur={(e) => {
-								const next = (e.currentTarget.textContent ?? '').trim();
+								// Collapse internal whitespace so multi-line pastes don't carry hidden
+								// newlines into the data model (the tag is white-space: nowrap, so it
+								// would render fine but the stored value would still hold them).
+								const next = (e.currentTarget.textContent ?? '').replace(/\s+/g, ' ').trim();
 								const previous = sentence.displayName ?? defaultLabel;
 								if (next === previous) {
 									// Keep the rendered text in sync with state if the user typed
@@ -710,7 +717,7 @@
 						>
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
+						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
 							{#each tokens as token, j}
 								{@const word = token.text}
 								{@const hasAboveLanes = sentence.lanesAbove > 0}
@@ -718,7 +725,7 @@
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
 									{#if hasAboveLanes}
-										<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
+										<span class="annotations-above" lang="zxx" style:font-size={`${glossFontSize}px`}>
 											{#each Array(sentence.lanesAbove) as _, laneIndex}
 												<span class="annotation-line annotation-above">
 													{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
@@ -773,7 +780,7 @@
 										<Word {word} />
 									</span>
 									{#if hasBelowLanes}
-										<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
+										<span class="annotations-below" lang="zxx" style:font-size={`${glossFontSize}px`}>
 											{#each Array(sentence.lanesBelow) as _, laneIndex}
 												<span class="annotation-line annotation-below">
 													{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
@@ -919,9 +926,18 @@
 				{/if}
 			</div>
 		{/if}
+		{@const dashArray =
+			lineStyle === 'dashed' ? `${lineWidth * 5} ${lineWidth * 4}` : lineStyle === 'dotted' ? `${lineWidth} ${lineWidth * 2}` : undefined}
 		<svg style="position: absolute;" width="100%" height="100%">
 			{#each lines as [x1, y1, x2, y2, color]}
-				<path d={connectionPath(x1, y1, x2, y2, curvature)} stroke={color} stroke-width={lineWidth} fill="none" />
+				<path
+					d={connectionPath(x1, y1, x2, y2, curvature)}
+					stroke={color}
+					stroke-width={lineWidth}
+					stroke-dasharray={dashArray}
+					stroke-linecap={lineStyle === 'dotted' ? 'round' : undefined}
+					fill="none"
+				/>
 			{/each}
 		</svg>
 

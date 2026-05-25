@@ -2,6 +2,7 @@
 	import { run } from 'svelte/legacy';
 
 	import { oklchToHex, pickNColors, DEFAULT_PALETTE, PALETTES, type PaletteId } from '$lib/color';
+	import { applyPreviewColors, type DragPreview } from '$lib/equivalency-preview';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -13,7 +14,7 @@
 	import { page } from '$app/stores';
 	import { getCanonicalUrl, getJsonLd, getOgImageUrl, themeColor } from '$lib/seo';
 
-	import type { Alignment, FontFamily, FontStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, LineStyle, Mode, Sentence, SentenceData, SentenceToken } from '$lib/types';
 	import { createSentence, getSentenceGlosses, getSentenceWords, normalizeLanes } from '$lib/types';
 	import { docFromExample, docFromLegacy, isDocEmpty, loadDoc, saveDoc } from '$lib/projects';
 	import { buildShareUrl, decodeDocFromUrl, isShareUrlLong, readPayloadFromUrl } from '$lib/share';
@@ -21,6 +22,7 @@
 
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
+	import QrDialog from '$lib/QrDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import ThemeToggle from '$lib/ThemeToggle.svelte';
@@ -94,30 +96,22 @@
 	});
 	const PALETTE_STORAGE_KEY = 'word-order:palette';
 	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
+	const LINE_STYLE_STORAGE_KEY = 'word-order:line-style';
+	const LINE_STYLES: LineStyle[] = ['solid', 'dashed', 'dotted'];
 	let palette: PaletteId = $state(DEFAULT_PALETTE);
 	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
 	// Bound by <Equivalency> while a drag is in progress; null when idle. Mirrors
 	// the {from, to} that onreorder would emit on drop, so we can pre-apply the
 	// same permutation to line colours without committing to the reorder.
-	let dragPreview: { from: number; to: number } | null = $state(null);
-	let displayColors: string[] = $derived.by(() => {
-		if (!dragPreview) return colors;
-		const { from, to } = dragPreview;
-		if (from === to || from < 0 || from >= colors.length) return colors;
-		return colors.map((_, i) => {
-			let newPos = i;
-			if (i === from) newPos = to;
-			else if (from < to && i > from && i <= to) newPos = i - 1;
-			else if (to < from && i >= to && i < from) newPos = i + 1;
-			return colors[newPos];
-		});
-	});
+	let dragPreview: DragPreview = $state(null);
+	let displayColors: string[] = $derived(applyPreviewColors(colors, dragPreview));
 	let word_spans: HTMLSpanElement[][] = $state([]);
 
 	// Parameters
 	let verticalGap = $state(0);
 	let lineGap = $state(0);
 	let lineWidth = $state(1);
+	let lineStyle: LineStyle = $state('solid');
 	let straightLength = $state(0);
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
@@ -127,6 +121,7 @@
 	let fontSize = $state(15);
 	let glossFontSize = $state(11);
 	let spaceWidth = $state(4);
+	let letterSpacing = $state(0);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
 	let aboutOpen = $state(false);
@@ -162,6 +157,18 @@
 	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareUrlLength = $state(0);
 	let shareLoadError = $state(false);
+
+	let qrOpen = $state(false);
+	let qrUrl = $state('');
+
+	async function openQrDialog() {
+		try {
+			qrUrl = await buildShareUrl(window.location.origin, { schemaVersion: 1, sentences, equivalency });
+			qrOpen = true;
+		} catch {
+			// Falls back to silently doing nothing — same behaviour as copyShareLink's failure mode.
+		}
+	}
 
 	async function copyShareLink() {
 		try {
@@ -234,6 +241,9 @@
 
 		const storedPalette = window.localStorage.getItem(PALETTE_STORAGE_KEY);
 		if (storedPalette && PALETTE_IDS.includes(storedPalette as PaletteId)) palette = storedPalette as PaletteId;
+
+		const storedLineStyle = window.localStorage.getItem(LINE_STYLE_STORAGE_KEY);
+		if (storedLineStyle && LINE_STYLES.includes(storedLineStyle as LineStyle)) lineStyle = storedLineStyle as LineStyle;
 
 		mounted = true;
 		await tick();
@@ -703,6 +713,31 @@
 		closeExportMenu();
 	}
 
+	function exportTsv() {
+		// One column per sentence (header = displayName ?? lang), one row per
+		// equivalency entry (the alignment groups). A cell holds the joined
+		// token text for that sentence's slice of the entry; missing slices
+		// (the ❌ row in the UI) render as empty cells.
+		// Tabs and newlines inside cells get replaced with single spaces — TSV
+		// has no robust quoting and most spreadsheets choke on embedded
+		// delimiters more than they care about losing whitespace.
+		const cleanCell = (text: string) => text.replace(/[\t\r\n]+/g, ' ');
+
+		const headers = sentences.map((s) => cleanCell(s.displayName ?? s.lang));
+		const rows = equivalency.map((entry) =>
+			entry.map((wordIndices, sentenceIndex) => {
+				if (!wordIndices || wordIndices.length === 0) return '';
+				const tokens = sentences[sentenceIndex]?.tokens ?? [];
+				return cleanCell(wordIndices.map((i) => tokens[i]?.text ?? '').join(' '));
+			})
+		);
+
+		const tsv = [headers, ...rows].map((cols) => cols.join('\t')).join('\n') + '\n';
+		// Prefix BOM so Excel detects UTF-8 (TSV opens straight into Excel).
+		save('﻿' + tsv, 'text/tab-separated-values;charset=utf-8', exportFilename('tsv'));
+		closeExportMenu();
+	}
+
 	function exportText() {
 		// Plain-text representation of the alignment for contexts that can't
 		// render the SVG (chat, email, code review). Each content token gets
@@ -811,6 +846,66 @@ ${svgString}
 		}
 	}
 
+	type SocialPreset = { id: string; label: string; width: number; height: number };
+	// Sized for the platforms' link-card / in-feed image slots as of early 2026.
+	const SOCIAL_PRESETS: SocialPreset[] = [
+		{ id: 'twitter-card', label: 'X / Twitter (1600 × 900)', width: 1600, height: 900 },
+		{ id: 'instagram-square', label: 'Instagram square (1080 × 1080)', width: 1080, height: 1080 },
+		{ id: 'instagram-portrait', label: 'Instagram portrait (1080 × 1350)', width: 1080, height: 1350 },
+		{ id: 'facebook-link', label: 'Facebook link (1200 × 630)', width: 1200, height: 630 },
+		{ id: 'linkedin-link', label: 'LinkedIn link (1200 × 627)', width: 1200, height: 627 }
+	];
+
+	async function exportSocial(preset: SocialPreset) {
+		if (!output) return;
+		try {
+			// Render the natural-size PNG first, then composite onto a canvas of
+			// the preset dimensions so we don't have to fight the dom-to-image
+			// scale math for non-aspect-preserving targets.
+			const source = await exportPngBlob(2);
+			if (!source) return;
+
+			const sourceUrl = URL.createObjectURL(source);
+			try {
+				const img = new Image();
+				await new Promise<void>((resolve, reject) => {
+					img.onload = () => resolve();
+					img.onerror = () => reject(new Error('Image load failed'));
+					img.src = sourceUrl;
+				});
+
+				const canvas = document.createElement('canvas');
+				canvas.width = preset.width;
+				canvas.height = preset.height;
+				const ctx = canvas.getContext('2d');
+				if (!ctx) return;
+				ctx.fillStyle = getExportBackgroundColor();
+				ctx.fillRect(0, 0, preset.width, preset.height);
+
+				// Fit-contain with 5% padding so the diagram never kisses the edges.
+				const pad = 0.05;
+				const maxW = preset.width * (1 - pad * 2);
+				const maxH = preset.height * (1 - pad * 2);
+				const scale = Math.min(maxW / img.width, maxH / img.height);
+				const drawW = img.width * scale;
+				const drawH = img.height * scale;
+				const drawX = (preset.width - drawW) / 2;
+				const drawY = (preset.height - drawH) / 2;
+				ctx.imageSmoothingQuality = 'high';
+				ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+				const out = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+				if (out) save(out, 'image/png', exportFilename(`${preset.id}.png`));
+			} finally {
+				URL.revokeObjectURL(sourceUrl);
+			}
+		} catch (err) {
+			console.error(`Export social (${preset.id}) failed:`, err);
+		} finally {
+			closeExportMenu();
+		}
+	}
+
 	async function exportPdf() {
 		if (!output) {
 			closeExportMenu();
@@ -856,6 +951,9 @@ ${svgString}
 	});
 	run(() => {
 		if (mounted) window.localStorage.setItem(PALETTE_STORAGE_KEY, palette);
+	});
+	run(() => {
+		if (mounted) window.localStorage.setItem(LINE_STYLE_STORAGE_KEY, lineStyle);
 	});
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
@@ -993,6 +1091,9 @@ ${svgString}
 		></iconify-icon>
 		{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
 	</button>
+	<button class="qr-button" disabled={mode === 'edit'} title={$LL.menu.qr()} aria-label={$LL.menu.qr()} onclick={openQrDialog}>
+		<iconify-icon icon="mdi:qrcode"></iconify-icon>
+	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button
@@ -1012,6 +1113,10 @@ ${svgString}
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
 				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
+			</button>
+			<button type="button" disabled={mode === 'edit'} onclick={exportTsv}>
+				<iconify-icon icon="mdi:table" inline="true"></iconify-icon>
+				TSV
 			</button>
 			<button type="button" disabled={mode === 'edit'} onclick={exportText}>
 				<iconify-icon icon="mdi:text" inline="true"></iconify-icon>
@@ -1041,6 +1146,13 @@ ${svgString}
 					{/each}
 				</select>
 			</div>
+			<div class="export-section-label">{$LL.menu.socialSection()}</div>
+			{#each SOCIAL_PRESETS as preset (preset.id)}
+				<button type="button" class="export-social" disabled={mode === 'edit'} onclick={() => exportSocial(preset)}>
+					<iconify-icon icon="mdi:share-variant-outline" inline="true"></iconify-icon>
+					{preset.label}
+				</button>
+			{/each}
 		</div>
 	</div>
 	<button class="about-button" title={$LL.menu.settings()} aria-label={$LL.menu.settings()} onclick={() => (settingsOpen = true)}>
@@ -1059,6 +1171,7 @@ ${svgString}
 
 <AboutDialog bind:open={aboutOpen} />
 <SettingsDialog bind:open={settingsOpen} />
+<QrDialog bind:open={qrOpen} url={qrUrl} />
 <TranslatePopover
 	bind:open={translatePopoverOpen}
 	sourceLangs={sentences.map((s) => s.lang)}
@@ -1136,6 +1249,7 @@ ${svgString}
 					{verticalGap}
 					{lineGap}
 					{lineWidth}
+					{lineStyle}
 					{straightLength}
 					{endpointCorrection}
 					{curvature}
@@ -1144,6 +1258,7 @@ ${svgString}
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
+					{letterSpacing}
 					bind:outputMargin
 					{loading}
 					{modifying}
@@ -1234,6 +1349,7 @@ ${svgString}
 			bind:verticalGap
 			bind:lineGap
 			bind:lineWidth
+			bind:lineStyle
 			bind:straightLength
 			bind:endpointCorrection
 			bind:curvature
@@ -1243,6 +1359,7 @@ ${svgString}
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
+			bind:letterSpacing
 			bind:palette
 		/>
 	</div>
@@ -1663,6 +1780,12 @@ ${svgString}
 		border-color: var(--color-border);
 	}
 
+	/* QR is icon-only; trim the wide padding so it sits flush next to the
+	   Copy Link button without looking oversized. */
+	.menu button.qr-button {
+		padding: 0.5em 0.6em;
+	}
+
 	.export-dropdown {
 		position: relative;
 		display: inline-flex;
@@ -1754,6 +1877,22 @@ ${svgString}
 	.export-scale-row label {
 		font-weight: 600;
 		white-space: nowrap;
+	}
+
+	.export-section-label {
+		padding: 0.6em 0.85em 0.25em;
+		margin-top: 0.4em;
+		border-top: 1px solid var(--color-border-soft);
+		font-size: 0.72em;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-text-faint);
+	}
+
+	.export-menu button.export-social {
+		font-weight: normal;
+		font-size: 0.92em;
 	}
 
 	.export-scale-row select {
