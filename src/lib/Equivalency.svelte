@@ -3,38 +3,19 @@
 	import { LL } from '../i18n/i18n-svelte';
 	import Word from './Word.svelte';
 	import type { Sentence } from './types';
+	import { applyPreviewColors, type DragPreview } from './equivalency-preview';
 
 	interface Props {
 		sentences: Sentence[];
 		equivalency: number[][][];
 		colors: string[];
 		/** Active drag preview ({from, to} as it would be emitted on drop), or null when idle. Read by the parent so it can permute the line colors live. */
-		dragPreview?: { from: number; to: number } | null;
+		dragPreview?: DragPreview;
 		onreorder?: (e: { from: number; to: number }) => void;
 		onscramble?: () => void;
 	}
 
 	let { sentences, equivalency, colors, dragPreview = $bindable(null), onreorder, onscramble }: Props = $props();
-
-	/**
-	 * For each logical entry index, return the positional colour it would take
-	 * after the proposed drop. Colours are positional (colours[k] = colour at
-	 * physical position k), so an entry being moved from `from` to `to` is
-	 * re-coloured to colours[to], and entries between `from` and `to` shift one
-	 * slot to absorb the gap.
-	 */
-	function applyPreviewColors(colors: string[], preview: { from: number; to: number } | null): string[] {
-		if (!preview) return colors;
-		const { from, to } = preview;
-		if (from === to || from < 0 || from >= colors.length) return colors;
-		return colors.map((_, i) => {
-			let newPos = i;
-			if (i === from) newPos = to;
-			else if (from < to && i > from && i <= to) newPos = i - 1;
-			else if (to < from && i >= to && i < from) newPos = i + 1;
-			return colors[newPos];
-		});
-	}
 
 	// Live colour preview shared by row swatches, the colour-bar gradient, and
 	// (via the bound dragPreview) the connector lines in Output.svelte. Without
