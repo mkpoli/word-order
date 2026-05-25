@@ -21,6 +21,7 @@
 		fontSize?: number;
 		glossFontSize?: number;
 		spaceWidth?: number;
+		letterSpacing?: number;
 		palette?: PaletteId;
 	}
 
@@ -37,6 +38,7 @@
 		fontSize = $bindable(15),
 		glossFontSize = $bindable(11),
 		spaceWidth = $bindable(4),
+		letterSpacing = $bindable(0),
 		palette = $bindable(DEFAULT_PALETTE)
 	}: Props = $props();
 
@@ -174,6 +176,12 @@
 		{$LL.params.spaceWidth()}
 	</label>
 	<RangeSlider bind:value={spaceWidth} id="space-width" min={0} max={40} suffix=" px" />
+
+	<label for="letter-spacing">
+		<iconify-icon icon="mdi:format-letter-spacing" inline="true"></iconify-icon>
+		{$LL.params.letterSpacing()}
+	</label>
+	<RangeSlider bind:value={letterSpacing} id="letter-spacing" min={-2} max={10} step={0.1} suffix=" px" />
 </fieldset>
 
 <fieldset>
