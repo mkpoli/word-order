@@ -82,7 +82,8 @@ const createLL = () => ({
 		marginTop: m.aria_margin_top,
 		marginBottom: m.aria_margin_bottom,
 		marginLeft: m.aria_margin_left,
-		marginRight: m.aria_margin_right
+		marginRight: m.aria_margin_right,
+		renameLanguage: m.aria_rename_language
 	},
 	dialog: {
 		editing: m.dialog_editing,

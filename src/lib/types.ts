@@ -18,6 +18,8 @@ export type Sentence = {
 	lanesAbove: number;
 	lanesBelow: number;
 	showGloss: boolean;
+	/** Optional override for the displayed language label. When unset, `getLanguageName(lang, locale)` is used. */
+	displayName?: string;
 };
 
 export type LegacySentence = [lang: string, words: string[]];
