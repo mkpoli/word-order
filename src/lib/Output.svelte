@@ -721,7 +721,7 @@
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
 									{#if hasAboveLanes}
-										<span class="annotations-above" style:font-size={`${glossFontSize}px`}>
+										<span class="annotations-above" lang="zxx" style:font-size={`${glossFontSize}px`}>
 											{#each Array(sentence.lanesAbove) as _, laneIndex}
 												<span class="annotation-line annotation-above">
 													{isContent(word) ? (token.annotationsAbove[laneIndex] ?? '') : ''}
@@ -776,7 +776,7 @@
 										<Word {word} />
 									</span>
 									{#if hasBelowLanes}
-										<span class="annotations-below" style:font-size={`${glossFontSize}px`}>
+										<span class="annotations-below" lang="zxx" style:font-size={`${glossFontSize}px`}>
 											{#each Array(sentence.lanesBelow) as _, laneIndex}
 												<span class="annotation-line annotation-below">
 													{isContent(word) ? (token.annotationsBelow[laneIndex] ?? '') : ''}
