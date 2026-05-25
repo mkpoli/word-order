@@ -203,6 +203,10 @@
 
 	:global(fieldset > select) {
 		padding: 0.2em 0.5em;
+		background: var(--color-surface);
+		color: var(--color-text);
+		border: 1px solid var(--color-border);
+		border-radius: 0.2em;
 	}
 
 </style>

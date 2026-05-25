@@ -1198,13 +1198,18 @@
 			opacity 180ms ease,
 			filter 180ms ease;
 
-		/* TODO(#56-followup): the output canvas is intentionally pinned to the
-		   light palette so PNG/SVG/PDF exports look consistent regardless of
-		   the author's UI theme. Once we ship background-customization
+		/* TODO(#56-followup): the rendered diagram itself is intentionally pinned
+		   to the light palette so PNG/SVG/PDF exports look consistent regardless
+		   of the author's UI theme. Once we ship background-customization
 		   (related: #48 palettes, possibly a new "canvas bg" picker), revisit
 		   this and let the canvas honour the active theme — or, better,
-		   honour an explicit per-document background choice. */
+		   honour an explicit per-document background choice.
+		   Scoped to the inner <output> element so the wrapper (which extends to
+		   the column gap on wide layouts) still picks up the page background. */
 		color-scheme: light;
+	}
+
+	.output :global(output) {
 		--color-bg: #ffffff;
 		--color-surface: #ffffff;
 		--color-surface-elevated: #ffffff;
