@@ -171,6 +171,8 @@ Translations live in `project.inlang/messages/*.json`. To add a new locale:
 
 Missing keys fall back to the base locale (English), so translations can be incremental.
 
+> ⚠️ **Never fill an unknown locale string with English or an AI-guessed translation.** It is strictly better for a key to be **absent** from a locale file than for the value to be a guess: when absent, Paraglide falls back to English and the gap is visible; when "filled" with a bad translation, the gap is hidden and the UI silently misinforms users. If you don't have a verified translation from a speaker, **leave the key out** — especially for low-resource and endangered locales (`ain`, `grc`, `la`, `ko-Kore`, `ja-Hira`, `tok`).
+
 ## Contributing
 
 Issues and pull requests are welcome — <https://github.com/mkpoli/word-order/>.
