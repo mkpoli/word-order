@@ -190,7 +190,7 @@
 							{/each}
 							<span class="lane-corner" aria-hidden="true"></span>
 
-							{#each annotationsBelow as lane, laneIndex (`below-${laneIndex}`)}
+							{#each annotationsBelow as _lane, laneIndex (`below-${laneIndex}`)}
 								<span class="lane-label">{$LL.input.laneBelow({ n: laneIndex + 1 })}</span>
 								{#each glossableTokens as { tokenIndex } (tokenIndex)}
 									<input
