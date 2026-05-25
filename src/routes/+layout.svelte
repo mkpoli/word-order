@@ -56,16 +56,18 @@
 	:root[data-theme='dark'] {
 		color-scheme: dark;
 
-		--color-bg: #15191e;
-		--color-surface: #1d232b;
-		--color-surface-elevated: #232a33;
+		/* Deeper page bg and lifted surface so panels visibly sit above the page,
+		   instead of all three greys living within ~8 brightness units of each other. */
+		--color-bg: #0d1117;
+		--color-surface: #1c2128;
+		--color-surface-elevated: #2a313a;
 		--color-text: #e6eaef;
 		--color-text-muted: #aab2bc;
 		--color-text-faint: #7e8794;
-		--color-border: #2c3440;
-		--color-border-soft: #232a33;
-		--color-hover: #2a323d;
-		--color-shadow: rgb(0 0 0 / 0.5);
+		--color-border: #3a4452;
+		--color-border-soft: #262d36;
+		--color-hover: #2f3742;
+		--color-shadow: rgb(0 0 0 / 0.55);
 		/* Inactive button text/border needs to be visible against the
 		   dark page bg; lift to a mid-grey instead of the near-black light default. */
 		--color-inactive: rgb(170 178 188);
@@ -76,16 +78,16 @@
 		:root:not([data-theme='light']) {
 			color-scheme: dark;
 
-			--color-bg: #15191e;
-			--color-surface: #1d232b;
-			--color-surface-elevated: #232a33;
+			--color-bg: #0d1117;
+			--color-surface: #1c2128;
+			--color-surface-elevated: #2a313a;
 			--color-text: #e6eaef;
 			--color-text-muted: #aab2bc;
 			--color-text-faint: #7e8794;
-			--color-border: #2c3440;
-			--color-border-soft: #232a33;
-			--color-hover: #2a323d;
-			--color-shadow: rgb(0 0 0 / 0.5);
+			--color-border: #3a4452;
+			--color-border-soft: #262d36;
+			--color-hover: #2f3742;
+			--color-shadow: rgb(0 0 0 / 0.55);
 			--color-inactive: rgb(170 178 188);
 			--color-accent-text: rgb(135 165 255);
 		}
@@ -95,6 +97,11 @@
 	body {
 		background-color: var(--color-bg);
 		color: var(--color-text);
+		/* Mirrors of border-soft / shadow that descendants can use when they
+		   need page-theme values even after they've overridden the palette
+		   locally (e.g. the output canvas pins itself to light). */
+		--page-border-soft: var(--color-border-soft);
+		--page-shadow: var(--color-shadow);
 	}
 
 	* {
@@ -108,16 +115,20 @@
 
 		padding: 1em 1.5em;
 		border-radius: 0.5em;
-		border: none;
-		box-shadow: 1px 1px 5px 0 var(--color-shadow);
+		border: 1px solid var(--color-border-soft);
+		box-shadow: 0 1px 3px 0 var(--color-shadow);
 		background: var(--color-surface);
 	}
 
 	legend {
-		background: var(--color-surface);
+		/* Use the elevated surface so the legend chip stands away from the
+		   fieldset bg even when fieldset and surface share the same tone. */
+		background: var(--color-surface-elevated);
+		color: var(--color-text);
 		padding: 0.2em 0.8em;
 		border-radius: 0.3em;
-		box-shadow: 1px 1px 5px 0 var(--color-shadow);
+		border: 1px solid var(--color-border-soft);
+		box-shadow: 0 1px 3px 0 var(--color-shadow);
 		font-weight: bold;
 	}
 
