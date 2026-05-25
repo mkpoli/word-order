@@ -13,3 +13,11 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 /src/lib/paraglide
+/project.inlang/.meta.json
+/project.inlang/README.md
+/test-results
+/playwright-report
+
+# Hand-formatted README — prettier reflows markdown tables to column-aligned form
+# which makes editing painful. Keep the loose single-line style.
+/README.md
