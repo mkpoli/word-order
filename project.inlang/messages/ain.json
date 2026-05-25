@@ -100,12 +100,5 @@
 	"input_word_row": "Itakpo",
 	"input_add_lane_above": "Itakrunoka ka ta o",
 	"input_add_lane_below": "Itakrunoka pok ta o",
-	"input_remove_lane": "Itakrunoka isamka",
-	"confirm_import": "Tan file anu? Suy etak itak ka rerukoyno ka opitta hokunpa kuni p ne ruwe ne.",
-	"menu_raster_scale": "Kosokot:",
-	"params_gloss_font_size": "Itak yaykaye sirsam tomoryep",
-	"theme_label": "Iren",
-	"theme_system": "Ainu kotan",
-	"theme_light": "Pere",
-	"theme_dark": "Kunne"
+	"input_remove_lane": "Itakrunoka isamka"
 }
