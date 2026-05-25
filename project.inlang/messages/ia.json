@@ -100,5 +100,12 @@
 	"input_word_row": "Parola",
 	"input_add_lane_above": "Adder linea supra",
 	"input_add_lane_below": "Adder linea infra",
-	"input_remove_lane": "Remover linea"
+	"input_remove_lane": "Remover linea",
+	"confirm_import": "Importar iste file? Tu phrases e connexiones actual essera reimplaciate.",
+	"menu_raster_scale": "Scala raster:",
+	"params_gloss_font_size": "Dimension de fonte del glossa",
+	"theme_label": "Thema",
+	"theme_system": "Systema",
+	"theme_light": "Clar",
+	"theme_dark": "Obscur"
 }

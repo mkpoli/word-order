@@ -100,5 +100,12 @@
 	"input_word_row": "शब्द",
 	"input_add_lane_above": "ऊपर पंक्ति जोड़ें",
 	"input_add_lane_below": "नीचे पंक्ति जोड़ें",
-	"input_remove_lane": "पंक्ति हटाएँ"
+	"input_remove_lane": "पंक्ति हटाएँ",
+	"confirm_import": "क्या यह फ़ाइल आयात करें? आपके वर्तमान वाक्य और संबंध बदल दिए जाएंगे।",
+	"menu_raster_scale": "रास्टर स्केल:",
+	"params_gloss_font_size": "व्याख्या का फ़ॉन्ट आकार",
+	"theme_label": "थीम",
+	"theme_system": "सिस्टम",
+	"theme_light": "उजला",
+	"theme_dark": "गहरा"
 }

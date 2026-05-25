@@ -100,5 +100,12 @@
 	"input_word_row": "واژه",
 	"input_add_lane_above": "افزودن خط در بالا",
 	"input_add_lane_below": "افزودن خط در پایین",
-	"input_remove_lane": "حذف خط"
+	"input_remove_lane": "حذف خط",
+	"confirm_import": "این فایل وارد شود؟ جملات و پیوندهای فعلی جایگزین خواهند شد.",
+	"menu_raster_scale": "مقیاس تصویر:",
+	"params_gloss_font_size": "اندازه قلم توضیح",
+	"theme_label": "پوسته",
+	"theme_system": "سیستم",
+	"theme_light": "روشن",
+	"theme_dark": "تیره"
 }

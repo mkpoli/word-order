@@ -98,5 +98,14 @@
 	"input_word_row": "Дума",
 	"input_add_lane_above": "Добави ред отгоре",
 	"input_add_lane_below": "Добави ред отдолу",
-	"input_remove_lane": "Премахни реда"
+	"input_remove_lane": "Премахни реда",
+	"confirm_import": "Да импортирам ли този файл? Текущите изречения и връзки ще бъдат заменени.",
+	"menu_raster_scale": "Растерен мащаб:",
+	"params_gloss_font_size": "Размер на шрифта на анотацията",
+	"params_line_width": "Дебелина на линията",
+	"params_space_width": "Ширина на интервала",
+	"theme_label": "Тема",
+	"theme_system": "Системна",
+	"theme_light": "Светла",
+	"theme_dark": "Тъмна"
 }

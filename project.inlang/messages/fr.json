@@ -100,5 +100,12 @@
 	"input_word_row": "Mot",
 	"input_add_lane_above": "Ajouter une ligne au-dessus",
 	"input_add_lane_below": "Ajouter une ligne en dessous",
-	"input_remove_lane": "Supprimer la ligne"
+	"input_remove_lane": "Supprimer la ligne",
+	"confirm_import": "Importer ce fichier ? Vos phrases et connexions actuelles seront remplacées.",
+	"menu_raster_scale": "Échelle de l'image :",
+	"params_gloss_font_size": "Taille de la glose",
+	"theme_label": "Thème",
+	"theme_system": "Système",
+	"theme_light": "Clair",
+	"theme_dark": "Sombre"
 }

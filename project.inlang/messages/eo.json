@@ -100,5 +100,12 @@
 	"input_word_row": "Vorto",
 	"input_add_lane_above": "Aldoni linion supre",
 	"input_add_lane_below": "Aldoni linion sube",
-	"input_remove_lane": "Forigi linion"
+	"input_remove_lane": "Forigi linion",
+	"confirm_import": "Ĉu importi ĉi tiun dosieron? Viaj nunaj frazoj kaj ligoj estos anstataŭigitaj.",
+	"menu_raster_scale": "Bitmapa skalo:",
+	"params_gloss_font_size": "Grandeco de glosa tiparo",
+	"theme_label": "Etoso",
+	"theme_system": "Sistemo",
+	"theme_light": "Hela",
+	"theme_dark": "Malhela"
 }

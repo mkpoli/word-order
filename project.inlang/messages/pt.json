@@ -100,5 +100,12 @@
 	"input_word_row": "Palavra",
 	"input_add_lane_above": "Adicionar linha acima",
 	"input_add_lane_below": "Adicionar linha abaixo",
-	"input_remove_lane": "Remover linha"
+	"input_remove_lane": "Remover linha",
+	"confirm_import": "Importar este arquivo? Suas frases e conexões atuais serão substituídas.",
+	"menu_raster_scale": "Escala da imagem:",
+	"params_gloss_font_size": "Tamanho da fonte da glosa",
+	"theme_label": "Tema",
+	"theme_system": "Sistema",
+	"theme_light": "Claro",
+	"theme_dark": "Escuro"
 }

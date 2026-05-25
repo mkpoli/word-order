@@ -100,5 +100,12 @@
 	"input_word_row": "Word",
 	"input_add_lane_above": "Add line above",
 	"input_add_lane_below": "Add line below",
-	"input_remove_lane": "Remove line"
+	"input_remove_lane": "Remove line",
+	"confirm_import": "Εἰσαγάγωμεν τοῦτο τὸ ἀρχεῖον; τὰ νῦν λεγόμενα καὶ αἱ συναφαὶ ἀντικατασταθήσονται.",
+	"menu_raster_scale": "Μέγεθος εἰκόνος:",
+	"params_gloss_font_size": "Μέγεθος γραμμάτων ἑρμηνείας",
+	"theme_label": "Σχῆμα",
+	"theme_system": "Σύστημα",
+	"theme_light": "Φωτεινόν",
+	"theme_dark": "Σκοτεινόν"
 }

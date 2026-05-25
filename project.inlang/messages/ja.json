@@ -100,5 +100,12 @@
 	"input_word_row": "単語",
 	"input_add_lane_above": "上に行を追加",
 	"input_add_lane_below": "下に行を追加",
-	"input_remove_lane": "行を削除"
+	"input_remove_lane": "行を削除",
+	"confirm_import": "このファイルをインポートしますか? 現在の文と接続は置き換えられます。",
+	"menu_raster_scale": "画像倍率:",
+	"params_gloss_font_size": "注釈フォントサイズ",
+	"theme_label": "テーマ",
+	"theme_system": "システム",
+	"theme_light": "ライト",
+	"theme_dark": "ダーク"
 }

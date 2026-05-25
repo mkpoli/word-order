@@ -100,5 +100,12 @@
 	"input_word_row": "词",
 	"input_add_lane_above": "在上方添加一行",
 	"input_add_lane_below": "在下方添加一行",
-	"input_remove_lane": "移除该行"
+	"input_remove_lane": "移除该行",
+	"confirm_import": "导入此文件吗？您当前的句子和连接将被替换。",
+	"menu_raster_scale": "图像倍率：",
+	"params_gloss_font_size": "注释字体大小",
+	"theme_label": "主题",
+	"theme_system": "跟随系统",
+	"theme_light": "浅色",
+	"theme_dark": "深色"
 }
