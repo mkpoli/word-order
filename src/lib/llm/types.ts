@@ -44,6 +44,8 @@ export type ProviderCallContext = {
 	signal?: AbortSignal;
 };
 
+export type KeyValidation = { status: 'valid' } | { status: 'invalid'; reason: string } | { status: 'network-error' };
+
 export interface LlmProvider {
 	id: ProviderId;
 	label: string;
@@ -51,6 +53,16 @@ export interface LlmProvider {
 	defaultModel: string;
 	keyHint: string;
 	call(request: TranslateRequest, ctx: ProviderCallContext): Promise<ProviderCallResult>;
+	/**
+	 * Cheapest possible authenticated round-trip to confirm the key is good.
+	 * Should NOT incur token-billable cost — use a metadata endpoint
+	 * (e.g. GET /models). Returns:
+	 *  - `valid`: 2xx response
+	 *  - `invalid`: 401/403, key is rejected
+	 *  - `network-error`: 5xx, CORS failure, abort — the key may still be
+	 *    fine, we just can't tell from here.
+	 */
+	validateKey(apiKey: string, signal?: AbortSignal): Promise<KeyValidation>;
 }
 
 export class LlmError extends Error {

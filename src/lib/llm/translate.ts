@@ -5,12 +5,15 @@ import { getProvider } from './providers';
 import type { TokenUsage, TranslateRequest } from './types';
 import { LlmError } from './types';
 import { validate } from './validate';
+import { cacheKey, lookupCachedTranslation, storeCachedTranslation } from './cache';
 
 export const MAX_SOURCE_TOKENS = 120;
 
 export type TranslateResult = {
 	sentences: Sentence[];
 	usage?: TokenUsage;
+	/** Whether this result was served from the local cache (no network call). */
+	cached?: boolean;
 	/** Resolved at call time so a usage chip can show what model produced the result. */
 	provider: string;
 	model: string;
@@ -38,6 +41,13 @@ export async function translateAndAlign(
 	if (!apiKey) throw new LlmError(`No API key set for ${provider.label}.`);
 	const model = settings.model || provider.defaultModel;
 
+	// Cache lookup: identical (provider, model, sources, targets) tuple ⇒
+	// reuse the prior translation, skipping the network call entirely. Saves
+	// real money on classroom demos / "show this example again" workflows.
+	const key = await cacheKey(provider.id, model, request);
+	const cached = lookupCachedTranslation(key);
+	if (cached) return { ...cached, cached: true };
+
 	const { raw, usage } = await provider.call(request, { apiKey, model, signal });
 	const validated = validate(raw, request);
 
@@ -45,5 +55,7 @@ export async function translateAndAlign(
 		const showGloss = t.glosses.some((g) => g.trim().length > 0);
 		return createSentence(t.lang, t.tokens, t.glosses, showGloss);
 	});
-	return { sentences, usage, provider: provider.label, model };
+	const result: TranslateResult = { sentences, usage, provider: provider.label, model };
+	storeCachedTranslation(key, result);
+	return result;
 }

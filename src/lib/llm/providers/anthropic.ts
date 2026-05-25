@@ -53,5 +53,26 @@ export const anthropic: LlmProvider = {
 				? { inputTokens: u.input_tokens, outputTokens: u.output_tokens }
 				: undefined;
 		return { raw: toolBlock.input as LlmRawResponse, usage };
+	},
+	async validateKey(apiKey, signal) {
+		try {
+			const r = await fetch('https://api.anthropic.com/v1/models', {
+				method: 'GET',
+				headers: {
+					'x-api-key': apiKey,
+					'anthropic-version': '2023-06-01',
+					'anthropic-dangerous-direct-browser-access': 'true'
+				},
+				signal
+			});
+			if (r.ok) return { status: 'valid' };
+			if (r.status === 401 || r.status === 403) {
+				const text = await r.text().catch(() => r.statusText);
+				return { status: 'invalid', reason: text || `${r.status}` };
+			}
+			return { status: 'network-error' };
+		} catch {
+			return { status: 'network-error' };
+		}
 	}
 };

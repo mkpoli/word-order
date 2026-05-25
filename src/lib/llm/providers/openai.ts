@@ -70,5 +70,22 @@ export const openai: LlmProvider = {
 				? { inputTokens: u.prompt_tokens, outputTokens: u.completion_tokens }
 				: undefined;
 		return { raw, usage };
+	},
+	async validateKey(apiKey, signal) {
+		try {
+			const r = await fetch('https://api.openai.com/v1/models', {
+				method: 'GET',
+				headers: { authorization: `Bearer ${apiKey}` },
+				signal
+			});
+			if (r.ok) return { status: 'valid' };
+			if (r.status === 401 || r.status === 403) {
+				const text = await r.text().catch(() => r.statusText);
+				return { status: 'invalid', reason: text || `${r.status}` };
+			}
+			return { status: 'network-error' };
+		} catch {
+			return { status: 'network-error' };
+		}
 	}
 };

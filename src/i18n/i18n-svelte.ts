@@ -33,7 +33,18 @@ const createLL = () => ({
 		boldItalic: m.params_bold_italic,
 		fontSize: m.params_font_size,
 		glossFontSize: m.params_gloss_font_size,
-		spaceWidth: m.params_space_width
+		spaceWidth: m.params_space_width,
+		colors: m.params_colors,
+		palette: m.params_palette,
+		paletteNames: {
+			spectrum: m.params_palette_spectrum,
+			pastel: m.params_palette_pastel,
+			vivid: m.params_palette_vivid,
+			warm: m.params_palette_warm,
+			cool: m.params_palette_cool,
+			'mono-blue': m.params_palette_mono_blue,
+			'mono-warm': m.params_palette_mono_warm
+		}
 	},
 	input: {
 		input: m.input_input,
@@ -71,7 +82,8 @@ const createLL = () => ({
 		marginTop: m.aria_margin_top,
 		marginBottom: m.aria_margin_bottom,
 		marginLeft: m.aria_margin_left,
-		marginRight: m.aria_margin_right
+		marginRight: m.aria_margin_right,
+		renameLanguage: m.aria_rename_language
 	},
 	dialog: {
 		editing: m.dialog_editing,
@@ -119,7 +131,14 @@ const createLL = () => ({
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,
-		privacy: m.settings_privacy
+		keyChecking: m.settings_key_checking,
+		keyValid: m.settings_key_valid,
+		keyInvalid: m.settings_key_invalid,
+		keyNetworkError: m.settings_key_network_error,
+		privacy: m.settings_privacy,
+		cacheStored: m.settings_cache_stored,
+		cacheCleared: m.settings_cache_cleared,
+		clearCache: m.settings_clear_cache
 	},
 	theme: {
 		label: m.theme_label,

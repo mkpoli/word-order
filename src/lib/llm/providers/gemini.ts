@@ -62,5 +62,21 @@ export const gemini: LlmProvider = {
 				? { inputTokens: u.promptTokenCount, outputTokens: u.candidatesTokenCount }
 				: undefined;
 		return { raw, usage };
+	},
+	async validateKey(apiKey, signal) {
+		try {
+			const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`, {
+				method: 'GET',
+				signal
+			});
+			if (r.ok) return { status: 'valid' };
+			if (r.status === 400 || r.status === 401 || r.status === 403) {
+				const text = await r.text().catch(() => r.statusText);
+				return { status: 'invalid', reason: text || `${r.status}` };
+			}
+			return { status: 'network-error' };
+		} catch {
+			return { status: 'network-error' };
+		}
 	}
 };

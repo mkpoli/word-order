@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
 
-	import { oklchToHex, pickNColors } from '$lib/color';
+	import { oklchToHex, pickNColors, DEFAULT_PALETTE, PALETTES, type PaletteId } from '$lib/color';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -92,7 +92,26 @@
 		}
 		return cm;
 	});
-	let colors: string[] = $derived(pickNColors(equivalency.length, false).map(oklchToHex));
+	const PALETTE_STORAGE_KEY = 'word-order:palette';
+	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
+	let palette: PaletteId = $state(DEFAULT_PALETTE);
+	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
+	// Bound by <Equivalency> while a drag is in progress; null when idle. Mirrors
+	// the {from, to} that onreorder would emit on drop, so we can pre-apply the
+	// same permutation to line colours without committing to the reorder.
+	let dragPreview: { from: number; to: number } | null = $state(null);
+	let displayColors: string[] = $derived.by(() => {
+		if (!dragPreview) return colors;
+		const { from, to } = dragPreview;
+		if (from === to || from < 0 || from >= colors.length) return colors;
+		return colors.map((_, i) => {
+			let newPos = i;
+			if (i === from) newPos = to;
+			else if (from < to && i > from && i <= to) newPos = i - 1;
+			else if (to < from && i >= to && i < from) newPos = i + 1;
+			return colors[newPos];
+		});
+	});
 	let word_spans: HTMLSpanElement[][] = $state([]);
 
 	// Parameters
@@ -212,6 +231,9 @@
 
 		const storedScale = Number(window.localStorage.getItem(RASTER_SCALE_STORAGE_KEY));
 		if (RASTER_SCALES.includes(storedScale as RasterScale)) rasterScale = storedScale as RasterScale;
+
+		const storedPalette = window.localStorage.getItem(PALETTE_STORAGE_KEY);
+		if (storedPalette && PALETTE_IDS.includes(storedPalette as PaletteId)) palette = storedPalette as PaletteId;
 
 		mounted = true;
 		await tick();
@@ -799,6 +821,9 @@ ${svgString}
 	run(() => {
 		if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
 	});
+	run(() => {
+		if (mounted) window.localStorage.setItem(PALETTE_STORAGE_KEY, palette);
+	});
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
 	run(() => {
@@ -1070,7 +1095,7 @@ ${svgString}
 					pendingIndices={pendingSentenceSet}
 					{alignment}
 					bind:lines
-					{colors}
+					colors={displayColors}
 					{verticalGap}
 					{lineGap}
 					{lineWidth}
@@ -1143,6 +1168,12 @@ ${svgString}
 						editingSelectionStart = word;
 						editingSelectionEnd = word + 1;
 					}}
+					on:renameLanguage={({ detail: { sentence, displayName } }) => {
+						const target = sentences[sentence];
+						if (!target) return;
+						if (displayName === undefined) delete target.displayName;
+						else target.displayName = displayName;
+					}}
 				/>
 			{/if}
 		</div>
@@ -1175,6 +1206,7 @@ ${svgString}
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
+			bind:palette
 		/>
 	</div>
 
@@ -1183,6 +1215,7 @@ ${svgString}
 			{sentences}
 			{equivalency}
 			{colors}
+			bind:dragPreview
 			onreorder={({ from, to }) => {
 				const entry = equivalency[from];
 				equivalency.splice(from, 1);

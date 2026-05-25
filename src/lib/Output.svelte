@@ -40,6 +40,10 @@
 			offset: number;
 		};
 		cancelTranslate: void;
+		renameLanguage: {
+			sentence: number;
+			displayName: string | undefined;
+		};
 	}>();
 
 	interface Props {
@@ -271,6 +275,8 @@
 	let draggingIndex = $state(-1);
 	let draggingPosition = { x: 0, y: 0 };
 	let draggingOffset = $state({ x: 0, y: 0 });
+	/** Visual drop index (0..sentences.length); null when not dragging. */
+	let dropTargetIndex = $state<number | null>(null);
 	let draggers: HTMLDivElement[] = $state([]);
 
 	// Dragging output margins from the canvas edge.
@@ -343,6 +349,25 @@
 		draggingIndex = l;
 		draggers[draggingIndex]?.setPointerCapture(e.pointerId);
 		draggingPosition = { x: e.clientX, y: e.clientY };
+		dropTargetIndex = l;
+	}
+
+	/**
+	 * The "visual" drop index — between which rows the dragged row would land,
+	 * counting from 0 (above the first row) to `draggers.length` (below the
+	 * last). Computed by counting how many rows have their vertical centre
+	 * above the cursor. This is what the user sees, independent of the
+	 * splice-mechanics adjustment we do for dispatch.
+	 */
+	function computeDropVisualIndex(clientY: number): number {
+		let dropAt = 0;
+		for (const dragger of draggers) {
+			const rect = dragger.getBoundingClientRect();
+			const center = (rect.top + rect.bottom) / 2;
+			if (clientY > center) dropAt++;
+			else break;
+		}
+		return dropAt;
 	}
 
 	function dragend(e: PointerEvent) {
@@ -350,30 +375,28 @@
 
 		draggers[draggingIndex]?.releasePointerCapture(e.pointerId);
 
-		let lastBottom = -1;
-		for (const [i, dragger] of draggers.entries()) {
-			const rect = dragger.getBoundingClientRect();
-			const centerBetween = (rect.top - lastBottom) / 2;
-
-			if (i !== draggingIndex && (i === 0 ? rect.top : centerBetween) <= e.clientY && rect.bottom >= e.clientY) {
-				dispatch('reorder', {
-					from: draggingIndex,
-					to: i
-				});
-				break;
-			}
-
-			lastBottom = rect.bottom;
+		const visual = computeDropVisualIndex(e.clientY);
+		// Skip dispatch if the visual position is the same as the original
+		// (drop above own row OR just below own row both leave the array
+		// unchanged after splice).
+		if (visual !== draggingIndex && visual !== draggingIndex + 1) {
+			// Adjust for the splice(from, 1) shift: if we drop AFTER the
+			// original position (visual > from), the removal moves everything
+			// down by 1, so the insert index is visual - 1.
+			const to = visual < draggingIndex ? visual : visual - 1;
+			dispatch('reorder', { from: draggingIndex, to });
 		}
 
 		draggingIndex = -1;
 		draggingOffset = { x: 0, y: 0 };
+		dropTargetIndex = null;
 	}
 
 	function onpointermove(e: PointerEvent) {
 		if (draggingIndex >= 0) {
 			draggingOffset.x = e.clientX - draggingPosition.x;
 			draggingOffset.y = e.clientY - draggingPosition.y;
+			dropTargetIndex = computeDropVisualIndex(e.clientY);
 		}
 	}
 
@@ -639,12 +662,53 @@
 	{#if !loading}
 		{#each sentences as sentence, i}
 			{@const { lang, tokens } = sentence}
+			{#if dropTargetIndex === i && draggingIndex !== i && draggingIndex !== i - 1}
+				<div class="drop-indicator" aria-hidden="true"></div>
+			{/if}
 			{#if !pendingIndices.has(i)}
+				{@const defaultLabel = getLanguageName(lang, $locale)}
+				{@const currentLabel = sentence.displayName ?? defaultLabel}
 				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
 					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
 					</div>
-					<span class="tag" style:transform={getTransform(i, draggingOffset)}>{getLanguageName(lang, $locale)}</span>
+					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
+						<span
+							class="tag-text"
+							class:tag-edited={sentence.displayName !== undefined}
+							contenteditable="true"
+							role="textbox"
+							tabindex="0"
+							spellcheck="false"
+							title={$LL.aria.renameLanguage()}
+							onkeydown={(e) => {
+								if (e.key === 'Enter' || e.key === 'Escape') {
+									e.preventDefault();
+									(e.currentTarget as HTMLElement).blur();
+								}
+							}}
+							onfocus={(e) => {
+								const range = document.createRange();
+								range.selectNodeContents(e.currentTarget as HTMLElement);
+								const sel = window.getSelection();
+								sel?.removeAllRanges();
+								sel?.addRange(range);
+							}}
+							onblur={(e) => {
+								const next = (e.currentTarget.textContent ?? '').trim();
+								const previous = sentence.displayName ?? defaultLabel;
+								if (next === previous) {
+									// Keep the rendered text in sync with state if the user typed
+									// then reverted — innerText might be stale whitespace otherwise.
+									e.currentTarget.textContent = previous;
+									return;
+								}
+								// Clear the override when the user types the default label or empties the field.
+								const displayName = next === '' || next === defaultLabel ? undefined : next;
+								dispatch('renameLanguage', { sentence: i, displayName });
+							}}>{currentLabel}</span
+						>
+					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
 						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
 							{#each tokens as token, j}
@@ -749,6 +813,9 @@
 				</div>
 			{/if}
 		{/each}
+		{#if dropTargetIndex === sentences.length && draggingIndex !== sentences.length - 1}
+			<div class="drop-indicator" aria-hidden="true"></div>
+		{/if}
 		{#if pendingIndices.size > 0}
 			<div class="pending-tray">
 				{#each [...pendingIndices] as i (i)}
@@ -896,6 +963,29 @@
 		text-align: center;
 		margin-right: 2em;
 		white-space: nowrap;
+	}
+
+	.tag-text {
+		cursor: text;
+		border-radius: 0.2em;
+		padding: 0 0.15em;
+		outline: 1px dashed transparent;
+		outline-offset: 1px;
+		transition: outline-color 120ms ease;
+	}
+
+	.tag-text:hover {
+		outline-color: var(--color-border);
+	}
+
+	.tag-text:focus {
+		outline: 1px solid var(--color-accent);
+		background: var(--color-surface);
+	}
+
+	/* Subtle marker so an overridden label is recognisable at a glance. */
+	.tag-text.tag-edited {
+		font-style: italic;
 	}
 
 	.sentence-body {
@@ -1379,6 +1469,17 @@
 
 	.sentence {
 		display: contents;
+	}
+
+	/* Spans the full grid as a thin accent-coloured line, slid into the
+	   row-gap with negative margins so it doesn't push the neighbouring rows.
+	   pointer-events:none keeps it from interfering with drag detection. */
+	.drop-indicator {
+		grid-column: 1 / -1;
+		height: 0;
+		border-top: 2px solid var(--color-accent);
+		margin: calc(-1 * var(--row-gap, 0.65em) / 2 - 1px) 0;
+		pointer-events: none;
 	}
 
 	.action {
