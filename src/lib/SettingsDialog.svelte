@@ -5,6 +5,7 @@
 	import { LL } from '../i18n/i18n-svelte';
 	import { llmSettings, type ProviderId } from './settings';
 	import { PROVIDERS, getProvider } from './llm/providers';
+	import type { KeyValidation } from './llm/types';
 	import { clearTranslationCache, getCacheSize } from './llm/cache';
 
 	interface Props {
@@ -33,6 +34,33 @@
 	let provider = $derived(getProvider($llmSettings.provider));
 	let currentKey = $derived($llmSettings.keys[$llmSettings.provider] ?? '');
 	let currentModel = $derived($llmSettings.model || provider.defaultModel);
+
+	type ValidationState = { status: 'idle' | 'checking' } | KeyValidation;
+	let validation = $state<ValidationState>({ status: 'idle' });
+	let validationTimer: ReturnType<typeof setTimeout> | null = null;
+	let validationAbort: AbortController | null = null;
+	/**
+	 * Debounce key changes by 600ms so we don't spam the auth endpoint while
+	 * the user types/pastes. Abort any in-flight check before starting a new
+	 * one so the latest key always wins.
+	 */
+	$effect(() => {
+		const key = currentKey;
+		const p = provider;
+		if (validationTimer) clearTimeout(validationTimer);
+		if (validationAbort) validationAbort.abort();
+		if (!key) {
+			validation = { status: 'idle' };
+			return;
+		}
+		validationTimer = setTimeout(async () => {
+			const ctrl = new AbortController();
+			validationAbort = ctrl;
+			validation = { status: 'checking' };
+			const result = await p.validateKey(key, ctrl.signal);
+			if (!ctrl.signal.aborted) validation = result;
+		}, 600);
+	});
 
 	function close() {
 		open = false;
@@ -121,6 +149,27 @@
 						{showKey ? $LL.settings.hide() : $LL.settings.show()}
 					</button>
 				</div>
+				{#if validation.status === 'checking'}
+					<p class="key-status checking">
+						<iconify-icon icon="mdi:loading" inline="true"></iconify-icon>
+						<span>{$LL.settings.keyChecking()}</span>
+					</p>
+				{:else if validation.status === 'valid'}
+					<p class="key-status valid">
+						<iconify-icon icon="mdi:check-circle-outline" inline="true"></iconify-icon>
+						<span>{$LL.settings.keyValid()}</span>
+					</p>
+				{:else if validation.status === 'invalid'}
+					<p class="key-status invalid" title={validation.reason}>
+						<iconify-icon icon="mdi:close-circle-outline" inline="true"></iconify-icon>
+						<span>{$LL.settings.keyInvalid()}</span>
+					</p>
+				{:else if validation.status === 'network-error'}
+					<p class="key-status network-error">
+						<iconify-icon icon="mdi:cloud-off-outline" inline="true"></iconify-icon>
+						<span>{$LL.settings.keyNetworkError()}</span>
+					</p>
+				{/if}
 			</div>
 
 			<div class="field cache-row">
@@ -268,6 +317,29 @@
 	}
 	.cache-label {
 		font-size: 0.88em;
+		color: var(--color-text-muted);
+	}
+
+	.key-status {
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+		font-size: 0.85em;
+		margin: 0.35em 0 0;
+	}
+	.key-status :global(iconify-icon) {
+		font-size: 1.1em;
+	}
+	.key-status.checking {
+		color: var(--color-text-muted);
+	}
+	.key-status.valid {
+		color: rgb(20 130 60);
+	}
+	.key-status.invalid {
+		color: rgb(180 40 40);
+	}
+	.key-status.network-error {
 		color: var(--color-text-muted);
 	}
 
