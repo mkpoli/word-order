@@ -119,7 +119,10 @@ const createLL = () => ({
 		apiKey: m.settings_api_key,
 		show: m.settings_show,
 		hide: m.settings_hide,
-		privacy: m.settings_privacy
+		privacy: m.settings_privacy,
+		cacheStored: m.settings_cache_stored,
+		cacheCleared: m.settings_cache_cleared,
+		clearCache: m.settings_clear_cache
 	},
 	theme: {
 		label: m.theme_label,

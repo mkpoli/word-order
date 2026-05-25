@@ -5,6 +5,7 @@
 	import { LL } from '../i18n/i18n-svelte';
 	import { llmSettings, type ProviderId } from './settings';
 	import { PROVIDERS, getProvider } from './llm/providers';
+	import { clearTranslationCache, getCacheSize } from './llm/cache';
 
 	interface Props {
 		open?: boolean;
@@ -13,6 +14,21 @@
 	let { open = $bindable(false) }: Props = $props();
 
 	let showKey = $state(false);
+	let cacheSize = $state(0);
+	let cacheClearedFlash = $state(false);
+
+	$effect(() => {
+		// Re-read cache size whenever the dialog opens; cheap and keeps the
+		// number live if a translate happened while the dialog was closed.
+		if (open) cacheSize = getCacheSize();
+	});
+
+	function onClearCache() {
+		clearTranslationCache();
+		cacheSize = 0;
+		cacheClearedFlash = true;
+		setTimeout(() => (cacheClearedFlash = false), 1800);
+	}
 
 	let provider = $derived(getProvider($llmSettings.provider));
 	let currentKey = $derived($llmSettings.keys[$llmSettings.provider] ?? '');
@@ -105,6 +121,15 @@
 						{showKey ? $LL.settings.hide() : $LL.settings.show()}
 					</button>
 				</div>
+			</div>
+
+			<div class="field cache-row">
+				<span class="cache-label">
+					{cacheClearedFlash ? $LL.settings.cacheCleared() : $LL.settings.cacheStored({ count: cacheSize })}
+				</span>
+				<button type="button" class="toggle" onclick={onClearCache} disabled={cacheSize === 0 && !cacheClearedFlash}>
+					{$LL.settings.clearCache()}
+				</button>
 			</div>
 
 			<p class="privacy">
@@ -229,6 +254,21 @@
 
 	.toggle:hover {
 		background: rgb(46 91 255 / 0.15);
+	}
+	.toggle:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	.cache-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		justify-content: space-between;
+	}
+	.cache-label {
+		font-size: 0.88em;
+		color: var(--color-text-muted);
 	}
 
 	.privacy {
