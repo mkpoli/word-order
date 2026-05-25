@@ -49,6 +49,7 @@
 		"colorjs.io": "^0.6.1",
 		"iconify-icon": "3",
 		"jspdf": "^4.2.1",
-		"qrcode": "^1.5.4"
+		"qrcode": "^1.5.4",
+		"svg2pdf.js": "^2.7.0"
 	}
 }

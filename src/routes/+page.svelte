@@ -879,16 +879,6 @@ ${svgString}
 			return;
 		}
 		try {
-			const scale = rasterScale;
-			const dataUrl = await domToImage.toPng(output, {
-				width: output.clientWidth * scale,
-				height: output.clientHeight * scale,
-				style: {
-					transform: `scale(${scale})`,
-					transformOrigin: 'top left',
-					'background-color': getExportBackgroundColor()
-				}
-			});
 			const widthPx = output.clientWidth;
 			const heightPx = output.clientHeight;
 			const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
@@ -898,7 +888,27 @@ ${svgString}
 				format: [widthPx, heightPx],
 				hotfixes: ['px_scaling']
 			});
-			pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
+
+			// Vector PDF: render via the same dom-to-svg pipeline as Export SVG,
+			// then hand the SVG element to svg2pdf so text stays selectable and
+			// lines stay crisp at any zoom (vs. the prior raster-embed PNG).
+			const svgString = buildSvgString();
+			if (!svgString) throw new Error('SVG serialisation failed');
+			const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+			const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
+			// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
+			// Visibility hidden but still in flow so getComputedStyle resolves.
+			const host = document.createElement('div');
+			host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+			host.appendChild(svgRoot);
+			document.body.appendChild(host);
+			try {
+				const { svg2pdf } = await import('svg2pdf.js');
+				await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
+			} finally {
+				host.remove();
+			}
+
 			pdf.save(exportFilename('pdf'));
 		} catch (err) {
 			console.error('Export PDF failed:', err);
