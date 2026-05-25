@@ -50,7 +50,8 @@ const SCHEMA_VERSION = 1 as const;
 
 type SentenceOptsT = [lanesAbove: number, lanesBelow: number, showGloss: 0 | 1];
 type TokenT = string | [text: string, above: string[], below: string[]];
-type SentenceT = [lang: string, tokens: TokenT[], opts: SentenceOptsT];
+/** Opts is omitted when it would be `[0, 0, 0]` (the default — no annotation lanes). */
+type SentenceT = [lang: string, tokens: TokenT[]] | [lang: string, tokens: TokenT[], opts: SentenceOptsT];
 type DocT = [schemaVersion: 1, sentences: SentenceT[], equivalency: number[][][]];
 
 function tokenToTuple(token: SentenceToken): TokenT {
@@ -84,7 +85,15 @@ function padOrTrim(arr: string[], len: number): string[] {
 }
 
 function docToTuple(doc: ShareableDoc): DocT {
-	const sentences: SentenceT[] = doc.sentences.map((s) => [s.lang, s.tokens.map(tokenToTuple), [s.lanesAbove, s.lanesBelow, s.showGloss ? 1 : 0]]);
+	const sentences: SentenceT[] = doc.sentences.map((s) => {
+		const tokens = s.tokens.map(tokenToTuple);
+		// Elide the opts triple when it equals the default [0, 0, 0]. The common
+		// "plain row, no annotation lanes" case ends up as a 2-tuple
+		// `[lang, tokens]` — saves ~6 bytes per sentence in the JSON form, plus
+		// fewer key-less zeros to deflate.
+		if (s.lanesAbove === 0 && s.lanesBelow === 0 && !s.showGloss) return [s.lang, tokens];
+		return [s.lang, tokens, [s.lanesAbove, s.lanesBelow, s.showGloss ? 1 : 0]];
+	});
 	return [SCHEMA_VERSION, sentences, doc.equivalency];
 }
 
@@ -95,10 +104,18 @@ function tupleToDoc(t: unknown): ShareableDoc | null {
 	if (!Array.isArray(sentencesRaw) || !Array.isArray(equiv)) return null;
 	const sentences: Sentence[] = [];
 	for (const s of sentencesRaw) {
-		if (!Array.isArray(s) || s.length < 3) return null;
-		const [lang, tokensRaw, opts] = s as [unknown, unknown, unknown];
-		if (typeof lang !== 'string' || !Array.isArray(tokensRaw) || !Array.isArray(opts) || opts.length < 3) return null;
-		const [lanesAbove, lanesBelow, showG] = opts as [number, number, 0 | 1];
+		if (!Array.isArray(s) || s.length < 2) return null;
+		const [lang, tokensRaw] = s as [unknown, unknown];
+		if (typeof lang !== 'string' || !Array.isArray(tokensRaw)) return null;
+		// Opts is optional — when absent, default to [0, 0, 0].
+		let lanesAbove = 0;
+		let lanesBelow = 0;
+		let showG: 0 | 1 = 0;
+		if (s.length >= 3) {
+			const opts = s[2];
+			if (!Array.isArray(opts) || opts.length < 3) return null;
+			[lanesAbove, lanesBelow, showG] = opts as [number, number, 0 | 1];
+		}
 		const tokens = (tokensRaw as TokenT[]).map((tk) => tupleToToken(tk, lanesAbove, lanesBelow));
 		sentences.push({
 			lang,
