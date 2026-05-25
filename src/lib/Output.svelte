@@ -695,7 +695,10 @@
 								sel?.addRange(range);
 							}}
 							onblur={(e) => {
-								const next = (e.currentTarget.textContent ?? '').trim();
+								// Collapse internal whitespace so multi-line pastes don't carry hidden
+								// newlines into the data model (the tag is white-space: nowrap, so it
+								// would render fine but the stored value would still hold them).
+								const next = (e.currentTarget.textContent ?? '').replace(/\s+/g, ' ').trim();
 								const previous = sentence.displayName ?? defaultLabel;
 								if (next === previous) {
 									// Keep the rendered text in sync with state if the user typed

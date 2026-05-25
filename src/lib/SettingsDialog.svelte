@@ -60,6 +60,13 @@
 			const result = await p.validateKey(key, ctrl.signal);
 			if (!ctrl.signal.aborted) validation = result;
 		}, 600);
+		// Cleanup on unmount or before the effect re-runs: cancel the pending
+		// debounce timer and abort any in-flight validation so we don't leak
+		// a fetch into nowhere when the dialog closes mid-check.
+		return () => {
+			if (validationTimer) clearTimeout(validationTimer);
+			if (validationAbort) validationAbort.abort();
+		};
 	});
 
 	function close() {
@@ -334,10 +341,10 @@
 		color: var(--color-text-muted);
 	}
 	.key-status.valid {
-		color: rgb(20 130 60);
+		color: var(--color-success);
 	}
 	.key-status.invalid {
-		color: rgb(180 40 40);
+		color: var(--color-danger);
 	}
 	.key-status.network-error {
 		color: var(--color-text-muted);
