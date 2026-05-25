@@ -74,12 +74,14 @@
 	}
 
 	.dialog {
-		background: white;
+		background: var(--color-surface);
+		color: var(--color-text);
 		max-width: 32em;
 		width: 100%;
 		border-radius: 0.8em;
-		box-shadow: 0 20px 60px rgb(23 36 78 / 0.3);
+		box-shadow: 0 20px 60px var(--color-shadow);
 		padding: 1.4em 1.6em;
+		border: 1px solid var(--color-border-soft);
 	}
 
 	header {
@@ -93,7 +95,7 @@
 	header h2 {
 		margin: 0;
 		font-size: 1.25em;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
@@ -105,18 +107,18 @@
 		border: none;
 		font-size: 1.2em;
 		cursor: pointer;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		padding: 0.2em 0.4em;
 		border-radius: 0.3em;
 	}
 
 	.dismiss:hover {
-		background: rgb(24 33 61 / 0.08);
+		background: var(--color-hover);
 	}
 
 	.lede {
 		font-size: 1.05em;
-		color: rgb(45 55 80);
+		color: var(--color-text);
 		margin: 0.6em 0 0.8em;
 		line-height: 1.5;
 	}
@@ -125,14 +127,14 @@
 		display: flex;
 		gap: 0.5em;
 		align-items: baseline;
-		color: rgb(74 82 112);
+		color: var(--color-text-muted);
 		font-size: 0.95em;
 		margin: 0 0 1em;
 		line-height: 1.5;
 	}
 
 	.credit :global(a) {
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		text-decoration: none;
 		font-weight: 600;
 	}
@@ -156,7 +158,7 @@
 		border: 1px solid rgb(46 91 255 / 0.3);
 		border-radius: 0.4em;
 		text-decoration: none;
-		color: rgb(33 56 199);
+		color: var(--color-accent-text);
 		font-weight: 600;
 		font-size: 0.9em;
 	}

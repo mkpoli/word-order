@@ -20,6 +20,7 @@
 	import AboutDialog from '$lib/AboutDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
+	import ThemeToggle from '$lib/ThemeToggle.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
@@ -514,13 +515,11 @@
 
 	let loading = false;
 
-	function getBodyBackgroundColor(): string {
-		if (typeof document === 'undefined') return 'white';
-
-		const typedStyle = document.body.computedStyleMap?.().get('background-color');
-		if (typedStyle) return typedStyle.toString();
-
-		return window.getComputedStyle(document.body).backgroundColor || document.body.style.backgroundColor || 'white';
+	function getExportBackgroundColor(): string {
+		// Exports are forced to white regardless of the active UI theme so PNG/PDF/SVG
+		// output looks consistent whether the author is in light or dark mode. If a
+		// future feature lets users choose an export background, branch here.
+		return 'white';
 	}
 
 	async function replaceDoc(next: { sentences: Sentence[]; equivalency: number[][][] }) {
@@ -646,7 +645,7 @@
 			style: {
 				transform: `scale(${scale})`,
 				transformOrigin: 'top left',
-				'background-color': getBodyBackgroundColor()
+				'background-color': getExportBackgroundColor()
 			}
 		});
 	}
@@ -693,7 +692,7 @@
 				style: {
 					transform: `scale(${scale})`,
 					transformOrigin: 'top left',
-					'background-color': getBodyBackgroundColor()
+					'background-color': getExportBackgroundColor()
 				}
 			});
 			const widthPx = output.clientWidth;
@@ -853,6 +852,7 @@
 		{$LL.menu.about()}
 	</button>
 	<div class="menu-locale">
+		<ThemeToggle />
 		<LocaleSelect />
 	</div>
 </header>
@@ -1115,7 +1115,7 @@
 		position: absolute;
 		inset: -0.5rem;
 		border-radius: 2.2rem;
-		background: rgb(255 255 255 / 0.96);
+		background: color-mix(in srgb, var(--color-bg) 96%, transparent);
 		z-index: -2;
 		opacity: 0;
 		transition: opacity 180ms ease;
@@ -1129,7 +1129,7 @@
 		text-align: center;
 		padding: 1em;
 
-		color: #444;
+		color: var(--color-text-muted);
 		max-width: 1024px;
 		margin: 0 auto;
 	}
@@ -1142,27 +1142,27 @@
 	}
 
 	footer a.github-link {
-		color: #181717;
+		color: light-dark(#181717, #e6eaef);
 	}
 
 	footer a.github-link:visited {
-		color: #181717;
+		color: light-dark(#181717, #e6eaef);
 	}
 
 	footer a.twitter-link {
-		color: #1d9bf0;
+		color: light-dark(#1d9bf0, #4dbcff);
 	}
 
 	footer a.twitter-link:visited {
-		color: #1d9bf0;
+		color: light-dark(#1d9bf0, #4dbcff);
 	}
 
 	footer a.home-link {
-		color: #444;
+		color: var(--color-text-muted);
 	}
 
 	footer a.home-link:visited {
-		color: #444;
+		color: var(--color-text-muted);
 	}
 
 	.params {
@@ -1199,9 +1199,42 @@
 			filter 180ms ease;
 	}
 
+	/* TODO(#56-followup): the rendered diagram itself is intentionally pinned
+	   to the light palette so PNG/SVG/PDF exports look consistent regardless
+	   of the author's UI theme. Once we ship background-customization
+	   (related: #48 palettes, possibly a new "canvas bg" picker), revisit and
+	   let the canvas honour the active theme — or, better, an explicit
+	   per-document background choice.
+	   Scoped to the inner <output> element so the .output wrapper still picks
+	   up the page palette (used by the rim shadow). */
+	.output :global(output) {
+		color-scheme: light;
+		--color-bg: #ffffff;
+		--color-surface: #ffffff;
+		--color-surface-elevated: #ffffff;
+		--color-text: #222222;
+		--color-text-muted: #555555;
+		--color-text-faint: #777777;
+		--color-border: #cccccc;
+		--color-border-soft: #eeeeee;
+		--color-hover: #eeeeee;
+		--color-shadow: rgb(0 0 0 / 0.18);
+		--color-accent-text: rgb(33 56 199);
+		background: #ffffff;
+		color: #222222;
+		/* Rim hugs the actual diagram width, not the full column. Lives on
+		   <output> rather than .output-scroll so it doesn't extend to the
+		   viewport edges when the diagram is narrower than the column. */
+		border-radius: 0.4em;
+		box-shadow:
+			0 1px 3px 0 var(--page-shadow, rgb(0 0 0 / 0.18)),
+			0 0 0 1px var(--page-border-soft, #eeeeee);
+	}
+
 	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
 	   so .output's overflow stays visible and the ::after editing indicator
-	   below the box can render. */
+	   below the box can render. Padding gives the inner <output>'s rim shadow
+	   room to render before .output-scroll's overflow clips it. */
 	.output-scroll {
 		overflow-x: auto;
 		overflow-y: hidden;
@@ -1214,6 +1247,7 @@
 		   exported clones and push them off to one side. */
 		display: flex;
 		justify-content: center;
+		padding: 6px 6px 8px;
 	}
 
 	.output::after {
@@ -1338,22 +1372,26 @@
 
 	.menu-locale {
 		margin-inline-start: auto;
-		flex: 0 1 16rem;
-		max-width: 16rem;
+		display: flex;
+		align-items: stretch;
+		gap: 0.4rem;
+		flex: 0 1 18rem;
+		max-width: 18rem;
 	}
 
 	.menu button {
 		appearance: none;
 		padding: 0.5em 1em;
-		border: none;
+		border: 1px solid var(--color-border-soft);
 		border-radius: 0.2em;
 
 		font-weight: bold;
 		font-size: 1.02em;
 
-		background-color: white;
+		background-color: var(--color-surface);
+		color: var(--color-text);
 
-		box-shadow: 1px 1px 5px 0 #ccc;
+		box-shadow: 0 1px 3px 0 var(--color-shadow);
 
 		display: flex;
 		align-items: center;
@@ -1362,7 +1400,8 @@
 	}
 
 	.menu button:not(:disabled):hover {
-		background-color: #eee;
+		background-color: var(--color-hover);
+		border-color: var(--color-border);
 	}
 
 	.export-dropdown {
@@ -1391,10 +1430,10 @@
 		display: none;
 		flex-direction: column;
 		gap: 0.1em;
-		background: white;
+		background: var(--color-surface);
 		border-radius: 0.3em;
 		box-shadow:
-			1px 1px 5px 0 #ccc,
+			1px 1px 5px 0 var(--color-shadow),
 			0 6px 22px rgb(15 23 42 / 0.12);
 		z-index: 100;
 	}
@@ -1413,7 +1452,7 @@
 		font: inherit;
 		font-weight: bold;
 		font-size: 1em;
-		color: #333;
+		color: var(--color-text);
 		display: grid;
 		grid-template-columns: 1.3em 1fr;
 		align-items: center;
@@ -1427,12 +1466,12 @@
 	.export-menu button :global(iconify-icon) {
 		font-size: 1.15em;
 		justify-self: center;
-		color: #555;
+		color: var(--color-text-muted);
 	}
 
 	.export-menu button:not(:disabled):hover,
 	.export-menu button:focus-visible {
-		background-color: #eee;
+		background-color: var(--color-hover);
 		outline: none;
 	}
 
@@ -1448,9 +1487,9 @@
 		gap: 0.6em;
 		padding: 0.4em 0.85em 0.2em;
 		margin-top: 0.25em;
-		border-top: 1px solid #eee;
+		border-top: 1px solid var(--color-border-soft);
 		font-size: 0.85em;
-		color: #555;
+		color: var(--color-text-muted);
 	}
 
 	.export-scale-row label {
@@ -1463,9 +1502,9 @@
 		font-weight: bold;
 		padding: 0.15em 0.35em;
 		border-radius: 0.25em;
-		border: 1px solid #ccc;
-		background: white;
-		color: #333;
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
+		color: var(--color-text);
 	}
 
 	.export-scale-row select:disabled {
@@ -1501,10 +1540,10 @@
 		display: none;
 		flex-direction: column;
 		gap: 0.05em;
-		background: white;
+		background: var(--color-surface);
 		border-radius: 0.3em;
 		box-shadow:
-			1px 1px 5px 0 #ccc,
+			1px 1px 5px 0 var(--color-shadow),
 			0 6px 22px rgb(15 23 42 / 0.12);
 		z-index: 100;
 	}
@@ -1521,7 +1560,7 @@
 		padding: 0.35em 0.7em;
 		border-radius: 0.25em;
 		font: inherit;
-		color: #333;
+		color: var(--color-text);
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
@@ -1539,7 +1578,7 @@
 		white-space: nowrap;
 		font-weight: 600;
 		font-size: 0.85em;
-		color: #333;
+		color: var(--color-text);
 	}
 
 	.examples-menu .example-langs {
@@ -1550,13 +1589,13 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		font-size: 0.7em;
-		color: #888;
+		color: var(--color-text-faint);
 		letter-spacing: 0.02em;
 	}
 
 	.examples-menu button:not(:disabled):hover,
 	.examples-menu button:focus-visible {
-		background-color: #eee;
+		background-color: var(--color-hover);
 		outline: none;
 	}
 
@@ -1593,7 +1632,7 @@
 		grid-template-columns: auto 1fr auto auto auto;
 		align-items: center;
 		gap: 0.6em;
-		background: white;
+		background: var(--color-surface);
 		border: 1px solid rgb(46 91 255 / 0.3);
 		border-radius: 0.5em;
 		padding: 0.55em 0.8em;

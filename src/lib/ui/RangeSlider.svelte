@@ -335,8 +335,8 @@
 		--hover-expand: 0.3em;
 		--click-expand: 0.5em;
 
-		--color-slider: #efefef;
-		--color-slider-border: #dbdbdb;
+		--color-slider: light-dark(#efefef, #2a323d);
+		--color-slider-border: light-dark(#dbdbdb, #3a4452);
 
 		--color-handle: var(--color-range-handle, #838de7);
 		--color-handle-border: var(--color-handle);
