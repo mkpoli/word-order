@@ -25,10 +25,7 @@ function normalize(s: string): string {
  * Keeps multi-character glosses with underscores intact ("to_me" stays "to_me").
  */
 function normalizeGlossKey(g: string): string {
-	return g
-		.toLowerCase()
-		.split(/[.\-]/)[0]
-		.trim();
+	return g.toLowerCase().split(/[.\-]/)[0].trim();
 }
 
 /**
@@ -48,11 +45,7 @@ function normalizeGlossKey(g: string): string {
  *
  * Manual user-made groups are preserved.
  */
-export function addGlossAlignments(
-	sentences: Sentence[],
-	existing: number[][][],
-	newSentenceIndices: number[]
-): number[][][] {
+export function addGlossAlignments(sentences: Sentence[], existing: number[][][], newSentenceIndices: number[]): number[][][] {
 	const newSet = new Set(newSentenceIndices);
 
 	// Bucket every glossed token across all sentences by its NORMALISED gloss key

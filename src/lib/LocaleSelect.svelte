@@ -17,12 +17,12 @@
 		window.localStorage.setItem('locale', newLocale);
 	};
 
-	let menu: HTMLDetailsElement;
-	let trigger: HTMLElement;
-	let optionButtons: HTMLButtonElement[] = [];
-	$: localeOptions = getLocaleOptions($locale);
-	$: selected = getLocaleOption($locale, $locale);
-	$: selectedIndex = localeOptions.findIndex((option) => option.value === $locale);
+	let menu: HTMLDetailsElement | undefined = $state();
+	let trigger: HTMLElement | undefined = $state();
+	let optionButtons: HTMLButtonElement[] = $state([]);
+	let localeOptions = $derived(getLocaleOptions($locale));
+	let selected = $derived(getLocaleOption($locale, $locale));
+	let selectedIndex = $derived(localeOptions.findIndex((option) => option.value === $locale));
 
 	function closeMenu() {
 		menu?.removeAttribute('open');
@@ -92,16 +92,16 @@
 </script>
 
 <details class="locale-picker" bind:this={menu}>
-	<summary aria-label={$LL.params.displayLanguage()} bind:this={trigger} on:keydown={onTriggerKeydown}>
+	<summary aria-label={$LL.params.displayLanguage()} bind:this={trigger} onkeydown={onTriggerKeydown}>
 		<span class="locale-trigger-icon">
-			<iconify-icon icon="mdi:translate" />
+			<iconify-icon icon="mdi:translate"></iconify-icon>
 		</span>
 		<span class="locale-trigger-copy">
 			<span class="locale-trigger-label">{$LL.params.displayLanguage()}</span>
 			<span class="locale-trigger-value" lang={selected.tag}>{selected.endonym}</span>
 		</span>
 		<span class="locale-trigger-code">{getLocaleDisplayCode(selected)}</span>
-		<iconify-icon class="locale-trigger-caret" icon="mdi:chevron-down" />
+		<iconify-icon class="locale-trigger-caret" icon="mdi:chevron-down"></iconify-icon>
 	</summary>
 
 	<div class="locale-menu" role="listbox" aria-label={$LL.params.displayLanguage()}>
@@ -112,15 +112,15 @@
 				aria-selected={option.value === $locale}
 				class:selected={option.value === $locale}
 				bind:this={optionButtons[index]}
-				on:click={() => onSelect(option.value)}
-				on:keydown={(event) => onOptionKeydown(event, index, option.value)}
+				onclick={() => onSelect(option.value)}
+				onkeydown={(event) => onOptionKeydown(event, index, option.value)}
 			>
 				<span class="locale-option-copy">
 					<span class="locale-option-title-row">
 						<span class="locale-option-endonym" lang={option.tag}>{option.endonym}</span>
 						{#if option.value === $locale}
 							<span class="locale-option-badge" aria-label={$LL.ui.selected()}>
-								<iconify-icon icon="material-symbols:check-rounded" />
+								<iconify-icon icon="material-symbols:check-rounded"></iconify-icon>
 							</span>
 						{/if}
 					</span>
@@ -168,7 +168,7 @@
 		background-color: var(--color-hover);
 	}
 
-	.locale-picker:has(summary:focus-visible) > summary {
+	.locale-picker:has(:global(summary:focus-visible)) > summary {
 		outline: none;
 		background-color: var(--color-hover);
 		box-shadow:

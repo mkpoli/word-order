@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { createBubbler, stopPropagation } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { LL } from '../i18n/i18n-svelte';
 
-	export let open = false;
+	interface Props {
+		open?: boolean;
+	}
+
+	let { open = $bindable(false) }: Props = $props();
 
 	function close() {
 		open = false;
@@ -12,25 +19,25 @@
 	}
 </script>
 
-<svelte:window on:keydown={onkeydown} />
+<svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" on:click={close} role="presentation">
-		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" on:click|stopPropagation>
+	<div class="backdrop" onclick={close} role="presentation">
+		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" onclick={stopPropagation(bubble('click'))}>
 			<header>
 				<h2 id="about-title">
-					<iconify-icon icon="mdi:information-outline" inline="true" />
+					<iconify-icon icon="mdi:information-outline" inline="true"></iconify-icon>
 					{$LL.about.title()}
 				</h2>
-				<button class="dismiss" type="button" aria-label={$LL.about.close()} on:click={close}>
-					<iconify-icon icon="material-symbols:close-rounded" inline="true" />
+				<button class="dismiss" type="button" aria-label={$LL.about.close()} onclick={close}>
+					<iconify-icon icon="material-symbols:close-rounded" inline="true"></iconify-icon>
 				</button>
 			</header>
 
 			<p class="lede">{$LL.about.tagline()}</p>
 
 			<p class="credit">
-				<iconify-icon icon="mdi:lightbulb-outline" inline="true" />
+				<iconify-icon icon="mdi:lightbulb-outline" inline="true"></iconify-icon>
 				<span>
 					{@html $LL.about.credit({
 						author: '<a href="https://twitter.com/MC_such" target="_blank" rel="noreferrer noopener">@MC_such</a>'
@@ -40,19 +47,19 @@
 
 			<nav class="links" aria-label={$LL.about.links()}>
 				<a href="https://github.com/mkpoli/word-order#readme" target="_blank" rel="noreferrer noopener">
-					<iconify-icon icon="mdi:book-open-variant" inline="true" />
+					<iconify-icon icon="mdi:book-open-variant" inline="true"></iconify-icon>
 					README
 				</a>
 				<a href="https://github.com/mkpoli/word-order/" target="_blank" rel="noreferrer noopener">
-					<iconify-icon icon="mdi:github" inline="true" />
+					<iconify-icon icon="mdi:github" inline="true"></iconify-icon>
 					GitHub
 				</a>
 				<a href="https://twitter.com/mkpoli/status/1562786122782380036" target="_blank" rel="noreferrer noopener">
-					<iconify-icon icon="mdi:twitter" inline="true" />
+					<iconify-icon icon="mdi:twitter" inline="true"></iconify-icon>
 					2022
 				</a>
 				<a href="https://x.com/mkpoli/status/2058050806977634725" target="_blank" rel="noreferrer noopener">
-					<iconify-icon icon="mdi:twitter" inline="true" />
+					<iconify-icon icon="mdi:twitter" inline="true"></iconify-icon>
 					2026
 				</a>
 			</nav>
