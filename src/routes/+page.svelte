@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
 
-	import { oklchToHex, pickNColors } from '$lib/color';
+	import { oklchToHex, pickNColors, DEFAULT_PALETTE, PALETTES, type PaletteId } from '$lib/color';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -92,7 +92,10 @@
 		}
 		return cm;
 	});
-	let colors: string[] = $derived(pickNColors(equivalency.length, false).map(oklchToHex));
+	const PALETTE_STORAGE_KEY = 'word-order:palette';
+	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
+	let palette: PaletteId = $state(DEFAULT_PALETTE);
+	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
 	let word_spans: HTMLSpanElement[][] = $state([]);
 
 	// Parameters
@@ -203,6 +206,9 @@
 
 		const storedScale = Number(window.localStorage.getItem(RASTER_SCALE_STORAGE_KEY));
 		if (RASTER_SCALES.includes(storedScale as RasterScale)) rasterScale = storedScale as RasterScale;
+
+		const storedPalette = window.localStorage.getItem(PALETTE_STORAGE_KEY);
+		if (storedPalette && PALETTE_IDS.includes(storedPalette as PaletteId)) palette = storedPalette as PaletteId;
 
 		mounted = true;
 		await tick();
@@ -776,6 +782,9 @@ ${svgString}
 	run(() => {
 		if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
 	});
+	run(() => {
+		if (mounted) window.localStorage.setItem(PALETTE_STORAGE_KEY, palette);
+	});
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
 	run(() => {
@@ -1125,6 +1134,7 @@ ${svgString}
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
+			bind:palette
 		/>
 	</div>
 
