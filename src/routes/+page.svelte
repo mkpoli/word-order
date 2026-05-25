@@ -22,6 +22,7 @@
 
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
+	import QrDialog from '$lib/QrDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import ThemeToggle from '$lib/ThemeToggle.svelte';
@@ -156,6 +157,18 @@
 	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareUrlLength = $state(0);
 	let shareLoadError = $state(false);
+
+	let qrOpen = $state(false);
+	let qrUrl = $state('');
+
+	async function openQrDialog() {
+		try {
+			qrUrl = await buildShareUrl(window.location.origin, { schemaVersion: 1, sentences, equivalency });
+			qrOpen = true;
+		} catch {
+			// Falls back to silently doing nothing — same behaviour as copyShareLink's failure mode.
+		}
+	}
 
 	async function copyShareLink() {
 		try {
@@ -1020,6 +1033,9 @@ ${svgString}
 		></iconify-icon>
 		{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
 	</button>
+	<button class="qr-button" disabled={mode === 'edit'} title={$LL.menu.qr()} aria-label={$LL.menu.qr()} onclick={openQrDialog}>
+		<iconify-icon icon="mdi:qrcode"></iconify-icon>
+	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button
@@ -1089,6 +1105,7 @@ ${svgString}
 
 <AboutDialog bind:open={aboutOpen} />
 <SettingsDialog bind:open={settingsOpen} />
+<QrDialog bind:open={qrOpen} url={qrUrl} />
 <TranslatePopover
 	bind:open={translatePopoverOpen}
 	sourceLangs={sentences.map((s) => s.lang)}
@@ -1695,6 +1712,12 @@ ${svgString}
 	.menu button:not(:disabled):hover {
 		background-color: var(--color-hover);
 		border-color: var(--color-border);
+	}
+
+	/* QR is icon-only; trim the wide padding so it sits flush next to the
+	   Copy Link button without looking oversized. */
+	.menu button.qr-button {
+		padding: 0.5em 0.6em;
 	}
 
 	.export-dropdown {
