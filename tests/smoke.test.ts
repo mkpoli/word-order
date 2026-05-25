@@ -49,6 +49,7 @@ test('theme toggle cycles system → light → dark', async ({ page }) => {
 
 test('output canvas stays light in both themes (export consistency)', async ({ page }) => {
 	await page.goto('/');
+	await page.waitForSelector('output');
 
 	for (const theme of ['light', 'dark'] as const) {
 		await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
