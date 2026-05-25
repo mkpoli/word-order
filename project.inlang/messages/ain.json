@@ -100,5 +100,12 @@
 	"input_word_row": "Itakpo",
 	"input_add_lane_above": "Itakrunoka ka ta o",
 	"input_add_lane_below": "Itakrunoka pok ta o",
-	"input_remove_lane": "Itakrunoka isamka"
+	"input_remove_lane": "Itakrunoka isamka",
+	"theme_label": "iro",
+	"theme_light": "peker",
+	"theme_system": "sistem",
+	"params_gloss_font_size": "Aeuepekerpe poro hi",
+	"theme_dark": "kunne",
+	"menu_raster_scale": "poro hi",
+	"confirm_import": "tan cinuyep a=uk? tane an itaksay a=isamka ruwe ne."
 }

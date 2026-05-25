@@ -100,5 +100,12 @@
 	"input_word_row": "Woord",
 	"input_add_lane_above": "Regel boven toevoegen",
 	"input_add_lane_below": "Regel onder toevoegen",
-	"input_remove_lane": "Regel verwijderen"
+	"input_remove_lane": "Regel verwijderen",
+	"confirm_import": "Dit bestand importeren? Je huidige zinnen en verbindingen worden vervangen.",
+	"menu_raster_scale": "Rasterschaal:",
+	"params_gloss_font_size": "Lettergrootte glosse",
+	"theme_label": "Thema",
+	"theme_system": "Systeem",
+	"theme_light": "Licht",
+	"theme_dark": "Donker"
 }

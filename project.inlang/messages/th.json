@@ -100,5 +100,12 @@
 	"input_word_row": "คำ",
 	"input_add_lane_above": "เพิ่มแถวด้านบน",
 	"input_add_lane_below": "เพิ่มแถวด้านล่าง",
-	"input_remove_lane": "ลบแถว"
+	"input_remove_lane": "ลบแถว",
+	"confirm_import": "นำเข้าไฟล์นี้หรือไม่? ประโยคและการเชื่อมโยงปัจจุบันของคุณจะถูกแทนที่",
+	"menu_raster_scale": "อัตราขยายภาพ:",
+	"params_gloss_font_size": "ขนาดตัวอักษรของคำอธิบาย",
+	"theme_label": "ธีม",
+	"theme_system": "ระบบ",
+	"theme_light": "สว่าง",
+	"theme_dark": "มืด"
 }

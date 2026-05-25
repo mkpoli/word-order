@@ -100,5 +100,12 @@
 	"input_word_row": "Wort",
 	"input_add_lane_above": "Zeile oben hinzufügen",
 	"input_add_lane_below": "Zeile unten hinzufügen",
-	"input_remove_lane": "Zeile entfernen"
+	"input_remove_lane": "Zeile entfernen",
+	"confirm_import": "Diese Datei importieren? Deine aktuellen Sätze und Verbindungen werden ersetzt.",
+	"menu_raster_scale": "Rasterskalierung:",
+	"params_gloss_font_size": "Glossen-Schriftgröße",
+	"theme_label": "Design",
+	"theme_system": "System",
+	"theme_light": "Hell",
+	"theme_dark": "Dunkel"
 }

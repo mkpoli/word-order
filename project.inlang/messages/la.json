@@ -100,5 +100,12 @@
 	"input_word_row": "Verbum",
 	"input_add_lane_above": "Lineam supra addere",
 	"input_add_lane_below": "Lineam infra addere",
-	"input_remove_lane": "Lineam removere"
+	"input_remove_lane": "Lineam removere",
+	"confirm_import": "Hunc fasciculum importare? Sententiae et nexus tui actuales reponentur.",
+	"menu_raster_scale": "Scala imaginis:",
+	"params_gloss_font_size": "Magnitudo litterarum glossae",
+	"theme_label": "Habitus",
+	"theme_system": "Systema",
+	"theme_light": "Lucidus",
+	"theme_dark": "Obscurus"
 }

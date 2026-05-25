@@ -100,5 +100,12 @@
 	"input_word_row": "Słowo",
 	"input_add_lane_above": "Dodaj wiersz powyżej",
 	"input_add_lane_below": "Dodaj wiersz poniżej",
-	"input_remove_lane": "Usuń wiersz"
+	"input_remove_lane": "Usuń wiersz",
+	"confirm_import": "Zaimportować ten plik? Twoje obecne zdania i połączenia zostaną zastąpione.",
+	"menu_raster_scale": "Skala obrazu:",
+	"params_gloss_font_size": "Rozmiar czcionki glosy",
+	"theme_label": "Motyw",
+	"theme_system": "Systemowy",
+	"theme_light": "Jasny",
+	"theme_dark": "Ciemny"
 }
