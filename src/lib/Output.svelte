@@ -74,6 +74,7 @@
 		fontSize: number;
 		glossFontSize: number;
 		spaceWidth: number;
+		letterSpacing?: number;
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
@@ -104,6 +105,7 @@
 		fontSize,
 		glossFontSize,
 		spaceWidth,
+		letterSpacing = 0,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
 		output = $bindable()
@@ -715,7 +717,7 @@
 						>
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
-						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment}>
+						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
 							{#each tokens as token, j}
 								{@const word = token.text}
 								{@const hasAboveLanes = sentence.lanesAbove > 0}
