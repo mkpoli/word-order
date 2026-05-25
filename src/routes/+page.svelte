@@ -127,6 +127,7 @@
 	let fontSize = $state(15);
 	let glossFontSize = $state(11);
 	let spaceWidth = $state(4);
+	let letterSpacing = $state(0);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
 	let aboutOpen = $state(false);
@@ -1107,6 +1108,7 @@ ${svgString}
 					{fontSize}
 					{glossFontSize}
 					{spaceWidth}
+					{letterSpacing}
 					bind:outputMargin
 					{loading}
 					{modifying}
@@ -1206,6 +1208,7 @@ ${svgString}
 			bind:fontSize
 			bind:glossFontSize
 			bind:spaceWidth
+			bind:letterSpacing
 			bind:palette
 		/>
 	</div>

@@ -34,6 +34,7 @@ const createLL = () => ({
 		fontSize: m.params_font_size,
 		glossFontSize: m.params_gloss_font_size,
 		spaceWidth: m.params_space_width,
+		letterSpacing: m.params_letter_spacing,
 		colors: m.params_colors,
 		palette: m.params_palette,
 		paletteNames: {
