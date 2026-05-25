@@ -869,7 +869,7 @@ ${svgString}
 				<iconify-icon icon="mdi:file-pdf-box" inline="true"></iconify-icon>
 				PDF
 			</button>
-			<button type="button" disabled={mode === 'edit'} on:click={exportHtml}>
+			<button type="button" disabled={mode === 'edit'} onclick={exportHtml}>
 				<iconify-icon icon="mdi:language-html5" inline="true" />
 				HTML
 			</button>
