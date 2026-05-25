@@ -67,9 +67,7 @@ export function getLaneValues(sentence: Sentence, position: AnnotationPosition, 
 export function setTokenAnnotation(token: SentenceToken, position: AnnotationPosition, lane: number, value: string): SentenceToken {
 	const annotations = position === 'above' ? [...token.annotationsAbove] : [...token.annotationsBelow];
 	annotations[lane] = value;
-	return position === 'above'
-		? { ...token, annotationsAbove: annotations }
-		: { ...token, annotationsBelow: annotations };
+	return position === 'above' ? { ...token, annotationsAbove: annotations } : { ...token, annotationsBelow: annotations };
 }
 
 /** Pad/truncate each token's annotation arrays to match `lanesAbove` and `lanesBelow`. */
@@ -119,10 +117,8 @@ export function normalizeSentence(sentence: SentenceData): Sentence {
 
 	if ('tokens' in sentence && Array.isArray(sentence.tokens)) {
 		const tokens = sentence.tokens.map(normalizeToken);
-		const lanesAbove =
-			(sentence as { lanesAbove?: number }).lanesAbove ?? tokens.reduce((max, t) => Math.max(max, t.annotationsAbove.length), 0);
-		const lanesBelow =
-			(sentence as { lanesBelow?: number }).lanesBelow ?? tokens.reduce((max, t) => Math.max(max, t.annotationsBelow.length), 0);
+		const lanesAbove = (sentence as { lanesAbove?: number }).lanesAbove ?? tokens.reduce((max, t) => Math.max(max, t.annotationsAbove.length), 0);
+		const lanesBelow = (sentence as { lanesBelow?: number }).lanesBelow ?? tokens.reduce((max, t) => Math.max(max, t.annotationsBelow.length), 0);
 		const showGloss = sentence.showGloss ?? tokens.some((t) => t.annotationsAbove.some(Boolean) || t.annotationsBelow.some(Boolean));
 		return normalizeLanes({ lang: sentence.lang, tokens, lanesAbove, lanesBelow, showGloss });
 	}

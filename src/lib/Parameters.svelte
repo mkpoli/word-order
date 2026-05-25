@@ -208,5 +208,4 @@
 		border: 1px solid var(--color-border);
 		border-radius: 0.2em;
 	}
-
 </style>

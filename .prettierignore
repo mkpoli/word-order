@@ -7,6 +7,13 @@ node_modules
 .env.*
 !.env.example
 /src/i18n/i18n-*.ts
+/src/lib/paraglide
+/project.inlang/.meta.json
+/project.inlang/README.md
+
+# Hand-formatted README — prettier reflows markdown tables to column-aligned form
+# which makes editing painful. Keep the loose single-line style.
+/README.md
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
