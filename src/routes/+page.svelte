@@ -1102,6 +1102,12 @@ ${svgString}
 						editingSelectionStart = word;
 						editingSelectionEnd = word + 1;
 					}}
+					on:renameLanguage={({ detail: { sentence, displayName } }) => {
+						const target = sentences[sentence];
+						if (!target) return;
+						if (displayName === undefined) delete target.displayName;
+						else target.displayName = displayName;
+					}}
 				/>
 			{/if}
 		</div>
