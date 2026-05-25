@@ -656,15 +656,67 @@
 		closeExportMenu();
 	}
 
+	function buildSvgString(): string | null {
+		if (!output) return null;
+		const serializer = new XMLSerializer();
+		const svgDocument = elementToSVG(output);
+		return serializer.serializeToString(svgDocument);
+	}
+
 	function exportSvg() {
-		if (!output) {
+		const svgString = buildSvgString();
+		if (svgString === null) {
 			closeExportMenu();
 			return;
 		}
-		const serializer = new XMLSerializer();
-		const svgDocument = elementToSVG(output);
-		const svgString = serializer.serializeToString(svgDocument);
 		save(svgString, 'image/svg+xml', exportFilename('svg'));
+		closeExportMenu();
+	}
+
+	function exportHtml() {
+		const svgString = buildSvgString();
+		if (svgString === null) {
+			closeExportMenu();
+			return;
+		}
+		const langs = sentences
+			.map((s) => s.lang)
+			.filter(Boolean)
+			.join(' · ');
+		const firstWords = sentences[0]?.tokens
+			.map((t) => t.text)
+			.filter((text) => !/^[\s\p{P}]+$/u.test(text))
+			.slice(0, 8)
+			.join(' ');
+		const title = [firstWords, langs].filter(Boolean).join(' — ') || 'Word Order Illustrator export';
+		const escapedTitle = title.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+		const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>${escapedTitle}</title>
+<style>
+:root { color-scheme: light; }
+html, body { margin: 0; padding: 0; background: #ffffff; color: #222222; }
+body {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+${svgString}
+</body>
+</html>
+`;
+		save(html, 'text/html', exportFilename('html'));
 		closeExportMenu();
 	}
 
@@ -832,6 +884,10 @@
 			<button type="button" disabled={mode === 'edit'} on:click={exportPdf}>
 				<iconify-icon icon="mdi:file-pdf-box" inline="true" />
 				PDF
+			</button>
+			<button type="button" disabled={mode === 'edit'} on:click={exportHtml}>
+				<iconify-icon icon="mdi:language-html5" inline="true" />
+				HTML
 			</button>
 			<div class="export-scale-row">
 				<label for="raster-scale-select">{$LL.menu.rasterScale()}</label>
