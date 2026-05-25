@@ -100,5 +100,12 @@
 	"input_word_row": "Kata",
 	"input_add_lane_above": "Tambah baris atas",
 	"input_add_lane_below": "Tambah baris bawah",
-	"input_remove_lane": "Hapus baris"
+	"input_remove_lane": "Hapus baris",
+	"confirm_import": "Impor berkas ini? Kalimat dan koneksi Anda saat ini akan diganti.",
+	"menu_raster_scale": "Skala raster:",
+	"params_gloss_font_size": "Ukuran huruf glosa",
+	"theme_label": "Tema",
+	"theme_system": "Sistem",
+	"theme_light": "Terang",
+	"theme_dark": "Gelap"
 }

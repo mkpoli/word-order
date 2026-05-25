@@ -100,5 +100,12 @@
 	"input_word_row": "단어",
 	"input_add_lane_above": "위에 줄 추가",
 	"input_add_lane_below": "아래에 줄 추가",
-	"input_remove_lane": "줄 제거"
+	"input_remove_lane": "줄 제거",
+	"confirm_import": "이 파일을 가져올까요? 현재 문장과 연결은 대체됩니다.",
+	"menu_raster_scale": "이미지 배율:",
+	"params_gloss_font_size": "주석 글꼴 크기",
+	"theme_label": "테마",
+	"theme_system": "시스템",
+	"theme_light": "라이트",
+	"theme_dark": "다크"
 }

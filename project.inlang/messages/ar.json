@@ -100,5 +100,12 @@
 	"input_word_row": "كلمة",
 	"input_add_lane_above": "إضافة سطر أعلى",
 	"input_add_lane_below": "إضافة سطر أسفل",
-	"input_remove_lane": "إزالة السطر"
+	"input_remove_lane": "إزالة السطر",
+	"confirm_import": "هل تريد استيراد هذا الملف؟ سيتم استبدال جملك وروابطك الحالية.",
+	"menu_raster_scale": "حجم الصورة:",
+	"params_gloss_font_size": "حجم خط الشرح",
+	"theme_label": "السمة",
+	"theme_system": "النظام",
+	"theme_light": "فاتح",
+	"theme_dark": "داكن"
 }

@@ -100,5 +100,12 @@
 	"input_word_row": "Sözcük",
 	"input_add_lane_above": "Üste satır ekle",
 	"input_add_lane_below": "Alta satır ekle",
-	"input_remove_lane": "Satırı kaldır"
+	"input_remove_lane": "Satırı kaldır",
+	"confirm_import": "Bu dosya içe aktarılsın mı? Mevcut cümleleriniz ve bağlantılarınız değiştirilecek.",
+	"menu_raster_scale": "Görsel ölçeği:",
+	"params_gloss_font_size": "Gloss yazı boyutu",
+	"theme_label": "Tema",
+	"theme_system": "Sistem",
+	"theme_light": "Açık",
+	"theme_dark": "Koyu"
 }

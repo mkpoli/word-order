@@ -100,5 +100,12 @@
 	"input_word_row": "たんご",
 	"input_add_lane_above": "うえに ぎょうを ついか",
 	"input_add_lane_below": "したに ぎょうを ついか",
-	"input_remove_lane": "ぎょうを けす"
+	"input_remove_lane": "ぎょうを けす",
+	"confirm_import": "このファイルをインポートしますか? げんざいのぶんとつながりはおきかえられます。",
+	"menu_raster_scale": "がぞうばいりつ:",
+	"params_gloss_font_size": "ちゅうしゃくのもじサイズ",
+	"theme_label": "テーマ",
+	"theme_system": "システム",
+	"theme_light": "ライト",
+	"theme_dark": "ダーク"
 }

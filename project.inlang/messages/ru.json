@@ -100,5 +100,12 @@
 	"input_word_row": "Слово",
 	"input_add_lane_above": "Добавить строку сверху",
 	"input_add_lane_below": "Добавить строку снизу",
-	"input_remove_lane": "Удалить строку"
+	"input_remove_lane": "Удалить строку",
+	"confirm_import": "Импортировать этот файл? Ваши текущие предложения и связи будут заменены.",
+	"menu_raster_scale": "Растровый масштаб:",
+	"params_gloss_font_size": "Размер шрифта глоссы",
+	"theme_label": "Тема",
+	"theme_system": "Системная",
+	"theme_light": "Светлая",
+	"theme_dark": "Тёмная"
 }
