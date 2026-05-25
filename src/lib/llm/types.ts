@@ -24,6 +24,20 @@ export type LlmRawResponse = {
 	translations: LlmTranslation[];
 };
 
+export type TokenUsage = {
+	inputTokens: number;
+	outputTokens: number;
+};
+
+export type ProviderCallResult = {
+	raw: LlmRawResponse;
+	/**
+	 * Provider-reported token counts. Optional because some endpoints / older
+	 * API versions don't return them; UI hides the usage chip when absent.
+	 */
+	usage?: TokenUsage;
+};
+
 export type ProviderCallContext = {
 	apiKey: string;
 	model: string;
@@ -36,7 +50,7 @@ export interface LlmProvider {
 	models: string[];
 	defaultModel: string;
 	keyHint: string;
-	call(request: TranslateRequest, ctx: ProviderCallContext): Promise<LlmRawResponse>;
+	call(request: TranslateRequest, ctx: ProviderCallContext): Promise<ProviderCallResult>;
 }
 
 export class LlmError extends Error {

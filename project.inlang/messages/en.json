@@ -107,6 +107,8 @@
 	"translate_open_settings": "Open Settings",
 	"translate_too_long": "Sentence too long ({count} tokens; max {max}).",
 	"translate_dismiss_error": "Dismiss",
+	"translate_usage": "{model}: {input} → {output} tokens",
+	"translate_usage_dismiss": "Dismiss",
 	"translate_from_sources": "from {count} sentences: {langs}",
 	"translate_custom_placeholder": "Custom code (e.g. ko-Kore, en-US)",
 	"translate_add_custom": "Add",

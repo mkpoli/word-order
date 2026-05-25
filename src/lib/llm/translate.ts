@@ -2,7 +2,7 @@ import { createSentence, type Sentence } from '$lib/types';
 import { llmSettings, type LlmSettings } from '$lib/settings';
 import { get } from 'svelte/store';
 import { getProvider } from './providers';
-import type { TranslateRequest } from './types';
+import type { TokenUsage, TranslateRequest } from './types';
 import { LlmError } from './types';
 import { validate } from './validate';
 
@@ -10,6 +10,10 @@ export const MAX_SOURCE_TOKENS = 120;
 
 export type TranslateResult = {
 	sentences: Sentence[];
+	usage?: TokenUsage;
+	/** Resolved at call time so a usage chip can show what model produced the result. */
+	provider: string;
+	model: string;
 };
 
 export async function translateAndAlign(
@@ -34,12 +38,12 @@ export async function translateAndAlign(
 	if (!apiKey) throw new LlmError(`No API key set for ${provider.label}.`);
 	const model = settings.model || provider.defaultModel;
 
-	const raw = await provider.call(request, { apiKey, model, signal });
+	const { raw, usage } = await provider.call(request, { apiKey, model, signal });
 	const validated = validate(raw, request);
 
 	const sentences: Sentence[] = validated.translations.map((t) => {
 		const showGloss = t.glosses.some((g) => g.trim().length > 0);
 		return createSentence(t.lang, t.tokens, t.glosses, showGloss);
 	});
-	return { sentences };
+	return { sentences, usage, provider: provider.label, model };
 }

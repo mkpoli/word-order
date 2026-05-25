@@ -50,10 +50,17 @@ export const gemini: LlmProvider = {
 		const text = Array.isArray(parts) ? parts.map((p: { text?: string }) => p?.text ?? '').join('') : '';
 		if (!text) throw new LlmError('Gemini returned no text content');
 
+		let raw: LlmRawResponse;
 		try {
-			return JSON.parse(text) as LlmRawResponse;
+			raw = JSON.parse(text) as LlmRawResponse;
 		} catch (err) {
 			throw new LlmError('Gemini returned non-JSON content', err);
 		}
+		const u = payload?.usageMetadata;
+		const usage =
+			u && typeof u.promptTokenCount === 'number' && typeof u.candidatesTokenCount === 'number'
+				? { inputTokens: u.promptTokenCount, outputTokens: u.candidatesTokenCount }
+				: undefined;
+		return { raw, usage };
 	}
 };

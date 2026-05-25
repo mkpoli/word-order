@@ -58,10 +58,17 @@ export const openai: LlmProvider = {
 			throw new LlmError('OpenAI returned no message content');
 		}
 
+		let raw: LlmRawResponse;
 		try {
-			return JSON.parse(content) as LlmRawResponse;
+			raw = JSON.parse(content) as LlmRawResponse;
 		} catch (err) {
 			throw new LlmError('OpenAI returned non-JSON content', err);
 		}
+		const u = payload?.usage;
+		const usage =
+			u && typeof u.prompt_tokens === 'number' && typeof u.completion_tokens === 'number'
+				? { inputTokens: u.prompt_tokens, outputTokens: u.completion_tokens }
+				: undefined;
+		return { raw, usage };
 	}
 };
