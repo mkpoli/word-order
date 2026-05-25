@@ -40,6 +40,8 @@
 			--color-accent: rgb(44 71 255);
 			--color-inactive: rgb(61, 66, 66);
 			--color-error: rgb(255 0 50);
+			--color-success: rgb(20 130 60);
+			--color-danger: rgb(180 40 40);
 
 			--color-bg: #ffffff;
 			--color-surface: #ffffff;
@@ -78,6 +80,8 @@
 			   dark page bg; lift to a mid-grey instead of the near-black light default. */
 			--color-inactive: rgb(170 178 188);
 			--color-accent-text: rgb(135 165 255);
+			--color-success: rgb(85 200 130);
+			--color-danger: rgb(240 110 110);
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -96,6 +100,8 @@
 				--color-shadow: rgb(0 0 0 / 0.55);
 				--color-inactive: rgb(170 178 188);
 				--color-accent-text: rgb(135 165 255);
+				--color-success: rgb(85 200 130);
+				--color-danger: rgb(240 110 110);
 			}
 		}
 
