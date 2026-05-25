@@ -703,6 +703,31 @@
 		closeExportMenu();
 	}
 
+	function exportTsv() {
+		// One column per sentence (header = displayName ?? lang), one row per
+		// equivalency entry (the alignment groups). A cell holds the joined
+		// token text for that sentence's slice of the entry; missing slices
+		// (the ❌ row in the UI) render as empty cells.
+		// Tabs and newlines inside cells get replaced with single spaces — TSV
+		// has no robust quoting and most spreadsheets choke on embedded
+		// delimiters more than they care about losing whitespace.
+		const cleanCell = (text: string) => text.replace(/[\t\r\n]+/g, ' ');
+
+		const headers = sentences.map((s) => cleanCell(s.displayName ?? s.lang));
+		const rows = equivalency.map((entry) =>
+			entry.map((wordIndices, sentenceIndex) => {
+				if (!wordIndices || wordIndices.length === 0) return '';
+				const tokens = sentences[sentenceIndex]?.tokens ?? [];
+				return cleanCell(wordIndices.map((i) => tokens[i]?.text ?? '').join(' '));
+			})
+		);
+
+		const tsv = [headers, ...rows].map((cols) => cols.join('\t')).join('\n') + '\n';
+		// Prefix BOM so Excel detects UTF-8 (TSV opens straight into Excel).
+		save('﻿' + tsv, 'text/tab-separated-values;charset=utf-8', exportFilename('tsv'));
+		closeExportMenu();
+	}
+
 	function buildSvgString(): string | null {
 		if (!output) return null;
 		const serializer = new XMLSerializer();
@@ -979,6 +1004,10 @@ ${svgString}
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
 				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
+			</button>
+			<button type="button" disabled={mode === 'edit'} onclick={exportTsv}>
+				<iconify-icon icon="mdi:table" inline="true"></iconify-icon>
+				TSV
 			</button>
 			<button type="button" disabled={mode === 'edit'} onclick={exportSvg}>
 				<iconify-icon icon="mdi:vector-square" inline="true"></iconify-icon>
