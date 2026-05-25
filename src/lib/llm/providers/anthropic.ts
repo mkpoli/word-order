@@ -47,7 +47,12 @@ export const anthropic: LlmProvider = {
 		if (!toolBlock || typeof toolBlock.input !== 'object' || toolBlock.input === null) {
 			throw new LlmError('Anthropic did not return the expected tool_use block');
 		}
-		return toolBlock.input as LlmRawResponse;
+		const u = payload?.usage;
+		const usage =
+			u && typeof u.input_tokens === 'number' && typeof u.output_tokens === 'number'
+				? { inputTokens: u.input_tokens, outputTokens: u.output_tokens }
+				: undefined;
+		return { raw: toolBlock.input as LlmRawResponse, usage };
 	},
 	async validateKey(apiKey, signal) {
 		try {

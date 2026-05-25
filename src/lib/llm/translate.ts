@@ -2,7 +2,7 @@ import { createSentence, type Sentence } from '$lib/types';
 import { llmSettings, type LlmSettings } from '$lib/settings';
 import { get } from 'svelte/store';
 import { getProvider } from './providers';
-import type { TranslateRequest } from './types';
+import type { TokenUsage, TranslateRequest } from './types';
 import { LlmError } from './types';
 import { validate } from './validate';
 import { cacheKey, lookupCachedTranslation, storeCachedTranslation } from './cache';
@@ -11,8 +11,10 @@ export const MAX_SOURCE_TOKENS = 120;
 
 export type TranslateResult = {
 	sentences: Sentence[];
+	usage?: TokenUsage;
 	/** Whether this result was served from the local cache (no network call). */
 	cached?: boolean;
+	/** Resolved at call time so a usage chip can show what model produced the result. */
 	provider: string;
 	model: string;
 };
@@ -46,14 +48,14 @@ export async function translateAndAlign(
 	const cached = lookupCachedTranslation(key);
 	if (cached) return { ...cached, cached: true };
 
-	const raw = await provider.call(request, { apiKey, model, signal });
+	const { raw, usage } = await provider.call(request, { apiKey, model, signal });
 	const validated = validate(raw, request);
 
 	const sentences: Sentence[] = validated.translations.map((t) => {
 		const showGloss = t.glosses.some((g) => g.trim().length > 0);
 		return createSentence(t.lang, t.tokens, t.glosses, showGloss);
 	});
-	const result: TranslateResult = { sentences, provider: provider.label, model };
+	const result: TranslateResult = { sentences, usage, provider: provider.label, model };
 	storeCachedTranslation(key, result);
 	return result;
 }
