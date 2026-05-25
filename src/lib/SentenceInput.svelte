@@ -432,7 +432,7 @@
 		   is still functional, just wider than ideal. */
 		field-sizing: content;
 		padding: 0.28em 0.45em;
-		border: 1px solid rgb(44 71 255 / 20%);
+		border: 1px solid var(--color-border);
 		border-radius: 0.3em;
 		background: var(--color-surface);
 		color: var(--color-text);
@@ -444,10 +444,14 @@
 		text-align: center;
 	}
 
+	.lane-input:hover {
+		border-color: var(--color-text-muted);
+	}
+
 	.lane-input:focus {
 		outline: none;
-		border-color: rgb(44 71 255 / 55%);
-		box-shadow: 0 0 0 2px rgb(44 71 255 / 12%);
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 2px rgb(46 91 255 / 0.18);
 	}
 
 	.word-cell {

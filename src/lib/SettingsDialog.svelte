@@ -178,17 +178,22 @@
 
 	.field select,
 	.field input {
-		padding: 0.5em 0.65em;
-		border: 1px solid rgb(46 91 255 / 0.3);
-		border-radius: 0.35em;
+		padding: 0.3em 0.5em;
+		border: 1px solid var(--color-border);
+		border-radius: 0.3em;
 		font: inherit;
 		background: var(--color-surface);
 		color: var(--color-text);
 	}
 
+	.field select:hover,
+	.field input:hover {
+		border-color: var(--color-text-muted);
+	}
+
 	.field select:focus,
 	.field input:focus {
-		outline: 2px solid rgb(46 91 255 / 0.4);
+		outline: 2px solid var(--color-accent);
 		outline-offset: -1px;
 	}
 
