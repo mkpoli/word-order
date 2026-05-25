@@ -5,13 +5,14 @@
 	import RangeSlider from '$lib/ui/RangeSlider.svelte';
 
 	import { LL } from '$i18n/i18n-svelte';
-	import type { Alignment, FontFamily, FontStyle } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, LineStyle } from '$lib/types';
 	import { PALETTES, DEFAULT_PALETTE, type PaletteId, pickNColors, oklchToHex } from '$lib/color';
 
 	interface Props {
 		verticalGap?: number;
 		lineGap?: number;
 		lineWidth?: number;
+		lineStyle?: LineStyle;
 		straightLength?: number;
 		endpointCorrection?: number;
 		curvature?: number;
@@ -28,6 +29,7 @@
 		verticalGap = $bindable(30),
 		lineGap = $bindable(5),
 		lineWidth = $bindable(1),
+		lineStyle = $bindable('solid'),
 		straightLength = $bindable(0),
 		endpointCorrection = $bindable(0),
 		curvature = $bindable(1),
@@ -88,6 +90,16 @@
 		{$LL.params.lineWidth()}
 	</label>
 	<RangeSlider id="line-width" min={0.1} max={6} step={0.1} bind:value={lineWidth} suffix=" px" />
+
+	<label for="line-style">
+		<iconify-icon icon="mdi:dots-horizontal" inline="true"></iconify-icon>
+		{$LL.params.lineStyle()}
+	</label>
+	<select id="line-style" name="line-style" bind:value={lineStyle}>
+		<option value="solid">{$LL.params.lineStyleSolid()}</option>
+		<option value="dashed">{$LL.params.lineStyleDashed()}</option>
+		<option value="dotted">{$LL.params.lineStyleDotted()}</option>
+	</select>
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true"></iconify-icon>

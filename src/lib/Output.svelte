@@ -7,7 +7,7 @@
 	import { run } from 'svelte/legacy';
 
 	import { onMount, tick, createEventDispatcher } from 'svelte';
-	import type { Alignment, FontFamily, FontStyle, Mode, Sentence } from '$lib/types';
+	import type { Alignment, FontFamily, FontStyle, LineStyle, Mode, Sentence } from '$lib/types';
 	import { getSentenceWords, sentenceHasAnyAnnotation } from '$lib/types';
 	import { getLanguageName, getLocaleDirection } from './lang';
 	import { LL, locale } from '$i18n/i18n-svelte';
@@ -64,6 +64,7 @@
 		verticalGap: number;
 		lineGap: number;
 		lineWidth?: number;
+		lineStyle?: LineStyle;
 		straightLength: number;
 		endpointCorrection: number;
 		curvature?: number;
@@ -93,6 +94,7 @@
 		verticalGap,
 		lineGap,
 		lineWidth = 1,
+		lineStyle = 'solid',
 		straightLength,
 		endpointCorrection,
 		curvature = 1,
@@ -919,9 +921,18 @@
 				{/if}
 			</div>
 		{/if}
+		{@const dashArray =
+			lineStyle === 'dashed' ? `${lineWidth * 5} ${lineWidth * 4}` : lineStyle === 'dotted' ? `${lineWidth} ${lineWidth * 2}` : undefined}
 		<svg style="position: absolute;" width="100%" height="100%">
 			{#each lines as [x1, y1, x2, y2, color]}
-				<path d={connectionPath(x1, y1, x2, y2, curvature)} stroke={color} stroke-width={lineWidth} fill="none" />
+				<path
+					d={connectionPath(x1, y1, x2, y2, curvature)}
+					stroke={color}
+					stroke-width={lineWidth}
+					stroke-dasharray={dashArray}
+					stroke-linecap={lineStyle === 'dotted' ? 'round' : undefined}
+					fill="none"
+				/>
 			{/each}
 		</svg>
 
