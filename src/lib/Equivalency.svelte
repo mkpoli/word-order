@@ -92,6 +92,8 @@
 	let draggingIndex = $state(-1);
 	let draggingPosition = { x: 0, y: 0 };
 	let draggingOffset = $state({ x: 0, y: 0 });
+	/** Visual drop index (0..equivalency.length); null when not dragging. */
+	let dropTargetIndex = $state<number | null>(null);
 
 	function dragstart(l: number, e: PointerEvent) {
 		draggingIndex = l;
@@ -100,6 +102,19 @@
 		}
 
 		draggingPosition = { x: e.clientX, y: e.clientY };
+		dropTargetIndex = l;
+	}
+
+	/** Count of equivalency rows whose vertical centre sits above the cursor. */
+	function computeDropVisualIndex(clientY: number): number {
+		let dropAt = 0;
+		for (const div of equivalencyDivs) {
+			const rect = div.getBoundingClientRect();
+			const center = (rect.top + rect.bottom) / 2;
+			if (clientY > center) dropAt++;
+			else break;
+		}
+		return dropAt;
 	}
 
 	function dragend(e: PointerEvent) {
@@ -109,21 +124,16 @@
 			e.target.releasePointerCapture(e.pointerId);
 		}
 
-		let lastBottom = -1;
-		for (const [i, div] of equivalencyDivs.entries()) {
-			const rect = div.getBoundingClientRect();
-			const centerBetween = (rect.top - lastBottom) / 2;
-
-			if (i !== draggingIndex && (i === 0 ? rect.top : centerBetween) <= e.clientY && rect.bottom >= e.clientY) {
-				onreorder?.({ from: draggingIndex, to: i });
-				break;
-			}
-
-			lastBottom = rect.bottom;
+		const visual = computeDropVisualIndex(e.clientY);
+		if (visual !== draggingIndex && visual !== draggingIndex + 1) {
+			// Splice mechanics: drop AFTER current position needs visual - 1.
+			const to = visual < draggingIndex ? visual : visual - 1;
+			onreorder?.({ from: draggingIndex, to });
 		}
 
 		draggingIndex = -1;
 		draggingOffset = { x: 0, y: 0 };
+		dropTargetIndex = null;
 	}
 
 	function onpointermove(e: PointerEvent) {
@@ -132,6 +142,7 @@
 				x: e.clientX - draggingPosition.x,
 				y: e.clientY - draggingPosition.y
 			};
+			dropTargetIndex = computeDropVisualIndex(e.clientY);
 		}
 	}
 
@@ -146,6 +157,9 @@
 <div class="color-bar" style:background-image={stripeGradient}></div>
 <div class="entries" bind:this={entriesContainer}>
 	{#each equivalency as entry, i (i)}
+		{#if dropTargetIndex === i && draggingIndex !== i && draggingIndex !== i - 1}
+			<div class="drop-indicator" aria-hidden="true"></div>
+		{/if}
 		<div
 			class="equivalency"
 			style:color={colors[i]}
@@ -167,6 +181,9 @@
 			{/each}
 		</div>
 	{/each}
+	{#if dropTargetIndex === equivalency.length && draggingIndex !== equivalency.length - 1}
+		<div class="drop-indicator" aria-hidden="true"></div>
+	{/if}
 </div>
 <button class="scramble-all" title={$LL.menu.scramble()} aria-label={$LL.menu.scramble()} onclick={() => onscramble?.()}>
 	<iconify-icon icon="fad:random-1dice" width="1.5em"></iconify-icon>
@@ -183,6 +200,13 @@
 	.equivalency {
 		cursor: move;
 		user-select: none;
+	}
+
+	.drop-indicator {
+		height: 0;
+		border-top: 2px solid var(--color-accent);
+		margin: -1px 0;
+		pointer-events: none;
 	}
 
 	.color-bar {

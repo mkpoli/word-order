@@ -49,6 +49,9 @@ test('theme toggle cycles system → light → dark', async ({ page }) => {
 
 test('output canvas stays light in both themes (export consistency)', async ({ page }) => {
 	await page.goto('/');
+	// Wait for SvelteKit hydration to mount the Output component; the page's
+	// `{#if mounted}` gate means querySelector('output') returns null until
+	// onMount finishes its async work.
 	await page.waitForSelector('output');
 
 	for (const theme of ['light', 'dark'] as const) {
