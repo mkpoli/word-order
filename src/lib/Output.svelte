@@ -473,6 +473,7 @@
 			fontSize !== undefined &&
 			glossFontSize !== undefined &&
 			spaceWidth !== undefined &&
+			letterSpacing !== undefined &&
 			$locale
 		)
 			tick().then(() => {
