@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Розмір шрифту глоси",
 	"params_space_width": "Ширина пробілу",
 	"params_letter_spacing": "Міжлітерний інтервал",
+	"params_show_lang_meta": "Інфо про мову",
+	"params_show_lang_meta_on": "Показати родину / типологію",
 	"params_colors": "Кольори",
 	"params_palette": "Палітра",
 	"params_palette_spectrum": "Повний спектр",

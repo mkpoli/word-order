@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "注释字体大小",
 	"params_space_width": "空格宽度",
 	"params_letter_spacing": "字距",
+	"params_show_lang_meta": "语言信息",
+	"params_show_lang_meta_on": "显示语系 / 类型",
 	"params_colors": "颜色",
 	"params_palette": "调色板",
 	"params_palette_spectrum": "完整光谱",

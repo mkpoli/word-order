@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "اندازه قلم توضیح",
 	"params_space_width": "پهنای فاصله",
 	"params_letter_spacing": "فاصلهٔ حروف",
+	"params_show_lang_meta": "اطلاعات زبان",
+	"params_show_lang_meta_on": "نمایش خانواده / گونه‌شناسی",
 	"params_colors": "رنگ‌ها",
 	"params_palette": "پالت",
 	"params_palette_spectrum": "طیف کامل",

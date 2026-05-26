@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Cỡ chữ chú thích",
 	"params_space_width": "Độ rộng khoảng trắng",
 	"params_letter_spacing": "Khoảng cách chữ",
+	"params_show_lang_meta": "Thông tin ngôn ngữ",
+	"params_show_lang_meta_on": "Hiện họ / loại hình",
 	"params_colors": "Màu",
 	"params_palette": "Bảng màu",
 	"params_palette_spectrum": "Phổ đầy đủ",

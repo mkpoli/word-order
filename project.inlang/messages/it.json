@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Dimensione del carattere della glossa",
 	"params_space_width": "Larghezza spazio",
 	"params_letter_spacing": "Spaziatura lettere",
+	"params_show_lang_meta": "Info lingua",
+	"params_show_lang_meta_on": "Mostra famiglia / tipologia",
 	"params_colors": "Colori",
 	"params_palette": "Tavolozza",
 	"params_palette_spectrum": "Spettro completo",

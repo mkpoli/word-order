@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "suli sitelen pi sona toki",
 	"params_space_width": "suli pi poka weka",
 	"params_letter_spacing": "weka pi sitelen",
+	"params_show_lang_meta": "sona pi toki",
+	"params_show_lang_meta_on": "o pana e kulupu en nasin",
 	"params_colors": "kule",
 	"params_palette": "kulupu pi kule",
 	"params_palette_spectrum": "kule ali",

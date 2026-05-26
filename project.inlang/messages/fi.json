@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Glossin fonttikoko",
 	"params_space_width": "Välilyönnin leveys",
 	"params_letter_spacing": "Merkkiväli",
+	"params_show_lang_meta": "Kielitiedot",
+	"params_show_lang_meta_on": "Näytä kieliperhe / typologia",
 	"params_colors": "Värit",
 	"params_palette": "Paletti",
 	"params_palette_spectrum": "Koko spektri",

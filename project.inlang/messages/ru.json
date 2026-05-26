@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Размер шрифта глоссы",
 	"params_space_width": "Ширина пробела",
 	"params_letter_spacing": "Межбуквенный интервал",
+	"params_show_lang_meta": "Сведения о языке",
+	"params_show_lang_meta_on": "Показать семью / типологию",
 	"params_colors": "Цвета",
 	"params_palette": "Палитра",
 	"params_palette_spectrum": "Полный спектр",

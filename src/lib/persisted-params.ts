@@ -27,6 +27,7 @@ export type ParamsSnapshot = {
 	lineHalo?: boolean;
 	lineHaloWidth?: number;
 	tokenGap?: number;
+	showLangMeta?: boolean;
 	straightLength?: number;
 	endpointCorrection?: number;
 	curvature?: number;

@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "注釈フォントサイズ",
 	"params_space_width": "空白幅",
 	"params_letter_spacing": "文字間隔",
+	"params_show_lang_meta": "言語情報",
+	"params_show_lang_meta_on": "系統・類型を表示",
 	"params_colors": "色",
 	"params_palette": "パレット",
 	"params_palette_spectrum": "全スペクトル",
