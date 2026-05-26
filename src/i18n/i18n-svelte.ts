@@ -19,6 +19,8 @@ const createLL = () => ({
 		lineStyleSolid: m.params_line_style_solid,
 		lineStyleDashed: m.params_line_style_dashed,
 		lineStyleDotted: m.params_line_style_dotted,
+		lineHalo: m.params_line_halo,
+		lineHaloOn: m.params_line_halo_on,
 		straightLength: m.params_straight_length,
 		endpointCorrection: m.params_endpoint_correction,
 		curvature: m.params_curvature,

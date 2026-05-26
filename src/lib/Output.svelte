@@ -65,6 +65,8 @@
 		lineGap: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
+		lineHalo?: boolean;
+		lineHaloWidth?: number;
 		straightLength: number;
 		endpointCorrection: number;
 		curvature?: number;
@@ -96,6 +98,8 @@
 		lineGap,
 		lineWidth = 1,
 		lineStyle = 'solid',
+		lineHalo = false,
+		lineHaloWidth = 1.5,
 		straightLength,
 		endpointCorrection,
 		curvature = 1,
@@ -930,6 +934,22 @@
 		{@const dashArray =
 			lineStyle === 'dashed' ? `${lineWidth * 5} ${lineWidth * 4}` : lineStyle === 'dotted' ? `${lineWidth} ${lineWidth * 2}` : undefined}
 		<svg style="position: absolute;" width="100%" height="100%">
+			<!-- Halo pass: a thicker background-coloured stroke drawn under each
+			     coloured stroke. When two paths cross, the upper one's halo masks
+			     a small slice of the lower one — the "subway-map" technique that
+			     makes dense crossings legible without changing path geometry. -->
+			{#if lineHalo}
+				{#each lines as [x1, y1, x2, y2]}
+					<path
+						class="line-halo"
+						d={connectionPath(x1, y1, x2, y2, curvature)}
+						stroke-width={lineWidth + lineHaloWidth * 2}
+						stroke-dasharray={dashArray}
+						stroke-linecap="round"
+						fill="none"
+					/>
+				{/each}
+			{/if}
 			{#each lines as [x1, y1, x2, y2, color]}
 				<path
 					d={connectionPath(x1, y1, x2, y2, curvature)}
@@ -1091,6 +1111,14 @@
 		   dom-to-svg, shifting exports off-centre to the right. Centring is
 		   handled by the .output-scroll wrapper instead. */
 		flex-shrink: 0;
+	}
+
+	/* Halo strokes mask crossings by painting in the canvas background colour.
+	   The output element overrides --color-bg to white (so PNG / SVG / PDF
+	   exports stay consistent regardless of theme), so this var resolves
+	   correctly in both interactive and export contexts. */
+	.line-halo {
+		stroke: var(--color-bg, white);
 	}
 
 	svg {
