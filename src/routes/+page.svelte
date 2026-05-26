@@ -254,6 +254,9 @@
 		if (typeof stored.lineGap === 'number') lineGap = stored.lineGap;
 		if (typeof stored.lineWidth === 'number') lineWidth = stored.lineWidth;
 		if (stored.lineStyle && LINE_STYLES.includes(stored.lineStyle)) lineStyle = stored.lineStyle;
+		if (typeof stored.lineHalo === 'boolean') lineHalo = stored.lineHalo;
+		if (typeof stored.lineHaloWidth === 'number') lineHaloWidth = stored.lineHaloWidth;
+		if (typeof stored.tokenGap === 'number') tokenGap = stored.tokenGap;
 		if (typeof stored.straightLength === 'number') straightLength = stored.straightLength;
 		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
 		if (typeof stored.curvature === 'number') curvature = stored.curvature;
@@ -996,6 +999,9 @@ ${svgString}
 			lineGap,
 			lineWidth,
 			lineStyle,
+			lineHalo,
+			lineHaloWidth,
+			tokenGap,
 			straightLength,
 			endpointCorrection,
 			curvature,
