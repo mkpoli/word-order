@@ -170,10 +170,33 @@
 		}
 	}
 
-	function getTransform(l: number, draggingOffset: { x: number; y: number }) {
-		if (draggingIndex !== l) return 'none';
-		return `translate(${draggingOffset.x}px, ${draggingOffset.y}px)`;
+	function getTransform(l: number, draggingOffset: { x: number; y: number }, shifts: number[]) {
+		if (draggingIndex === l) {
+			return `translate(${draggingOffset.x}px, ${draggingOffset.y}px)`;
+		}
+		const shift = shifts[l] ?? 0;
+		return shift ? `translateY(${shift}px)` : 'none';
 	}
+
+	// While dragging, non-dragged rows that sit between the source slot and the
+	// proposed drop slot slide out of the way by the dragged row's height — so
+	// the phantom doesn't visually overlap their text, and the user sees a live
+	// preview of the post-drop layout instead of a row floating over a static
+	// column. Empty array when idle so the rows render in their natural slots.
+	let displayShifts: number[] = $derived.by(() => {
+		const shifts = equivalency.map(() => 0);
+		if (!dragPreview || equivalencyDivs.length === 0) return shifts;
+		const { from, to } = dragPreview;
+		if (from === to || from < 0 || from >= equivalencyDivs.length) return shifts;
+		const draggedHeight = equivalencyDivs[from]?.offsetHeight ?? 0;
+		if (draggedHeight === 0) return shifts;
+		for (let i = 0; i < shifts.length; i++) {
+			if (i === from) continue;
+			if (from < to && i > from && i <= to) shifts[i] = -draggedHeight;
+			else if (to < from && i >= to && i < from) shifts[i] = draggedHeight;
+		}
+		return shifts;
+	});
 </script>
 
 <svelte:window onpointerup={dragend} {onpointermove} />
@@ -186,11 +209,12 @@
 		{/if}
 		<div
 			class="equivalency"
+			class:dragging={draggingIndex === i}
 			style:color={displayColors[i]}
 			onpointerdown={(e) => dragstart(i, e)}
 			onpointerup={dragend}
 			bind:this={equivalencyDivs[i]}
-			style:transform={getTransform(i, draggingOffset)}
+			style:transform={getTransform(i, draggingOffset, displayShifts)}
 		>
 			{#each entry as words, j (j)}
 				<span class="words">
@@ -224,6 +248,19 @@
 	.equivalency {
 		cursor: move;
 		user-select: none;
+		/* Non-dragged rows shift out of the way (see displayShifts) — animate
+		   that transform so the preview reads as a smooth swap rather than
+		   teleport. The active drag opts out below so the phantom tracks the
+		   cursor without lag. */
+		transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+
+	.equivalency.dragging {
+		transition: none;
+		/* Lift the phantom above the row it's hovering over so the colour
+		   tag isn't visually under another row's text mid-drag. */
+		z-index: 1;
+		position: relative;
 	}
 
 	.drop-indicator {

@@ -13,6 +13,8 @@
 		lineGap?: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
+		lineHalo?: boolean;
+		lineHaloWidth?: number;
 		straightLength?: number;
 		endpointCorrection?: number;
 		curvature?: number;
@@ -32,6 +34,8 @@
 		lineGap = $bindable(5),
 		lineWidth = $bindable(1),
 		lineStyle = $bindable('solid'),
+		lineHalo = $bindable(false),
+		lineHaloWidth = $bindable(1.5),
 		straightLength = $bindable(0),
 		endpointCorrection = $bindable(0),
 		curvature = $bindable(1),
@@ -104,6 +108,18 @@
 		<option value="dashed">{$LL.params.lineStyleDashed()}</option>
 		<option value="dotted">{$LL.params.lineStyleDotted()}</option>
 	</select>
+
+	<label for="line-halo">
+		<iconify-icon icon="mdi:circle-double" inline="true"></iconify-icon>
+		{$LL.params.lineHalo()}
+	</label>
+	<div class="halo-row">
+		<label class="halo-toggle">
+			<input type="checkbox" id="line-halo" bind:checked={lineHalo} />
+			<span>{$LL.params.lineHaloOn()}</span>
+		</label>
+		<RangeSlider id="line-halo-width" min={0.5} max={4} step={0.1} bind:value={lineHaloWidth} suffix=" px" disabled={!lineHalo} />
+	</div>
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true"></iconify-icon>
@@ -229,6 +245,25 @@
 </fieldset>
 
 <style>
+	.halo-row {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: center;
+		gap: 0.6em;
+		margin: 0 0.5em;
+	}
+
+	.halo-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		font-weight: normal;
+		font-size: 0.92em;
+		color: var(--color-text-muted);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
 	.alignment {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;

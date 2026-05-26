@@ -19,6 +19,8 @@ const createLL = () => ({
 		lineStyleSolid: m.params_line_style_solid,
 		lineStyleDashed: m.params_line_style_dashed,
 		lineStyleDotted: m.params_line_style_dotted,
+		lineHalo: m.params_line_halo,
+		lineHaloOn: m.params_line_halo_on,
 		straightLength: m.params_straight_length,
 		endpointCorrection: m.params_endpoint_correction,
 		curvature: m.params_curvature,
@@ -91,6 +93,18 @@ const createLL = () => ({
 		marginRight: m.aria_margin_right,
 		renameLanguage: m.aria_rename_language
 	},
+	renameLanguage: {
+		title: m.rename_language_title,
+		close: m.rename_language_close,
+		defaultLabel: m.rename_language_default_label,
+		customLabel: m.rename_language_custom_label,
+		customised: m.rename_language_customised,
+		customisedHint: m.rename_language_customised_hint,
+		hint: m.rename_language_hint,
+		reset: m.rename_language_reset,
+		cancel: m.rename_language_cancel,
+		save: m.rename_language_save
+	},
 	dialog: {
 		editing: m.dialog_editing,
 		confirm: m.dialog_confirm,
@@ -124,6 +138,8 @@ const createLL = () => ({
 		pdf: m.menu_pdf,
 		rasterScale: m.menu_raster_scale,
 		socialSection: m.menu_social_section,
+		shareSection: m.menu_share_section,
+		fileSection: m.menu_file_section,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
 		settings: m.menu_settings,

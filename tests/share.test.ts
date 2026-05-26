@@ -16,6 +16,9 @@ test.describe('URL share', () => {
 		expect(defaultMarker).toBeTruthy();
 		expect(defaultMarker).toMatch(/eat\s*glass/);
 
+		// Copy link now lives inside the Export dropdown — focusing the trigger
+		// opens the menu (it expands on focus and hover).
+		await page.getByRole('button', { name: /Export/i }).focus();
 		// Trigger the Copy link button.
 		await page.getByRole('button', { name: /Copy link|Copied/i }).click();
 		// Wait for the share handler to finish — it writes to the clipboard,

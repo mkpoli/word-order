@@ -3,6 +3,7 @@
 
 	import { oklchToHex, pickNColors, DEFAULT_PALETTE, PALETTES, type PaletteId } from '$lib/color';
 	import { applyPreviewColors, type DragPreview } from '$lib/equivalency-preview';
+	import { loadParams, saveParams } from '$lib/persisted-params';
 	import { onMount, tick } from 'svelte';
 
 	import 'iconify-icon';
@@ -23,6 +24,7 @@
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
 	import QrDialog from '$lib/QrDialog.svelte';
+	import RenameLanguageDialog from '$lib/RenameLanguageDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import ThemeToggle from '$lib/ThemeToggle.svelte';
@@ -37,7 +39,7 @@
 	import { translateAndAlign } from '$lib/llm/translate';
 	import type { TranslateRequest } from '$lib/llm/types';
 	import { addGlossAlignments } from '$lib/gloss-align';
-	import { getLocaleOptions } from '$lib/lang';
+	import { getLocaleOptions, getLanguageName } from '$lib/lang';
 
 	// const SENTENCES = [
 	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
@@ -94,10 +96,11 @@
 		}
 		return cm;
 	});
-	const PALETTE_STORAGE_KEY = 'word-order:palette';
 	const PALETTE_IDS: PaletteId[] = PALETTES.map((p) => p.id);
-	const LINE_STYLE_STORAGE_KEY = 'word-order:line-style';
 	const LINE_STYLES: LineStyle[] = ['solid', 'dashed', 'dotted'];
+	const ALIGNMENTS: Alignment[] = ['left', 'center', 'right'];
+	const FONT_FAMILIES: FontFamily[] = ['default', 'sans-serif', 'serif', 'monospace'];
+	const FONT_STYLES: FontStyle[] = ['normal', 'italic', 'bold', 'bold-italic'];
 	let palette: PaletteId = $state(DEFAULT_PALETTE);
 	let colors: string[] = $derived(pickNColors(equivalency.length, false, palette).map(oklchToHex));
 	// Bound by <Equivalency> while a drag is in progress; null when idle. Mirrors
@@ -112,6 +115,8 @@
 	let lineGap = $state(0);
 	let lineWidth = $state(1);
 	let lineStyle: LineStyle = $state('solid');
+	let lineHalo = $state(false);
+	let lineHaloWidth = $state(1.5);
 	let straightLength = $state(0);
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
@@ -132,7 +137,6 @@
 
 	type RasterScale = 2 | 3 | 4 | 6;
 	const RASTER_SCALES: RasterScale[] = [2, 3, 4, 6];
-	const RASTER_SCALE_STORAGE_KEY = 'word-order:raster-scale';
 	let rasterScale: RasterScale = $state(2);
 
 	type PendingTranslation = {
@@ -161,6 +165,9 @@
 
 	let qrOpen = $state(false);
 	let qrUrl = $state('');
+
+	let renameLangOpen = $state(false);
+	let renameLangSentenceIndex = $state<number | null>(null);
 
 	async function openQrDialog() {
 		try {
@@ -237,14 +244,36 @@
 		// connector SVG empty until the next user interaction.
 		word_spans = sentences.map(() => []);
 
-		const storedScale = Number(window.localStorage.getItem(RASTER_SCALE_STORAGE_KEY));
-		if (RASTER_SCALES.includes(storedScale as RasterScale)) rasterScale = storedScale as RasterScale;
-
-		const storedPalette = window.localStorage.getItem(PALETTE_STORAGE_KEY);
-		if (storedPalette && PALETTE_IDS.includes(storedPalette as PaletteId)) palette = storedPalette as PaletteId;
-
-		const storedLineStyle = window.localStorage.getItem(LINE_STYLE_STORAGE_KEY);
-		if (storedLineStyle && LINE_STYLES.includes(storedLineStyle as LineStyle)) lineStyle = storedLineStyle as LineStyle;
+		// Unified persisted parameter snapshot: replaces the per-key reads
+		// (raster scale, palette, line style) and adds restore for every
+		// other appearance / text / margin knob the user touches. Values are
+		// guarded with explicit shape/enum checks so a hand-edited or
+		// corrupt blob can't crash the page.
+		const stored = loadParams();
+		if (typeof stored.verticalGap === 'number') verticalGap = stored.verticalGap;
+		if (typeof stored.lineGap === 'number') lineGap = stored.lineGap;
+		if (typeof stored.lineWidth === 'number') lineWidth = stored.lineWidth;
+		if (stored.lineStyle && LINE_STYLES.includes(stored.lineStyle)) lineStyle = stored.lineStyle;
+		if (typeof stored.straightLength === 'number') straightLength = stored.straightLength;
+		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
+		if (typeof stored.curvature === 'number') curvature = stored.curvature;
+		if (stored.alignment && ALIGNMENTS.includes(stored.alignment)) alignment = stored.alignment;
+		if (stored.fontFamily && FONT_FAMILIES.includes(stored.fontFamily)) fontFamily = stored.fontFamily;
+		if (stored.fontStyle && FONT_STYLES.includes(stored.fontStyle)) fontStyle = stored.fontStyle;
+		if (typeof stored.fontSize === 'number') fontSize = stored.fontSize;
+		if (typeof stored.glossFontSize === 'number') glossFontSize = stored.glossFontSize;
+		if (typeof stored.spaceWidth === 'number') spaceWidth = stored.spaceWidth;
+		if (typeof stored.letterSpacing === 'number') letterSpacing = stored.letterSpacing;
+		if (stored.palette && PALETTE_IDS.includes(stored.palette)) palette = stored.palette;
+		if (typeof stored.rasterScale === 'number' && RASTER_SCALES.includes(stored.rasterScale as RasterScale)) {
+			rasterScale = stored.rasterScale as RasterScale;
+		}
+		if (stored.outputMargin && typeof stored.outputMargin === 'object') {
+			const m = stored.outputMargin;
+			if (typeof m.top === 'number' && typeof m.right === 'number' && typeof m.bottom === 'number' && typeof m.left === 'number') {
+				outputMargin = m;
+			}
+		}
 
 		mounted = true;
 		await tick();
@@ -913,16 +942,6 @@ ${svgString}
 			return;
 		}
 		try {
-			const scale = rasterScale;
-			const dataUrl = await domToImage.toPng(output, {
-				width: output.clientWidth * scale,
-				height: output.clientHeight * scale,
-				style: {
-					transform: `scale(${scale})`,
-					transformOrigin: 'top left',
-					'background-color': getExportBackgroundColor()
-				}
-			});
 			const widthPx = output.clientWidth;
 			const heightPx = output.clientHeight;
 			const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
@@ -932,7 +951,27 @@ ${svgString}
 				format: [widthPx, heightPx],
 				hotfixes: ['px_scaling']
 			});
-			pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
+
+			// Vector PDF: render via the same dom-to-svg pipeline as Export SVG,
+			// then hand the SVG element to svg2pdf so text stays selectable and
+			// lines stay crisp at any zoom (vs. the prior raster-embed PNG).
+			const svgString = buildSvgString();
+			if (!svgString) throw new Error('SVG serialisation failed');
+			const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+			const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
+			// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
+			// Visibility hidden but still in flow so getComputedStyle resolves.
+			const host = document.createElement('div');
+			host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+			host.appendChild(svgRoot);
+			document.body.appendChild(host);
+			try {
+				const { svg2pdf } = await import('svg2pdf.js');
+				await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
+			} finally {
+				host.remove();
+			}
+
 			pdf.save(exportFilename('pdf'));
 		} catch (err) {
 			console.error('Export PDF failed:', err);
@@ -947,14 +986,30 @@ ${svgString}
 		equivalency = equivalency.filter((entry) => !entry.every((sentence) => sentence.length === 0));
 	});
 	let pendingSentenceSet = $derived(new Set<number>(pendingTranslation?.rowIndices ?? []));
+	// Persist every appearance / parameter knob in a single localStorage
+	// blob so the next visit restores the user's full setup, not just the
+	// three fields that used to have dedicated keys.
 	run(() => {
-		if (mounted) window.localStorage.setItem(RASTER_SCALE_STORAGE_KEY, String(rasterScale));
-	});
-	run(() => {
-		if (mounted) window.localStorage.setItem(PALETTE_STORAGE_KEY, palette);
-	});
-	run(() => {
-		if (mounted) window.localStorage.setItem(LINE_STYLE_STORAGE_KEY, lineStyle);
+		if (!mounted) return;
+		saveParams({
+			verticalGap,
+			lineGap,
+			lineWidth,
+			lineStyle,
+			straightLength,
+			endpointCorrection,
+			curvature,
+			alignment,
+			fontFamily,
+			fontStyle,
+			fontSize,
+			glossFontSize,
+			spaceWidth,
+			letterSpacing,
+			palette,
+			rasterScale,
+			outputMargin
+		});
 	});
 	// Autosave on any change to sentences or equivalency. Skip while a translation is pending
 	// so we don't persist the empty placeholder rows.
@@ -1078,23 +1133,6 @@ ${svgString}
 		<iconify-icon icon="uil:import"></iconify-icon>
 		{$LL.menu.import()}</button
 	>
-	<button
-		disabled={mode === 'edit'}
-		class:share-long={shareFeedback === 'long'}
-		title={shareFeedback === 'long'
-			? $LL.menu.shareLong({ length: shareUrlLength })
-			: shareFeedback === 'copied'
-				? $LL.menu.shareCopied()
-				: $LL.menu.share()}
-		onclick={copyShareLink}
-	>
-		<iconify-icon icon={shareFeedback === 'long' ? 'mdi:alert-outline' : shareFeedback === 'copied' ? 'mdi:check' : 'mdi:link-variant'}
-		></iconify-icon>
-		{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
-	</button>
-	<button class="qr-button" disabled={mode === 'edit'} title={$LL.menu.qr()} aria-label={$LL.menu.qr()} onclick={openQrDialog}>
-		<iconify-icon icon="mdi:qrcode"></iconify-icon>
-	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button
@@ -1111,6 +1149,29 @@ ${svgString}
 			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron"></iconify-icon>
 		</button>
 		<div class="export-menu" role="group" aria-label={$LL.menu.export()}>
+			<div class="export-section-label">{$LL.menu.shareSection()}</div>
+			<button
+				type="button"
+				class:share-long={shareFeedback === 'long'}
+				disabled={mode === 'edit'}
+				title={shareFeedback === 'long'
+					? $LL.menu.shareLong({ length: shareUrlLength })
+					: shareFeedback === 'copied'
+						? $LL.menu.shareCopied()
+						: $LL.menu.share()}
+				onclick={copyShareLink}
+			>
+				<iconify-icon
+					icon={shareFeedback === 'long' ? 'mdi:alert-outline' : shareFeedback === 'copied' ? 'mdi:check' : 'mdi:link-variant'}
+					inline="true"
+				></iconify-icon>
+				{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
+			</button>
+			<button type="button" disabled={mode === 'edit'} onclick={openQrDialog}>
+				<iconify-icon icon="mdi:qrcode" inline="true"></iconify-icon>
+				{$LL.menu.qr()}
+			</button>
+			<div class="export-section-label">{$LL.menu.fileSection()}</div>
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
 				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
@@ -1173,6 +1234,19 @@ ${svgString}
 <AboutDialog bind:open={aboutOpen} />
 <SettingsDialog bind:open={settingsOpen} />
 <QrDialog bind:open={qrOpen} url={qrUrl} />
+<RenameLanguageDialog
+	bind:open={renameLangOpen}
+	lang={renameLangSentenceIndex !== null ? (sentences[renameLangSentenceIndex]?.lang ?? '') : ''}
+	defaultLabel={renameLangSentenceIndex !== null ? getLanguageName(sentences[renameLangSentenceIndex]?.lang ?? '', $locale) : ''}
+	displayName={renameLangSentenceIndex !== null ? sentences[renameLangSentenceIndex]?.displayName : undefined}
+	onsave={(displayName) => {
+		if (renameLangSentenceIndex === null) return;
+		const target = sentences[renameLangSentenceIndex];
+		if (!target) return;
+		if (displayName === undefined) delete target.displayName;
+		else target.displayName = displayName;
+	}}
+/>
 <TranslatePopover
 	bind:open={translatePopoverOpen}
 	sourceLangs={sentences.map((s) => s.lang)}
@@ -1251,6 +1325,8 @@ ${svgString}
 					{lineGap}
 					{lineWidth}
 					{lineStyle}
+					{lineHalo}
+					{lineHaloWidth}
 					{straightLength}
 					{endpointCorrection}
 					{curvature}
@@ -1328,6 +1404,10 @@ ${svgString}
 						if (displayName === undefined) delete target.displayName;
 						else target.displayName = displayName;
 					}}
+					on:openRenameLanguage={({ detail: { sentence } }) => {
+						renameLangSentenceIndex = sentence;
+						renameLangOpen = true;
+					}}
 				/>
 			{/if}
 		</div>
@@ -1352,6 +1432,8 @@ ${svgString}
 			bind:lineGap
 			bind:lineWidth
 			bind:lineStyle
+			bind:lineHalo
+			bind:lineHaloWidth
 			bind:straightLength
 			bind:endpointCorrection
 			bind:curvature
@@ -1783,12 +1865,6 @@ ${svgString}
 		border-color: var(--color-border);
 	}
 
-	/* QR is icon-only; trim the wide padding so it sits flush next to the
-	   Copy Link button without looking oversized. */
-	.menu button.qr-button {
-		padding: 0.5em 0.6em;
-	}
-
 	.export-dropdown {
 		position: relative;
 		display: inline-flex;
@@ -1891,6 +1967,14 @@ ${svgString}
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		color: var(--color-text-faint);
+	}
+
+	/* The first label in the menu sits flush against the top padding — no
+	   horizontal rule needed before it. */
+	.export-section-label:first-child {
+		margin-top: 0;
+		padding-top: 0.1em;
+		border-top: none;
 	}
 
 	.export-menu button.export-social {

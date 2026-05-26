@@ -44,6 +44,9 @@
 			sentence: number;
 			displayName: string | undefined;
 		};
+		openRenameLanguage: {
+			sentence: number;
+		};
 	}>();
 
 	interface Props {
@@ -65,6 +68,8 @@
 		lineGap: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
+		lineHalo?: boolean;
+		lineHaloWidth?: number;
 		straightLength: number;
 		endpointCorrection: number;
 		curvature?: number;
@@ -101,6 +106,8 @@
 		lineGap,
 		lineWidth = 1,
 		lineStyle = 'solid',
+		lineHalo = false,
+		lineHaloWidth = 1.5,
 		straightLength,
 		endpointCorrection,
 		curvature = 1,
@@ -685,44 +692,16 @@
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
 					</div>
 					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
-						<span
-							class="tag-text"
-							class:tag-edited={sentence.displayName !== undefined}
-							contenteditable="true"
-							role="textbox"
-							tabindex="0"
-							spellcheck="false"
+						<span class="tag-text">{currentLabel}</span>
+						<button
+							type="button"
+							class="tag-rename action"
 							title={$LL.aria.renameLanguage()}
-							onkeydown={(e) => {
-								if (e.key === 'Enter' || e.key === 'Escape') {
-									e.preventDefault();
-									(e.currentTarget as HTMLElement).blur();
-								}
-							}}
-							onfocus={(e) => {
-								const range = document.createRange();
-								range.selectNodeContents(e.currentTarget as HTMLElement);
-								const sel = window.getSelection();
-								sel?.removeAllRanges();
-								sel?.addRange(range);
-							}}
-							onblur={(e) => {
-								// Collapse internal whitespace so multi-line pastes don't carry hidden
-								// newlines into the data model (the tag is white-space: nowrap, so it
-								// would render fine but the stored value would still hold them).
-								const next = (e.currentTarget.textContent ?? '').replace(/\s+/g, ' ').trim();
-								const previous = sentence.displayName ?? defaultLabel;
-								if (next === previous) {
-									// Keep the rendered text in sync with state if the user typed
-									// then reverted — innerText might be stale whitespace otherwise.
-									e.currentTarget.textContent = previous;
-									return;
-								}
-								// Clear the override when the user types the default label or empties the field.
-								const displayName = next === '' || next === defaultLabel ? undefined : next;
-								dispatch('renameLanguage', { sentence: i, displayName });
-							}}>{currentLabel}</span
+							aria-label={$LL.aria.renameLanguage()}
+							onclick={() => dispatch('openRenameLanguage', { sentence: i })}
 						>
+							<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
+						</button>
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
 						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
@@ -943,6 +922,22 @@
 		{@const dashArray =
 			lineStyle === 'dashed' ? `${lineWidth * 5} ${lineWidth * 4}` : lineStyle === 'dotted' ? `${lineWidth} ${lineWidth * 2}` : undefined}
 		<svg style="position: absolute;" width="100%" height="100%">
+			<!-- Halo pass: a thicker background-coloured stroke drawn under each
+			     coloured stroke. When two paths cross, the upper one's halo masks
+			     a small slice of the lower one — the "subway-map" technique that
+			     makes dense crossings legible without changing path geometry. -->
+			{#if lineHalo}
+				{#each lines as [x1, y1, x2, y2]}
+					<path
+						class="line-halo"
+						d={connectionPath(x1, y1, x2, y2, curvature)}
+						stroke-width={lineWidth + lineHaloWidth * 2}
+						stroke-dasharray={dashArray}
+						stroke-linecap="round"
+						fill="none"
+					/>
+				{/each}
+			{/if}
 			{#each lines as [x1, y1, x2, y2, color]}
 				<path
 					d={connectionPath(x1, y1, x2, y2, curvature)}
@@ -995,27 +990,39 @@
 		white-space: nowrap;
 	}
 
-	.tag-text {
-		cursor: text;
+	/* The tag itself is a plain, non-interactive label — no italic, dashed
+	   outline, or focus ring. Overrides aren't visually distinguished here
+	   so the final-render diagram looks the same whether or not the label
+	   has been customised; the "customised" marker lives in the rename
+	   dialog instead. */
+	.tag {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.25em;
+	}
+
+	.tag-rename {
+		appearance: none;
+		background: none;
+		border: none;
+		padding: 0.1em 0.2em;
+		cursor: pointer;
+		color: var(--color-text-faint);
+		font-size: 0.85em;
+		line-height: 1;
 		border-radius: 0.2em;
-		padding: 0 0.15em;
-		outline: 1px dashed transparent;
-		outline-offset: 1px;
-		transition: outline-color 120ms ease;
+		opacity: 0;
+		transition: opacity 120ms ease;
 	}
 
-	.tag-text:hover {
-		outline-color: var(--color-border);
+	.tag:hover .tag-rename,
+	.tag-rename:focus-visible {
+		opacity: 1;
 	}
 
-	.tag-text:focus {
-		outline: 1px solid var(--color-accent);
-		background: var(--color-surface);
-	}
-
-	/* Subtle marker so an overridden label is recognisable at a glance. */
-	.tag-text.tag-edited {
-		font-style: italic;
+	.tag-rename:hover {
+		color: var(--color-accent);
+		background: var(--color-hover);
 	}
 
 	.sentence-body {
@@ -1024,6 +1031,12 @@
 
 	.words {
 		display: block;
+		/* Keep each sentence on a single line. On narrow viewports the
+		   parent <.output-scroll> provides horizontal scrolling — that
+		   gives the diagram a clean overflow story rather than wrapping
+		   words to a new line (which dropped the SVG connectors out of
+		   alignment with the tokens). */
+		white-space: nowrap;
 	}
 
 	.token {
@@ -1098,6 +1111,14 @@
 		   dom-to-svg, shifting exports off-centre to the right. Centring is
 		   handled by the .output-scroll wrapper instead. */
 		flex-shrink: 0;
+	}
+
+	/* Halo strokes mask crossings by painting in the canvas background colour.
+	   The output element overrides --color-bg to white (so PNG / SVG / PDF
+	   exports stay consistent regardless of theme), so this var resolves
+	   correctly in both interactive and export contexts. */
+	.line-halo {
+		stroke: var(--color-bg, white);
 	}
 
 	svg {
