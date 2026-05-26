@@ -99,8 +99,6 @@ const createLL = () => ({
 		defaultLabel: m.rename_language_default_label,
 		customLabel: m.rename_language_custom_label,
 		customised: m.rename_language_customised,
-		customisedHint: m.rename_language_customised_hint,
-		hint: m.rename_language_hint,
 		reset: m.rename_language_reset,
 		cancel: m.rename_language_cancel,
 		save: m.rename_language_save

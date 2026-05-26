@@ -89,7 +89,7 @@
 				<label for="rename-input">
 					{$LL.renameLanguage.customLabel()}
 					{#if isCustomised}
-						<span class="customised-badge" title={$LL.renameLanguage.customisedHint()}>
+						<span class="customised-badge">
 							<iconify-icon icon="mdi:star-outline" inline="true"></iconify-icon>
 							{$LL.renameLanguage.customised()}
 						</span>
@@ -105,7 +105,6 @@
 					spellcheck="false"
 					class:customised={isCustomised}
 				/>
-				<p class="hint">{$LL.renameLanguage.hint()}</p>
 			</div>
 
 			<div class="actions">
