@@ -1011,6 +1011,12 @@
 
 	.words {
 		display: block;
+		/* Keep each sentence on a single line. On narrow viewports the
+		   parent <.output-scroll> provides horizontal scrolling — that
+		   gives the diagram a clean overflow story rather than wrapping
+		   words to a new line (which dropped the SVG connectors out of
+		   alignment with the tokens). */
+		white-space: nowrap;
 	}
 
 	.token {
