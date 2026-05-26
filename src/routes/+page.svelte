@@ -114,6 +114,8 @@
 	let lineGap = $state(0);
 	let lineWidth = $state(1);
 	let lineStyle: LineStyle = $state('solid');
+	let lineHalo = $state(false);
+	let lineHaloWidth = $state(1.5);
 	let straightLength = $state(0);
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
@@ -1305,6 +1307,8 @@ ${svgString}
 					{lineGap}
 					{lineWidth}
 					{lineStyle}
+					{lineHalo}
+					{lineHaloWidth}
 					{straightLength}
 					{endpointCorrection}
 					{curvature}
@@ -1405,6 +1409,8 @@ ${svgString}
 			bind:lineGap
 			bind:lineWidth
 			bind:lineStyle
+			bind:lineHalo
+			bind:lineHaloWidth
 			bind:straightLength
 			bind:endpointCorrection
 			bind:curvature
