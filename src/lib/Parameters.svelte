@@ -25,6 +25,7 @@
 		glossFontSize?: number;
 		spaceWidth?: number;
 		letterSpacing?: number;
+		tokenGap?: number;
 		palette?: PaletteId;
 	}
 
@@ -45,6 +46,7 @@
 		glossFontSize = $bindable(11),
 		spaceWidth = $bindable(4),
 		letterSpacing = $bindable(0),
+		tokenGap = $bindable(0),
 		palette = $bindable(DEFAULT_PALETTE)
 	}: Props = $props();
 
@@ -210,6 +212,12 @@
 		{$LL.params.letterSpacing()}
 	</label>
 	<RangeSlider bind:value={letterSpacing} id="letter-spacing" min={-2} max={10} step={0.1} suffix=" px" />
+
+	<label for="token-gap">
+		<iconify-icon icon="mdi:arrow-expand-horizontal" inline="true"></iconify-icon>
+		{$LL.params.tokenGap()}
+	</label>
+	<RangeSlider bind:value={tokenGap} id="token-gap" min={0} max={20} step={0.5} suffix=" px" />
 </fieldset>
 
 <fieldset>
