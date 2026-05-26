@@ -1126,23 +1126,6 @@ ${svgString}
 		<iconify-icon icon="uil:import"></iconify-icon>
 		{$LL.menu.import()}</button
 	>
-	<button
-		disabled={mode === 'edit'}
-		class:share-long={shareFeedback === 'long'}
-		title={shareFeedback === 'long'
-			? $LL.menu.shareLong({ length: shareUrlLength })
-			: shareFeedback === 'copied'
-				? $LL.menu.shareCopied()
-				: $LL.menu.share()}
-		onclick={copyShareLink}
-	>
-		<iconify-icon icon={shareFeedback === 'long' ? 'mdi:alert-outline' : shareFeedback === 'copied' ? 'mdi:check' : 'mdi:link-variant'}
-		></iconify-icon>
-		{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
-	</button>
-	<button class="qr-button" disabled={mode === 'edit'} title={$LL.menu.qr()} aria-label={$LL.menu.qr()} onclick={openQrDialog}>
-		<iconify-icon icon="mdi:qrcode"></iconify-icon>
-	</button>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="export-dropdown" class:open={exportOpen} bind:this={exportWrapper} onmouseenter={openExportMenu} onmouseleave={scheduleExportClose}>
 		<button
@@ -1159,6 +1142,29 @@ ${svgString}
 			<iconify-icon icon="mdi:chevron-down" inline="true" class="chevron"></iconify-icon>
 		</button>
 		<div class="export-menu" role="group" aria-label={$LL.menu.export()}>
+			<div class="export-section-label">{$LL.menu.shareSection()}</div>
+			<button
+				type="button"
+				class:share-long={shareFeedback === 'long'}
+				disabled={mode === 'edit'}
+				title={shareFeedback === 'long'
+					? $LL.menu.shareLong({ length: shareUrlLength })
+					: shareFeedback === 'copied'
+						? $LL.menu.shareCopied()
+						: $LL.menu.share()}
+				onclick={copyShareLink}
+			>
+				<iconify-icon
+					icon={shareFeedback === 'long' ? 'mdi:alert-outline' : shareFeedback === 'copied' ? 'mdi:check' : 'mdi:link-variant'}
+					inline="true"
+				></iconify-icon>
+				{shareFeedback === 'long' ? $LL.menu.shareLongShort() : shareFeedback === 'copied' ? $LL.menu.shareCopied() : $LL.menu.share()}
+			</button>
+			<button type="button" disabled={mode === 'edit'} onclick={openQrDialog}>
+				<iconify-icon icon="mdi:qrcode" inline="true"></iconify-icon>
+				{$LL.menu.qr()}
+			</button>
+			<div class="export-section-label">{$LL.menu.fileSection()}</div>
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
 				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
@@ -1829,12 +1835,6 @@ ${svgString}
 		border-color: var(--color-border);
 	}
 
-	/* QR is icon-only; trim the wide padding so it sits flush next to the
-	   Copy Link button without looking oversized. */
-	.menu button.qr-button {
-		padding: 0.5em 0.6em;
-	}
-
 	.export-dropdown {
 		position: relative;
 		display: inline-flex;
@@ -1937,6 +1937,14 @@ ${svgString}
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		color: var(--color-text-faint);
+	}
+
+	/* The first label in the menu sits flush against the top padding — no
+	   horizontal rule needed before it. */
+	.export-section-label:first-child {
+		margin-top: 0;
+		padding-top: 0.1em;
+		border-top: none;
 	}
 
 	.export-menu button.export-social {
