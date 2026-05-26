@@ -46,7 +46,7 @@ test.describe('URL share', () => {
 		await page.goto('/#d=t.not~~real~~payload');
 		const toast = page.locator('.share-load-error');
 		await expect(toast).toBeVisible();
-		await expect(toast).toContainText(/truncated|corrupted/i);
+		await expect(toast).toContainText(/broken/i);
 
 		// Diagram still rendered (fell back to the sample).
 		await expect(page.locator('output')).toContainText(/eat\s*glass/);
