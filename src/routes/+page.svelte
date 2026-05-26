@@ -24,6 +24,7 @@
 	// Components
 	import AboutDialog from '$lib/AboutDialog.svelte';
 	import QrDialog from '$lib/QrDialog.svelte';
+	import RenameLanguageDialog from '$lib/RenameLanguageDialog.svelte';
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import ThemeToggle from '$lib/ThemeToggle.svelte';
@@ -38,7 +39,7 @@
 	import { translateAndAlign } from '$lib/llm/translate';
 	import type { TranslateRequest } from '$lib/llm/types';
 	import { addGlossAlignments } from '$lib/gloss-align';
-	import { getLocaleOptions } from '$lib/lang';
+	import { getLocaleOptions, getLanguageName } from '$lib/lang';
 
 	// const SENTENCES = [
 	// 	['en', 'I can eat glass and it doesn’t hurt me.'],
@@ -163,6 +164,9 @@
 
 	let qrOpen = $state(false);
 	let qrUrl = $state('');
+
+	let renameLangOpen = $state(false);
+	let renameLangSentenceIndex = $state<number | null>(null);
 
 	async function openQrDialog() {
 		try {
@@ -1229,6 +1233,19 @@ ${svgString}
 <AboutDialog bind:open={aboutOpen} />
 <SettingsDialog bind:open={settingsOpen} />
 <QrDialog bind:open={qrOpen} url={qrUrl} />
+<RenameLanguageDialog
+	bind:open={renameLangOpen}
+	lang={renameLangSentenceIndex !== null ? (sentences[renameLangSentenceIndex]?.lang ?? '') : ''}
+	defaultLabel={renameLangSentenceIndex !== null ? getLanguageName(sentences[renameLangSentenceIndex]?.lang ?? '', $locale) : ''}
+	displayName={renameLangSentenceIndex !== null ? sentences[renameLangSentenceIndex]?.displayName : undefined}
+	onsave={(displayName) => {
+		if (renameLangSentenceIndex === null) return;
+		const target = sentences[renameLangSentenceIndex];
+		if (!target) return;
+		if (displayName === undefined) delete target.displayName;
+		else target.displayName = displayName;
+	}}
+/>
 <TranslatePopover
 	bind:open={translatePopoverOpen}
 	sourceLangs={sentences.map((s) => s.lang)}
@@ -1384,6 +1401,10 @@ ${svgString}
 						if (!target) return;
 						if (displayName === undefined) delete target.displayName;
 						else target.displayName = displayName;
+					}}
+					on:openRenameLanguage={({ detail: { sentence } }) => {
+						renameLangSentenceIndex = sentence;
+						renameLangOpen = true;
 					}}
 				/>
 			{/if}
