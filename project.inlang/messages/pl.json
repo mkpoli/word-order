@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Rozmiar czcionki glosy",
 	"params_space_width": "Szerokosc spacji",
 	"params_letter_spacing": "Odstęp między literami",
+	"params_show_lang_meta": "Info o języku",
+	"params_show_lang_meta_on": "Pokaż rodzinę / typologię",
 	"params_colors": "Kolory",
 	"params_palette": "Paleta",
 	"params_palette_spectrum": "Pełne spektrum",

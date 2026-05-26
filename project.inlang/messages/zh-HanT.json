@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "註釋字型大小",
 	"params_space_width": "空格寬度",
 	"params_letter_spacing": "字距",
+	"params_show_lang_meta": "語言資訊",
+	"params_show_lang_meta_on": "顯示語系 / 類型",
 	"params_colors": "顏色",
 	"params_palette": "調色盤",
 	"params_palette_spectrum": "完整光譜",

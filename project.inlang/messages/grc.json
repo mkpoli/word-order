@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Μέγεθος γραμμάτων ἑρμηνείας",
 	"params_space_width": "Εὖρος κενοῦ",
 	"params_letter_spacing": "Διάστημα γραμμάτων",
+	"params_show_lang_meta": "Πληροφορίαι περὶ τῆς γλώσσης",
+	"params_show_lang_meta_on": "Δεῖξον φῦλον καὶ τύπον",
 	"params_colors": "Χρώματα",
 	"params_palette": "Πίναξ χρωμάτων",
 	"params_palette_spectrum": "Πλῆρες φάσμα",

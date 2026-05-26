@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "ちゅうしゃくのもじサイズ",
 	"params_space_width": "あきの おおきさ",
 	"params_letter_spacing": "もじの あいだ",
+	"params_show_lang_meta": "ことばの じょうほう",
+	"params_show_lang_meta_on": "けいとう・るいけいを ひょうじ",
 	"params_colors": "いろ",
 	"params_palette": "いろの くみあわせ",
 	"params_palette_spectrum": "ぜんぶの いろ",

@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "Tamanho da fonte da glosa",
 	"params_space_width": "Largura do espaco",
 	"params_letter_spacing": "Espaçamento entre letras",
+	"params_show_lang_meta": "Info do idioma",
+	"params_show_lang_meta_on": "Mostrar família / tipologia",
 	"params_colors": "Cores",
 	"params_palette": "Paleta",
 	"params_palette_spectrum": "Espectro completo",

@@ -42,6 +42,8 @@ const createLL = () => ({
 		spaceWidth: m.params_space_width,
 		letterSpacing: m.params_letter_spacing,
 		tokenGap: m.params_token_gap,
+		showLangMeta: m.params_show_lang_meta,
+		showLangMetaOn: m.params_show_lang_meta_on,
 		colors: m.params_colors,
 		palette: m.params_palette,
 		paletteNames: {

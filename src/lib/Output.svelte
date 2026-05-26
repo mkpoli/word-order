@@ -10,6 +10,7 @@
 	import type { Alignment, FontFamily, FontStyle, LineStyle, Mode, Sentence } from '$lib/types';
 	import { getSentenceWords, sentenceHasAnyAnnotation } from '$lib/types';
 	import { getLanguageName, getLocaleDirection } from './lang';
+	import { getLangMeta } from './lang-meta';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
 	import type { Margin } from '$lib/types';
@@ -85,6 +86,8 @@
 		 * (CJK, Thai) — spaceWidth has no effect there because there's no whitespace
 		 * token to widen. Default 0. */
 		tokenGap?: number;
+		/** Whether to render the small linguistic-metadata chip under each language tag. */
+		showLangMeta?: boolean;
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
@@ -119,6 +122,7 @@
 		spaceWidth,
 		letterSpacing = 0,
 		tokenGap = 0,
+		showLangMeta = false,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
 		output = $bindable()
@@ -687,21 +691,29 @@
 			{#if !pendingIndices.has(i)}
 				{@const defaultLabel = getLanguageName(lang, $locale)}
 				{@const currentLabel = sentence.displayName ?? defaultLabel}
+				{@const meta = showLangMeta ? getLangMeta(lang) : null}
 				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
 					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
 					</div>
 					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
-						<span class="tag-text">{currentLabel}</span>
-						<button
-							type="button"
-							class="tag-rename action"
-							title={$LL.aria.renameLanguage()}
-							aria-label={$LL.aria.renameLanguage()}
-							onclick={() => dispatch('openRenameLanguage', { sentence: i })}
-						>
-							<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
-						</button>
+						<span class="tag-row">
+							<span class="tag-text">{currentLabel}</span>
+							<button
+								type="button"
+								class="tag-rename action"
+								title={$LL.aria.renameLanguage()}
+								aria-label={$LL.aria.renameLanguage()}
+								onclick={() => dispatch('openRenameLanguage', { sentence: i })}
+							>
+								<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
+							</button>
+						</span>
+						{#if meta}
+							<span class="tag-meta" lang="en" title="{meta.family.join(' · ')} · {meta.typology} · {meta.morphology} · {meta.script}">
+								{meta.family[meta.family.length - 1]} · {meta.typology} · {meta.morphology}
+							</span>
+						{/if}
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
 						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
@@ -997,8 +1009,26 @@
 	   dialog instead. */
 	.tag {
 		display: inline-flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 0.05em;
+	}
+
+	.tag-row {
+		display: inline-flex;
 		align-items: baseline;
 		gap: 0.25em;
+	}
+
+	/* The linguistic-metadata chip sits under the language label in a small
+	   muted style — informational, never the eye-catcher. */
+	.tag-meta {
+		font-size: 0.62em;
+		font-weight: normal;
+		color: var(--color-text-faint);
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		font-feature-settings: 'tnum';
 	}
 
 	.tag-rename {

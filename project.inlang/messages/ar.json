@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "حجم خط الشرح",
 	"params_space_width": "عرض المسافة",
 	"params_letter_spacing": "تباعد الأحرف",
+	"params_show_lang_meta": "معلومات اللغة",
+	"params_show_lang_meta_on": "إظهار العائلة / النحو",
 	"params_colors": "الألوان",
 	"params_palette": "لوحة الألوان",
 	"params_palette_spectrum": "الطيف الكامل",

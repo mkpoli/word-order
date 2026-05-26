@@ -128,6 +128,7 @@
 	let spaceWidth = $state(4);
 	let letterSpacing = $state(0);
 	let tokenGap = $state(0);
+	let showLangMeta = $state(false);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
 	let aboutOpen = $state(false);
@@ -257,6 +258,7 @@
 		if (typeof stored.lineHalo === 'boolean') lineHalo = stored.lineHalo;
 		if (typeof stored.lineHaloWidth === 'number') lineHaloWidth = stored.lineHaloWidth;
 		if (typeof stored.tokenGap === 'number') tokenGap = stored.tokenGap;
+		if (typeof stored.showLangMeta === 'boolean') showLangMeta = stored.showLangMeta;
 		if (typeof stored.straightLength === 'number') straightLength = stored.straightLength;
 		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
 		if (typeof stored.curvature === 'number') curvature = stored.curvature;
@@ -1002,6 +1004,7 @@ ${svgString}
 			lineHalo,
 			lineHaloWidth,
 			tokenGap,
+			showLangMeta,
 			straightLength,
 			endpointCorrection,
 			curvature,
@@ -1343,6 +1346,7 @@ ${svgString}
 					{spaceWidth}
 					{letterSpacing}
 					{tokenGap}
+					{showLangMeta}
 					bind:outputMargin
 					{loading}
 					{modifying}
@@ -1451,6 +1455,7 @@ ${svgString}
 			bind:spaceWidth
 			bind:letterSpacing
 			bind:tokenGap
+			bind:showLangMeta
 			bind:palette
 		/>
 	</div>

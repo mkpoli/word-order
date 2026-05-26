@@ -31,6 +31,8 @@
 	"params_gloss_font_size": "解釋 글꼴 크기",
 	"params_space_width": "空白 너비",
 	"params_letter_spacing": "字 間隔",
+	"params_show_lang_meta": "言語 情報",
+	"params_show_lang_meta_on": "語族 / 類型 表示",
 	"params_colors": "色相",
 	"params_palette": "色 板",
 	"params_palette_spectrum": "全 分光",
