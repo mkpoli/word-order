@@ -135,7 +135,7 @@
 	"translate_using_provider": "{provider} a=eywanke",
 	"translate_no_key": "{provider} kusu API key isam.",
 	"translate_open_settings": "Etokoyki sarare",
-	"translate_too_long": "Itaksay tanne kasuno an ({count} itakpo; iotta {max}).",
+	"translate_too_long": "Itaksay tanne kasu — {count} itakpo, iotta {max}",
 	"translate_dismiss_error": "Uska",
 	"translate_usage": "{model}: {input} → {output} itakpo",
 	"translate_usage_dismiss": "Uska",
