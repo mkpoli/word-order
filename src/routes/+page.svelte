@@ -122,6 +122,7 @@
 	let glossFontSize = $state(11);
 	let spaceWidth = $state(4);
 	let letterSpacing = $state(0);
+	let tokenGap = $state(0);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
 	let aboutOpen = $state(false);
@@ -1259,6 +1260,7 @@ ${svgString}
 					{glossFontSize}
 					{spaceWidth}
 					{letterSpacing}
+					{tokenGap}
 					bind:outputMargin
 					{loading}
 					{modifying}
@@ -1360,6 +1362,7 @@ ${svgString}
 			bind:glossFontSize
 			bind:spaceWidth
 			bind:letterSpacing
+			bind:tokenGap
 			bind:palette
 		/>
 	</div>
