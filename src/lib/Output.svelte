@@ -80,6 +80,11 @@
 		glossFontSize: number;
 		spaceWidth: number;
 		letterSpacing?: number;
+		/** Extra inline-end margin applied between adjacent content tokens that are NOT
+		 * separated by a whitespace token. Useful for scripts that don't use spaces
+		 * (CJK, Thai) — spaceWidth has no effect there because there's no whitespace
+		 * token to widen. Default 0. */
+		tokenGap?: number;
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
@@ -113,6 +118,7 @@
 		glossFontSize,
 		spaceWidth,
 		letterSpacing = 0,
+		tokenGap = 0,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
 		output = $bindable()
@@ -481,6 +487,7 @@
 			glossFontSize !== undefined &&
 			spaceWidth !== undefined &&
 			letterSpacing !== undefined &&
+			tokenGap !== undefined &&
 			$locale
 		)
 			tick().then(() => {
@@ -702,8 +709,14 @@
 								{@const word = token.text}
 								{@const hasAboveLanes = sentence.lanesAbove > 0}
 								{@const hasBelowLanes = sentence.lanesBelow > 0}
+								{@const nextToken = tokens[j + 1]}
+								{@const needsTokenGap = tokenGap > 0 && !isWhitespace(word) && nextToken !== undefined && !isWhitespace(nextToken.text)}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
-								<span class="token" class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}>
+								<span
+									class="token"
+									class:with-gloss={sentenceShowsGloss(sentence) && isContent(word)}
+									style:margin-inline-end={needsTokenGap ? `${tokenGap}px` : undefined}
+								>
 									{#if hasAboveLanes}
 										<span class="annotations-above" lang="zxx" style:font-size={`${glossFontSize}px`}>
 											{#each Array(sentence.lanesAbove) as _, laneIndex}
