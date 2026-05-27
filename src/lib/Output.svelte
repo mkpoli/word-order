@@ -691,7 +691,6 @@
 					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
 						<span
 							class="tag-text"
-							class:tag-text-customised={sentence.displayName !== undefined}
 							contenteditable="true"
 							role="textbox"
 							tabindex="0"
@@ -1036,10 +1035,10 @@
 		background: var(--color-surface);
 	}
 
-	.tag-text-customised {
-		font-style: italic;
-		color: var(--color-accent-text);
-	}
+	/* No .tag-text-customised style here on purpose. The final-render diagram
+	   must look identical whether the label is the locale default or a
+	   user-customised one; the "this is customised" hint belongs in the input
+	   side of the UI, not in the output the user exports. */
 
 	.sentence-body {
 		display: block;
