@@ -962,12 +962,17 @@ ${svgString}
 
 	function pdfNeedsRaster(): boolean {
 		for (const s of sentences) {
+			// The exported header uses displayName when set, else the locale's
+			// translated name for the BCP-47 code (e.g. ja → 日本語). Both need
+			// the raster check — a Latin-only sentence labelled with 日本語 still
+			// produces mojibake in the vector PDF.
+			const label = s.displayName ?? getLanguageName(s.lang, $locale);
+			if (!isLatinScript(label)) return true;
 			for (const t of s.tokens) {
 				if (!isLatinScript(t.text)) return true;
 				for (const ann of t.annotationsAbove) if (!isLatinScript(ann)) return true;
 				for (const ann of t.annotationsBelow) if (!isLatinScript(ann)) return true;
 			}
-			if (s.displayName && !isLatinScript(s.displayName)) return true;
 		}
 		return false;
 	}
