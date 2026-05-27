@@ -204,6 +204,24 @@
 		return lines;
 	}
 
+	/**
+	 * Collect each connector's two endpoints, deduped by quantised (x,y,color).
+	 * drawLines emits up to three Line segments per logical connector when
+	 * `straightLength > 0` (the curved middle plus two short straight stubs);
+	 * without dedup we'd stack three coincident endpoint dots and the result
+	 * looks bloated.
+	 */
+	function uniqueEndpoints(lines: Line[]): Array<{ x: number; y: number; color: string }> {
+		const out: Array<{ x: number; y: number; color: string }> = [];
+		const has = (x: number, y: number, color: string) =>
+			out.some((p) => Math.round(p.x) === Math.round(x) && Math.round(p.y) === Math.round(y) && p.color === color);
+		for (const [x1, y1, x2, y2, color] of lines) {
+			if (!has(x1, y1, color)) out.push({ x: x1, y: y1, color });
+			if (!has(x2, y2, color)) out.push({ x: x2, y: y2, color });
+		}
+		return out;
+	}
+
 	function connectionPath(x1: number, y1: number, x2: number, y2: number, curvature: number): string {
 		if (curvature === 0) return `M ${x1} ${y1} L ${x2} ${y2}`;
 
@@ -924,40 +942,28 @@
 			lineStyle === 'dashed' ? `${lineWidth * 5} ${lineWidth * 4}` : lineStyle === 'dotted' ? `${lineWidth} ${lineWidth * 2}` : undefined}
 		<svg style="position: absolute;" width="100%" height="100%">
 			{#each lines as [x1, y1, x2, y2, color]}
-				{#if dottedEnd}
-					<!-- Two-pass overlay: a full-length dotted stroke gives the dotted
-					     ends, then a solid middle segment (using pathLength=100 +
-					     dashoffset) overlays it from the 25% mark to the 75% mark.
-					     Net visual: dotted near both endpoints, solid in the middle. -->
-					<path
-						d={connectionPath(x1, y1, x2, y2, curvature)}
-						stroke={color}
-						stroke-width={lineWidth}
-						stroke-dasharray={`${lineWidth} ${lineWidth * 2}`}
-						stroke-linecap="round"
-						fill="none"
-					/>
-					<path
-						d={connectionPath(x1, y1, x2, y2, curvature)}
-						stroke={color}
-						stroke-width={lineWidth}
-						pathLength="100"
-						stroke-dasharray="50 100"
-						stroke-dashoffset="-25"
-						stroke-linecap="butt"
-						fill="none"
-					/>
-				{:else}
-					<path
-						d={connectionPath(x1, y1, x2, y2, curvature)}
-						stroke={color}
-						stroke-width={lineWidth}
-						stroke-dasharray={dashArray}
-						stroke-linecap={lineStyle === 'dotted' ? 'round' : undefined}
-						fill="none"
-					/>
-				{/if}
+				<path
+					d={connectionPath(x1, y1, x2, y2, curvature)}
+					stroke={color}
+					stroke-width={lineWidth}
+					stroke-dasharray={dashArray}
+					stroke-linecap={lineStyle === 'dotted' ? 'round' : undefined}
+					fill="none"
+				/>
 			{/each}
+			{#if dottedEnd}
+				<!-- Filled circles at each connector endpoint, in the connector colour
+				     — same accent the og-image uses to anchor each link visually to
+				     the word it connects. Rendered as a second pass so the dots sit
+				     on top of the lines without being interrupted by stroke joins.
+				     Dedup by quantised (x,y,color) so the straight-segment fragments
+				     drawLines adds when straightLength > 0 don't stack three
+				     coincident dots at the same endpoint. -->
+				{@const endpointDots = uniqueEndpoints(lines)}
+				{#each endpointDots as { x, y, color }}
+					<circle cx={x} cy={y} r={Math.max(lineWidth * 2, 2.5)} fill={color} />
+				{/each}
+			{/if}
 		</svg>
 
 		<div class="edit-dialog" use:draggable class:visible={mode === 'edit'}>
