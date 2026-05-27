@@ -139,6 +139,26 @@
 		mounted = true;
 	});
 
+	// ResizeObserver on <output> + its rows. Whenever any sentence row's
+	// bounding box changes (chip toggling, font load, browser zoom, viewport
+	// width affecting wrap), re-run drawLines so the connectors stay glued
+	// to the words they link. drawLines itself is read-only on layout so
+	// there's no feedback loop.
+	let layoutObserver: ResizeObserver | null = null;
+	$effect(() => {
+		if (!output) return;
+		layoutObserver?.disconnect();
+		layoutObserver = new ResizeObserver(() => {
+			if (!mounted || loading) return;
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+		});
+		layoutObserver.observe(output);
+		return () => {
+			layoutObserver?.disconnect();
+			layoutObserver = null;
+		};
+	});
+
 	function drawLines(
 		word_spans: HTMLSpanElement[][],
 		equivalency: number[][][],
@@ -483,7 +503,18 @@
 	}
 
 	run(() => {
-		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+		// Reference showLangMeta + sentences so toggling the chip on/off (or a
+		// per-sentence displayMeta override changing the chip's content width)
+		// re-runs drawLines after the DOM settles — otherwise the connectors
+		// stay pinned to the pre-chip layout and look misaligned. tick() lets
+		// the chip element actually mount/unmount before we measure.
+		void showLangMeta;
+		void sentences;
+		if (mounted && equivalency && !loading) {
+			tick().then(() => {
+				lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+			});
+		}
 	});
 	run(() => {
 		if (
