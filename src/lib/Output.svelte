@@ -88,6 +88,10 @@
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
+		/** When true, suspends the fit-to-width adjustments — set during export
+		 * pipelines so the captured artifact uses the user-configured margins
+		 * and 1:1 scale rather than the shrunk on-screen presentation. */
+		fitDisabled?: boolean;
 	}
 
 	let {
@@ -121,14 +125,91 @@
 		tokenGap = 0,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
-		output = $bindable()
+		output = $bindable(),
+		fitDisabled = false
 	}: Props = $props();
 	let tokenEditDialog: HTMLDivElement | undefined = $state();
 
 	let mounted = $state(false);
 
+	// Fit-to-width: when the natural diagram is wider than its scroll
+	// container, first shrink the horizontal margins (user-configured padding
+	// of <output>) down to zero, and if that's still not enough apply CSS zoom
+	// so the whole diagram visually fits without horizontal scrolling. Both
+	// adjustments are reactive on container size + content geometry and are
+	// suspended via `fitDisabled` during exports so artifacts keep the
+	// configured margins and natural 1:1 scale.
+	let fitZoom = $state(1);
+	let fitPadX = $state<number | null>(null);
+	let fitObserver: ResizeObserver | null = null;
+
+	function recomputeFit() {
+		if (fitDisabled || !output) {
+			fitZoom = 1;
+			fitPadX = null;
+			return;
+		}
+		const parent = output.parentElement;
+		if (!parent) return;
+		const container = parent.clientWidth;
+		if (container <= 0) return;
+		// Measure natural width at 1:1 with the user's configured margins.
+		// We temporarily strip our overrides so scrollWidth reflects the
+		// real intrinsic content size, then restore the inline styles.
+		const savedPadding = output.style.padding;
+		// Cast to any so TS doesn't trip on the (now standard) zoom property.
+		const styleAny = output.style as CSSStyleDeclaration & { zoom: string };
+		const savedZoom = styleAny.zoom;
+		output.style.padding = `${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`;
+		styleAny.zoom = '1';
+		const natural = output.scrollWidth;
+		output.style.padding = savedPadding;
+		styleAny.zoom = savedZoom;
+		if (natural <= container) {
+			fitZoom = 1;
+			fitPadX = null;
+			return;
+		}
+		const noPad = natural - outputMargin.left - outputMargin.right;
+		if (noPad <= container) {
+			// Shrinking horizontal padding alone makes it fit.
+			fitPadX = Math.max(0, Math.floor((container - noPad) / 2));
+			fitZoom = 1;
+		} else {
+			// Zero out horizontal padding AND zoom down to fit.
+			fitPadX = 0;
+			fitZoom = container / noPad;
+		}
+	}
+
 	onMount(() => {
 		mounted = true;
+		if (output) {
+			const parent = output.parentElement;
+			if (parent) {
+				fitObserver = new ResizeObserver(() => recomputeFit());
+				fitObserver.observe(parent);
+				fitObserver.observe(output);
+			}
+		}
+		return () => {
+			fitObserver?.disconnect();
+			fitObserver = null;
+		};
+	});
+
+	$effect(() => {
+		// Re-run fit when anything that affects natural width changes.
+		void sentences;
+		void outputMargin;
+		void fontSize;
+		void verticalGap;
+		void letterSpacing;
+		void spaceWidth;
+		void tokenGap;
+		void fitDisabled;
+		if (!mounted) return;
+		requestAnimationFrame(recomputeFit);
 	});
 
 	function drawLines(
@@ -178,10 +259,15 @@
 						const bLeft = Math.min(rectB1.left, rectB2.left);
 						const bRight = Math.max(rectB1.right, rectB2.right);
 
-						let x1 = (aLeft + aRight) / 2 - rectOutput.left;
-						let y1 = getBottomEndpoint(sentences[j], spanA1, spanA2, rectOutput);
-						let x2 = (bLeft + bRight) / 2 - rectOutput.left;
-						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
+						// CSS zoom on <output> scales all child bounding-rect deltas by
+						// the zoom factor, but the SVG inside the same zoomed parent
+						// interprets path coords in pre-zoom local units. Divide here to
+						// get back to local units so the rendered lines stay glued to
+						// the words they connect.
+						let x1 = ((aLeft + aRight) / 2 - rectOutput.left) / fitZoom;
+						let y1 = getBottomEndpoint(sentences[j], spanA1, spanA2, rectOutput) / fitZoom;
+						let x2 = ((bLeft + bRight) / 2 - rectOutput.left) / fitZoom;
+						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput) / fitZoom;
 
 						const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
 						x1 += correction;
@@ -475,6 +561,9 @@
 	}
 
 	run(() => {
+		// fitZoom referenced so a fit-driven layout change (resize / margin
+		// shrink / zoom apply) re-runs drawLines under the new scale.
+		void fitZoom;
 		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	});
 	run(() => {
@@ -560,7 +649,10 @@
 	class:bold={fontStyle === 'bold' || fontStyle === 'bold-italic'}
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
-	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	style:padding={fitPadX !== null
+		? `${outputMargin.top}px ${fitPadX}px ${outputMargin.bottom}px ${fitPadX}px`
+		: `${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	style:zoom={fitZoom < 1 ? fitZoom : null}
 	class:margin-adjusting={marginDrag !== null}
 >
 	<!-- Visual bands (pink tint + blueprint dimension annotation). Non-
