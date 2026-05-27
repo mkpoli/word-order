@@ -1693,14 +1693,15 @@ ${svgString}
 			0 0 0 1px var(--page-border-soft, #eeeeee);
 	}
 
-	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
-	   so .output's overflow stays visible and the ::after editing indicator
-	   below the box can render. Padding gives the inner <output>'s rim shadow
-	   room to render before .output-scroll's overflow clips it. */
+	/* `overflow-x: hidden` rather than `auto` now that Output.svelte's fit
+	   pipeline guarantees the diagram never visually exceeds this container's
+	   width (margins shrink first, then CSS zoom). The horizontal scrollbar
+	   used to show up even when fit had reduced the content to the container
+	   size — sub-pixel rounding kept browsers reserving the scrollbar gutter.
+	   The flex centring stays so a narrower diagram still centres horizontally. */
 	.output-scroll {
-		overflow-x: auto;
+		overflow-x: hidden;
 		overflow-y: hidden;
-		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
 		/* Centre the <output> when it fits; the flex container still scrolls
 		   horizontally when the diagram exceeds the viewport because the inner
