@@ -25,6 +25,7 @@ const createLL = () => ({
 		endpointCorrection: m.params_endpoint_correction,
 		curvature: m.params_curvature,
 		textAlignment: m.params_text_alignment,
+		tagAlignment: m.params_tag_alignment,
 		displayLanguage: m.params_display_language,
 		text: m.params_text,
 		fontFamily: m.params_font_family,

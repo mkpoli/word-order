@@ -74,6 +74,7 @@
 		endpointCorrection: number;
 		curvature?: number;
 		alignment?: Alignment;
+		tagAlignment?: Alignment;
 		fontFamily: FontFamily;
 		fontStyle: FontStyle;
 		fontSize: number;
@@ -112,6 +113,7 @@
 		endpointCorrection,
 		curvature = 1,
 		alignment = 'center',
+		tagAlignment = 'left',
 		fontFamily,
 		fontStyle,
 		fontSize,
@@ -691,7 +693,15 @@
 					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
 					</div>
-					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
+					<span
+						class="tag"
+						style:transform={getTransform(i, draggingOffset)}
+						style:justify-self={tagAlignment === 'center'
+							? 'center'
+							: tagAlignment === 'right'
+								? 'end'
+								: 'start'}
+					>
 						<span class="tag-text">{currentLabel}</span>
 						<button
 							type="button"

@@ -121,6 +121,7 @@
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
 	let alignment: Alignment = $state('center');
+	let tagAlignment: Alignment = $state('left');
 	let fontFamily: FontFamily = $state('default');
 	let fontStyle: FontStyle = $state('normal');
 	let fontSize = $state(15);
@@ -261,6 +262,7 @@
 		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
 		if (typeof stored.curvature === 'number') curvature = stored.curvature;
 		if (stored.alignment && ALIGNMENTS.includes(stored.alignment)) alignment = stored.alignment;
+		if (stored.tagAlignment && ALIGNMENTS.includes(stored.tagAlignment)) tagAlignment = stored.tagAlignment;
 		if (stored.fontFamily && FONT_FAMILIES.includes(stored.fontFamily)) fontFamily = stored.fontFamily;
 		if (stored.fontStyle && FONT_STYLES.includes(stored.fontStyle)) fontStyle = stored.fontStyle;
 		if (typeof stored.fontSize === 'number') fontSize = stored.fontSize;
@@ -1006,6 +1008,7 @@ ${svgString}
 			endpointCorrection,
 			curvature,
 			alignment,
+			tagAlignment,
 			fontFamily,
 			fontStyle,
 			fontSize,
@@ -1325,6 +1328,7 @@ ${svgString}
 					{equivalency}
 					pendingIndices={pendingSentenceSet}
 					{alignment}
+					{tagAlignment}
 					bind:lines
 					colors={displayColors}
 					{verticalGap}
@@ -1444,6 +1448,7 @@ ${svgString}
 			bind:endpointCorrection
 			bind:curvature
 			bind:alignment
+			bind:tagAlignment
 			bind:fontFamily
 			bind:fontStyle
 			bind:fontSize

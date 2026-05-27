@@ -19,6 +19,7 @@
 		endpointCorrection?: number;
 		curvature?: number;
 		alignment?: Alignment;
+		tagAlignment?: Alignment;
 		fontFamily?: FontFamily;
 		fontStyle?: FontStyle;
 		fontSize?: number;
@@ -40,6 +41,7 @@
 		endpointCorrection = $bindable(0),
 		curvature = $bindable(1),
 		alignment = $bindable('center'),
+		tagAlignment = $bindable('left'),
 		fontFamily = $bindable('default'),
 		fontStyle = $bindable('normal'),
 		fontSize = $bindable(15),
@@ -165,6 +167,19 @@
 		<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
 		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
 		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
+	</div>
+
+	<label for="tag-alignment">
+		<iconify-icon icon="mdi:tag-text-outline" inline="true"></iconify-icon>
+		{$LL.params.tagAlignment()}
+	</label>
+	<div class="alignment">
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="left" id="tag-alignment-left" />
+		<label for="tag-alignment-left"><iconify-icon icon="ic:round-format-align-left"></iconify-icon></label>
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="center" id="tag-alignment-center" />
+		<label for="tag-alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="right" id="tag-alignment-right" />
+		<label for="tag-alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
 	</div>
 
 	<label for="font-family">
@@ -299,18 +314,18 @@
 		margin: 0;
 	}
 
-	input[type='radio'][name='alignment']:checked + label {
+	.alignment > input[type='radio']:checked + label {
 		color: white;
 		background-color: var(--color-inactive);
 		border: 1px solid var(--color-inactive);
 	}
 
-	.alignment:focus-within > input[type='radio'][name='alignment']:checked + label {
+	.alignment:focus-within > input[type='radio']:checked + label {
 		background-color: var(--color-accent);
 		border-color: var(--color-accent);
 	}
 
-	input[type='radio'][name='alignment'] {
+	.alignment > input[type='radio'] {
 		position: absolute;
 		opacity: 0;
 		cursor: pointer;
@@ -318,7 +333,7 @@
 		width: 0;
 	}
 
-	input[type='radio'][name='alignment'] + label {
+	.alignment > input[type='radio'] + label {
 		cursor: pointer;
 	}
 
