@@ -719,7 +719,6 @@
 						{#if meta}
 							<span
 								class="tag-meta"
-								class:customised={metaCustomised}
 								lang={metaCustomised ? undefined : 'en'}
 								title={metaCustomised ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
 								contenteditable="plaintext-only"
@@ -1066,12 +1065,10 @@
 		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
 	}
 
-	/* Customised state: italic + accent colour. Mirrors the tag-text override
-	   pattern so both inline-editable language fields share the same affordance. */
-	.tag-meta.customised {
-		font-style: italic;
-		color: var(--color-accent);
-	}
+	/* No .tag-meta.customised style on purpose. Same UX rule as the language
+	   tag (#126): the final-render diagram must look identical whether the
+	   chip is auto-generated or a user override. The "this is custom" hint
+	   lives in the input side of the UI, not in the output the user exports. */
 
 	.tag-rename {
 		appearance: none;
