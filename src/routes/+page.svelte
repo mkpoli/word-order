@@ -1414,12 +1414,6 @@ ${svgString}
 						if (displayName === undefined) delete target.displayName;
 						else target.displayName = displayName;
 					}}
-					on:renameMeta={({ detail: { sentence, displayMeta } }) => {
-						const target = sentences[sentence];
-						if (!target) return;
-						if (displayMeta === undefined) delete target.displayMeta;
-						else target.displayMeta = displayMeta;
-					}}
 					on:openRenameLanguage={({ detail: { sentence } }) => {
 						renameLangSentenceIndex = sentence;
 						renameLangOpen = true;
@@ -1433,8 +1427,15 @@ ${svgString}
 		<SentenceInput
 			on:submit={onsubmit}
 			on:openTranslate={() => (translatePopoverOpen = true)}
+			on:renameMeta={({ detail: { sentence, displayMeta } }) => {
+				const target = sentences[sentence];
+				if (!target) return;
+				if (displayMeta === undefined) delete target.displayMeta;
+				else target.displayMeta = displayMeta;
+			}}
 			{modifying}
 			{sentences}
+			{showLangMeta}
 			bind:text={editingText}
 			bind:annotationsAbove={editingAnnotationsAbove}
 			bind:annotationsBelow={editingAnnotationsBelow}

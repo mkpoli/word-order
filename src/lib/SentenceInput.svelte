@@ -3,6 +3,7 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import { getLanguageName } from './lang';
+	import { getLangMeta } from './lang-meta';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import { tokenizeSentence } from './tokenize';
 	import type { AnnotationPosition, Sentence } from './types';
@@ -18,6 +19,10 @@
 		/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
 		annotationsBelow?: string[][];
 		glossEnabled?: boolean;
+		/** Whether the linguistic-metadata chip is enabled in Parameters. When
+		 * false, no point showing the meta-edit field — it'd refer to a row
+		 * the user has chosen not to display. */
+		showLangMeta?: boolean;
 	}
 
 	let {
@@ -26,11 +31,15 @@
 		text = $bindable(''),
 		annotationsAbove = $bindable([]),
 		annotationsBelow = $bindable([]),
-		glossEnabled = $bindable(false)
+		glossEnabled = $bindable(false),
+		showLangMeta = false
 	}: Props = $props();
 
 	let lang = $state('en');
 	let displayName = $state('English');
+	let displayMeta = $state('');
+	let defaultMetaText = $state('');
+	let displayMetaIsCustomised = $state(false);
 
 	let previousLang = 'en';
 
@@ -68,6 +77,10 @@
 			showGloss: boolean;
 		};
 		openTranslate: void;
+		renameMeta: {
+			sentence: number;
+			displayMeta: string | undefined;
+		};
 	}>();
 
 	let empty = $state(false);
@@ -131,6 +144,26 @@
 
 	run(() => {
 		displayName = getLanguageName(lang, $locale);
+	});
+
+	// Linguistic-metadata chip: track the auto-generated default + whether the
+	// currently-modified sentence has an override so the input next to the
+	// lang field can italic+accent itself when the user is editing a custom
+	// value. The diagram never gets this styling — that's the whole point of
+	// keeping editing on the input side (see UX memory).
+	run(() => {
+		const m = getLangMeta(lang);
+		defaultMetaText = m ? `${m.family[m.family.length - 1]} · ${m.typology} · ${m.morphology}` : '';
+	});
+	run(() => {
+		if (modifying !== -1) {
+			const override = sentences[modifying]?.displayMeta;
+			displayMeta = override ?? '';
+			displayMetaIsCustomised = override !== undefined;
+		} else {
+			displayMeta = '';
+			displayMetaIsCustomised = false;
+		}
 	});
 	run(() => {
 		syncLanes(text);
@@ -274,6 +307,37 @@
 				{/if}
 			</div>
 		</div>
+		{#if modifying !== -1 && showLangMeta && defaultMetaText}
+			<!-- Linguistic-metadata editor. Only appears in modify mode and when
+			     the Parameters chip is enabled, since editing a row the user has
+			     chosen not to display would be confusing. The italic + accent
+			     styling lives here on the input side only — the diagram chip
+			     stays plain regardless, so the exported artifact is always the
+			     same shape (see UX feedback memory). -->
+			<div class="meta-row">
+				<label for="display-meta" class:customised={displayMetaIsCustomised}>{$LL.params.showLangMeta()}</label>
+				<input
+					type="text"
+					id="display-meta"
+					bind:value={displayMeta}
+					placeholder={defaultMetaText}
+					class:customised={displayMetaIsCustomised}
+					onblur={() => {
+						const value = displayMeta.trim();
+						dispatch('renameMeta', { sentence: modifying, displayMeta: value === '' ? undefined : value });
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							(e.currentTarget as HTMLInputElement).blur();
+						} else if (e.key === 'Escape') {
+							displayMeta = sentences[modifying]?.displayMeta ?? '';
+							(e.currentTarget as HTMLInputElement).blur();
+						}
+					}}
+				/>
+			</div>
+		{/if}
 		<div class="guidance">
 			<iconify-icon icon="ph:info" width="1.5em" height="1.5em"></iconify-icon>
 			<p>
@@ -324,9 +388,10 @@
 			't t t'
 			'g g g'
 			'l n b'
+			'm m m'
 			'i i i';
 
-		grid-template-rows: 1fr auto auto auto;
+		grid-template-rows: 1fr auto auto auto auto;
 
 		gap: 1em;
 
@@ -334,6 +399,42 @@
 
 		justify-self: stretch;
 		align-items: center;
+	}
+
+	.meta-row {
+		grid-area: m;
+		display: grid;
+		grid-template-columns: minmax(8em, max-content) 1fr;
+		gap: 0.6em;
+		align-items: center;
+	}
+
+	.meta-row > label {
+		font-size: 0.92em;
+		color: var(--color-text-muted);
+		justify-self: end;
+	}
+
+	.meta-row > input {
+		width: 100%;
+		padding: 0.35em 0.6em;
+		background: var(--color-surface);
+		color: var(--color-text);
+		border: 1px solid var(--color-border);
+		border-radius: 0.25em;
+		font-size: 0.92em;
+	}
+
+	/* Italic + accent on both the label and the input value when the meta is
+	   user-customised — mirrors the lang-rename customised affordance. */
+	.meta-row > label.customised,
+	.meta-row > input.customised {
+		font-style: italic;
+		color: var(--color-accent-text);
+	}
+
+	.meta-row > input.customised {
+		border-color: var(--color-accent);
 	}
 
 	:global(code) {
@@ -645,6 +746,7 @@
 				'n n n'
 				'l l l'
 				'b b b'
+				'm m m'
 				'i i i';
 		}
 
