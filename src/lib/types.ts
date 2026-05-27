@@ -21,6 +21,8 @@ export type Sentence = {
 	showGloss: boolean;
 	/** Optional override for the displayed language label. When unset, `getLanguageName(lang, locale)` is used. */
 	displayName?: string;
+	/** Optional override for the language-metadata chip line. When unset, the auto-generated `family · typology · morphology` line from `lang-meta.ts` is shown. Empty string is treated as "hide the chip for this sentence". */
+	displayMeta?: string;
 };
 
 export type LegacySentence = [lang: string, words: string[]];
@@ -123,7 +125,17 @@ export function normalizeSentence(sentence: SentenceData): Sentence {
 		const lanesAbove = (sentence as { lanesAbove?: number }).lanesAbove ?? tokens.reduce((max, t) => Math.max(max, t.annotationsAbove.length), 0);
 		const lanesBelow = (sentence as { lanesBelow?: number }).lanesBelow ?? tokens.reduce((max, t) => Math.max(max, t.annotationsBelow.length), 0);
 		const showGloss = sentence.showGloss ?? tokens.some((t) => t.annotationsAbove.some(Boolean) || t.annotationsBelow.some(Boolean));
-		return normalizeLanes({ lang: sentence.lang, tokens, lanesAbove, lanesBelow, showGloss });
+		const displayName = (sentence as { displayName?: string }).displayName;
+		const displayMeta = (sentence as { displayMeta?: string }).displayMeta;
+		return normalizeLanes({
+			lang: sentence.lang,
+			tokens,
+			lanesAbove,
+			lanesBelow,
+			showGloss,
+			...(displayName !== undefined ? { displayName } : {}),
+			...(displayMeta !== undefined ? { displayMeta } : {})
+		});
 	}
 
 	const sentenceObject = sentence as {

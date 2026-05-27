@@ -48,6 +48,10 @@
 		openRenameLanguage: {
 			sentence: number;
 		};
+		renameMeta: {
+			sentence: number;
+			displayMeta: string | undefined;
+		};
 	}>();
 
 	interface Props {
@@ -692,6 +696,9 @@
 				{@const defaultLabel = getLanguageName(lang, $locale)}
 				{@const currentLabel = sentence.displayName ?? defaultLabel}
 				{@const meta = showLangMeta ? getLangMeta(lang) : null}
+				{@const defaultMetaText = meta ? `${meta.family[meta.family.length - 1]} · ${meta.typology} · ${meta.morphology}` : ''}
+				{@const currentMetaText = sentence.displayMeta ?? defaultMetaText}
+				{@const metaCustomised = sentence.displayMeta !== undefined && sentence.displayMeta !== defaultMetaText}
 				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
 					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
@@ -710,9 +717,30 @@
 							</button>
 						</span>
 						{#if meta}
-							<span class="tag-meta" lang="en" title="{meta.family.join(' · ')} · {meta.typology} · {meta.morphology} · {meta.script}">
-								{meta.family[meta.family.length - 1]} · {meta.typology} · {meta.morphology}
-							</span>
+							<span
+								class="tag-meta"
+								class:customised={metaCustomised}
+								lang={metaCustomised ? undefined : 'en'}
+								title={metaCustomised ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
+								contenteditable="plaintext-only"
+								spellcheck="false"
+								onblur={(e) => {
+									const value = (e.currentTarget as HTMLElement).innerText.trim();
+									// Empty → revert to auto-generated default; otherwise store as override.
+									// Storing the user's text even when it equals the default lets us keep the
+									// customised italic state stable until they explicitly clear the field.
+									dispatch('renameMeta', { sentence: i, displayMeta: value === '' ? undefined : value });
+								}}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										e.preventDefault();
+										(e.currentTarget as HTMLElement).blur();
+									} else if (e.key === 'Escape') {
+										(e.currentTarget as HTMLElement).innerText = currentMetaText;
+										(e.currentTarget as HTMLElement).blur();
+									}
+								}}>{currentMetaText}</span
+							>
 						{/if}
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
@@ -1029,6 +1057,20 @@
 		letter-spacing: 0.02em;
 		white-space: nowrap;
 		font-feature-settings: 'tnum';
+		outline: none;
+		cursor: text;
+		border-radius: 0.2em;
+	}
+
+	.tag-meta:focus {
+		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
+	}
+
+	/* Customised state: italic + accent colour. Mirrors the tag-text override
+	   pattern so both inline-editable language fields share the same affordance. */
+	.tag-meta.customised {
+		font-style: italic;
+		color: var(--color-accent);
 	}
 
 	.tag-rename {
