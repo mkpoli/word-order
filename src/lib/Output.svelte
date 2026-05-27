@@ -48,6 +48,10 @@
 		openRenameLanguage: {
 			sentence: number;
 		};
+		renameMeta: {
+			sentence: number;
+			displayMeta: string | undefined;
+		};
 	}>();
 
 	interface Props {
@@ -713,17 +717,30 @@
 							</button>
 						</span>
 						{#if meta}
-							<!-- Display-only. Editing the chip happens in SentenceInput so the
-						     final-render diagram never changes appearance when the user
-						     customises the metadata, per UX feedback. The `metaCustomised`
-						     branch drops the `lang="en"` hint and the auto-generated title
-						     attribute because both stop being meaningful once the text is
-						     no longer the structured Family · Typology · Morphology string. -->
+							<!-- Inline-editable like the language tag in #126, but never
+							     visually different when customised. The italic + accent
+							     affordance for the customised state lives in
+							     SentenceInput's meta-row, so the diagram (and any export
+							     of it) stays identical regardless of overrides. -->
 							<span
 								class="tag-meta"
 								lang={metaCustomised ? undefined : 'en'}
 								title={metaCustomised ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
-								>{currentMetaText}</span
+								contenteditable="plaintext-only"
+								spellcheck="false"
+								onblur={(e) => {
+									const value = (e.currentTarget as HTMLElement).innerText.trim();
+									dispatch('renameMeta', { sentence: i, displayMeta: value === '' ? undefined : value });
+								}}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										e.preventDefault();
+										(e.currentTarget as HTMLElement).blur();
+									} else if (e.key === 'Escape') {
+										(e.currentTarget as HTMLElement).innerText = currentMetaText;
+										(e.currentTarget as HTMLElement).blur();
+									}
+								}}>{currentMetaText}</span
 							>
 						{/if}
 					</span>
@@ -1033,9 +1050,10 @@
 	}
 
 	/* The linguistic-metadata chip sits under the language label in a small
-	   muted style — informational, never the eye-catcher. Display-only here;
-	   editing happens in SentenceInput so the final-render diagram is
-	   identical whether the chip is auto-generated or a user override. */
+	   muted style — informational, never the eye-catcher. Inline-editable
+	   (contenteditable), but no italic/accent for the customised state: that
+	   styling lives in SentenceInput's meta-row, so the final-render diagram
+	   looks identical whether the chip is auto-generated or a user override. */
 	.tag-meta {
 		font-size: 0.62em;
 		font-weight: normal;
@@ -1043,6 +1061,13 @@
 		letter-spacing: 0.02em;
 		white-space: nowrap;
 		font-feature-settings: 'tnum';
+		outline: none;
+		cursor: text;
+		border-radius: 0.2em;
+	}
+
+	.tag-meta:focus {
+		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
 	}
 
 	.tag-rename {
