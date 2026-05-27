@@ -696,11 +696,7 @@
 					<span
 						class="tag"
 						style:transform={getTransform(i, draggingOffset)}
-						style:justify-self={tagAlignment === 'center'
-							? 'center'
-							: tagAlignment === 'right'
-								? 'end'
-								: 'start'}
+						style:justify-self={tagAlignment === 'center' ? 'center' : tagAlignment === 'right' ? 'end' : 'start'}
 					>
 						<span class="tag-text">{currentLabel}</span>
 						<button
