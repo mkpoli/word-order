@@ -1435,7 +1435,7 @@ ${svgString}
 			}}
 			{modifying}
 			{sentences}
-			{showLangMeta}
+			bind:showLangMeta
 			bind:text={editingText}
 			bind:annotationsAbove={editingAnnotationsAbove}
 			bind:annotationsBelow={editingAnnotationsBelow}
@@ -1462,7 +1462,6 @@ ${svgString}
 			bind:spaceWidth
 			bind:letterSpacing
 			bind:tokenGap
-			bind:showLangMeta
 			bind:palette
 		/>
 	</div>

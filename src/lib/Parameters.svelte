@@ -26,7 +26,6 @@
 		spaceWidth?: number;
 		letterSpacing?: number;
 		tokenGap?: number;
-		showLangMeta?: boolean;
 		palette?: PaletteId;
 	}
 
@@ -48,7 +47,6 @@
 		spaceWidth = $bindable(4),
 		letterSpacing = $bindable(0),
 		tokenGap = $bindable(0),
-		showLangMeta = $bindable(false),
 		palette = $bindable(DEFAULT_PALETTE)
 	}: Props = $props();
 
@@ -220,15 +218,6 @@
 		{$LL.params.tokenGap()}
 	</label>
 	<RangeSlider bind:value={tokenGap} id="token-gap" min={0} max={20} step={0.5} suffix=" px" />
-
-	<label for="show-lang-meta">
-		<iconify-icon icon="mdi:information-outline" inline="true"></iconify-icon>
-		{$LL.params.showLangMeta()}
-	</label>
-	<label class="halo-toggle">
-		<input type="checkbox" id="show-lang-meta" bind:checked={showLangMeta} />
-		<span>{$LL.params.showLangMetaOn()}</span>
-	</label>
 </fieldset>
 
 <fieldset>
