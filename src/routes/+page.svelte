@@ -947,15 +947,27 @@ ${svgString}
 	 * 14 PDF fonts have no glyphs for those scripts and svg2pdf produces
 	 * unreadable mojibake otherwise.
 	 */
+	function isLatinScript(s: string): boolean {
+		for (const ch of s) {
+			const cp = ch.codePointAt(0);
+			if (cp === undefined) continue;
+			if (cp >= 0x20 && cp <= 0x2ff) continue;
+			if (cp >= 0x300 && cp <= 0x36f) continue;
+			if (cp >= 0x2000 && cp <= 0x206f) continue;
+			if (cp === 0x09 || cp === 0x0a || cp === 0x0d) continue;
+			return false;
+		}
+		return true;
+	}
+
 	function pdfNeedsRaster(): boolean {
-		const latinOnly = /^[ -˿̀-ͯ -⁯\s]*$/;
 		for (const s of sentences) {
 			for (const t of s.tokens) {
-				if (!latinOnly.test(t.text)) return true;
-				for (const ann of t.annotationsAbove) if (!latinOnly.test(ann)) return true;
-				for (const ann of t.annotationsBelow) if (!latinOnly.test(ann)) return true;
+				if (!isLatinScript(t.text)) return true;
+				for (const ann of t.annotationsAbove) if (!isLatinScript(ann)) return true;
+				for (const ann of t.annotationsBelow) if (!isLatinScript(ann)) return true;
 			}
-			if (s.displayName && !latinOnly.test(s.displayName)) return true;
+			if (s.displayName && !isLatinScript(s.displayName)) return true;
 		}
 		return false;
 	}
