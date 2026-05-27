@@ -121,7 +121,7 @@
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
 	let alignment: Alignment = $state('center');
-	let tagAlignment: Alignment = $state('left');
+	let tagAlignment: Alignment = $state('center');
 	let fontFamily: FontFamily = $state('default');
 	let fontStyle: FontStyle = $state('normal');
 	let fontSize = $state(15);

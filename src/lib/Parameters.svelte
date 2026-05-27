@@ -41,7 +41,7 @@
 		endpointCorrection = $bindable(0),
 		curvature = $bindable(1),
 		alignment = $bindable('center'),
-		tagAlignment = $bindable('left'),
+		tagAlignment = $bindable('center'),
 		fontFamily = $bindable('default'),
 		fontStyle = $bindable('normal'),
 		fontSize = $bindable(15),

@@ -113,7 +113,7 @@
 		endpointCorrection,
 		curvature = 1,
 		alignment = 'center',
-		tagAlignment = 'left',
+		tagAlignment = 'center',
 		fontFamily,
 		fontStyle,
 		fontSize,
