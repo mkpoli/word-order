@@ -19,9 +19,10 @@
 		/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
 		annotationsBelow?: string[][];
 		glossEnabled?: boolean;
-		/** Whether the linguistic-metadata chip is enabled in Parameters. When
-		 * false, no point showing the meta-edit field — it'd refer to a row
-		 * the user has chosen not to display. */
+		/** Master toggle for the linguistic-metadata chip. Lives here in the
+		 * Input fieldset alongside the rest of the language controls so the
+		 * grouping is "everything about this language" instead of being split
+		 * between Input and the Parameters → Text panel. */
 		showLangMeta?: boolean;
 	}
 
@@ -32,7 +33,7 @@
 		annotationsAbove = $bindable([]),
 		annotationsBelow = $bindable([]),
 		glossEnabled = $bindable(false),
-		showLangMeta = false
+		showLangMeta = $bindable(false)
 	}: Props = $props();
 
 	let lang = $state('en');
@@ -307,21 +308,30 @@
 				{/if}
 			</div>
 		</div>
-		{#if modifying !== -1 && showLangMeta && defaultMetaText}
-			<!-- Linguistic-metadata editor. Only appears in modify mode and when
-			     the Parameters chip is enabled, since editing a row the user has
-			     chosen not to display would be confusing. The italic + accent
-			     styling lives here on the input side only — the diagram chip
-			     stays plain regardless, so the exported artifact is always the
-			     same shape (see UX feedback memory). -->
-			<div class="meta-row">
-				<label for="display-meta" class:customised={displayMetaIsCustomised}>{$LL.params.showLangMeta()}</label>
+		<!-- Linguistic-metadata controls. Both the toggle and the per-sentence
+		     editor live here in the Input fieldset (rather than the Parameters
+		     panel) so all "stuff about this language" is grouped together.
+		     Italic + accent on the customised state appears here only — the
+		     diagram chip stays plain so the exported artifact is identical
+		     for default vs override. -->
+		<div class="meta-row">
+			<label for="show-lang-meta" class="meta-toggle-label">
+				<iconify-icon icon="mdi:information-outline" inline="true"></iconify-icon>
+				{$LL.params.showLangMeta()}
+			</label>
+			<label class="meta-toggle">
+				<input type="checkbox" id="show-lang-meta" bind:checked={showLangMeta} disabled={!defaultMetaText} />
+				<span>{$LL.params.showLangMetaOn()}</span>
+			</label>
+			{#if modifying !== -1 && showLangMeta && defaultMetaText}
 				<input
 					type="text"
 					id="display-meta"
+					class="meta-input"
+					class:customised={displayMetaIsCustomised}
 					bind:value={displayMeta}
 					placeholder={defaultMetaText}
-					class:customised={displayMetaIsCustomised}
+					aria-label={$LL.params.showLangMeta()}
 					onblur={() => {
 						const value = displayMeta.trim();
 						dispatch('renameMeta', { sentence: modifying, displayMeta: value === '' ? undefined : value });
@@ -336,8 +346,8 @@
 						}
 					}}
 				/>
-			</div>
-		{/if}
+			{/if}
+		</div>
 		<div class="guidance">
 			<iconify-icon icon="ph:info" width="1.5em" height="1.5em"></iconify-icon>
 			<p>
@@ -405,17 +415,42 @@
 		grid-area: m;
 		display: grid;
 		grid-template-columns: minmax(8em, max-content) 1fr;
-		gap: 0.6em;
+		row-gap: 0.4em;
+		column-gap: 0.6em;
 		align-items: center;
 	}
 
-	.meta-row > label {
+	.meta-toggle-label {
 		font-size: 0.92em;
 		color: var(--color-text-muted);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
 		justify-self: end;
 	}
 
-	.meta-row > input {
+	.meta-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		font-size: 0.92em;
+		color: var(--color-text-muted);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
+	.meta-toggle input[type='checkbox']:disabled {
+		opacity: 0.45;
+	}
+
+	.meta-toggle:has(input:disabled) {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	.meta-input {
+		/* Sit in the second column on its own row, lining up under the toggle. */
+		grid-column: 2 / 3;
 		width: 100%;
 		padding: 0.35em 0.6em;
 		background: var(--color-surface);
@@ -425,15 +460,11 @@
 		font-size: 0.92em;
 	}
 
-	/* Italic + accent on both the label and the input value when the meta is
-	   user-customised — mirrors the lang-rename customised affordance. */
-	.meta-row > label.customised,
-	.meta-row > input.customised {
+	/* Italic + accent on the customised state — mirrors the lang-rename
+	   customised affordance. The Output diagram never carries this styling. */
+	.meta-input.customised {
 		font-style: italic;
 		color: var(--color-accent-text);
-	}
-
-	.meta-row > input.customised {
 		border-color: var(--color-accent);
 	}
 
