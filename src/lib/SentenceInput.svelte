@@ -154,7 +154,9 @@
 	// keeping editing on the input side (see UX memory).
 	run(() => {
 		const m = getLangMeta(lang);
-		defaultMetaText = m ? `${m.family[m.family.length - 1]} · ${m.typology} · ${m.morphology}` : '';
+		// Keep this short — typology + morphology only. Mirrors the chip's
+		// default text in Output (the family chain lives in its title attr).
+		defaultMetaText = m ? `${m.typology} · ${m.morphology}` : '';
 	});
 	run(() => {
 		if (modifying !== -1) {
