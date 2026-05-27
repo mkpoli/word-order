@@ -1035,12 +1035,18 @@
 	   outline, or focus ring. Overrides aren't visually distinguished here
 	   so the final-render diagram looks the same whether or not the label
 	   has been customised; the "customised" marker lives in the rename
-	   dialog instead. */
+	   dialog instead.
+
+	   `position: relative` is the anchor for the absolute .tag-meta chip
+	   below — keeping the chip out of the layout flow means it doesn't
+	   inflate the grid row height. If it did, every line drawLines emits
+	   would have to traverse the extra chip-height too, visibly stretching
+	   the connector geometry beyond the configured verticalGap. */
 	.tag {
+		position: relative;
 		display: inline-flex;
 		flex-direction: column;
 		align-items: flex-end;
-		gap: 0.05em;
 	}
 
 	.tag-row {
@@ -1053,8 +1059,18 @@
 	   muted style — informational, never the eye-catcher. Inline-editable
 	   (contenteditable), but no italic/accent for the customised state: that
 	   styling lives in SentenceInput's meta-row, so the final-render diagram
-	   looks identical whether the chip is auto-generated or a user override. */
+	   looks identical whether the chip is auto-generated or a user override.
+
+	   Absolute-positioned below the tag-row so the chip doesn't push the
+	   grid row taller (which would silently stretch connector-line geometry
+	   beyond the configured verticalGap). It sits in the column gutter
+	   between this sentence and the next, on the tag's x-axis — connectors
+	   live in the sentence-body column, so the two don't visually collide. */
 	.tag-meta {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 0.05em;
 		font-size: 0.62em;
 		font-weight: normal;
 		color: var(--color-text-faint);
