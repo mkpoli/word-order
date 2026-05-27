@@ -939,6 +939,27 @@ ${svgString}
 		}
 	}
 
+	/**
+	 * True if any sentence contains a character outside the Latin / Latin-extended
+	 * ranges that svg2pdf's standard PDF fonts (Helvetica / Times / Courier) can
+	 * render. CJK, Greek, Cyrillic, Hebrew, Arabic, Devanagari etc. all trigger
+	 * this — for those we fall back to a raster-embed PDF, because the standard
+	 * 14 PDF fonts have no glyphs for those scripts and svg2pdf produces
+	 * unreadable mojibake otherwise.
+	 */
+	function pdfNeedsRaster(): boolean {
+		const latinOnly = /^[ -˿̀-ͯ -⁯\s]*$/;
+		for (const s of sentences) {
+			for (const t of s.tokens) {
+				if (!latinOnly.test(t.text)) return true;
+				for (const ann of t.annotationsAbove) if (!latinOnly.test(ann)) return true;
+				for (const ann of t.annotationsBelow) if (!latinOnly.test(ann)) return true;
+			}
+			if (s.displayName && !latinOnly.test(s.displayName)) return true;
+		}
+		return false;
+	}
+
 	async function exportPdf() {
 		if (!output) {
 			closeExportMenu();
@@ -955,24 +976,42 @@ ${svgString}
 				hotfixes: ['px_scaling']
 			});
 
-			// Vector PDF: render via the same dom-to-svg pipeline as Export SVG,
-			// then hand the SVG element to svg2pdf so text stays selectable and
-			// lines stay crisp at any zoom (vs. the prior raster-embed PNG).
-			const svgString = buildSvgString();
-			if (!svgString) throw new Error('SVG serialisation failed');
-			const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-			const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
-			// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
-			// Visibility hidden but still in flow so getComputedStyle resolves.
-			const host = document.createElement('div');
-			host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
-			host.appendChild(svgRoot);
-			document.body.appendChild(host);
-			try {
-				const { svg2pdf } = await import('svg2pdf.js');
-				await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
-			} finally {
-				host.remove();
+			if (pdfNeedsRaster()) {
+				// CJK / Cyrillic / Greek / Arabic / Devanagari etc.: svg2pdf can't
+				// embed those glyphs in the standard PDF fonts, so the text comes
+				// out as mojibake. Fall back to the raster-PNG-in-PDF path that
+				// shipped before #109 — text isn't selectable but at least it
+				// renders correctly.
+				const scale = rasterScale;
+				const dataUrl = await domToImage.toPng(output, {
+					width: output.clientWidth * scale,
+					height: output.clientHeight * scale,
+					style: {
+						transform: `scale(${scale})`,
+						transformOrigin: 'top left',
+						'background-color': getExportBackgroundColor()
+					}
+				});
+				pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
+			} else {
+				// Pure Latin: keep the vector path so text stays selectable and
+				// lines stay crisp at any zoom.
+				const svgString = buildSvgString();
+				if (!svgString) throw new Error('SVG serialisation failed');
+				const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+				const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
+				// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
+				// Visibility hidden but still in flow so getComputedStyle resolves.
+				const host = document.createElement('div');
+				host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+				host.appendChild(svgRoot);
+				document.body.appendChild(host);
+				try {
+					const { svg2pdf } = await import('svg2pdf.js');
+					await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
+				} finally {
+					host.remove();
+				}
 			}
 
 			pdf.save(exportFilename('pdf'));
