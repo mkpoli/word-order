@@ -44,9 +44,6 @@
 			sentence: number;
 			displayName: string | undefined;
 		};
-		openRenameLanguage: {
-			sentence: number;
-		};
 	}>();
 
 	interface Props {
@@ -692,16 +689,41 @@
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
 					</div>
 					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
-						<span class="tag-text">{currentLabel}</span>
-						<button
-							type="button"
-							class="tag-rename action"
+						<span
+							class="tag-text"
+							class:tag-text-customised={sentence.displayName !== undefined}
+							contenteditable="true"
+							role="textbox"
+							tabindex="0"
+							spellcheck="false"
 							title={$LL.aria.renameLanguage()}
 							aria-label={$LL.aria.renameLanguage()}
-							onclick={() => dispatch('openRenameLanguage', { sentence: i })}
+							onkeydown={(e) => {
+								if (e.key === 'Enter' || e.key === 'Escape') {
+									e.preventDefault();
+									(e.currentTarget as HTMLElement).blur();
+								}
+							}}
+							onfocus={(e) => {
+								const range = document.createRange();
+								range.selectNodeContents(e.currentTarget as HTMLElement);
+								const sel = window.getSelection();
+								sel?.removeAllRanges();
+								sel?.addRange(range);
+							}}
+							onblur={(e) => {
+								const next = (e.currentTarget.textContent ?? '').replace(/\s+/g, ' ').trim();
+								const previous = sentence.displayName ?? defaultLabel;
+								if (next === previous) {
+									// Restore stale text in case browser left whitespace behind.
+									e.currentTarget.textContent = previous;
+									return;
+								}
+								// Empty input OR typed the default label → clear the override.
+								const displayName = next === '' || next === defaultLabel ? undefined : next;
+								dispatch('renameLanguage', { sentence: i, displayName });
+							}}>{currentLabel}</span
 						>
-							<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
-						</button>
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
 						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
@@ -990,39 +1012,33 @@
 		white-space: nowrap;
 	}
 
-	/* The tag itself is a plain, non-interactive label — no italic, dashed
-	   outline, or focus ring. Overrides aren't visually distinguished here
-	   so the final-render diagram looks the same whether or not the label
-	   has been customised; the "customised" marker lives in the rename
-	   dialog instead. */
-	.tag {
-		display: inline-flex;
-		align-items: baseline;
-		gap: 0.25em;
-	}
-
-	.tag-rename {
-		appearance: none;
-		background: none;
-		border: none;
-		padding: 0.1em 0.2em;
-		cursor: pointer;
-		color: var(--color-text-faint);
-		font-size: 0.85em;
-		line-height: 1;
+	/* Inline-editable tag. The hover ring is a quiet affordance; the focus
+	   ring + accent background says "you're editing now". Italic + accent
+	   border signals "customised" when displayName differs from the default,
+	   no badge or hint paragraph needed. Empty input on blur reverts. */
+	.tag-text {
+		cursor: text;
 		border-radius: 0.2em;
-		opacity: 0;
-		transition: opacity 120ms ease;
+		padding: 0 0.15em;
+		outline: 1px dashed transparent;
+		outline-offset: 1px;
+		transition:
+			outline-color 120ms ease,
+			background-color 120ms ease;
 	}
 
-	.tag:hover .tag-rename,
-	.tag-rename:focus-visible {
-		opacity: 1;
+	.tag-text:hover {
+		outline-color: var(--color-border);
 	}
 
-	.tag-rename:hover {
-		color: var(--color-accent);
-		background: var(--color-hover);
+	.tag-text:focus {
+		outline: 1px solid var(--color-accent);
+		background: var(--color-surface);
+	}
+
+	.tag-text-customised {
+		font-style: italic;
+		color: var(--color-accent-text);
 	}
 
 	.sentence-body {

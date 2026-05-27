@@ -93,16 +93,6 @@ const createLL = () => ({
 		marginRight: m.aria_margin_right,
 		renameLanguage: m.aria_rename_language
 	},
-	renameLanguage: {
-		title: m.rename_language_title,
-		close: m.rename_language_close,
-		defaultLabel: m.rename_language_default_label,
-		customLabel: m.rename_language_custom_label,
-		customised: m.rename_language_customised,
-		reset: m.rename_language_reset,
-		cancel: m.rename_language_cancel,
-		save: m.rename_language_save
-	},
 	dialog: {
 		editing: m.dialog_editing,
 		confirm: m.dialog_confirm,
