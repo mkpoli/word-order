@@ -1680,16 +1680,25 @@
 		opacity: 0.5;
 	}
 
+	/* Pin the diagram's font stack to Noto so the on-screen preview matches
+	   what PDF export embeds via src/lib/pdf-fonts.ts. The PDF embedder runs
+	   the same script-detection (Latin / Hans / Hira+Kata / Hangul) and fetches
+	   a matching Google Fonts subset, so the exported text is the literal same
+	   vector outlines as the preview. */
+	output {
+		font-family: 'Noto Sans', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+	}
+
 	.serif {
-		font-family: serif;
+		font-family: 'Noto Serif', 'Noto Serif SC', 'Noto Serif JP', 'Noto Serif KR', serif;
 	}
 
 	.sans-serif {
-		font-family: sans-serif;
+		font-family: 'Noto Sans', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
 	}
 
 	.monospace {
-		font-family: monospace;
+		font-family: 'Noto Sans Mono', ui-monospace, monospace;
 	}
 
 	.italic {

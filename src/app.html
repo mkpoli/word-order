@@ -6,6 +6,19 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="%sveltekit.assets%/favicon-16x16.png" />
 		<link rel="manifest" href="%sveltekit.assets%/site.webmanifest" />
 		<meta name="viewport" content="width=device-width" />
+		<!--
+			Web fonts for the diagram. Pinning the family means the on-screen preview
+			and the exported PDF render with the same vector outlines instead of
+			whatever the user's OS happens to substitute. The PDF export pipeline
+			(src/lib/pdf-fonts.ts) re-fetches subsetted versions of these via the
+			Google Fonts API and embeds them with jsPDF.
+		-->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+JP:wght@400;700&family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+Mono:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
 		<script>
 			// Apply persisted theme before first paint to avoid flash.
 			(() => {

@@ -939,44 +939,6 @@ ${svgString}
 		}
 	}
 
-	/**
-	 * True if any sentence contains a character outside the Latin / Latin-extended
-	 * ranges that svg2pdf's standard PDF fonts (Helvetica / Times / Courier) can
-	 * render. CJK, Greek, Cyrillic, Hebrew, Arabic, Devanagari etc. all trigger
-	 * this — for those we fall back to a raster-embed PDF, because the standard
-	 * 14 PDF fonts have no glyphs for those scripts and svg2pdf produces
-	 * unreadable mojibake otherwise.
-	 */
-	function isLatinScript(s: string): boolean {
-		for (const ch of s) {
-			const cp = ch.codePointAt(0);
-			if (cp === undefined) continue;
-			if (cp >= 0x20 && cp <= 0x2ff) continue;
-			if (cp >= 0x300 && cp <= 0x36f) continue;
-			if (cp >= 0x2000 && cp <= 0x206f) continue;
-			if (cp === 0x09 || cp === 0x0a || cp === 0x0d) continue;
-			return false;
-		}
-		return true;
-	}
-
-	function pdfNeedsRaster(): boolean {
-		for (const s of sentences) {
-			// The exported header uses displayName when set, else the locale's
-			// translated name for the BCP-47 code (e.g. ja → 日本語). Both need
-			// the raster check — a Latin-only sentence labelled with 日本語 still
-			// produces mojibake in the vector PDF.
-			const label = s.displayName ?? getLanguageName(s.lang, $locale);
-			if (!isLatinScript(label)) return true;
-			for (const t of s.tokens) {
-				if (!isLatinScript(t.text)) return true;
-				for (const ann of t.annotationsAbove) if (!isLatinScript(ann)) return true;
-				for (const ann of t.annotationsBelow) if (!isLatinScript(ann)) return true;
-			}
-		}
-		return false;
-	}
-
 	async function exportPdf() {
 		if (!output) {
 			closeExportMenu();
@@ -993,42 +955,31 @@ ${svgString}
 				hotfixes: ['px_scaling']
 			});
 
-			if (pdfNeedsRaster()) {
-				// CJK / Cyrillic / Greek / Arabic / Devanagari etc.: svg2pdf can't
-				// embed those glyphs in the standard PDF fonts, so the text comes
-				// out as mojibake. Fall back to the raster-PNG-in-PDF path that
-				// shipped before #109 — text isn't selectable but at least it
-				// renders correctly.
-				const scale = rasterScale;
-				const dataUrl = await domToImage.toPng(output, {
-					width: output.clientWidth * scale,
-					height: output.clientHeight * scale,
-					style: {
-						transform: `scale(${scale})`,
-						transformOrigin: 'top left',
-						'background-color': getExportBackgroundColor()
-					}
-				});
-				pdf.addImage(dataUrl, 'PNG', 0, 0, widthPx, heightPx, undefined, 'FAST');
-			} else {
-				// Pure Latin: keep the vector path so text stays selectable and
-				// lines stay crisp at any zoom.
-				const svgString = buildSvgString();
-				if (!svgString) throw new Error('SVG serialisation failed');
-				const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-				const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
-				// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
-				// Visibility hidden but still in flow so getComputedStyle resolves.
-				const host = document.createElement('div');
-				host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
-				host.appendChild(svgRoot);
-				document.body.appendChild(host);
-				try {
-					const { svg2pdf } = await import('svg2pdf.js');
-					await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
-				} finally {
-					host.remove();
-				}
+			// Vector PDF unconditionally. The pdf-fonts pipeline fetches a
+			// subsetted Noto woff2 for whatever scripts the diagram actually
+			// uses, decodes it to TTF, and registers it with this jsPDF so
+			// svg2pdf can embed real glyphs — no more mojibake for non-Latin
+			// text, no raster fallback, no loss of selectable text or vector
+			// crispness.
+			const svgString = buildSvgString();
+			if (!svgString) throw new Error('SVG serialisation failed');
+			const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+			const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
+
+			const { registerSvgFonts } = await import('$lib/pdf-fonts');
+			await registerSvgFonts(svgRoot, pdf);
+
+			// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
+			// Visibility hidden but still in flow so getComputedStyle resolves.
+			const host = document.createElement('div');
+			host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+			host.appendChild(svgRoot);
+			document.body.appendChild(host);
+			try {
+				const { svg2pdf } = await import('svg2pdf.js');
+				await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
+			} finally {
+				host.remove();
 			}
 
 			pdf.save(exportFilename('pdf'));
