@@ -156,29 +156,36 @@
 		{$LL.params.text()}
 	</legend>
 
-	<label for="alignment">
+	<label id="text-alignment-label">
 		<iconify-icon icon="mdi:format-align-justify" inline="true"></iconify-icon>
 		{$LL.params.textAlignment()}
 	</label>
-	<div class="alignment">
-		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
+	<div class="alignment" role="radiogroup" aria-labelledby="text-alignment-label">
+		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" aria-label={$LL.params.alignLeft()} />
 		<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left"></iconify-icon></label>
-		<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" />
+		<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" aria-label={$LL.params.alignCenter()} />
 		<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
-		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
+		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" aria-label={$LL.params.alignRight()} />
 		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
 	</div>
 
-	<label for="tag-alignment">
+	<label id="tag-alignment-label">
 		<iconify-icon icon="mdi:tag-text-outline" inline="true"></iconify-icon>
 		{$LL.params.tagAlignment()}
 	</label>
-	<div class="alignment">
-		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="left" id="tag-alignment-left" />
+	<div class="alignment" role="radiogroup" aria-labelledby="tag-alignment-label">
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="left" id="tag-alignment-left" aria-label={$LL.params.alignLeft()} />
 		<label for="tag-alignment-left"><iconify-icon icon="ic:round-format-align-left"></iconify-icon></label>
-		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="center" id="tag-alignment-center" />
+		<input
+			type="radio"
+			bind:group={tagAlignment}
+			name="tag-alignment"
+			value="center"
+			id="tag-alignment-center"
+			aria-label={$LL.params.alignCenter()}
+		/>
 		<label for="tag-alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
-		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="right" id="tag-alignment-right" />
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="right" id="tag-alignment-right" aria-label={$LL.params.alignRight()} />
 		<label for="tag-alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
 	</div>
 
