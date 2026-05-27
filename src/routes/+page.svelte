@@ -1824,6 +1824,24 @@ ${svgString}
 		}
 	}
 
+	/* On narrow viewports the page-edge padding eats space the diagram could
+	   otherwise use before fit-to-width has to zoom it down. Drop the main
+	   padding progressively so the diagram gets the full viewport width to
+	   work with before the CSS-zoom stage of the fit pipeline kicks in. */
+	@media (max-width: 720px) {
+		main {
+			padding: 0.5em;
+			gap: 1em;
+		}
+	}
+
+	@media (max-width: 480px) {
+		main {
+			padding: 0.25em;
+			gap: 0.75em;
+		}
+	}
+
 	.menu {
 		display: flex;
 		flex-wrap: wrap;
