@@ -727,7 +727,10 @@
 				{@const defaultLabel = getLanguageName(lang, $locale)}
 				{@const currentLabel = sentence.displayName ?? defaultLabel}
 				{@const meta = showLangMeta ? getLangMeta(lang) : null}
-				{@const defaultMetaText = meta ? `${meta.family[meta.family.length - 1]} · ${meta.typology} · ${meta.morphology}` : ''}
+				<!-- Default chip text is intentionally minimal — just typology +
+			     morphology. The family chain stays in the title attribute (hover)
+			     for users who want the full lineage. -->
+				{@const defaultMetaText = meta ? `${meta.typology} · ${meta.morphology}` : ''}
 				{@const currentMetaText = sentence.displayMeta ?? defaultMetaText}
 				{@const metaCustomised = sentence.displayMeta !== undefined && sentence.displayMeta !== defaultMetaText}
 				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
