@@ -82,7 +82,7 @@
 	"dialog_cancel": "취소",
 	"confirm_delete_sentence": "이 문장을 삭제하시겠습니까?",
 	"confirm_new": "새로운 삽화를 만드시겠습니까? 이 기능은 모든 데이터를 삭제합니다!",
-	"confirm_import": "이 파일을 가져올까요? 현재 문장과 연결은 대체됩니다.",
+	"confirm_import": "이 파일을 가져올까요? 현재 문장과 연결이 대체됩니다.",
 	"confirm_load_example": "\"{name}\" 예시를 불러올까요? 현재 문장과 연결이 교체됩니다.",
 	"menu_new": "새로 만들기",
 	"menu_import": "가져오기",

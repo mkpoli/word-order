@@ -82,7 +82,7 @@
 	"dialog_cancel": "Hủy",
 	"confirm_delete_sentence": "Bạn có chắc muốn xóa câu này không?",
 	"confirm_new": "Bạn có chắc muốn tạo minh họa mới không? Thao tác này sẽ xóa mọi thứ.",
-	"confirm_import": "Nhập tệp này? Các câu và liên kết hiện tại của bạn sẽ bị thay thế.",
+	"confirm_import": "Nhập tệp này? Các câu và kết nối hiện tại sẽ bị thay thế.",
 	"confirm_load_example": "Tải ví dụ \"{name}\"? Các câu và liên kết hiện tại sẽ bị thay thế.",
 	"menu_new": "Mới",
 	"menu_import": "Nhập",
