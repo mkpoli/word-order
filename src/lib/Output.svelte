@@ -573,6 +573,14 @@
 		// OLD colours on the SVG strokes even after the equivalency rows
 		// have shifted to their new arrangement.
 		void colors;
+		// draggingOffset / draggingIndex are referenced here so the line geometry
+		// recomputes on every pointermove while a sentence is being dragged.
+		// drawLines reads each span's getBoundingClientRect, which already
+		// includes the live CSS transform we apply during drag — so triggering
+		// this run on offset updates is enough to keep the connectors glued to
+		// the moving sentence in realtime.
+		void draggingOffset;
+		void draggingIndex;
 		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	});
 	run(() => {
