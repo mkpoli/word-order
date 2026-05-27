@@ -750,16 +750,21 @@
 								<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
 							</button>
 						</span>
-						{#if meta}
+						{#if showLangMeta && currentMetaText}
 							<!-- Inline-editable like the language tag in #126, but never
 							     visually different when customised. The italic + accent
 							     affordance for the customised state lives in
 							     SentenceInput's meta-row, so the diagram (and any export
-							     of it) stays identical regardless of overrides. -->
+							     of it) stays identical regardless of overrides.
+
+							     Renders when either lang-meta has coverage OR the user has
+							     supplied their own info via displayMeta. That second case
+							     is how unknown languages still get a chip — the user types
+							     it in and it shows up here. -->
 							<span
 								class="tag-meta"
-								lang={metaCustomised ? undefined : 'en'}
-								title={metaCustomised ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
+								lang={metaCustomised || !meta ? undefined : 'en'}
+								title={metaCustomised || !meta ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
 								contenteditable="plaintext-only"
 								spellcheck="false"
 								onblur={(e) => {

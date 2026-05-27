@@ -322,10 +322,14 @@
 				{$LL.params.showLangMeta()}
 			</label>
 			<label class="meta-toggle">
-				<input type="checkbox" id="show-lang-meta" bind:checked={showLangMeta} disabled={!defaultMetaText} />
+				<input type="checkbox" id="show-lang-meta" bind:checked={showLangMeta} />
 				<span>{$LL.params.showLangMetaOn()}</span>
 			</label>
-			{#if modifying !== -1 && showLangMeta && defaultMetaText}
+			{#if modifying !== -1 && showLangMeta}
+				<!-- Editor appears whenever the toggle is on in modify mode. If
+				     lang-meta has coverage we hint the auto-generated text via
+				     the placeholder; otherwise the user types their own info
+				     from scratch — that's how unknown languages get a chip. -->
 				<input
 					type="text"
 					id="display-meta"
