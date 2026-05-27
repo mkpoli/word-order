@@ -130,6 +130,22 @@
 	let tokenGap = $state(0);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
+	// Suspends the Output fit-to-width adjustments around an export so the
+	// captured artifact uses the user-configured margins and 1:1 scale rather
+	// than the on-screen shrunk presentation. Toggled by withFitDisabled().
+	let fitDisabled = $state(false);
+	async function withFitDisabled<T>(fn: () => Promise<T>): Promise<T> {
+		fitDisabled = true;
+		await tick();
+		// One extra frame so ResizeObserver/measure pass settles before capture.
+		await new Promise((r) => requestAnimationFrame(() => r(null)));
+		try {
+			return await fn();
+		} finally {
+			fitDisabled = false;
+		}
+	}
+
 	let aboutOpen = $state(false);
 	let settingsOpen = $state(false);
 	let examplesOpen = $state(false);
@@ -729,14 +745,17 @@
 
 	async function exportPngBlob(scale = 2): Promise<Blob | null> {
 		if (!output) return null;
-		return await domToImage.toBlob(output, {
-			width: output.clientWidth * scale,
-			height: output.clientHeight * scale,
-			style: {
-				transform: `scale(${scale})`,
-				transformOrigin: 'top left',
-				'background-color': getExportBackgroundColor()
-			}
+		return await withFitDisabled(async () => {
+			if (!output) return null;
+			return await domToImage.toBlob(output, {
+				width: output.clientWidth * scale,
+				height: output.clientHeight * scale,
+				style: {
+					transform: `scale(${scale})`,
+					transformOrigin: 'top left',
+					'background-color': getExportBackgroundColor()
+				}
+			});
 		});
 	}
 
@@ -811,8 +830,8 @@
 		return serializer.serializeToString(svgDocument);
 	}
 
-	function exportSvg() {
-		const svgString = buildSvgString();
+	async function exportSvg() {
+		const svgString = await withFitDisabled(async () => buildSvgString());
 		if (svgString === null) {
 			closeExportMenu();
 			return;
@@ -821,8 +840,8 @@
 		closeExportMenu();
 	}
 
-	function exportHtml() {
-		const svgString = buildSvgString();
+	async function exportHtml() {
+		const svgString = await withFitDisabled(async () => buildSvgString());
 		if (svgString === null) {
 			closeExportMenu();
 			return;
@@ -945,42 +964,47 @@ ${svgString}
 			return;
 		}
 		try {
-			const widthPx = output.clientWidth;
-			const heightPx = output.clientHeight;
-			const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
-			const pdf = new jsPDF({
-				orientation,
-				unit: 'px',
-				format: [widthPx, heightPx],
-				hotfixes: ['px_scaling']
-			});
-
-			// Vector PDF: render via the same dom-to-svg pipeline as Export SVG,
-			// then hand the SVG element to svg2pdf so text stays selectable and
-			// lines stay crisp at any zoom (vs. the prior raster-embed PNG).
-			const svgString = buildSvgString();
-			if (!svgString) throw new Error('SVG serialisation failed');
-			const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-			const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
-			// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
-			// Visibility hidden but still in flow so getComputedStyle resolves.
-			const host = document.createElement('div');
-			host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
-			host.appendChild(svgRoot);
-			document.body.appendChild(host);
-			try {
-				const { svg2pdf } = await import('svg2pdf.js');
-				await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
-			} finally {
-				host.remove();
-			}
-
-			pdf.save(exportFilename('pdf'));
+			await withFitDisabled(async () => exportPdfInner());
 		} catch (err) {
 			console.error('Export PDF failed:', err);
 		} finally {
 			closeExportMenu();
 		}
+	}
+
+	async function exportPdfInner() {
+		if (!output) return;
+		const widthPx = output.clientWidth;
+		const heightPx = output.clientHeight;
+		const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
+		const pdf = new jsPDF({
+			orientation,
+			unit: 'px',
+			format: [widthPx, heightPx],
+			hotfixes: ['px_scaling']
+		});
+
+		// Vector PDF: render via the same dom-to-svg pipeline as Export SVG,
+		// then hand the SVG element to svg2pdf so text stays selectable and
+		// lines stay crisp at any zoom (vs. the prior raster-embed PNG).
+		const svgString = buildSvgString();
+		if (!svgString) throw new Error('SVG serialisation failed');
+		const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+		const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
+		// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
+		// Visibility hidden but still in flow so getComputedStyle resolves.
+		const host = document.createElement('div');
+		host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+		host.appendChild(svgRoot);
+		document.body.appendChild(host);
+		try {
+			const { svg2pdf } = await import('svg2pdf.js');
+			await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
+		} finally {
+			host.remove();
+		}
+
+		pdf.save(exportFilename('pdf'));
 	}
 
 	let output: HTMLOutputElement | undefined = $state();
@@ -1344,6 +1368,7 @@ ${svgString}
 					{letterSpacing}
 					{tokenGap}
 					bind:outputMargin
+					{fitDisabled}
 					{loading}
 					{modifying}
 					{editingSelectionStart}
@@ -1668,14 +1693,15 @@ ${svgString}
 			0 0 0 1px var(--page-border-soft, #eeeeee);
 	}
 
-	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
-	   so .output's overflow stays visible and the ::after editing indicator
-	   below the box can render. Padding gives the inner <output>'s rim shadow
-	   room to render before .output-scroll's overflow clips it. */
+	/* `overflow-x: hidden` rather than `auto` now that Output.svelte's fit
+	   pipeline guarantees the diagram never visually exceeds this container's
+	   width (margins shrink first, then CSS zoom). The horizontal scrollbar
+	   used to show up even when fit had reduced the content to the container
+	   size — sub-pixel rounding kept browsers reserving the scrollbar gutter.
+	   The flex centring stays so a narrower diagram still centres horizontally. */
 	.output-scroll {
-		overflow-x: auto;
+		overflow-x: hidden;
 		overflow-y: hidden;
-		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
 		/* Centre the <output> when it fits; the flex container still scrolls
 		   horizontally when the diagram exceeds the viewport because the inner
@@ -1795,6 +1821,24 @@ ${svgString}
 			top: auto;
 			bottom: -1.4rem;
 			height: 1.4rem;
+		}
+	}
+
+	/* On narrow viewports the page-edge padding eats space the diagram could
+	   otherwise use before fit-to-width has to zoom it down. Drop the main
+	   padding progressively so the diagram gets the full viewport width to
+	   work with before the CSS-zoom stage of the fit pipeline kicks in. */
+	@media (max-width: 720px) {
+		main {
+			padding: 0.5em;
+			gap: 1em;
+		}
+	}
+
+	@media (max-width: 480px) {
+		main {
+			padding: 0.25em;
+			gap: 0.75em;
 		}
 	}
 
