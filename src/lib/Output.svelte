@@ -48,10 +48,6 @@
 		openRenameLanguage: {
 			sentence: number;
 		};
-		renameMeta: {
-			sentence: number;
-			displayMeta: string | undefined;
-		};
 	}>();
 
 	interface Props {
@@ -717,28 +713,17 @@
 							</button>
 						</span>
 						{#if meta}
+							<!-- Display-only. Editing the chip happens in SentenceInput so the
+						     final-render diagram never changes appearance when the user
+						     customises the metadata, per UX feedback. The `metaCustomised`
+						     branch drops the `lang="en"` hint and the auto-generated title
+						     attribute because both stop being meaningful once the text is
+						     no longer the structured Family · Typology · Morphology string. -->
 							<span
 								class="tag-meta"
 								lang={metaCustomised ? undefined : 'en'}
 								title={metaCustomised ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
-								contenteditable="plaintext-only"
-								spellcheck="false"
-								onblur={(e) => {
-									const value = (e.currentTarget as HTMLElement).innerText.trim();
-									// Empty → revert to auto-generated default; otherwise store as override.
-									// Storing the user's text even when it equals the default lets us keep the
-									// customised italic state stable until they explicitly clear the field.
-									dispatch('renameMeta', { sentence: i, displayMeta: value === '' ? undefined : value });
-								}}
-								onkeydown={(e) => {
-									if (e.key === 'Enter') {
-										e.preventDefault();
-										(e.currentTarget as HTMLElement).blur();
-									} else if (e.key === 'Escape') {
-										(e.currentTarget as HTMLElement).innerText = currentMetaText;
-										(e.currentTarget as HTMLElement).blur();
-									}
-								}}>{currentMetaText}</span
+								>{currentMetaText}</span
 							>
 						{/if}
 					</span>
@@ -1048,7 +1033,9 @@
 	}
 
 	/* The linguistic-metadata chip sits under the language label in a small
-	   muted style — informational, never the eye-catcher. */
+	   muted style — informational, never the eye-catcher. Display-only here;
+	   editing happens in SentenceInput so the final-render diagram is
+	   identical whether the chip is auto-generated or a user override. */
 	.tag-meta {
 		font-size: 0.62em;
 		font-weight: normal;
@@ -1056,19 +1043,7 @@
 		letter-spacing: 0.02em;
 		white-space: nowrap;
 		font-feature-settings: 'tnum';
-		outline: none;
-		cursor: text;
-		border-radius: 0.2em;
 	}
-
-	.tag-meta:focus {
-		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
-	}
-
-	/* No .tag-meta.customised style on purpose. Same UX rule as the language
-	   tag (#126): the final-render diagram must look identical whether the
-	   chip is auto-generated or a user override. The "this is custom" hint
-	   lives in the input side of the UI, not in the output the user exports. */
 
 	.tag-rename {
 		appearance: none;
