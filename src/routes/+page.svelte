@@ -732,8 +732,13 @@
 			.replace(/-+$/, '');
 	}
 
-	function exportFilename(ext: string): string {
-		if (sentences.length === 0) return `word-order.${ext}`;
+	// User override for the export filename stem. Empty → auto-generated from
+	// the first words + language codes. Session-only (a filename is specific to
+	// the current illustration, so persisting it across reloads would surprise).
+	let exportStem = $state('');
+
+	function autoExportStem(): string {
+		if (sentences.length === 0) return 'word-order';
 		const langs = sentences.map((s) => s.lang).join('-');
 		const firstWords = sentences[0].tokens
 			.map((t) => t.text)
@@ -741,7 +746,26 @@
 			.slice(0, 5)
 			.join(' ');
 		const slug = slugify(firstWords);
-		const stem = slug ? `${slug}.${langs}` : langs || 'word-order';
+		return slug ? `${slug}.${langs}` : langs || 'word-order';
+	}
+
+	function sanitizeStem(s: string): string {
+		// Filename-safe but light-touch (unlike slugify): keep case, spaces, and
+		// most punctuation, but strip path separators / reserved chars and any
+		// leading dots so the stem can't traverse paths or hide the extension.
+		let out = '';
+		for (const ch of s) {
+			const cp = ch.codePointAt(0);
+			if (cp === undefined || cp < 0x20) continue; // drop control chars
+			if ('\\/:*?"<>|'.includes(ch)) continue; // drop reserved filename chars
+			out += ch;
+		}
+		return out.replace(/^\.+/, '').trim().slice(0, 80);
+	}
+
+	function exportFilename(ext: string): string {
+		const custom = sanitizeStem(exportStem);
+		const stem = custom || autoExportStem();
 		return `${stem}.${ext}`;
 	}
 
@@ -1205,6 +1229,17 @@ ${svgString}
 				{$LL.menu.qr()}
 			</button>
 			<div class="export-section-label">{$LL.menu.fileSection()}</div>
+			<label class="export-filename" class:customised={sanitizeStem(exportStem) !== ''}>
+				<iconify-icon icon="mdi:rename-outline" inline="true"></iconify-icon>
+				<input
+					type="text"
+					bind:value={exportStem}
+					placeholder={autoExportStem()}
+					spellcheck="false"
+					aria-label={$LL.menu.filename()}
+					onkeydown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
+				/>
+			</label>
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
 				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
@@ -2030,6 +2065,38 @@ ${svgString}
 		margin-top: 0;
 		padding-top: 0.1em;
 		border-top: none;
+	}
+
+	/* Inline filename editor sitting under the File section header. The icon +
+	   input read as one field; the placeholder shows the auto-generated stem so
+	   the user knows the default without it being a committed value. */
+	.export-filename {
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+		margin: 0.1em 0.6em 0.3em;
+		padding: 0.3em 0.5em;
+		border: 1px solid var(--color-border);
+		border-radius: 0.25em;
+		color: var(--color-text-faint);
+		font-size: 0.85em;
+	}
+
+	.export-filename input {
+		flex: 1;
+		min-width: 0;
+		border: none;
+		background: none;
+		color: var(--color-text);
+		font: inherit;
+		outline: none;
+	}
+
+	/* Accent the field when the user has set a custom stem — same customised
+	   affordance used elsewhere; only on the input control, never on output. */
+	.export-filename.customised {
+		border-color: var(--color-accent);
+		color: var(--color-accent-text);
 	}
 
 	.export-menu button.export-social {
