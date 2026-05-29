@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { createBubbler, stopPropagation } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import { LL } from '../i18n/i18n-svelte';
 
 	interface Props {
@@ -22,8 +19,12 @@
 <svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" onclick={close} role="presentation">
-		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" onclick={stopPropagation(bubble('click'))}>
+	<!-- Close only when the backdrop itself is clicked, not when a click bubbles
+	     up from inside the dialog. Avoids the legacy stopPropagation bubbler on
+	     the dialog (which tripped the a11y "non-interactive element with click
+	     handler" rule). -->
+	<div class="backdrop" onclick={(e) => e.target === e.currentTarget && close()} role="presentation">
+		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="about-title">
 			<header>
 				<h2 id="about-title">
 					<iconify-icon icon="mdi:information-outline" inline="true"></iconify-icon>
