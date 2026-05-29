@@ -788,7 +788,7 @@
 	{/if}
 
 	{#if !loading}
-		{#each sentences as sentence, i}
+		{#each sentences as sentence, i (sentence)}
 			{@const { lang, tokens } = sentence}
 			{#if dropTargetIndex === i && draggingIndex !== i && draggingIndex !== i - 1}
 				<div class="drop-indicator" aria-hidden="true"></div>
