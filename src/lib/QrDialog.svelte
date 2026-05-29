@@ -109,8 +109,9 @@
 <svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" onclick={close} role="presentation">
-		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="qr-title" onclick={(e) => e.stopPropagation()}>
+	<!-- Close only on a direct backdrop click — see AboutDialog for rationale. -->
+	<div class="backdrop" onclick={(e) => e.target === e.currentTarget && close()} role="presentation">
+		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="qr-title">
 			<header>
 				<h2 id="qr-title">
 					<iconify-icon icon="mdi:qrcode" inline="true"></iconify-icon>
