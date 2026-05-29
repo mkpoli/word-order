@@ -178,6 +178,11 @@
 	let shareFeedback: ShareFeedback = $state(null);
 	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareUrlLength = $state(0);
+
+	// Feedback for "Copy image": idle → copying → copied | unsupported | error.
+	type CopyImageFeedback = 'copying' | 'copied' | 'unsupported' | 'error' | null;
+	let copyImageFeedback: CopyImageFeedback = $state(null);
+	let copyImageFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareLoadError = $state(false);
 
 	let qrOpen = $state(false);
@@ -900,6 +905,37 @@ ${svgString}
 		}
 	}
 
+	function flashCopyImage(state: CopyImageFeedback, ms: number) {
+		copyImageFeedback = state;
+		if (copyImageFeedbackTimer) clearTimeout(copyImageFeedbackTimer);
+		copyImageFeedbackTimer = setTimeout(() => {
+			copyImageFeedback = null;
+			copyImageFeedbackTimer = null;
+		}, ms);
+	}
+
+	async function copyImage() {
+		// Write the diagram to the clipboard as a PNG so it can be pasted
+		// straight into docs / chat / slides. Unlike the other export buttons
+		// this one stays open and shows inline feedback, mirroring Copy link.
+		if (!navigator.clipboard || typeof ClipboardItem === 'undefined' || !navigator.clipboard.write) {
+			flashCopyImage('unsupported', 3000);
+			return;
+		}
+		copyImageFeedback = 'copying';
+		try {
+			// Safari requires the ClipboardItem to be constructed synchronously
+			// from a Promise<Blob> inside the user-gesture task, so hand it the
+			// pending blob promise rather than awaiting first.
+			const item = new ClipboardItem({ 'image/png': exportPngBlob(rasterScale).then((b) => b ?? new Blob()) });
+			await navigator.clipboard.write([item]);
+			flashCopyImage('copied', 1800);
+		} catch (err) {
+			console.error('Copy image failed:', err);
+			flashCopyImage('error', 3000);
+		}
+	}
+
 	type SocialPreset = { id: string; label: string; width: number; height: number };
 	// Sized for the platforms' link-card / in-feed image slots as of early 2026.
 	const SOCIAL_PRESETS: SocialPreset[] = [
@@ -1203,6 +1239,31 @@ ${svgString}
 			<button type="button" disabled={mode === 'edit'} onclick={openQrDialog}>
 				<iconify-icon icon="mdi:qrcode" inline="true"></iconify-icon>
 				{$LL.menu.qr()}
+			</button>
+			<button
+				type="button"
+				class:share-long={copyImageFeedback === 'unsupported' || copyImageFeedback === 'error'}
+				disabled={mode === 'edit' || copyImageFeedback === 'copying'}
+				title={copyImageFeedback === 'unsupported' ? $LL.menu.copyImageUnsupported() : $LL.menu.copyImage()}
+				onclick={copyImage}
+			>
+				<iconify-icon
+					icon={copyImageFeedback === 'copied'
+						? 'mdi:check'
+						: copyImageFeedback === 'unsupported' || copyImageFeedback === 'error'
+							? 'mdi:alert-outline'
+							: 'mdi:image-multiple-outline'}
+					inline="true"
+				></iconify-icon>
+				{copyImageFeedback === 'copying'
+					? $LL.menu.copyImageBusy()
+					: copyImageFeedback === 'copied'
+						? $LL.menu.copyImageCopied()
+						: copyImageFeedback === 'unsupported'
+							? $LL.menu.copyImageUnsupported()
+							: copyImageFeedback === 'error'
+								? $LL.menu.copyImageError()
+								: $LL.menu.copyImage()}
 			</button>
 			<div class="export-section-label">{$LL.menu.fileSection()}</div>
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
