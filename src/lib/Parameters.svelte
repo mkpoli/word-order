@@ -13,7 +13,7 @@
 		lineGap?: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
-		dottedEnd?: boolean;
+		dottedEndRadius?: number;
 		straightLength?: number;
 		endpointCorrection?: number;
 		curvature?: number;
@@ -33,7 +33,7 @@
 		lineGap = $bindable(5),
 		lineWidth = $bindable(1),
 		lineStyle = $bindable('solid'),
-		dottedEnd = $bindable(false),
+		dottedEndRadius = $bindable(0),
 		straightLength = $bindable(0),
 		endpointCorrection = $bindable(0),
 		curvature = $bindable(1),
@@ -111,10 +111,7 @@
 		<iconify-icon icon="mdi:format-overline" inline="true"></iconify-icon>
 		{$LL.params.dottedEnd()}
 	</label>
-	<label class="halo-toggle">
-		<input type="checkbox" id="dotted-end" bind:checked={dottedEnd} />
-		<span>{$LL.params.dottedEndOn()}</span>
-	</label>
+	<input type="range" id="dotted-end" min="0" max="10" step="1" bind:value={dottedEndRadius} class="slider" />
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true"></iconify-icon>

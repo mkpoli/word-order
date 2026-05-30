@@ -24,7 +24,7 @@ export type ParamsSnapshot = {
 	lineGap?: number;
 	lineWidth?: number;
 	lineStyle?: LineStyle;
-	dottedEnd?: boolean;
+	dottedEndRadius?: number;
 	tokenGap?: number;
 	straightLength?: number;
 	endpointCorrection?: number;

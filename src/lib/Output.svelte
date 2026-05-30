@@ -71,7 +71,7 @@
 		/** Render each connector line as dotted near its endpoints, solid in the
 		 * middle — a softer entry/exit at the words than a hard stop. Replaces
 		 * the earlier halo experiment. */
-		dottedEnd?: boolean;
+		dottedEndRadius?: number;
 		straightLength: number;
 		endpointCorrection: number;
 		curvature?: number;
@@ -108,7 +108,7 @@
 		lineGap,
 		lineWidth = 1,
 		lineStyle = 'solid',
-		dottedEnd = false,
+		dottedEndRadius = 0,
 		straightLength,
 		endpointCorrection,
 		curvature = 1,
@@ -951,7 +951,7 @@
 					fill="none"
 				/>
 			{/each}
-			{#if dottedEnd}
+			{#if dottedEndRadius > 0}
 				<!-- Filled circles at each connector endpoint, in the connector colour
 				     — same accent the og-image uses to anchor each link visually to
 				     the word it connects. Rendered as a second pass so the dots sit
@@ -961,7 +961,7 @@
 				     coincident dots at the same endpoint. -->
 				{@const endpointDots = uniqueEndpoints(lines)}
 				{#each endpointDots as { x, y, color }}
-					<circle cx={x} cy={y} r={Math.max(lineWidth * 2, 2.5)} fill={color} />
+					<circle cx={x} cy={y} r={dottedEndRadius} fill={color} />
 				{/each}
 			{/if}
 		</svg>
