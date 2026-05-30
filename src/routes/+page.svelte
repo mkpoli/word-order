@@ -760,7 +760,9 @@
 			if ('\\/:*?"<>|'.includes(ch)) continue; // drop reserved filename chars
 			out += ch;
 		}
-		return out.replace(/^\.+/, '').trim().slice(0, 80);
+		// Cap by code point, not UTF-16 unit, so the 80-char limit can't split a
+		// surrogate pair (emoji / rare scripts) into invalid Unicode.
+		return Array.from(out.replace(/^\.+/, '').trim()).slice(0, 80).join('');
 	}
 
 	function exportFilename(ext: string): string {
