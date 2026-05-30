@@ -157,5 +157,6 @@
 	"translate_remove_custom": "সরান",
 	"translate_cancel": "বাতিল",
 	"translate_retry": "আবার চেষ্টা",
-	"translate_cost_notice": "{provider} অ্যাকাউন্ট ব্যবহার করে — সস্তা মডেলই সাধারণত যথেষ্ট।"
+	"translate_cost_notice": "{provider} অ্যাকাউন্ট ব্যবহার করে — সস্তা মডেলই সাধারণত যথেষ্ট।",
+	"menu_filename": "ফাইলের নাম"
 }

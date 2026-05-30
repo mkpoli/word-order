@@ -157,5 +157,6 @@
 	"translate_remove_custom": "हटाएँ",
 	"translate_cancel": "रद्द करें",
 	"translate_retry": "पुनः प्रयास",
-	"translate_cost_notice": "{provider} खाते का उपयोग करता है — सस्ते मॉडल आमतौर पर पर्याप्त हैं।"
+	"translate_cost_notice": "{provider} खाते का उपयोग करता है — सस्ते मॉडल आमतौर पर पर्याप्त हैं।",
+	"menu_filename": "फ़ाइल का नाम"
 }
