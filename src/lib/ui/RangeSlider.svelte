@@ -232,6 +232,7 @@
 	class:hoverable
 	class:reversed
 	class:focus
+	role="none"
 	onmousedown={sliderInteractStart}
 	onmouseup={sliderInteractEnd}
 	ontouchstart={preventDefault(sliderInteractStart)}
