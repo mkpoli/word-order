@@ -160,5 +160,6 @@
 	"translate_remove_custom": "Видалити",
 	"translate_cancel": "Скасувати",
 	"translate_retry": "Повторити",
-	"translate_cost_notice": "Використовує ваш обліковий запис {provider} — дешевших моделей зазвичай достатньо."
+	"translate_cost_notice": "Використовує ваш обліковий запис {provider} — дешевших моделей зазвичай достатньо.",
+	"menu_filename": "Назва файлу"
 }

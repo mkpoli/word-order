@@ -160,5 +160,6 @@
 	"translate_remove_custom": "移除",
 	"translate_cancel": "取消",
 	"translate_retry": "重試",
-	"translate_cost_notice": "使用您的{provider}帳戶——便宜的模型通常足夠。"
+	"translate_cost_notice": "使用您的{provider}帳戶——便宜的模型通常足夠。",
+	"menu_filename": "檔案名稱"
 }

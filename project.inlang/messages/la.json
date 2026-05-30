@@ -160,5 +160,6 @@
 	"translate_remove_custom": "Removere",
 	"translate_cancel": "Cancellare",
 	"translate_retry": "Iterum conari",
-	"translate_cost_notice": "Ratione {provider} tua utitur — exemplaria viliora plerumque sufficiunt."
+	"translate_cost_notice": "Ratione {provider} tua utitur — exemplaria viliora plerumque sufficiunt.",
+	"menu_filename": "Nomen fasciculi"
 }

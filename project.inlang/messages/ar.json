@@ -160,5 +160,6 @@
 	"translate_remove_custom": "إزالة",
 	"translate_cancel": "إلغاء",
 	"translate_retry": "إعادة المحاولة",
-	"translate_cost_notice": "يستخدم حساب {provider} الخاص بك — النماذج الأرخص كافية في الغالب."
+	"translate_cost_notice": "يستخدم حساب {provider} الخاص بك — النماذج الأرخص كافية في الغالب.",
+	"menu_filename": "اسم الملف"
 }

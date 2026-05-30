@@ -160,5 +160,6 @@
 	"translate_remove_custom": "Retirer",
 	"translate_cancel": "Annuler",
 	"translate_retry": "Réessayer",
-	"translate_cost_notice": "Utilisez votre compte {provider} — les modèles moins chers conviennent généralement."
+	"translate_cost_notice": "Utilisez votre compte {provider} — les modèles moins chers conviennent généralement.",
+	"menu_filename": "Nom du fichier"
 }
