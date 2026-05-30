@@ -160,5 +160,6 @@
 	"translate_remove_custom": "Remover",
 	"translate_cancel": "Cancellar",
 	"translate_retry": "Retentar",
-	"translate_cost_notice": "Usa tu conto {provider} — le modellos plus economic usualmente suffice."
+	"translate_cost_notice": "Usa tu conto {provider} — le modellos plus economic usualmente suffice.",
+	"menu_filename": "Nomine de file"
 }

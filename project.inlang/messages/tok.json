@@ -160,5 +160,6 @@
 	"translate_remove_custom": "o weka",
 	"translate_cancel": "o pini",
 	"translate_retry": "o sin",
-	"translate_cost_notice": "ni li kepeken mani sina lon {provider} — ilo sona lili li pona."
+	"translate_cost_notice": "ni li kepeken mani sina lon {provider} — ilo sona lili li pona.",
+	"menu_filename": "nimi lipu"
 }

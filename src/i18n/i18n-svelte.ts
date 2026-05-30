@@ -142,6 +142,7 @@ const createLL = () => ({
 		socialSection: m.menu_social_section,
 		shareSection: m.menu_share_section,
 		fileSection: m.menu_file_section,
+		filename: m.menu_filename,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
 		settings: m.menu_settings,

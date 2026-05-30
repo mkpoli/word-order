@@ -160,5 +160,6 @@
 	"translate_remove_custom": "Премахни",
 	"translate_cancel": "Отказ",
 	"translate_retry": "Опитай отново",
-	"translate_cost_notice": "Използва вашия акаунт в {provider} — по-евтините модели обикновено стигат."
+	"translate_cost_notice": "Използва вашия акаунт в {provider} — по-евтините модели обикновено стигат.",
+	"menu_filename": "Име на файла"
 }
