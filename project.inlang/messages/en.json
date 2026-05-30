@@ -119,6 +119,7 @@
 	"menu_copy_image_copied": "Copied!",
 	"menu_copy_image_unsupported": "Browser can't copy images",
 	"menu_copy_image_error": "Copy failed",
+	"menu_filename": "Filename",
 	"menu_scramble": "Scramble colors",
 	"menu_examples": "Examples",
 	"menu_about": "About",

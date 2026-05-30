@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "suli sitelen pi lipu sona",
 	"params_space_width": "suli pi poka weka",
 	"params_letter_spacing": "weka pi sitelen",
+	"params_token_gap": "weka pi sitelen lili",
 	"params_colors": "kule",
 	"params_palette": "kulupu pi kule",
 	"params_palette_spectrum": "kule ali",
@@ -109,6 +110,8 @@
 	"menu_pdf": "o pana e PDF",
 	"menu_raster_scale": "suli sitelen:",
 	"menu_social_section": "ilo toki pi kulupu",
+	"menu_share_section": "pana",
+	"menu_file_section": "lipu",
 	"menu_scramble": "o ante e kule",
 	"menu_examples": "nasin sona",
 	"menu_about": "sona",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "o weka",
 	"translate_cancel": "o pini",
 	"translate_retry": "o sin",
-	"translate_cost_notice": "ni li kepeken mani sina lon {provider} — ilo sona lili li pona."
+	"translate_cost_notice": "ni li kepeken mani sina lon {provider} — ilo sona lili li pona.",
+	"menu_filename": "nimi lipu"
 }

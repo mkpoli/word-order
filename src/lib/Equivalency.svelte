@@ -202,7 +202,7 @@
 <svelte:window onpointerup={dragend} {onpointermove} />
 
 <div class="color-bar" style:background-image={stripeGradient}></div>
-<div class="entries" bind:this={entriesContainer}>
+<div class="entries" bind:this={entriesContainer} role="list">
 	{#each equivalency as entry, i (i)}
 		{#if dropTargetIndex === i && draggingIndex !== i && draggingIndex !== i - 1}
 			<div class="drop-indicator" aria-hidden="true"></div>
@@ -215,6 +215,7 @@
 			onpointerup={dragend}
 			bind:this={equivalencyDivs[i]}
 			style:transform={getTransform(i, draggingOffset, displayShifts)}
+			role="listitem"
 		>
 			{#each entry as words, j (j)}
 				<span class="words">

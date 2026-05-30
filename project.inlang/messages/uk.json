@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "Розмір шрифту анотацій",
 	"params_space_width": "Ширина пробілу",
 	"params_letter_spacing": "Міжлітерний інтервал",
+	"params_token_gap": "Інтервал токенів",
 	"params_colors": "Кольори",
 	"params_palette": "Палітра",
 	"params_palette_spectrum": "Повний спектр",
@@ -109,6 +110,8 @@
 	"menu_pdf": "Експорт PDF",
 	"menu_raster_scale": "Масштаб зображення:",
 	"menu_social_section": "Шаблони для соцмереж",
+	"menu_share_section": "Поділитися",
+	"menu_file_section": "Файл",
 	"menu_scramble": "Перемішати кольори",
 	"menu_examples": "Приклади",
 	"menu_about": "Про програму",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "Видалити",
 	"translate_cancel": "Скасувати",
 	"translate_retry": "Повторити",
-	"translate_cost_notice": "Використовує ваш обліковий запис {provider} — дешевших моделей зазвичай достатньо."
+	"translate_cost_notice": "Використовує ваш обліковий запис {provider} — дешевших моделей зазвичай достатньо.",
+	"menu_filename": "Назва файлу"
 }

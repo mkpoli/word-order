@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "Lettergrootte annotaties",
 	"params_space_width": "Spatiebreedte",
 	"params_letter_spacing": "Letterspatiëring",
+	"params_token_gap": "Tokenafstand",
 	"params_colors": "Kleuren",
 	"params_palette": "Palet",
 	"params_palette_spectrum": "Volledig spectrum",
@@ -109,6 +110,8 @@
 	"menu_pdf": "PDF exporteren",
 	"menu_raster_scale": "Rasterschaal:",
 	"menu_social_section": "Social-presets",
+	"menu_share_section": "Delen",
+	"menu_file_section": "Bestand",
 	"menu_scramble": "Kleuren mengen",
 	"menu_examples": "Voorbeelden",
 	"menu_about": "Over",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "Verwijderen",
 	"translate_cancel": "Annuleren",
 	"translate_retry": "Opnieuw",
-	"translate_cost_notice": "Gebruik je {provider}-account — goedkopere modellen volstaan meestal."
+	"translate_cost_notice": "Gebruik je {provider}-account — goedkopere modellen volstaan meestal.",
+	"menu_filename": "Bestandsnaam"
 }

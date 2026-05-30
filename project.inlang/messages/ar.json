@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "حجم خط التعليقات",
 	"params_space_width": "عرض المسافة",
 	"params_letter_spacing": "تباعد الأحرف",
+	"params_token_gap": "تباعد الرموز",
 	"params_colors": "الألوان",
 	"params_palette": "لوحة الألوان",
 	"params_palette_spectrum": "الطيف الكامل",
@@ -109,6 +110,8 @@
 	"menu_pdf": "تصدير PDF",
 	"menu_raster_scale": "حجم الصورة:",
 	"menu_social_section": "إعدادات مسبقة لوسائل التواصل",
+	"menu_share_section": "مشاركة",
+	"menu_file_section": "ملف",
 	"menu_scramble": "خلط الألوان",
 	"menu_examples": "أمثلة",
 	"menu_about": "حول",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "إزالة",
 	"translate_cancel": "إلغاء",
 	"translate_retry": "إعادة المحاولة",
-	"translate_cost_notice": "يستخدم حساب {provider} الخاص بك — النماذج الأرخص كافية في الغالب."
+	"translate_cost_notice": "يستخدم حساب {provider} الخاص بك — النماذج الأرخص كافية في الغالب.",
+	"menu_filename": "اسم الملف"
 }
