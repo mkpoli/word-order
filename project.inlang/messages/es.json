@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "Tamaño de fuente de anotaciones",
 	"params_space_width": "Ancho del espacio",
 	"params_letter_spacing": "Interletraje",
+	"params_token_gap": "Espaciado de tokens",
 	"params_colors": "Colores",
 	"params_palette": "Paleta",
 	"params_palette_spectrum": "Espectro completo",
@@ -109,6 +110,8 @@
 	"menu_pdf": "Exportar PDF",
 	"menu_raster_scale": "Escala de imagen:",
 	"menu_social_section": "Preajustes sociales",
+	"menu_share_section": "Compartir",
+	"menu_file_section": "Archivo",
 	"menu_scramble": "Mezclar colores",
 	"menu_examples": "Ejemplos",
 	"menu_about": "Acerca de",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "Quitar",
 	"translate_cancel": "Cancelar",
 	"translate_retry": "Reintentar",
-	"translate_cost_notice": "Usa tu cuenta de {provider} — los modelos más baratos suelen ser suficientes."
+	"translate_cost_notice": "Usa tu cuenta de {provider} — los modelos más baratos suelen ser suficientes.",
+	"menu_filename": "Nombre de archivo"
 }

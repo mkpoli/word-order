@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "টীকার ফন্টের আকার",
 	"params_space_width": "স্পেসের প্রস্থ",
 	"params_letter_spacing": "অক্ষরের ব্যবধান",
+	"params_token_gap": "টোকেন ব্যবধান",
 	"params_colors": "রঙ",
 	"params_palette": "প্যালেট",
 	"params_palette_spectrum": "পূর্ণ বর্ণালী",
@@ -109,6 +110,8 @@
 	"menu_pdf": "PDF রপ্তানি",
 	"menu_raster_scale": "র‍্যাস্টার স্কেল:",
 	"menu_social_section": "সোশ্যাল প্রিসেট",
+	"menu_share_section": "শেয়ার",
+	"menu_file_section": "ফাইল",
 	"menu_scramble": "রং এলোমেলো করুন",
 	"menu_examples": "উদাহরণ",
 	"menu_about": "পরিচিতি",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "সরান",
 	"translate_cancel": "বাতিল",
 	"translate_retry": "আবার চেষ্টা",
-	"translate_cost_notice": "{provider} অ্যাকাউন্ট ব্যবহার করে — সস্তা মডেলই সাধারণত যথেষ্ট।"
+	"translate_cost_notice": "{provider} অ্যাকাউন্ট ব্যবহার করে — সস্তা মডেলই সাধারণত যথেষ্ট।",
+	"menu_filename": "ফাইলের নাম"
 }

@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "Dimension del litteras del annotationes",
 	"params_space_width": "Largessa del spatio",
 	"params_letter_spacing": "Spatiamento del litteras",
+	"params_token_gap": "Spatiamento de token",
 	"params_colors": "Colores",
 	"params_palette": "Paletta",
 	"params_palette_spectrum": "Spectro complete",
@@ -109,6 +110,8 @@
 	"menu_pdf": "Exportar PDF",
 	"menu_raster_scale": "Scala raster:",
 	"menu_social_section": "Predefinitiones social",
+	"menu_share_section": "Compartir",
+	"menu_file_section": "File",
 	"menu_scramble": "Miscer colores",
 	"menu_examples": "Exemplos",
 	"menu_about": "A proposito",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "Remover",
 	"translate_cancel": "Cancellar",
 	"translate_retry": "Retentar",
-	"translate_cost_notice": "Usa tu conto {provider} — le modellos plus economic usualmente suffice."
+	"translate_cost_notice": "Usa tu conto {provider} — le modellos plus economic usualmente suffice.",
+	"menu_filename": "Nomine de file"
 }

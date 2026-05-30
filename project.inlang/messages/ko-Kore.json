@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "註釋 글꼴 크기",
 	"params_space_width": "空白 너비",
 	"params_letter_spacing": "字間",
+	"params_token_gap": "토큰 間隔",
 	"params_colors": "色相",
 	"params_palette": "팔레트",
 	"params_palette_spectrum": "全體 스펙트럼",
@@ -109,6 +110,8 @@
 	"menu_pdf": "PDF 내보내기",
 	"menu_raster_scale": "이미지 倍率:",
 	"menu_social_section": "SNS用 프리셋",
+	"menu_share_section": "共有",
+	"menu_file_section": "파일",
 	"menu_scramble": "色相 섞기",
 	"menu_examples": "例示",
 	"menu_about": "情報",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "除去",
 	"translate_cancel": "取消",
 	"translate_retry": "다시 試圖",
-	"translate_cost_notice": "{provider} 計定을 使用합니다 — 저렴한 모델로도 充分한 境遇가 많습니다."
+	"translate_cost_notice": "{provider} 計定을 使用합니다 — 저렴한 모델로도 充分한 境遇가 많습니다.",
+	"menu_filename": "파일 이름"
 }

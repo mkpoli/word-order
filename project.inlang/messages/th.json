@@ -35,6 +35,7 @@
 	"params_gloss_font_size": "ขนาดตัวอักษรคำอธิบาย",
 	"params_space_width": "ความกว้างช่องว่าง",
 	"params_letter_spacing": "ระยะห่างตัวอักษร",
+	"params_token_gap": "ระยะห่างโทเคน",
 	"params_colors": "สี",
 	"params_palette": "จานสี",
 	"params_palette_spectrum": "สเปกตรัมเต็ม",
@@ -109,6 +110,8 @@
 	"menu_pdf": "ส่งออก PDF",
 	"menu_raster_scale": "อัตราขยายภาพ:",
 	"menu_social_section": "พรีเซ็ตโซเชียล",
+	"menu_share_section": "แชร์",
+	"menu_file_section": "ไฟล์",
 	"menu_scramble": "สลับสี",
 	"menu_examples": "ตัวอย่าง",
 	"menu_about": "เกี่ยวกับ",
@@ -157,5 +160,6 @@
 	"translate_remove_custom": "ลบ",
 	"translate_cancel": "ยกเลิก",
 	"translate_retry": "ลองอีกครั้ง",
-	"translate_cost_notice": "ใช้บัญชี {provider} ของคุณ — โมเดลราคาถูกมักเพียงพอ"
+	"translate_cost_notice": "ใช้บัญชี {provider} ของคุณ — โมเดลราคาถูกมักเพียงพอ",
+	"menu_filename": "ชื่อไฟล์"
 }

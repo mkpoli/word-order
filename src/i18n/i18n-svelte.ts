@@ -147,6 +147,7 @@ const createLL = () => ({
 		copyImageCopied: m.menu_copy_image_copied,
 		copyImageUnsupported: m.menu_copy_image_unsupported,
 		copyImageError: m.menu_copy_image_error,
+		filename: m.menu_filename,
 		scramble: m.menu_scramble,
 		about: m.menu_about,
 		settings: m.menu_settings,
