@@ -157,5 +157,6 @@
 	"translate_remove_custom": "Kaldır",
 	"translate_cancel": "İptal",
 	"translate_retry": "Tekrar dene",
-	"translate_cost_notice": "{provider} hesabınızı kullanır — daha ucuz modeller genelde yeterlidir."
+	"translate_cost_notice": "{provider} hesabınızı kullanır — daha ucuz modeller genelde yeterlidir.",
+	"menu_filename": "Dosya adı"
 }

@@ -157,5 +157,6 @@
 	"translate_remove_custom": "除去",
 	"translate_cancel": "取消",
 	"translate_retry": "다시 試圖",
-	"translate_cost_notice": "{provider} 計定을 使用합니다 — 저렴한 모델로도 充分한 境遇가 많습니다."
+	"translate_cost_notice": "{provider} 計定을 使用합니다 — 저렴한 모델로도 充分한 境遇가 많습니다.",
+	"menu_filename": "파일 이름"
 }

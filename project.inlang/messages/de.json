@@ -157,5 +157,6 @@
 	"translate_remove_custom": "Entfernen",
 	"translate_cancel": "Abbrechen",
 	"translate_retry": "Wiederholen",
-	"translate_cost_notice": "Nutzt dein {provider}-Konto — günstigere Modelle reichen meist aus."
+	"translate_cost_notice": "Nutzt dein {provider}-Konto — günstigere Modelle reichen meist aus.",
+	"menu_filename": "Dateiname"
 }
