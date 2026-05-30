@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { createBubbler, stopPropagation } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import { LL } from '../i18n/i18n-svelte';
 	import { llmSettings, type ProviderId } from './settings';
 	import { PROVIDERS, getProvider } from './llm/providers';
@@ -99,8 +96,9 @@
 <svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" onclick={close} role="presentation">
-		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" onclick={stopPropagation(bubble('click'))}>
+	<!-- Close only on a direct backdrop click — see AboutDialog for rationale. -->
+	<div class="backdrop" onclick={(e) => e.target === e.currentTarget && close()} role="presentation">
+		<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title">
 			<header>
 				<h2 id="settings-title">
 					<iconify-icon icon="mdi:cog-outline" inline="true"></iconify-icon>
