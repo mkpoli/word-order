@@ -161,5 +161,10 @@
 	"translate_cancel": "Cancellar",
 	"translate_retry": "Retentar",
 	"translate_cost_notice": "Usa tu conto {provider} — le modellos plus economic usualmente suffice.",
-	"menu_filename": "Nomine de file"
+	"menu_filename": "Nomine de file",
+	"menu_copy_image": "Copiar le imagine",
+	"menu_copy_image_busy": "Copiante…",
+	"menu_copy_image_copied": "Copiate!",
+	"menu_copy_image_unsupported": "Le navigator non pote copiar imagines",
+	"menu_copy_image_error": "Copia fallite"
 }

@@ -161,5 +161,10 @@
 	"translate_cancel": "Cancelar",
 	"translate_retry": "Reintentar",
 	"translate_cost_notice": "Usa tu cuenta de {provider} — los modelos más baratos suelen ser suficientes.",
-	"menu_filename": "Nombre de archivo"
+	"menu_filename": "Nombre de archivo",
+	"menu_copy_image": "Copiar imagen",
+	"menu_copy_image_busy": "Copiando…",
+	"menu_copy_image_copied": "¡Copiado!",
+	"menu_copy_image_unsupported": "El navegador no puede copiar imágenes",
+	"menu_copy_image_error": "Error al copiar"
 }

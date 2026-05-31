@@ -161,5 +161,10 @@
 	"translate_cancel": "キャンセル",
 	"translate_retry": "再試行",
 	"translate_cost_notice": "{provider} のあなたのアカウントを使用します。安いモデルでも十分なことが多いです。",
-	"menu_filename": "ファイル名"
+	"menu_filename": "ファイル名",
+	"menu_copy_image": "画像をコピー",
+	"menu_copy_image_busy": "コピー中……",
+	"menu_copy_image_copied": "コピーしました！",
+	"menu_copy_image_unsupported": "ブラウザは画像をコピーできません",
+	"menu_copy_image_error": "コピーに失敗しました"
 }

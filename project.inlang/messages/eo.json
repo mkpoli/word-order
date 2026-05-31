@@ -161,5 +161,10 @@
 	"translate_cancel": "Nuligi",
 	"translate_retry": "Reprovi",
 	"translate_cost_notice": "Uzas vian {provider}-konton — pli malmultekostaj modeloj kutime sufiĉas.",
-	"menu_filename": "Dosiernomo"
+	"menu_filename": "Dosiernomo",
+	"menu_copy_image": "Kopii bildon",
+	"menu_copy_image_busy": "Kopiante…",
+	"menu_copy_image_copied": "Kopiite!",
+	"menu_copy_image_unsupported": "Retumilo ne povas kopii bildojn",
+	"menu_copy_image_error": "Kopiado malsukcesis"
 }
