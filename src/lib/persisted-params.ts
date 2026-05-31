@@ -24,14 +24,14 @@ export type ParamsSnapshot = {
 	lineGap?: number;
 	lineWidth?: number;
 	lineStyle?: LineStyle;
-	lineHalo?: boolean;
-	lineHaloWidth?: number;
+	dottedEndRadius?: number;
 	tokenGap?: number;
 	straightLength?: number;
 	endpointCorrection?: number;
 	curvature?: number;
 	// Text
 	alignment?: Alignment;
+	tagAlignment?: Alignment;
 	fontFamily?: FontFamily;
 	fontStyle?: FontStyle;
 	fontSize?: number;

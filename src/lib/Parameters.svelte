@@ -13,12 +13,12 @@
 		lineGap?: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
-		lineHalo?: boolean;
-		lineHaloWidth?: number;
+		dottedEndRadius?: number;
 		straightLength?: number;
 		endpointCorrection?: number;
 		curvature?: number;
 		alignment?: Alignment;
+		tagAlignment?: Alignment;
 		fontFamily?: FontFamily;
 		fontStyle?: FontStyle;
 		fontSize?: number;
@@ -34,12 +34,12 @@
 		lineGap = $bindable(5),
 		lineWidth = $bindable(1),
 		lineStyle = $bindable('solid'),
-		lineHalo = $bindable(false),
-		lineHaloWidth = $bindable(1.5),
+		dottedEndRadius = $bindable(0),
 		straightLength = $bindable(0),
 		endpointCorrection = $bindable(0),
 		curvature = $bindable(1),
 		alignment = $bindable('center'),
+		tagAlignment = $bindable('center'),
 		fontFamily = $bindable('default'),
 		fontStyle = $bindable('normal'),
 		fontSize = $bindable(15),
@@ -109,17 +109,11 @@
 		<option value="dotted">{$LL.params.lineStyleDotted()}</option>
 	</select>
 
-	<label for="line-halo">
-		<iconify-icon icon="mdi:circle-double" inline="true"></iconify-icon>
-		{$LL.params.lineHalo()}
+	<label for="dotted-end">
+		<iconify-icon icon="mdi:format-overline" inline="true"></iconify-icon>
+		{$LL.params.dottedEndRadius()}
 	</label>
-	<div class="halo-row">
-		<label class="halo-toggle">
-			<input type="checkbox" id="line-halo" bind:checked={lineHalo} />
-			<span>{$LL.params.lineHaloOn()}</span>
-		</label>
-		<RangeSlider id="line-halo-width" min={0.5} max={4} step={0.1} bind:value={lineHaloWidth} suffix=" px" disabled={!lineHalo} />
-	</div>
+	<RangeSlider id="dotted-end" min={0} max={10} step={0.1} bind:value={dottedEndRadius} suffix=" px" />
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true"></iconify-icon>
@@ -154,17 +148,37 @@
 		{$LL.params.text()}
 	</legend>
 
-	<label for="alignment">
+	<label id="text-alignment-label">
 		<iconify-icon icon="mdi:format-align-justify" inline="true"></iconify-icon>
 		{$LL.params.textAlignment()}
 	</label>
-	<div class="alignment">
-		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" />
+	<div class="alignment" role="radiogroup" aria-labelledby="text-alignment-label">
+		<input type="radio" bind:group={alignment} name="alignment" value="left" id="alignment-left" aria-label={$LL.params.alignLeft()} />
 		<label for="alignment-left"><iconify-icon icon="ic:round-format-align-left"></iconify-icon></label>
-		<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" />
+		<input type="radio" bind:group={alignment} name="alignment" value="center" id="alignment-center" aria-label={$LL.params.alignCenter()} />
 		<label for="alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
-		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" />
+		<input type="radio" bind:group={alignment} name="alignment" value="right" id="alignment-right" aria-label={$LL.params.alignRight()} />
 		<label for="alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
+	</div>
+
+	<label id="tag-alignment-label">
+		<iconify-icon icon="mdi:tag-text-outline" inline="true"></iconify-icon>
+		{$LL.params.tagAlignment()}
+	</label>
+	<div class="alignment" role="radiogroup" aria-labelledby="tag-alignment-label">
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="left" id="tag-alignment-left" aria-label={$LL.params.alignLeft()} />
+		<label for="tag-alignment-left"><iconify-icon icon="ic:round-format-align-left"></iconify-icon></label>
+		<input
+			type="radio"
+			bind:group={tagAlignment}
+			name="tag-alignment"
+			value="center"
+			id="tag-alignment-center"
+			aria-label={$LL.params.alignCenter()}
+		/>
+		<label for="tag-alignment-center"><iconify-icon icon="ic:round-format-align-center"></iconify-icon></label>
+		<input type="radio" bind:group={tagAlignment} name="tag-alignment" value="right" id="tag-alignment-right" aria-label={$LL.params.alignRight()} />
+		<label for="tag-alignment-right"><iconify-icon icon="ic:round-format-align-right"></iconify-icon></label>
 	</div>
 
 	<label for="font-family">
@@ -245,14 +259,6 @@
 </fieldset>
 
 <style>
-	.halo-row {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		align-items: center;
-		gap: 0.6em;
-		margin: 0 0.5em;
-	}
-
 	.halo-toggle {
 		display: inline-flex;
 		align-items: center;
@@ -299,18 +305,18 @@
 		margin: 0;
 	}
 
-	input[type='radio'][name='alignment']:checked + label {
+	.alignment > input[type='radio']:checked + label {
 		color: white;
 		background-color: var(--color-inactive);
 		border: 1px solid var(--color-inactive);
 	}
 
-	.alignment:focus-within > input[type='radio'][name='alignment']:checked + label {
+	.alignment:focus-within > input[type='radio']:checked + label {
 		background-color: var(--color-accent);
 		border-color: var(--color-accent);
 	}
 
-	input[type='radio'][name='alignment'] {
+	.alignment > input[type='radio'] {
 		position: absolute;
 		opacity: 0;
 		cursor: pointer;
@@ -318,7 +324,7 @@
 		width: 0;
 	}
 
-	input[type='radio'][name='alignment'] + label {
+	.alignment > input[type='radio'] + label {
 		cursor: pointer;
 	}
 
