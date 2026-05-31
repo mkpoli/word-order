@@ -111,7 +111,7 @@
 		<iconify-icon icon="mdi:format-overline" inline="true"></iconify-icon>
 		{$LL.params.dottedEndRadius()}
 	</label>
-	<RangeSlider id="dotted-end" min={0} max={10} bind:value={dottedEndRadius} suffix=" px" />
+	<RangeSlider id="dotted-end" min={0} max={10} step={0.1} bind:value={dottedEndRadius} suffix=" px" />
 
 	<label for="straight-length">
 		<iconify-icon icon="material-symbols:subdirectory-arrow-right" inline="true"></iconify-icon>
