@@ -153,5 +153,6 @@
 	"translate_remove_custom": "제거",
 	"translate_cancel": "취소",
 	"translate_retry": "다시 시도",
-	"translate_cost_notice": "{provider} 계정을 사용합니다 — 저렴한 모델로도 충분한 경우가 많습니다."
+	"translate_cost_notice": "{provider} 계정을 사용합니다 — 저렴한 모델로도 충분한 경우가 많습니다.",
+	"params_dotted_end_radius": "점 반지름"
 }

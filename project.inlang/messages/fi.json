@@ -153,5 +153,6 @@
 	"translate_remove_custom": "Poista",
 	"translate_cancel": "Peruuta",
 	"translate_retry": "Yritä uudelleen",
-	"translate_cost_notice": "Käyttää {provider}-tiliäsi — halvemmat mallit yleensä riittävät."
+	"translate_cost_notice": "Käyttää {provider}-tiliäsi — halvemmat mallit yleensä riittävät.",
+	"params_dotted_end_radius": "Pisteen säde"
 }
