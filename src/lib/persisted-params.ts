@@ -31,6 +31,7 @@ export type ParamsSnapshot = {
 	curvature?: number;
 	// Text
 	alignment?: Alignment;
+	tagAlignment?: Alignment;
 	fontFamily?: FontFamily;
 	fontStyle?: FontStyle;
 	fontSize?: number;
