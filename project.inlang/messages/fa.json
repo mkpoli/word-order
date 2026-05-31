@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "در حال کپی…",
 	"menu_copy_image_copied": "کپی شد!",
 	"menu_copy_image_unsupported": "مرورگر نمی‌تواند تصاویر را کپی کند",
-	"menu_copy_image_error": "کپی ناموفق بود"
+	"menu_copy_image_error": "کپی ناموفق بود",
+	"params_dotted_end_radius": "شعاع نقطه"
 }

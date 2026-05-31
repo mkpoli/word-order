@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Bezig met kopiëren…",
 	"menu_copy_image_copied": "Gekopieerd!",
 	"menu_copy_image_unsupported": "Browser kan geen afbeeldingen kopiëren",
-	"menu_copy_image_error": "Kopiëren mislukt"
+	"menu_copy_image_error": "Kopiëren mislukt",
+	"params_dotted_end_radius": "Puntstraal"
 }

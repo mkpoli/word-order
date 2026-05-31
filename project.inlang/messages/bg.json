@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Копиране…",
 	"menu_copy_image_copied": "Копирано!",
 	"menu_copy_image_unsupported": "Браузърът не може да копира изображения",
-	"menu_copy_image_error": "Копирането е неуспешно"
+	"menu_copy_image_error": "Копирането е неуспешно",
+	"params_dotted_end_radius": "Радиус на точката"
 }

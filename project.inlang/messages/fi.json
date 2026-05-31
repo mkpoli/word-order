@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Kopioidaan…",
 	"menu_copy_image_copied": "Kopioitu!",
 	"menu_copy_image_unsupported": "Selain ei voi kopioida kuvia",
-	"menu_copy_image_error": "Kopiointi epäonnistui"
+	"menu_copy_image_error": "Kopiointi epäonnistui",
+	"params_dotted_end_radius": "Pisteen säde"
 }

@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "複寫 中…",
 	"menu_copy_image_copied": "複寫됨!",
 	"menu_copy_image_unsupported": "브라우저가 그림을 複寫할 수 없습니다",
-	"menu_copy_image_error": "複寫 失敗"
+	"menu_copy_image_error": "複寫 失敗",
+	"params_dotted_end_radius": "點 半지름"
 }

@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "sitelen li kama…",
 	"menu_copy_image_copied": "kama jo!",
 	"menu_copy_image_unsupported": "ilo li ken ala pana e sitelen",
-	"menu_copy_image_error": "pana li pakala"
+	"menu_copy_image_error": "pana li pakala",
+	"params_dotted_end_radius": "suli pi sike lili"
 }

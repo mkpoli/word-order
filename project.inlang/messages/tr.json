@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Kopyalanıyor…",
 	"menu_copy_image_copied": "Kopyalandı!",
 	"menu_copy_image_unsupported": "Tarayıcı görselleri kopyalayamıyor",
-	"menu_copy_image_error": "Kopyalama başarısız"
+	"menu_copy_image_error": "Kopyalama başarısız",
+	"params_dotted_end_radius": "Nokta yarıçapı"
 }

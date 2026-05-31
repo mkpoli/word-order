@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "正在複製…",
 	"menu_copy_image_copied": "已複製！",
 	"menu_copy_image_unsupported": "瀏覽器無法複製圖片",
-	"menu_copy_image_error": "複製失敗"
+	"menu_copy_image_error": "複製失敗",
+	"params_dotted_end_radius": "圓點半徑"
 }

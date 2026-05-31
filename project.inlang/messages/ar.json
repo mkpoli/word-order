@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "جارٍ النسخ…",
 	"menu_copy_image_copied": "تم النسخ!",
 	"menu_copy_image_unsupported": "المتصفح لا يمكنه نسخ الصور",
-	"menu_copy_image_error": "فشل النسخ"
+	"menu_copy_image_error": "فشل النسخ",
+	"params_dotted_end_radius": "نصف قطر النقطة"
 }

@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Copiante…",
 	"menu_copy_image_copied": "Copiate!",
 	"menu_copy_image_unsupported": "Le navigator non pote copiar imagines",
-	"menu_copy_image_error": "Copia fallite"
+	"menu_copy_image_error": "Copia fallite",
+	"params_dotted_end_radius": "Radio del puncto"
 }

@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Đang sao chép…",
 	"menu_copy_image_copied": "Đã sao chép!",
 	"menu_copy_image_unsupported": "Trình duyệt không thể sao chép hình ảnh",
-	"menu_copy_image_error": "Sao chép thất bại"
+	"menu_copy_image_error": "Sao chép thất bại",
+	"params_dotted_end_radius": "Bán kính chấm"
 }

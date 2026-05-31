@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Ἀντιγράφων…",
 	"menu_copy_image_copied": "Ἀντεγράφη!",
 	"menu_copy_image_unsupported": "Ὁ πλοηγὸς εἰκόνας ἀντιγράφειν οὐ δύναται",
-	"menu_copy_image_error": "Ἡ ἀντιγραφὴ ἀπέτυχεν"
+	"menu_copy_image_error": "Ἡ ἀντιγραφὴ ἀπέτυχεν",
+	"params_dotted_end_radius": "Ἀκτὶς στιγμῆς"
 }

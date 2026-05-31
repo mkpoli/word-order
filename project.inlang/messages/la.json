@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Exscribens…",
 	"menu_copy_image_copied": "Exscriptum!",
 	"menu_copy_image_unsupported": "Navigatrum imagines exscribere non potest",
-	"menu_copy_image_error": "Exscribere non licuit"
+	"menu_copy_image_error": "Exscribere non licuit",
+	"params_dotted_end_radius": "Radius puncti"
 }

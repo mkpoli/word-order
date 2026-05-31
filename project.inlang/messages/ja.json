@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "コピー中……",
 	"menu_copy_image_copied": "コピーしました！",
 	"menu_copy_image_unsupported": "ブラウザは画像をコピーできません",
-	"menu_copy_image_error": "コピーに失敗しました"
+	"menu_copy_image_error": "コピーに失敗しました",
+	"params_dotted_end_radius": "点の半径"
 }

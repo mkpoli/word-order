@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "正在复制…",
 	"menu_copy_image_copied": "已复制！",
 	"menu_copy_image_unsupported": "浏览器无法复制图片",
-	"menu_copy_image_error": "复制失败"
+	"menu_copy_image_error": "复制失败",
+	"params_dotted_end_radius": "圆点半径"
 }

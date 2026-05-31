@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "กำลังคัดลอก…",
 	"menu_copy_image_copied": "คัดลอกแล้ว!",
 	"menu_copy_image_unsupported": "เบราว์เซอร์ไม่สามารถคัดลอกรูปภาพได้",
-	"menu_copy_image_error": "คัดลอกไม่สำเร็จ"
+	"menu_copy_image_error": "คัดลอกไม่สำเร็จ",
+	"params_dotted_end_radius": "รัศมีจุด"
 }

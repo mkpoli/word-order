@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "कॉपी हो रही है…",
 	"menu_copy_image_copied": "कॉपी हो गया!",
 	"menu_copy_image_unsupported": "ब्राउज़र छवियाँ कॉपी नहीं कर सकता",
-	"menu_copy_image_error": "कॉपी विफल"
+	"menu_copy_image_error": "कॉपी विफल",
+	"params_dotted_end_radius": "बिंदु त्रिज्या"
 }

@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Wird kopiert…",
 	"menu_copy_image_copied": "Kopiert!",
 	"menu_copy_image_unsupported": "Browser kann keine Bilder kopieren",
-	"menu_copy_image_error": "Kopieren fehlgeschlagen"
+	"menu_copy_image_error": "Kopieren fehlgeschlagen",
+	"params_dotted_end_radius": "Punktradius"
 }
