@@ -161,5 +161,10 @@
 	"translate_cancel": "Peruuta",
 	"translate_retry": "Yritä uudelleen",
 	"translate_cost_notice": "Käyttää {provider}-tiliäsi — halvemmat mallit yleensä riittävät.",
-	"menu_filename": "Tiedostonimi"
+	"menu_filename": "Tiedostonimi",
+	"menu_copy_image": "Kopioi kuva",
+	"menu_copy_image_busy": "Kopioidaan…",
+	"menu_copy_image_copied": "Kopioitu!",
+	"menu_copy_image_unsupported": "Selain ei voi kopioida kuvia",
+	"menu_copy_image_error": "Kopiointi epäonnistui"
 }

@@ -161,5 +161,10 @@
 	"translate_cancel": "لغو",
 	"translate_retry": "تلاش مجدد",
 	"translate_cost_notice": "از حساب {provider} شما استفاده می‌کند — مدل‌های ارزان‌تر معمولاً کافی‌اند.",
-	"menu_filename": "نام پرونده"
+	"menu_filename": "نام پرونده",
+	"menu_copy_image": "کپی تصویر",
+	"menu_copy_image_busy": "در حال کپی…",
+	"menu_copy_image_copied": "کپی شد!",
+	"menu_copy_image_unsupported": "مرورگر نمی‌تواند تصاویر را کپی کند",
+	"menu_copy_image_error": "کپی ناموفق بود"
 }

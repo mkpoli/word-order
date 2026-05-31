@@ -161,5 +161,10 @@
 	"translate_cancel": "Скасувати",
 	"translate_retry": "Повторити",
 	"translate_cost_notice": "Використовує ваш обліковий запис {provider} — дешевших моделей зазвичай достатньо.",
-	"menu_filename": "Назва файлу"
+	"menu_filename": "Назва файлу",
+	"menu_copy_image": "Копіювати зображення",
+	"menu_copy_image_busy": "Копіювання…",
+	"menu_copy_image_copied": "Скопійовано!",
+	"menu_copy_image_unsupported": "Браузер не може копіювати зображення",
+	"menu_copy_image_error": "Не вдалося скопіювати"
 }

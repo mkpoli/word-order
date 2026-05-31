@@ -161,5 +161,10 @@
 	"translate_cancel": "Отказ",
 	"translate_retry": "Опитай отново",
 	"translate_cost_notice": "Използва вашия акаунт в {provider} — по-евтините модели обикновено стигат.",
-	"menu_filename": "Име на файла"
+	"menu_filename": "Име на файла",
+	"menu_copy_image": "Копиране на изображение",
+	"menu_copy_image_busy": "Копиране…",
+	"menu_copy_image_copied": "Копирано!",
+	"menu_copy_image_unsupported": "Браузърът не може да копира изображения",
+	"menu_copy_image_error": "Копирането е неуспешно"
 }
