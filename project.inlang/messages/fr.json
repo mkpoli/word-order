@@ -161,5 +161,10 @@
 	"translate_cancel": "Annuler",
 	"translate_retry": "Réessayer",
 	"translate_cost_notice": "Utilisez votre compte {provider} — les modèles moins chers conviennent généralement.",
-	"menu_filename": "Nom du fichier"
+	"menu_filename": "Nom du fichier",
+	"menu_copy_image": "Copier l'image",
+	"menu_copy_image_busy": "Copie…",
+	"menu_copy_image_copied": "Copié !",
+	"menu_copy_image_unsupported": "Le navigateur ne peut pas copier d'images",
+	"menu_copy_image_error": "Échec de la copie"
 }

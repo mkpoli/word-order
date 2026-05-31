@@ -161,5 +161,10 @@
 	"translate_cancel": "取消",
 	"translate_retry": "重試",
 	"translate_cost_notice": "使用您的{provider}帳戶——便宜的模型通常足夠。",
-	"menu_filename": "檔案名稱"
+	"menu_filename": "檔案名稱",
+	"menu_copy_image": "複製圖片",
+	"menu_copy_image_busy": "正在複製…",
+	"menu_copy_image_copied": "已複製！",
+	"menu_copy_image_unsupported": "瀏覽器無法複製圖片",
+	"menu_copy_image_error": "複製失敗"
 }

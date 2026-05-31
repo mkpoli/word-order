@@ -161,5 +161,10 @@
 	"translate_cancel": "Отмена",
 	"translate_retry": "Повторить",
 	"translate_cost_notice": "Использует ваш аккаунт {provider} — более дешёвые модели обычно справляются.",
-	"menu_filename": "Имя файла"
+	"menu_filename": "Имя файла",
+	"menu_copy_image": "Копировать изображение",
+	"menu_copy_image_busy": "Копирование…",
+	"menu_copy_image_copied": "Скопировано!",
+	"menu_copy_image_unsupported": "Браузер не может копировать изображения",
+	"menu_copy_image_error": "Не удалось скопировать"
 }

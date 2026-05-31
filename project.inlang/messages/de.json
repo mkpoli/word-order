@@ -161,5 +161,10 @@
 	"translate_cancel": "Abbrechen",
 	"translate_retry": "Wiederholen",
 	"translate_cost_notice": "Nutzt dein {provider}-Konto — günstigere Modelle reichen meist aus.",
-	"menu_filename": "Dateiname"
+	"menu_filename": "Dateiname",
+	"menu_copy_image": "Bild kopieren",
+	"menu_copy_image_busy": "Wird kopiert…",
+	"menu_copy_image_copied": "Kopiert!",
+	"menu_copy_image_unsupported": "Browser kann keine Bilder kopieren",
+	"menu_copy_image_error": "Kopieren fehlgeschlagen"
 }

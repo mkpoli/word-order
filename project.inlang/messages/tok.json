@@ -161,5 +161,10 @@
 	"translate_cancel": "o pini",
 	"translate_retry": "o sin",
 	"translate_cost_notice": "ni li kepeken mani sina lon {provider} — ilo sona lili li pona.",
-	"menu_filename": "nimi lipu"
+	"menu_filename": "nimi lipu",
+	"menu_copy_image": "o pana e sitelen",
+	"menu_copy_image_busy": "sitelen li kama…",
+	"menu_copy_image_copied": "kama jo!",
+	"menu_copy_image_unsupported": "ilo li ken ala pana e sitelen",
+	"menu_copy_image_error": "pana li pakala"
 }

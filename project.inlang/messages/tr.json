@@ -161,5 +161,10 @@
 	"translate_cancel": "İptal",
 	"translate_retry": "Tekrar dene",
 	"translate_cost_notice": "{provider} hesabınızı kullanır — daha ucuz modeller genelde yeterlidir.",
-	"menu_filename": "Dosya adı"
+	"menu_filename": "Dosya adı",
+	"menu_copy_image": "Görseli kopyala",
+	"menu_copy_image_busy": "Kopyalanıyor…",
+	"menu_copy_image_copied": "Kopyalandı!",
+	"menu_copy_image_unsupported": "Tarayıcı görselleri kopyalayamıyor",
+	"menu_copy_image_error": "Kopyalama başarısız"
 }

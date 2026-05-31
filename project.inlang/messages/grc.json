@@ -161,5 +161,10 @@
 	"translate_cancel": "Cancel",
 	"translate_retry": "Retry",
 	"translate_cost_notice": "Uses your {provider} account — cheaper models are usually fine.",
-	"menu_filename": "Ὄνομα ἀρχείου"
+	"menu_filename": "Ὄνομα ἀρχείου",
+	"menu_copy_image": "Ἀντίγραφε τὴν εἰκόνα",
+	"menu_copy_image_busy": "Ἀντιγράφων…",
+	"menu_copy_image_copied": "Ἀντεγράφη!",
+	"menu_copy_image_unsupported": "Ὁ πλοηγὸς εἰκόνας ἀντιγράφειν οὐ δύναται",
+	"menu_copy_image_error": "Ἡ ἀντιγραφὴ ἀπέτυχεν"
 }

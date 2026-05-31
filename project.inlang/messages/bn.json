@@ -161,5 +161,10 @@
 	"translate_cancel": "বাতিল",
 	"translate_retry": "আবার চেষ্টা",
 	"translate_cost_notice": "{provider} অ্যাকাউন্ট ব্যবহার করে — সস্তা মডেলই সাধারণত যথেষ্ট।",
-	"menu_filename": "ফাইলের নাম"
+	"menu_filename": "ফাইলের নাম",
+	"menu_copy_image": "ছবি কপি করুন",
+	"menu_copy_image_busy": "কপি হচ্ছে…",
+	"menu_copy_image_copied": "কপি হয়েছে!",
+	"menu_copy_image_unsupported": "ব্রাউজার ছবি কপি করতে পারে না",
+	"menu_copy_image_error": "কপি ব্যর্থ হয়েছে"
 }

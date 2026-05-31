@@ -161,5 +161,10 @@
 	"translate_cancel": "Batal",
 	"translate_retry": "Coba lagi",
 	"translate_cost_notice": "Menggunakan akun {provider} Anda — model yang lebih murah biasanya cukup.",
-	"menu_filename": "Nama berkas"
+	"menu_filename": "Nama berkas",
+	"menu_copy_image": "Salin gambar",
+	"menu_copy_image_busy": "Menyalin…",
+	"menu_copy_image_copied": "Tersalin!",
+	"menu_copy_image_unsupported": "Peramban tidak dapat menyalin gambar",
+	"menu_copy_image_error": "Gagal menyalin"
 }
