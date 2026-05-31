@@ -161,5 +161,10 @@
 	"translate_cancel": "إلغاء",
 	"translate_retry": "إعادة المحاولة",
 	"translate_cost_notice": "يستخدم حساب {provider} الخاص بك — النماذج الأرخص كافية في الغالب.",
-	"menu_filename": "اسم الملف"
+	"menu_filename": "اسم الملف",
+	"menu_copy_image": "نسخ الصورة",
+	"menu_copy_image_busy": "جارٍ النسخ…",
+	"menu_copy_image_copied": "تم النسخ!",
+	"menu_copy_image_unsupported": "المتصفح لا يمكنه نسخ الصور",
+	"menu_copy_image_error": "فشل النسخ"
 }

@@ -161,5 +161,10 @@
 	"translate_cancel": "Cancellare",
 	"translate_retry": "Iterum conari",
 	"translate_cost_notice": "Ratione {provider} tua utitur — exemplaria viliora plerumque sufficiunt.",
-	"menu_filename": "Nomen fasciculi"
+	"menu_filename": "Nomen fasciculi",
+	"menu_copy_image": "Exscribe imaginem",
+	"menu_copy_image_busy": "Exscribens…",
+	"menu_copy_image_copied": "Exscriptum!",
+	"menu_copy_image_unsupported": "Navigatrum imagines exscribere non potest",
+	"menu_copy_image_error": "Exscribere non licuit"
 }

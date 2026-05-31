@@ -161,5 +161,10 @@
 	"translate_cancel": "やめる",
 	"translate_retry": "もういちど",
 	"translate_cost_notice": "{provider} の あなたの アカウントを つかいます。やすい モデルでも じゅうぶんな ことが おおいです。",
-	"menu_filename": "ファイルの なまえ"
+	"menu_filename": "ファイルの なまえ",
+	"menu_copy_image": "がぞうを こぴい",
+	"menu_copy_image_busy": "こぴいちゅう……",
+	"menu_copy_image_copied": "こぴい した!",
+	"menu_copy_image_unsupported": "ブラウザは がぞうを こぴい できません",
+	"menu_copy_image_error": "こぴいに しっぱい しました"
 }

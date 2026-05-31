@@ -161,5 +161,10 @@
 	"translate_cancel": "Anuluj",
 	"translate_retry": "Ponów",
 	"translate_cost_notice": "Używa twojego konta {provider} — tańsze modele zwykle wystarczają.",
-	"menu_filename": "Nazwa pliku"
+	"menu_filename": "Nazwa pliku",
+	"menu_copy_image": "Kopiuj obraz",
+	"menu_copy_image_busy": "Kopiowanie…",
+	"menu_copy_image_copied": "Skopiowano!",
+	"menu_copy_image_unsupported": "Przeglądarka nie może kopiować obrazów",
+	"menu_copy_image_error": "Kopiowanie nie powiodło się"
 }

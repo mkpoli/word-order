@@ -161,5 +161,10 @@
 	"translate_cancel": "ยกเลิก",
 	"translate_retry": "ลองอีกครั้ง",
 	"translate_cost_notice": "ใช้บัญชี {provider} ของคุณ — โมเดลราคาถูกมักเพียงพอ",
-	"menu_filename": "ชื่อไฟล์"
+	"menu_filename": "ชื่อไฟล์",
+	"menu_copy_image": "คัดลอกรูปภาพ",
+	"menu_copy_image_busy": "กำลังคัดลอก…",
+	"menu_copy_image_copied": "คัดลอกแล้ว!",
+	"menu_copy_image_unsupported": "เบราว์เซอร์ไม่สามารถคัดลอกรูปภาพได้",
+	"menu_copy_image_error": "คัดลอกไม่สำเร็จ"
 }

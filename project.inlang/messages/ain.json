@@ -158,5 +158,10 @@
 	"translate_cancel": "Hontomotuye",
 	"translate_retry": "Na arsuy",
 	"translate_cost_notice": "{provider} e=eywanke — hawke moter pirka.",
-	"menu_filename": "Cinuyep rehe"
+	"menu_filename": "Cinuyep rehe",
+	"menu_copy_image": "Noka eykoysampa",
+	"menu_copy_image_busy": "Eykoysampa kor an…",
+	"menu_copy_image_copied": "A=eykoysampa!",
+	"menu_copy_image_unsupported": "Tan aeywankep anak noka eykoysampa eaykap",
+	"menu_copy_image_error": "Eykoysampa eaykap"
 }

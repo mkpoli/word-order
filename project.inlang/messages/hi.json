@@ -161,5 +161,10 @@
 	"translate_cancel": "रद्द करें",
 	"translate_retry": "पुनः प्रयास",
 	"translate_cost_notice": "{provider} खाते का उपयोग करता है — सस्ते मॉडल आमतौर पर पर्याप्त हैं।",
-	"menu_filename": "फ़ाइल का नाम"
+	"menu_filename": "फ़ाइल का नाम",
+	"menu_copy_image": "छवि कॉपी करें",
+	"menu_copy_image_busy": "कॉपी हो रही है…",
+	"menu_copy_image_copied": "कॉपी हो गया!",
+	"menu_copy_image_unsupported": "ब्राउज़र छवियाँ कॉपी नहीं कर सकता",
+	"menu_copy_image_error": "कॉपी विफल"
 }
