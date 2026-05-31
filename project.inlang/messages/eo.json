@@ -153,5 +153,6 @@
 	"translate_remove_custom": "Forigi",
 	"translate_cancel": "Nuligi",
 	"translate_retry": "Reprovi",
-	"translate_cost_notice": "Uzas vian {provider}-konton — pli malmultekostaj modeloj kutime sufiĉas."
+	"translate_cost_notice": "Uzas vian {provider}-konton — pli malmultekostaj modeloj kutime sufiĉas.",
+	"params_dotted_end_radius": "Punkta radiuso"
 }

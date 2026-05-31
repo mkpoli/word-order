@@ -153,5 +153,6 @@
 	"translate_remove_custom": "けす",
 	"translate_cancel": "やめる",
 	"translate_retry": "もういちど",
-	"translate_cost_notice": "{provider} の あなたの アカウントを つかいます。やすい モデルでも じゅうぶんな ことが おおいです。"
+	"translate_cost_notice": "{provider} の あなたの アカウントを つかいます。やすい モデルでも じゅうぶんな ことが おおいです。",
+	"params_dotted_end_radius": "てんの おおきさ"
 }

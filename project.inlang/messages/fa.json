@@ -153,5 +153,6 @@
 	"translate_remove_custom": "حذف",
 	"translate_cancel": "لغو",
 	"translate_retry": "تلاش مجدد",
-	"translate_cost_notice": "از حساب {provider} شما استفاده می‌کند — مدل‌های ارزان‌تر معمولاً کافی‌اند."
+	"translate_cost_notice": "از حساب {provider} شما استفاده می‌کند — مدل‌های ارزان‌تر معمولاً کافی‌اند.",
+	"params_dotted_end_radius": "شعاع نقطه"
 }

@@ -153,5 +153,6 @@
 	"translate_remove_custom": "削除",
 	"translate_cancel": "キャンセル",
 	"translate_retry": "再試行",
-	"translate_cost_notice": "{provider} のあなたのアカウントを使用します。安いモデルでも十分なことが多いです。"
+	"translate_cost_notice": "{provider} のあなたのアカウントを使用します。安いモデルでも十分なことが多いです。",
+	"params_dotted_end_radius": "点の半径"
 }

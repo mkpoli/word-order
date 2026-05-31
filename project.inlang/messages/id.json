@@ -153,5 +153,6 @@
 	"translate_remove_custom": "Hapus",
 	"translate_cancel": "Batal",
 	"translate_retry": "Coba lagi",
-	"translate_cost_notice": "Menggunakan akun {provider} Anda — model yang lebih murah biasanya cukup."
+	"translate_cost_notice": "Menggunakan akun {provider} Anda — model yang lebih murah biasanya cukup.",
+	"params_dotted_end_radius": "Jari-jari titik"
 }

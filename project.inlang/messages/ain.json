@@ -153,5 +153,6 @@
 	"translate_remove_custom": "Isamka",
 	"translate_cancel": "Hontomotuye",
 	"translate_retry": "Na arsuy",
-	"translate_cost_notice": "{provider} e=eywanke — hawke moter pirka."
+	"translate_cost_notice": "{provider} e=eywanke — hawke moter pirka.",
+	"params_dotted_end_radius": "Noka poro hi"
 }

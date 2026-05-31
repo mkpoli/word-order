@@ -153,5 +153,6 @@
 	"translate_remove_custom": "Rimuovi",
 	"translate_cancel": "Annulla",
 	"translate_retry": "Riprova",
-	"translate_cost_notice": "Usa il tuo account {provider} — i modelli più economici di solito bastano."
+	"translate_cost_notice": "Usa il tuo account {provider} — i modelli più economici di solito bastano.",
+	"params_dotted_end_radius": "Raggio del punto"
 }
