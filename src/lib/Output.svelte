@@ -68,9 +68,10 @@
 		lineGap: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
-		/** Render each connector line as dotted near its endpoints, solid in the
-		 * middle — a softer entry/exit at the words than a hard stop. Replaces
-		 * the earlier halo experiment. */
+		/** Radius, in pixels, of the filled endpoint circles drawn where each
+		 * connector meets the words. The connector stroke itself stays solid in
+		 * the middle; these caps just give it a rounded dot at each end. Larger
+		 * values = bigger dots; 0 (default) hides them entirely. */
 		dottedEndRadius?: number;
 		straightLength: number;
 		endpointCorrection: number;
