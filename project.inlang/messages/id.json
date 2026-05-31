@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Menyalin…",
 	"menu_copy_image_copied": "Tersalin!",
 	"menu_copy_image_unsupported": "Peramban tidak dapat menyalin gambar",
-	"menu_copy_image_error": "Gagal menyalin"
+	"menu_copy_image_error": "Gagal menyalin",
+	"params_dotted_end_radius": "Jari-jari titik"
 }

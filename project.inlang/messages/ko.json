@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "복사 중…",
 	"menu_copy_image_copied": "복사됨!",
 	"menu_copy_image_unsupported": "브라우저가 이미지를 복사할 수 없습니다",
-	"menu_copy_image_error": "복사 실패"
+	"menu_copy_image_error": "복사 실패",
+	"params_dotted_end_radius": "점 반지름"
 }

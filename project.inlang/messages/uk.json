@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Копіювання…",
 	"menu_copy_image_copied": "Скопійовано!",
 	"menu_copy_image_unsupported": "Браузер не може копіювати зображення",
-	"menu_copy_image_error": "Не вдалося скопіювати"
+	"menu_copy_image_error": "Не вдалося скопіювати",
+	"params_dotted_end_radius": "Радіус точки"
 }

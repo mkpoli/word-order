@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Kopiowanie…",
 	"menu_copy_image_copied": "Skopiowano!",
 	"menu_copy_image_unsupported": "Przeglądarka nie może kopiować obrazów",
-	"menu_copy_image_error": "Kopiowanie nie powiodło się"
+	"menu_copy_image_error": "Kopiowanie nie powiodło się",
+	"params_dotted_end_radius": "Promień kropki"
 }

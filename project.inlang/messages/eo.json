@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Kopiante…",
 	"menu_copy_image_copied": "Kopiite!",
 	"menu_copy_image_unsupported": "Retumilo ne povas kopii bildojn",
-	"menu_copy_image_error": "Kopiado malsukcesis"
+	"menu_copy_image_error": "Kopiado malsukcesis",
+	"params_dotted_end_radius": "Punkta radiuso"
 }

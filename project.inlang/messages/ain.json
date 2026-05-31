@@ -163,5 +163,6 @@
 	"menu_copy_image_busy": "Eykoysampa kor an…",
 	"menu_copy_image_copied": "A=eykoysampa!",
 	"menu_copy_image_unsupported": "Tan aeywankep anak noka eykoysampa eaykap",
-	"menu_copy_image_error": "Eykoysampa eaykap"
+	"menu_copy_image_error": "Eykoysampa eaykap",
+	"params_dotted_end_radius": "Sinkop poro hi"
 }

@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Copie…",
 	"menu_copy_image_copied": "Copié !",
 	"menu_copy_image_unsupported": "Le navigateur ne peut pas copier d'images",
-	"menu_copy_image_error": "Échec de la copie"
+	"menu_copy_image_error": "Échec de la copie",
+	"params_dotted_end_radius": "Rayon du point"
 }

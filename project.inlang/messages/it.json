@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "Copia in corso…",
 	"menu_copy_image_copied": "Copiato!",
 	"menu_copy_image_unsupported": "Il browser non può copiare immagini",
-	"menu_copy_image_error": "Copia non riuscita"
+	"menu_copy_image_error": "Copia non riuscita",
+	"params_dotted_end_radius": "Raggio del punto"
 }

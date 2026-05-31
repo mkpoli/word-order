@@ -166,5 +166,6 @@
 	"menu_copy_image_busy": "কপি হচ্ছে…",
 	"menu_copy_image_copied": "কপি হয়েছে!",
 	"menu_copy_image_unsupported": "ব্রাউজার ছবি কপি করতে পারে না",
-	"menu_copy_image_error": "কপি ব্যর্থ হয়েছে"
+	"menu_copy_image_error": "কপি ব্যর্থ হয়েছে",
+	"params_dotted_end_radius": "বিন্দুর ব্যাসার্ধ"
 }
