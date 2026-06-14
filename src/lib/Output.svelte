@@ -65,12 +65,16 @@
 		lineGap: number;
 		lineWidth?: number;
 		lineStyle?: LineStyle;
-		lineHalo?: boolean;
-		lineHaloWidth?: number;
+		/** Radius, in pixels, of the filled endpoint circles drawn where each
+		 * connector meets the words. The connector stroke itself stays solid in
+		 * the middle; these caps just give it a rounded dot at each end. Larger
+		 * values = bigger dots; 0 (default) hides them entirely. */
+		dottedEndRadius?: number;
 		straightLength: number;
 		endpointCorrection: number;
 		curvature?: number;
 		alignment?: Alignment;
+		tagAlignment?: Alignment;
 		fontFamily: FontFamily;
 		fontStyle: FontStyle;
 		fontSize: number;
@@ -85,6 +89,10 @@
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
+		/** When true, suspends the fit-to-width adjustments — set during export
+		 * pipelines so the captured artifact uses the user-configured margins
+		 * and 1:1 scale rather than the shrunk on-screen presentation. */
+		fitDisabled?: boolean;
 	}
 
 	let {
@@ -103,12 +111,12 @@
 		lineGap,
 		lineWidth = 1,
 		lineStyle = 'solid',
-		lineHalo = false,
-		lineHaloWidth = 1.5,
+		dottedEndRadius = 0,
 		straightLength,
 		endpointCorrection,
 		curvature = 1,
 		alignment = 'center',
+		tagAlignment = 'center',
 		fontFamily,
 		fontStyle,
 		fontSize,
@@ -118,14 +126,91 @@
 		tokenGap = 0,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
-		output = $bindable()
+		output = $bindable(),
+		fitDisabled = false
 	}: Props = $props();
 	let tokenEditDialog: HTMLDivElement | undefined = $state();
 
 	let mounted = $state(false);
 
+	// Fit-to-width: when the natural diagram is wider than its scroll
+	// container, first shrink the horizontal margins (user-configured padding
+	// of <output>) down to zero, and if that's still not enough apply CSS zoom
+	// so the whole diagram visually fits without horizontal scrolling. Both
+	// adjustments are reactive on container size + content geometry and are
+	// suspended via `fitDisabled` during exports so artifacts keep the
+	// configured margins and natural 1:1 scale.
+	let fitZoom = $state(1);
+	let fitPadX = $state<number | null>(null);
+	let fitObserver: ResizeObserver | null = null;
+
+	function recomputeFit() {
+		if (fitDisabled || !output) {
+			fitZoom = 1;
+			fitPadX = null;
+			return;
+		}
+		const parent = output.parentElement;
+		if (!parent) return;
+		const container = parent.clientWidth;
+		if (container <= 0) return;
+		// Measure natural width at 1:1 with the user's configured margins.
+		// We temporarily strip our overrides so scrollWidth reflects the
+		// real intrinsic content size, then restore the inline styles.
+		const savedPadding = output.style.padding;
+		// Cast to any so TS doesn't trip on the (now standard) zoom property.
+		const styleAny = output.style as CSSStyleDeclaration & { zoom: string };
+		const savedZoom = styleAny.zoom;
+		output.style.padding = `${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`;
+		styleAny.zoom = '1';
+		const natural = output.scrollWidth;
+		output.style.padding = savedPadding;
+		styleAny.zoom = savedZoom;
+		if (natural <= container) {
+			fitZoom = 1;
+			fitPadX = null;
+			return;
+		}
+		const noPad = natural - outputMargin.left - outputMargin.right;
+		if (noPad <= container) {
+			// Shrinking horizontal padding alone makes it fit.
+			fitPadX = Math.max(0, Math.floor((container - noPad) / 2));
+			fitZoom = 1;
+		} else {
+			// Zero out horizontal padding AND zoom down to fit.
+			fitPadX = 0;
+			fitZoom = container / noPad;
+		}
+	}
+
 	onMount(() => {
 		mounted = true;
+		if (output) {
+			const parent = output.parentElement;
+			if (parent) {
+				fitObserver = new ResizeObserver(() => recomputeFit());
+				fitObserver.observe(parent);
+				fitObserver.observe(output);
+			}
+		}
+		return () => {
+			fitObserver?.disconnect();
+			fitObserver = null;
+		};
+	});
+
+	$effect(() => {
+		// Re-run fit when anything that affects natural width changes.
+		void sentences;
+		void outputMargin;
+		void fontSize;
+		void verticalGap;
+		void letterSpacing;
+		void spaceWidth;
+		void tokenGap;
+		void fitDisabled;
+		if (!mounted) return;
+		requestAnimationFrame(recomputeFit);
 	});
 
 	function drawLines(
@@ -175,10 +260,15 @@
 						const bLeft = Math.min(rectB1.left, rectB2.left);
 						const bRight = Math.max(rectB1.right, rectB2.right);
 
-						let x1 = (aLeft + aRight) / 2 - rectOutput.left;
-						let y1 = getBottomEndpoint(sentences[j], spanA1, spanA2, rectOutput);
-						let x2 = (bLeft + bRight) / 2 - rectOutput.left;
-						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput);
+						// CSS zoom on <output> scales all child bounding-rect deltas by
+						// the zoom factor, but the SVG inside the same zoomed parent
+						// interprets path coords in pre-zoom local units. Divide here to
+						// get back to local units so the rendered lines stay glued to
+						// the words they connect.
+						let x1 = ((aLeft + aRight) / 2 - rectOutput.left) / fitZoom;
+						let y1 = getBottomEndpoint(sentences[j], spanA1, spanA2, rectOutput) / fitZoom;
+						let x2 = ((bLeft + bRight) / 2 - rectOutput.left) / fitZoom;
+						let y2 = getTopEndpoint(sentences[k], spanB1, spanB2, rectOutput) / fitZoom;
 
 						const correction = endpointCorrection / ((y2 - y1) / (x2 - x1));
 						x1 += correction;
@@ -198,6 +288,24 @@
 			}
 		}
 		return lines;
+	}
+
+	/**
+	 * Collect each connector's two endpoints, deduped by quantised (x,y,color).
+	 * drawLines emits up to three Line segments per logical connector when
+	 * `straightLength > 0` (the curved middle plus two short straight stubs);
+	 * without dedup we'd stack three coincident endpoint dots and the result
+	 * looks bloated.
+	 */
+	function uniqueEndpoints(lines: Line[]): Array<{ x: number; y: number; color: string }> {
+		const out: Array<{ x: number; y: number; color: string }> = [];
+		const has = (x: number, y: number, color: string) =>
+			out.some((p) => Math.round(p.x) === Math.round(x) && Math.round(p.y) === Math.round(y) && p.color === color);
+		for (const [x1, y1, x2, y2, color] of lines) {
+			if (!has(x1, y1, color)) out.push({ x: x1, y: y1, color });
+			if (!has(x2, y2, color)) out.push({ x: x2, y: y2, color });
+		}
+		return out;
 	}
 
 	function connectionPath(x1: number, y1: number, x2: number, y2: number, curvature: number): string {
@@ -472,6 +580,9 @@
 	}
 
 	run(() => {
+		// fitZoom referenced so a fit-driven layout change (resize / margin
+		// shrink / zoom apply) re-runs drawLines under the new scale.
+		void fitZoom;
 		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	});
 	run(() => {
@@ -557,7 +668,10 @@
 	class:bold={fontStyle === 'bold' || fontStyle === 'bold-italic'}
 	style:gap={`${verticalGap}px 1em`}
 	style:font-size={`${fontSize}px`}
-	style:padding={`${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	style:padding={fitPadX !== null
+		? `${outputMargin.top}px ${fitPadX}px ${outputMargin.bottom}px ${fitPadX}px`
+		: `${outputMargin.top}px ${outputMargin.right}px ${outputMargin.bottom}px ${outputMargin.left}px`}
+	style:zoom={fitZoom < 1 ? fitZoom : null}
 	class:margin-adjusting={marginDrag !== null}
 >
 	<!-- Visual bands (pink tint + blueprint dimension annotation). Non-
@@ -688,7 +802,11 @@
 					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
 					</div>
-					<span class="tag" style:transform={getTransform(i, draggingOffset)}>
+					<span
+						class="tag"
+						style:transform={getTransform(i, draggingOffset)}
+						style:justify-self={tagAlignment === 'center' ? 'center' : tagAlignment === 'right' ? 'end' : 'start'}
+					>
 						<span
 							class="tag-text"
 							contenteditable="true"
@@ -943,22 +1061,6 @@
 		{@const dashArray =
 			lineStyle === 'dashed' ? `${lineWidth * 5} ${lineWidth * 4}` : lineStyle === 'dotted' ? `${lineWidth} ${lineWidth * 2}` : undefined}
 		<svg style="position: absolute;" width="100%" height="100%">
-			<!-- Halo pass: a thicker background-coloured stroke drawn under each
-			     coloured stroke. When two paths cross, the upper one's halo masks
-			     a small slice of the lower one — the "subway-map" technique that
-			     makes dense crossings legible without changing path geometry. -->
-			{#if lineHalo}
-				{#each lines as [x1, y1, x2, y2]}
-					<path
-						class="line-halo"
-						d={connectionPath(x1, y1, x2, y2, curvature)}
-						stroke-width={lineWidth + lineHaloWidth * 2}
-						stroke-dasharray={dashArray}
-						stroke-linecap="round"
-						fill="none"
-					/>
-				{/each}
-			{/if}
 			{#each lines as [x1, y1, x2, y2, color]}
 				<path
 					d={connectionPath(x1, y1, x2, y2, curvature)}
@@ -969,6 +1071,19 @@
 					fill="none"
 				/>
 			{/each}
+			{#if dottedEndRadius > 0}
+				<!-- Filled circles at each connector endpoint, in the connector colour
+				     — same accent the og-image uses to anchor each link visually to
+				     the word it connects. Rendered as a second pass so the dots sit
+				     on top of the lines without being interrupted by stroke joins.
+				     Dedup by quantised (x,y,color) so the straight-segment fragments
+				     drawLines adds when straightLength > 0 don't stack three
+				     coincident dots at the same endpoint. -->
+				{@const endpointDots = uniqueEndpoints(lines)}
+				{#each endpointDots as { x, y, color }}
+					<circle cx={x} cy={y} r={dottedEndRadius} fill={color} />
+				{/each}
+			{/if}
 		</svg>
 
 		<div class="edit-dialog" use:draggable class:visible={mode === 'edit'}>
@@ -1140,14 +1255,6 @@
 		   dom-to-svg, shifting exports off-centre to the right. Centring is
 		   handled by the .output-scroll wrapper instead. */
 		flex-shrink: 0;
-	}
-
-	/* Halo strokes mask crossings by painting in the canvas background colour.
-	   The output element overrides --color-bg to white (so PNG / SVG / PDF
-	   exports stay consistent regardless of theme), so this var resolves
-	   correctly in both interactive and export contexts. */
-	.line-halo {
-		stroke: var(--color-bg, white);
 	}
 
 	svg {

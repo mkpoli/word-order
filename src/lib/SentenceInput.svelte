@@ -85,6 +85,24 @@
 		});
 	}
 
+	function submit() {
+		const w = getWords(text);
+		if (w.length === 0) {
+			empty = true;
+			return;
+		}
+		text = '';
+		const nextAbove = fitLanes(annotationsAbove, w.length);
+		const nextBelow = fitLanes(annotationsBelow, w.length);
+		dispatch('submit', {
+			lang,
+			words: w,
+			annotationsAbove: nextAbove,
+			annotationsBelow: nextBelow,
+			showGloss: glossEnabled || hasAnyLane
+		});
+	}
+
 	function syncLanes(value: string) {
 		const words = getWords(value);
 		const nextAbove = fitLanes(annotationsAbove, words.length);
@@ -150,6 +168,12 @@
 	let glossableTokens = $derived(words.map((word, tokenIndex) => ({ word, tokenIndex })).filter(({ word }) => isGlossableToken(word)));
 	let reversedAboveIndices = $derived(annotationsAbove.map((_, i) => i).reverse());
 	let hasAnyLane = $derived(annotationsAbove.length > 0 || annotationsBelow.length > 0);
+
+	// Platform-aware modifier glyph for the submit shortcut hint shown on the
+	// primary button's tooltip. Not a translatable string — ⌘ / Ctrl are
+	// universal keycap notation.
+	const isMac = typeof navigator !== 'undefined' && /Mac|iP(hone|ad|od)/.test(navigator.platform || navigator.userAgent || '');
+	let submitShortcutHint = $derived(`${modifying === -1 ? $LL.input.add() : $LL.input.modify()} · ${isMac ? '⌘' : 'Ctrl'}+Enter`);
 </script>
 
 <fieldset class:editing={modifying !== -1}>
@@ -166,6 +190,14 @@
 			bind:this={textArea}
 			onchange={() => {
 				empty = false;
+			}}
+			onkeydown={(e) => {
+				// Cmd/Ctrl+Enter submits without leaving the keyboard — a plain
+				// Enter still inserts a newline (sentences can span lines).
+				if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+					e.preventDefault();
+					submit();
+				}
 			}}
 		></textarea>
 		<details class="gloss-panel" bind:open={glossEnabled}>
@@ -251,26 +283,7 @@
 			<input type="text" bind:value={lang} id="lang" />
 			<label for="lang" class:customised={displayNameIsCustomised}>{displayName}</label>
 			<div class="primary-actions">
-				<button
-					class="primary"
-					onclick={() => {
-						const w = getWords(text);
-						if (w.length === 0) {
-							empty = true;
-							return;
-						}
-						text = '';
-						const nextAbove = fitLanes(annotationsAbove, w.length);
-						const nextBelow = fitLanes(annotationsBelow, w.length);
-						dispatch('submit', {
-							lang,
-							words: w,
-							annotationsAbove: nextAbove,
-							annotationsBelow: nextBelow,
-							showGloss: glossEnabled || hasAnyLane
-						});
-					}}
-				>
+				<button class="primary" title={submitShortcutHint} onclick={submit}>
 					<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em"></iconify-icon>
 					{modifying === -1 ? $LL.input.add() : $LL.input.modify()}
 				</button>
