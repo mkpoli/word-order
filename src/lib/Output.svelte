@@ -750,17 +750,18 @@
 								<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
 							</button>
 						</span>
-						{#if showLangMeta && currentMetaText}
+						{#if showLangMeta}
 							<!-- Inline-editable like the language tag in #126, but never
 							     visually different when customised. The italic + accent
 							     affordance for the customised state lives in
 							     SentenceInput's meta-row, so the diagram (and any export
 							     of it) stays identical regardless of overrides.
 
-							     Renders when either lang-meta has coverage OR the user has
-							     supplied their own info via displayMeta. That second case
-							     is how unknown languages still get a chip — the user types
-							     it in and it shows up here. -->
+							     Renders whenever the feature is on — even with no coverage
+							     and no override, so the empty chip stays clickable in the
+							     diagram (same fix as the empty language tag in #126). An
+							     empty chip is invisible on export (faint colour, zero-width
+							     placeholder); the clickable box only shows on hover/focus. -->
 							<span
 								class="tag-meta"
 								lang={metaCustomised || !meta ? undefined : 'en'}
@@ -1116,12 +1117,33 @@
 		letter-spacing: 0.02em;
 		white-space: nowrap;
 		font-feature-settings: 'tnum';
-		outline: none;
+		outline: 1px dashed transparent;
+		outline-offset: 1px;
 		cursor: text;
 		border-radius: 0.2em;
+		transition: outline-color 120ms ease;
+	}
+
+	/* When a language has no lang-meta coverage and no override, currentMetaText
+	   is "" and this absolutely-positioned chip would collapse to zero size —
+	   nothing to click into. Keep a clickable box: min-width gives a horizontal
+	   target, the zero-width no-break space gives the line height. Neither is
+	   part of innerText, so the save/revert logic is unaffected, and the chip is
+	   invisible on export. */
+	.tag-meta:empty {
+		min-width: 2.5em;
+	}
+
+	.tag-meta:empty::before {
+		content: '\feff';
+	}
+
+	.tag-meta:hover {
+		outline-color: var(--color-border);
 	}
 
 	.tag-meta:focus {
+		outline-color: transparent;
 		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
 	}
 
