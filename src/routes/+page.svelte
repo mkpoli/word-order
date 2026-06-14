@@ -120,7 +120,6 @@
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
 	let alignment: Alignment = $state('center');
-	let tagAlignment: Alignment = $state('center');
 	let fontFamily: FontFamily = $state('default');
 	let fontStyle: FontStyle = $state('normal');
 	let fontSize = $state(15);
@@ -130,22 +129,6 @@
 	let tokenGap = $state(0);
 	let showLangMeta = $state(false);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
-
-	// Suspends the Output fit-to-width adjustments around an export so the
-	// captured artifact uses the user-configured margins and 1:1 scale rather
-	// than the on-screen shrunk presentation. Toggled by withFitDisabled().
-	let fitDisabled = $state(false);
-	async function withFitDisabled<T>(fn: () => Promise<T>): Promise<T> {
-		fitDisabled = true;
-		await tick();
-		// One extra frame so ResizeObserver/measure pass settles before capture.
-		await new Promise((r) => requestAnimationFrame(() => r(null)));
-		try {
-			return await fn();
-		} finally {
-			fitDisabled = false;
-		}
-	}
 
 	let aboutOpen = $state(false);
 	let settingsOpen = $state(false);
@@ -178,11 +161,6 @@
 	let shareFeedback: ShareFeedback = $state(null);
 	let shareFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareUrlLength = $state(0);
-
-	// Feedback for "Copy image": idle → copying → copied | unsupported | error.
-	type CopyImageFeedback = 'copying' | 'copied' | 'unsupported' | 'error' | null;
-	let copyImageFeedback: CopyImageFeedback = $state(null);
-	let copyImageFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
 	let shareLoadError = $state(false);
 
 	let qrOpen = $state(false);
@@ -283,7 +261,6 @@
 		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
 		if (typeof stored.curvature === 'number') curvature = stored.curvature;
 		if (stored.alignment && ALIGNMENTS.includes(stored.alignment)) alignment = stored.alignment;
-		if (stored.tagAlignment && ALIGNMENTS.includes(stored.tagAlignment)) tagAlignment = stored.tagAlignment;
 		if (stored.fontFamily && FONT_FAMILIES.includes(stored.fontFamily)) fontFamily = stored.fontFamily;
 		if (stored.fontStyle && FONT_STYLES.includes(stored.fontStyle)) fontStyle = stored.fontStyle;
 		if (typeof stored.fontSize === 'number') fontSize = stored.fontSize;
@@ -737,13 +714,8 @@
 			.replace(/-+$/, '');
 	}
 
-	// User override for the export filename stem. Empty → auto-generated from
-	// the first words + language codes. Session-only (a filename is specific to
-	// the current illustration, so persisting it across reloads would surprise).
-	let exportStem = $state('');
-
-	function autoExportStem(): string {
-		if (sentences.length === 0) return 'word-order';
+	function exportFilename(ext: string): string {
+		if (sentences.length === 0) return `word-order.${ext}`;
 		const langs = sentences.map((s) => s.lang).join('-');
 		const firstWords = sentences[0].tokens
 			.map((t) => t.text)
@@ -751,44 +723,20 @@
 			.slice(0, 5)
 			.join(' ');
 		const slug = slugify(firstWords);
-		return slug ? `${slug}.${langs}` : langs || 'word-order';
-	}
-
-	function sanitizeStem(s: string): string {
-		// Filename-safe but light-touch (unlike slugify): keep case, spaces, and
-		// most punctuation, but strip path separators / reserved chars and any
-		// leading dots so the stem can't traverse paths or hide the extension.
-		let out = '';
-		for (const ch of s) {
-			const cp = ch.codePointAt(0);
-			if (cp === undefined || cp < 0x20) continue; // drop control chars
-			if ('\\/:*?"<>|'.includes(ch)) continue; // drop reserved filename chars
-			out += ch;
-		}
-		// Cap by code point, not UTF-16 unit, so the 80-char limit can't split a
-		// surrogate pair (emoji / rare scripts) into invalid Unicode.
-		return Array.from(out.replace(/^\.+/, '').trim()).slice(0, 80).join('');
-	}
-
-	function exportFilename(ext: string): string {
-		const custom = sanitizeStem(exportStem);
-		const stem = custom || autoExportStem();
+		const stem = slug ? `${slug}.${langs}` : langs || 'word-order';
 		return `${stem}.${ext}`;
 	}
 
 	async function exportPngBlob(scale = 2): Promise<Blob | null> {
 		if (!output) return null;
-		return await withFitDisabled(async () => {
-			if (!output) return null;
-			return await domToImage.toBlob(output, {
-				width: output.clientWidth * scale,
-				height: output.clientHeight * scale,
-				style: {
-					transform: `scale(${scale})`,
-					transformOrigin: 'top left',
-					'background-color': getExportBackgroundColor()
-				}
-			});
+		return await domToImage.toBlob(output, {
+			width: output.clientWidth * scale,
+			height: output.clientHeight * scale,
+			style: {
+				transform: `scale(${scale})`,
+				transformOrigin: 'top left',
+				'background-color': getExportBackgroundColor()
+			}
 		});
 	}
 
@@ -863,8 +811,8 @@
 		return serializer.serializeToString(svgDocument);
 	}
 
-	async function exportSvg() {
-		const svgString = await withFitDisabled(async () => buildSvgString());
+	function exportSvg() {
+		const svgString = buildSvgString();
 		if (svgString === null) {
 			closeExportMenu();
 			return;
@@ -873,8 +821,8 @@
 		closeExportMenu();
 	}
 
-	async function exportHtml() {
-		const svgString = await withFitDisabled(async () => buildSvgString());
+	function exportHtml() {
+		const svgString = buildSvgString();
 		if (svgString === null) {
 			closeExportMenu();
 			return;
@@ -928,37 +876,6 @@ ${svgString}
 			console.error('Export PNG failed:', err);
 		} finally {
 			closeExportMenu();
-		}
-	}
-
-	function flashCopyImage(state: CopyImageFeedback, ms: number) {
-		copyImageFeedback = state;
-		if (copyImageFeedbackTimer) clearTimeout(copyImageFeedbackTimer);
-		copyImageFeedbackTimer = setTimeout(() => {
-			copyImageFeedback = null;
-			copyImageFeedbackTimer = null;
-		}, ms);
-	}
-
-	async function copyImage() {
-		// Write the diagram to the clipboard as a PNG so it can be pasted
-		// straight into docs / chat / slides. Unlike the other export buttons
-		// this one stays open and shows inline feedback, mirroring Copy link.
-		if (!navigator.clipboard || typeof ClipboardItem === 'undefined' || !navigator.clipboard.write) {
-			flashCopyImage('unsupported', 3000);
-			return;
-		}
-		copyImageFeedback = 'copying';
-		try {
-			// Safari requires the ClipboardItem to be constructed synchronously
-			// from a Promise<Blob> inside the user-gesture task, so hand it the
-			// pending blob promise rather than awaiting first.
-			const item = new ClipboardItem({ 'image/png': exportPngBlob(rasterScale).then((b) => b ?? new Blob()) });
-			await navigator.clipboard.write([item]);
-			flashCopyImage('copied', 1800);
-		} catch (err) {
-			console.error('Copy image failed:', err);
-			flashCopyImage('error', 3000);
 		}
 	}
 
@@ -1028,47 +945,49 @@ ${svgString}
 			return;
 		}
 		try {
-			await withFitDisabled(async () => exportPdfInner());
+			const widthPx = output.clientWidth;
+			const heightPx = output.clientHeight;
+			const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
+			const pdf = new jsPDF({
+				orientation,
+				unit: 'px',
+				format: [widthPx, heightPx],
+				hotfixes: ['px_scaling']
+			});
+
+			// Vector PDF unconditionally. The pdf-fonts pipeline fetches a
+			// subsetted Noto woff2 for whatever scripts the diagram actually
+			// uses, decodes it to TTF, and registers it with this jsPDF so
+			// svg2pdf can embed real glyphs — no more mojibake for non-Latin
+			// text, no raster fallback, no loss of selectable text or vector
+			// crispness.
+			const svgString = buildSvgString();
+			if (!svgString) throw new Error('SVG serialisation failed');
+			const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+			const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
+
+			const { registerSvgFonts } = await import('$lib/pdf-fonts');
+			await registerSvgFonts(svgRoot, pdf);
+
+			// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
+			// Visibility hidden but still in flow so getComputedStyle resolves.
+			const host = document.createElement('div');
+			host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+			host.appendChild(svgRoot);
+			document.body.appendChild(host);
+			try {
+				const { svg2pdf } = await import('svg2pdf.js');
+				await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
+			} finally {
+				host.remove();
+			}
+
+			pdf.save(exportFilename('pdf'));
 		} catch (err) {
 			console.error('Export PDF failed:', err);
 		} finally {
 			closeExportMenu();
 		}
-	}
-
-	async function exportPdfInner() {
-		if (!output) return;
-		const widthPx = output.clientWidth;
-		const heightPx = output.clientHeight;
-		const orientation = widthPx >= heightPx ? 'landscape' : 'portrait';
-		const pdf = new jsPDF({
-			orientation,
-			unit: 'px',
-			format: [widthPx, heightPx],
-			hotfixes: ['px_scaling']
-		});
-
-		// Vector PDF: render via the same dom-to-svg pipeline as Export SVG,
-		// then hand the SVG element to svg2pdf so text stays selectable and
-		// lines stay crisp at any zoom (vs. the prior raster-embed PNG).
-		const svgString = buildSvgString();
-		if (!svgString) throw new Error('SVG serialisation failed');
-		const svgDoc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-		const svgRoot = svgDoc.documentElement as unknown as SVGSVGElement;
-		// svg2pdf walks the live DOM, so attach the SVG off-screen for layout.
-		// Visibility hidden but still in flow so getComputedStyle resolves.
-		const host = document.createElement('div');
-		host.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
-		host.appendChild(svgRoot);
-		document.body.appendChild(host);
-		try {
-			const { svg2pdf } = await import('svg2pdf.js');
-			await svg2pdf(svgRoot, pdf, { x: 0, y: 0, width: widthPx, height: heightPx });
-		} finally {
-			host.remove();
-		}
-
-		pdf.save(exportFilename('pdf'));
 	}
 
 	let output: HTMLOutputElement | undefined = $state();
@@ -1094,7 +1013,6 @@ ${svgString}
 			endpointCorrection,
 			curvature,
 			alignment,
-			tagAlignment,
 			fontFamily,
 			fontStyle,
 			fontSize,
@@ -1266,43 +1184,7 @@ ${svgString}
 				<iconify-icon icon="mdi:qrcode" inline="true"></iconify-icon>
 				{$LL.menu.qr()}
 			</button>
-			<button
-				type="button"
-				class:share-long={copyImageFeedback === 'unsupported' || copyImageFeedback === 'error'}
-				disabled={mode === 'edit' || copyImageFeedback === 'copying'}
-				title={copyImageFeedback === 'unsupported' ? $LL.menu.copyImageUnsupported() : $LL.menu.copyImage()}
-				onclick={copyImage}
-			>
-				<iconify-icon
-					icon={copyImageFeedback === 'copied'
-						? 'mdi:check'
-						: copyImageFeedback === 'unsupported' || copyImageFeedback === 'error'
-							? 'mdi:alert-outline'
-							: 'mdi:image-multiple-outline'}
-					inline="true"
-				></iconify-icon>
-				{copyImageFeedback === 'copying'
-					? $LL.menu.copyImageBusy()
-					: copyImageFeedback === 'copied'
-						? $LL.menu.copyImageCopied()
-						: copyImageFeedback === 'unsupported'
-							? $LL.menu.copyImageUnsupported()
-							: copyImageFeedback === 'error'
-								? $LL.menu.copyImageError()
-								: $LL.menu.copyImage()}
-			</button>
 			<div class="export-section-label">{$LL.menu.fileSection()}</div>
-			<label class="export-filename" class:customised={sanitizeStem(exportStem) !== ''}>
-				<iconify-icon icon="mdi:rename-outline" inline="true"></iconify-icon>
-				<input
-					type="text"
-					bind:value={exportStem}
-					placeholder={autoExportStem()}
-					spellcheck="false"
-					aria-label={$LL.menu.filename()}
-					onkeydown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
-				/>
-			</label>
 			<button type="button" disabled={mode === 'edit'} onclick={exportJson}>
 				<iconify-icon icon="mdi:code-braces" inline="true"></iconify-icon>
 				JSON
@@ -1450,7 +1332,6 @@ ${svgString}
 					{equivalency}
 					pendingIndices={pendingSentenceSet}
 					{alignment}
-					{tagAlignment}
 					bind:lines
 					colors={displayColors}
 					{verticalGap}
@@ -1470,7 +1351,6 @@ ${svgString}
 					{tokenGap}
 					{showLangMeta}
 					bind:outputMargin
-					{fitDisabled}
 					{loading}
 					{modifying}
 					{editingSelectionStart}
@@ -1576,7 +1456,6 @@ ${svgString}
 			bind:endpointCorrection
 			bind:curvature
 			bind:alignment
-			bind:tagAlignment
 			bind:fontFamily
 			bind:fontStyle
 			bind:fontSize
@@ -1802,15 +1681,14 @@ ${svgString}
 			0 0 0 1px var(--page-border-soft, #eeeeee);
 	}
 
-	/* `overflow-x: hidden` rather than `auto` now that Output.svelte's fit
-	   pipeline guarantees the diagram never visually exceeds this container's
-	   width (margins shrink first, then CSS zoom). The horizontal scrollbar
-	   used to show up even when fit had reduced the content to the container
-	   size — sub-pixel rounding kept browsers reserving the scrollbar gutter.
-	   The flex centring stays so a narrower diagram still centres horizontally. */
+	/* Horizontal scroll lives on this inner wrapper, not on .output itself,
+	   so .output's overflow stays visible and the ::after editing indicator
+	   below the box can render. Padding gives the inner <output>'s rim shadow
+	   room to render before .output-scroll's overflow clips it. */
 	.output-scroll {
-		overflow-x: hidden;
+		overflow-x: auto;
 		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
 		overscroll-behavior-x: contain;
 		/* Centre the <output> when it fits; the flex container still scrolls
 		   horizontally when the diagram exceeds the viewport because the inner
@@ -1930,24 +1808,6 @@ ${svgString}
 			top: auto;
 			bottom: -1.4rem;
 			height: 1.4rem;
-		}
-	}
-
-	/* On narrow viewports the page-edge padding eats space the diagram could
-	   otherwise use before fit-to-width has to zoom it down. Drop the main
-	   padding progressively so the diagram gets the full viewport width to
-	   work with before the CSS-zoom stage of the fit pipeline kicks in. */
-	@media (max-width: 720px) {
-		main {
-			padding: 0.5em;
-			gap: 1em;
-		}
-	}
-
-	@media (max-width: 480px) {
-		main {
-			padding: 0.25em;
-			gap: 0.75em;
 		}
 	}
 
@@ -2134,38 +1994,6 @@ ${svgString}
 		margin-top: 0;
 		padding-top: 0.1em;
 		border-top: none;
-	}
-
-	/* Inline filename editor sitting under the File section header. The icon +
-	   input read as one field; the placeholder shows the auto-generated stem so
-	   the user knows the default without it being a committed value. */
-	.export-filename {
-		display: flex;
-		align-items: center;
-		gap: 0.4em;
-		margin: 0.1em 0.6em 0.3em;
-		padding: 0.3em 0.5em;
-		border: 1px solid var(--color-border);
-		border-radius: 0.25em;
-		color: var(--color-text-faint);
-		font-size: 0.85em;
-	}
-
-	.export-filename input {
-		flex: 1;
-		min-width: 0;
-		border: none;
-		background: none;
-		color: var(--color-text);
-		font: inherit;
-		outline: none;
-	}
-
-	/* Accent the field when the user has set a custom stem — same customised
-	   affordance used elsewhere; only on the input control, never on output. */
-	.export-filename.customised {
-		border-color: var(--color-accent);
-		color: var(--color-accent-text);
 	}
 
 	.export-menu button.export-social {
