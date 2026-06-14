@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Magnitudo litterarum annotationum",
 	"params_space_width": "Latitudo spatii",
 	"params_letter_spacing": "Spatium inter litteras",
+	"params_show_lang_meta": "Notitia linguae",
+	"params_show_lang_meta_on": "Familiam / typologiam ostende",
 	"params_token_gap": "Intervallum signorum",
 	"params_colors": "Colores",
 	"params_palette": "Selectio colorum",

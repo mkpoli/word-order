@@ -34,6 +34,8 @@
 	"params_font_size": "Размер на шрифта",
 	"params_gloss_font_size": "Размер на шрифта на анотациите",
 	"params_space_width": "Ширина на интервала",
+	"params_show_lang_meta": "Информация за езика",
+	"params_show_lang_meta_on": "Покажи семейство / типология",
 	"params_letter_spacing": "Разредка",
 	"params_token_gap": "Разстояние между токени",
 	"params_colors": "Цветове",

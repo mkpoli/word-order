@@ -158,6 +158,7 @@
 		displayName = override ?? getLanguageName(lang, $locale);
 		displayNameIsCustomised = override !== undefined;
 	});
+
 	run(() => {
 		syncLanes(text);
 	});

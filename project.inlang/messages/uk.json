@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Розмір шрифту анотацій",
 	"params_space_width": "Ширина пробілу",
 	"params_letter_spacing": "Міжлітерний інтервал",
+	"params_show_lang_meta": "Інфо про мову",
+	"params_show_lang_meta_on": "Показати родину / типологію",
 	"params_token_gap": "Інтервал токенів",
 	"params_colors": "Кольори",
 	"params_palette": "Палітра",

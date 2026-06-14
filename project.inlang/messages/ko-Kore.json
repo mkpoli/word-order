@@ -34,6 +34,8 @@
 	"params_font_size": "글꼴 크기",
 	"params_gloss_font_size": "註釋 글꼴 크기",
 	"params_space_width": "空白 너비",
+	"params_show_lang_meta": "言語 情報",
+	"params_show_lang_meta_on": "語族 / 類型 表示",
 	"params_letter_spacing": "字間",
 	"params_token_gap": "토큰 間隔",
 	"params_colors": "色相",

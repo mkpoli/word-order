@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Lettergrootte annotaties",
 	"params_space_width": "Spatiebreedte",
 	"params_letter_spacing": "Letterspatiëring",
+	"params_show_lang_meta": "Taalinfo",
+	"params_show_lang_meta_on": "Familie / typologie tonen",
 	"params_token_gap": "Tokenafstand",
 	"params_colors": "Kleuren",
 	"params_palette": "Palet",

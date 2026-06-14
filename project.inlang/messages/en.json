@@ -37,6 +37,8 @@
 	"params_space_width": "Space Width",
 	"params_letter_spacing": "Letter Spacing",
 	"params_token_gap": "Token Gap",
+	"params_show_lang_meta": "Language info",
+	"params_show_lang_meta_on": "Show family / typology",
 	"params_colors": "Colors",
 	"params_palette": "Palette",
 	"params_palette_spectrum": "Full spectrum",

@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Tipara grandeco de komentoj",
 	"params_space_width": "Spacolarĝo",
 	"params_letter_spacing": "Litera spaco",
+	"params_show_lang_meta": "Lingva informo",
+	"params_show_lang_meta_on": "Montri familion / tipologion",
 	"params_token_gap": "Interspaco de ĵetonoj",
 	"params_colors": "Koloroj",
 	"params_palette": "Paletro",

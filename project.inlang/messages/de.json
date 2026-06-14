@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Annotations-Schriftgröße",
 	"params_space_width": "Leerzeichenbreite",
 	"params_letter_spacing": "Buchstabenabstand",
+	"params_show_lang_meta": "Sprachinfo",
+	"params_show_lang_meta_on": "Familie / Typologie zeigen",
 	"params_token_gap": "Token-Abstand",
 	"params_colors": "Farben",
 	"params_palette": "Palette",

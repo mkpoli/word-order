@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Μέγεθος γραμμάτων σχολίων",
 	"params_space_width": "Εὖρος κενοῦ",
 	"params_letter_spacing": "Διάστημα γραμμάτων",
+	"params_show_lang_meta": "Πληροφορίαι περὶ τῆς γλώσσης",
+	"params_show_lang_meta_on": "Δεῖξον φῦλον καὶ τύπον",
 	"params_token_gap": "Διάστημα συμβόλων",
 	"params_colors": "Χρώματα",
 	"params_palette": "Πίναξ χρωμάτων",

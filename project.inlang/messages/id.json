@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Ukuran Font Anotasi",
 	"params_space_width": "Lebar Spasi",
 	"params_letter_spacing": "Spasi huruf",
+	"params_show_lang_meta": "Info bahasa",
+	"params_show_lang_meta_on": "Tampilkan keluarga / tipologi",
 	"params_token_gap": "Jarak token",
 	"params_colors": "Warna",
 	"params_palette": "Palet",

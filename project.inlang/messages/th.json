@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "ขนาดตัวอักษรคำอธิบาย",
 	"params_space_width": "ความกว้างช่องว่าง",
 	"params_letter_spacing": "ระยะห่างตัวอักษร",
+	"params_show_lang_meta": "ข้อมูลภาษา",
+	"params_show_lang_meta_on": "แสดงตระกูล / ประเภท",
 	"params_token_gap": "ระยะห่างโทเคน",
 	"params_colors": "สี",
 	"params_palette": "จานสี",

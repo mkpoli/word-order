@@ -10,6 +10,7 @@
 	import type { Alignment, FontFamily, FontStyle, LineStyle, Mode, Sentence } from '$lib/types';
 	import { getSentenceWords, sentenceHasAnyAnnotation } from '$lib/types';
 	import { getLanguageName, getLocaleDirection } from './lang';
+	import { getLangMeta } from './lang-meta';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import Word from './Word.svelte';
 	import type { Margin } from '$lib/types';
@@ -43,6 +44,10 @@
 		renameLanguage: {
 			sentence: number;
 			displayName: string | undefined;
+		};
+		renameMeta: {
+			sentence: number;
+			displayMeta: string | undefined;
 		};
 	}>();
 
@@ -86,6 +91,8 @@
 		 * (CJK, Thai) — spaceWidth has no effect there because there's no whitespace
 		 * token to widen. Default 0. */
 		tokenGap?: number;
+		/** Whether to render the small linguistic-metadata chip under each language tag. */
+		showLangMeta?: boolean;
 		outputMargin?: Margin;
 		mode?: Mode;
 		output: HTMLOutputElement | undefined;
@@ -124,6 +131,7 @@
 		spaceWidth,
 		letterSpacing = 0,
 		tokenGap = 0,
+		showLangMeta = false,
 		outputMargin = $bindable({ top: 0, right: 0, bottom: 0, left: 0 }),
 		mode = $bindable('view'),
 		output = $bindable(),
@@ -211,6 +219,26 @@
 		void fitDisabled;
 		if (!mounted) return;
 		requestAnimationFrame(recomputeFit);
+	});
+
+	// ResizeObserver on <output> + its rows. Whenever any sentence row's
+	// bounding box changes (chip toggling, font load, browser zoom, viewport
+	// width affecting wrap), re-run drawLines so the connectors stay glued
+	// to the words they link. drawLines itself is read-only on layout so
+	// there's no feedback loop.
+	let layoutObserver: ResizeObserver | null = null;
+	$effect(() => {
+		if (!output) return;
+		layoutObserver?.disconnect();
+		layoutObserver = new ResizeObserver(() => {
+			if (!mounted || loading) return;
+			lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+		});
+		layoutObserver.observe(output);
+		return () => {
+			layoutObserver?.disconnect();
+			layoutObserver = null;
+		};
 	});
 
 	function drawLines(
@@ -597,10 +625,21 @@
 	}
 
 	run(() => {
-		// fitZoom referenced so a fit-driven layout change (resize / margin
-		// shrink / zoom apply) re-runs drawLines under the new scale.
+		// Reference showLangMeta + sentences so toggling the chip on/off (or a
+		// per-sentence displayMeta override changing the chip's content width)
+		// re-runs drawLines after the DOM settles — otherwise the connectors
+		// stay pinned to the pre-chip layout and look misaligned. tick() lets
+		// the chip element actually mount/unmount before we measure. fitZoom is
+		// referenced too so a fit-driven layout change (resize / margin shrink /
+		// zoom apply) re-runs drawLines under the new scale.
+		void showLangMeta;
+		void sentences;
 		void fitZoom;
-		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+		if (mounted && equivalency && !loading) {
+			tick().then(() => {
+				lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
+			});
+		}
 	});
 	run(() => {
 		if (
@@ -815,6 +854,13 @@
 			{#if !pendingIndices.has(i)}
 				{@const defaultLabel = getLanguageName(lang, $locale)}
 				{@const currentLabel = sentence.displayName ?? defaultLabel}
+				{@const meta = showLangMeta ? getLangMeta(lang) : null}
+				<!-- Default chip text is intentionally minimal — just typology +
+			     morphology. The family chain stays in the title attribute (hover)
+			     for users who want the full lineage. -->
+				{@const defaultMetaText = meta ? `${meta.typology} · ${meta.morphology}` : ''}
+				{@const currentMetaText = sentence.displayMeta ?? defaultMetaText}
+				{@const metaCustomised = sentence.displayMeta !== undefined && sentence.displayMeta !== defaultMetaText}
 				<div class="sentence" class:dragged={draggingIndex === i} class:modifying={modifying === i}>
 					<div class="dragger action" onpointerdown={(e) => dragstart(i, e)} bind:this={draggers[i]}>
 						<iconify-icon icon="material-symbols:drag-indicator" width="1.2em" height="1.2em"></iconify-icon>
@@ -824,45 +870,90 @@
 						style:transform={getTransform(i, draggingOffset)}
 						style:justify-self={tagAlignment === 'center' ? 'center' : tagAlignment === 'right' ? 'end' : 'start'}
 					>
-						<span
-							class="tag-text"
-							contenteditable="true"
-							role="textbox"
-							tabindex="0"
-							spellcheck="false"
-							title={$LL.aria.renameLanguage()}
-							aria-label={$LL.aria.renameLanguage()}
-							onkeydown={(e) => {
-								// Don't commit mid-IME-composition: Enter/Escape there belong
-								// to the candidate window, not to this field.
-								if (e.isComposing) return;
-								if (e.key === 'Enter' || e.key === 'Escape') {
-									e.preventDefault();
-									(e.currentTarget as HTMLElement).blur();
-								}
-							}}
-							onfocus={(e) => {
-								const range = document.createRange();
-								range.selectNodeContents(e.currentTarget as HTMLElement);
-								const sel = window.getSelection();
-								sel?.removeAllRanges();
-								sel?.addRange(range);
-							}}
-							onblur={(e) => {
-								const el = e.currentTarget as HTMLElement;
-								const next = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
-								// Empty input OR the default label → clear the override; else store it.
-								const displayName = next === '' || next === defaultLabel ? undefined : next;
-								// Normalize the DOM: clearing a contenteditable leaves a stray
-								// <br> (and the browser may keep odd whitespace), which would keep
-								// an emptied tag out of :empty and collapse its clickable box.
-								// Rewriting textContent restores a clean, re-editable node.
-								el.textContent = displayName ?? defaultLabel;
-								if (displayName === sentence.displayName) return;
-								dispatch('renameLanguage', { sentence: i, displayName });
-							}}
-							use:editableText={currentLabel}
-						></span>
+						<span class="tag-row">
+							<span
+								class="tag-text"
+								contenteditable="true"
+								role="textbox"
+								tabindex="0"
+								spellcheck="false"
+								title={$LL.aria.renameLanguage()}
+								aria-label={$LL.aria.renameLanguage()}
+								onkeydown={(e) => {
+									// Don't commit mid-IME-composition: Enter/Escape there belong
+									// to the candidate window, not to this field.
+									if (e.isComposing) return;
+									if (e.key === 'Enter' || e.key === 'Escape') {
+										e.preventDefault();
+										(e.currentTarget as HTMLElement).blur();
+									}
+								}}
+								onfocus={(e) => {
+									const range = document.createRange();
+									range.selectNodeContents(e.currentTarget as HTMLElement);
+									const sel = window.getSelection();
+									sel?.removeAllRanges();
+									sel?.addRange(range);
+								}}
+								onblur={(e) => {
+									const el = e.currentTarget as HTMLElement;
+									const next = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+									// Empty input OR the default label → clear the override; else store it.
+									const displayName = next === '' || next === defaultLabel ? undefined : next;
+									// Normalize the DOM: clearing a contenteditable leaves a stray
+									// <br> (and the browser may keep odd whitespace), which would keep
+									// an emptied tag out of :empty and collapse its clickable box.
+									// Rewriting textContent restores a clean, re-editable node.
+									el.textContent = displayName ?? defaultLabel;
+									if (displayName === sentence.displayName) return;
+									dispatch('renameLanguage', { sentence: i, displayName });
+								}}
+								use:editableText={currentLabel}
+							></span>
+						</span>
+						{#if showLangMeta}
+							<!-- Inline-editable like the language tag in #126, but never
+							     visually different when customised. The italic + accent
+							     affordance for the customised state lives in
+							     SentenceInput's meta-row, so the diagram (and any export
+							     of it) stays identical regardless of overrides.
+
+							     Renders whenever the feature is on — even with no coverage
+							     and no override, so the empty chip stays clickable in the
+							     diagram (same fix as the empty language tag in #126). An
+							     empty chip is invisible on export (faint colour, zero-width
+							     placeholder); the clickable box only shows on hover/focus. -->
+							<span
+								class="tag-meta"
+								lang={metaCustomised || !meta ? undefined : 'en'}
+								title={metaCustomised || !meta ? '' : `${meta.family.join(' · ')} · ${meta.typology} · ${meta.morphology} · ${meta.script}`}
+								contenteditable="plaintext-only"
+								spellcheck="false"
+								onblur={(e) => {
+									const el = e.currentTarget as HTMLElement;
+									const value = el.innerText.trim();
+									// Normalize the DOM: clearing a contenteditable leaves a stray
+									// <br>, which keeps the chip out of :empty and collapses its
+									// clickable box. Rewriting textContent restores a clean empty
+									// node so an emptied chip stays editable.
+									el.textContent = value;
+									dispatch('renameMeta', { sentence: i, displayMeta: value === '' ? undefined : value });
+								}}
+								onkeydown={(e) => {
+									// Don't commit mid-IME-composition: Enter/Escape there belong
+									// to the candidate window, not to this field.
+									if (e.isComposing) return;
+									if (e.key === 'Enter') {
+										e.preventDefault();
+										(e.currentTarget as HTMLElement).blur();
+									} else if (e.key === 'Escape') {
+										(e.currentTarget as HTMLElement).innerText = currentMetaText;
+										(e.currentTarget as HTMLElement).blur();
+									}
+								}}
+								use:editableText={currentMetaText}
+							></span>
+						{/if}
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
 						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
@@ -1148,10 +1239,78 @@
 		white-space: nowrap;
 	}
 
-	/* Inline-editable tag. The hover ring is a quiet affordance; the focus
-	   ring + accent background says "you're editing now". Italic + accent
-	   border signals "customised" when displayName differs from the default,
-	   no badge or hint paragraph needed. Empty input on blur reverts. */
+	/* `position: relative` is the anchor for the absolute .tag-meta chip below,
+	   and the column flex stacks the inline-editable tag over the chip without
+	   the chip inflating the grid row height (which would stretch the connector
+	   geometry beyond the configured verticalGap). */
+	.tag {
+		position: relative;
+		display: inline-flex;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.tag-row {
+		position: relative;
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.25em;
+	}
+
+	/* The linguistic-metadata chip sits under the language label in a small
+	   muted style — informational, never the eye-catcher. Inline-editable
+	   (contenteditable), but no italic/accent for the customised state so the
+	   final-render diagram looks identical whether the chip is auto-generated
+	   or a user override.
+
+	   Absolute-positioned below the tag-row so the chip doesn't push the grid
+	   row taller, and centred on the tag's x-axis so it lines up under the
+	   language label regardless of tagAlignment. */
+	.tag-meta {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		margin-top: 0.05em;
+		font-size: 0.62em;
+		font-weight: normal;
+		color: var(--color-text-faint);
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		font-feature-settings: 'tnum';
+		outline: 1px dashed transparent;
+		outline-offset: 1px;
+		cursor: text;
+		border-radius: 0.2em;
+		transition: outline-color 120ms ease;
+	}
+
+	/* When a language has no lang-meta coverage and no override, currentMetaText
+	   is "" and this absolutely-positioned chip would collapse to zero size —
+	   nothing to click into. Keep a clickable box: min-width gives a horizontal
+	   target, the zero-width no-break space gives the line height. Neither is
+	   part of innerText, so the save/revert logic is unaffected, and the chip is
+	   invisible on export. */
+	.tag-meta:empty {
+		min-width: 2.5em;
+	}
+
+	.tag-meta:empty::before {
+		content: '\feff';
+	}
+
+	.tag-meta:hover {
+		outline-color: var(--color-border);
+	}
+
+	.tag-meta:focus {
+		outline-color: transparent;
+		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
+	}
+
+	/* Inline-editable language tag. The hover ring is a quiet affordance; the
+	   focus ring + accent background says "you're editing now". Empty input on
+	   blur reverts to the locale default. */
 	.tag-text {
 		display: inline-block;
 		cursor: text;
@@ -1838,16 +1997,25 @@
 		opacity: 0.5;
 	}
 
+	/* Pin the diagram's font stack to Noto so the on-screen preview matches
+	   what PDF export embeds via src/lib/pdf-fonts.ts. The PDF embedder runs
+	   the same script-detection (Latin / Hans / Hira+Kata / Hangul) and fetches
+	   a matching Google Fonts subset, so the exported text is the literal same
+	   vector outlines as the preview. */
+	output {
+		font-family: 'Noto Sans', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+	}
+
 	.serif {
-		font-family: serif;
+		font-family: 'Noto Serif', 'Noto Serif SC', 'Noto Serif JP', 'Noto Serif KR', serif;
 	}
 
 	.sans-serif {
-		font-family: sans-serif;
+		font-family: 'Noto Sans', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
 	}
 
 	.monospace {
-		font-family: monospace;
+		font-family: 'Noto Sans Mono', ui-monospace, monospace;
 	}
 
 	.italic {
