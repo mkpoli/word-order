@@ -816,6 +816,9 @@
 							title={$LL.aria.renameLanguage()}
 							aria-label={$LL.aria.renameLanguage()}
 							onkeydown={(e) => {
+								// Don't commit mid-IME-composition: Enter/Escape there belong
+								// to the candidate window, not to this field.
+								if (e.isComposing) return;
 								if (e.key === 'Enter' || e.key === 'Escape') {
 									e.preventDefault();
 									(e.currentTarget as HTMLElement).blur();
@@ -830,14 +833,15 @@
 							}}
 							onblur={(e) => {
 								const next = (e.currentTarget.textContent ?? '').replace(/\s+/g, ' ').trim();
-								const previous = sentence.displayName ?? defaultLabel;
-								if (next === previous) {
-									// Restore stale text in case browser left whitespace behind.
-									e.currentTarget.textContent = previous;
+								// Empty input OR the default label → clear the override; else store it.
+								const displayName = next === '' || next === defaultLabel ? undefined : next;
+								if (displayName === sentence.displayName) {
+									// No change to the stored override (incl. a redundant one that
+									// already equals the default). Restore the canonical text in
+									// case the browser left stray whitespace behind.
+									e.currentTarget.textContent = displayName ?? defaultLabel;
 									return;
 								}
-								// Empty input OR typed the default label → clear the override.
-								const displayName = next === '' || next === defaultLabel ? undefined : next;
 								dispatch('renameLanguage', { sentence: i, displayName });
 							}}>{currentLabel}</span
 						>
