@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Dimension del litteras del annotationes",
 	"params_space_width": "Largessa del spatio",
 	"params_letter_spacing": "Spatiamento del litteras",
+	"params_show_lang_meta": "Info linguistic",
+	"params_show_lang_meta_on": "Monstrar familia / typologia",
 	"params_token_gap": "Spatiamento de token",
 	"params_colors": "Colores",
 	"params_palette": "Paletta",

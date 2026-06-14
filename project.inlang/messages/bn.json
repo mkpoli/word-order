@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "টীকার ফন্টের আকার",
 	"params_space_width": "স্পেসের প্রস্থ",
 	"params_letter_spacing": "অক্ষরের ব্যবধান",
+	"params_show_lang_meta": "ভাষার তথ্য",
+	"params_show_lang_meta_on": "পরিবার / টাইপোলজি দেখাও",
 	"params_token_gap": "টোকেন ব্যবধান",
 	"params_colors": "রঙ",
 	"params_palette": "প্যালেট",

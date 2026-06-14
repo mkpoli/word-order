@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Huomautusten kirjasinkoko",
 	"params_space_width": "Välilyönnin leveys",
 	"params_letter_spacing": "Merkkiväli",
+	"params_show_lang_meta": "Kielitiedot",
+	"params_show_lang_meta_on": "Näytä kieliperhe / typologia",
 	"params_token_gap": "Tokenien väli",
 	"params_colors": "Värit",
 	"params_palette": "Paletti",

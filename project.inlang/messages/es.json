@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Tamaño de fuente de anotaciones",
 	"params_space_width": "Ancho del espacio",
 	"params_letter_spacing": "Interletraje",
+	"params_show_lang_meta": "Información del idioma",
+	"params_show_lang_meta_on": "Mostrar familia / tipología",
 	"params_token_gap": "Espaciado de tokens",
 	"params_colors": "Colores",
 	"params_palette": "Paleta",

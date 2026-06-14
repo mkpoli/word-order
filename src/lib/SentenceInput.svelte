@@ -150,6 +150,7 @@
 	run(() => {
 		displayName = getLanguageName(lang, $locale);
 	});
+
 	run(() => {
 		syncLanes(text);
 	});

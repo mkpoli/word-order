@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "주석 글꼴 크기",
 	"params_space_width": "공백 너비",
 	"params_letter_spacing": "자간",
+	"params_show_lang_meta": "언어 정보",
+	"params_show_lang_meta_on": "어족 / 유형 표시",
 	"params_token_gap": "토큰 간격",
 	"params_colors": "색상",
 	"params_palette": "팔레트",

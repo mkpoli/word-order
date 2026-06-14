@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "Rozmiar czcionki adnotacji",
 	"params_space_width": "Szerokosc spacji",
 	"params_letter_spacing": "Odstęp między literami",
+	"params_show_lang_meta": "Info o języku",
+	"params_show_lang_meta_on": "Pokaż rodzinę / typologię",
 	"params_token_gap": "Odstęp tokenów",
 	"params_colors": "Kolory",
 	"params_palette": "Paleta",

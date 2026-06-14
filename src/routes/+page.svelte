@@ -128,6 +128,7 @@
 	let spaceWidth = $state(4);
 	let letterSpacing = $state(0);
 	let tokenGap = $state(0);
+	let showLangMeta = $state(false);
 	let outputMargin: Margin = $state({ top: 40, right: 32, bottom: 40, left: 32 });
 
 	// Suspends the Output fit-to-width adjustments around an export so the
@@ -277,6 +278,7 @@
 		if (stored.lineStyle && LINE_STYLES.includes(stored.lineStyle)) lineStyle = stored.lineStyle;
 		if (typeof stored.dottedEndRadius === 'number') dottedEndRadius = stored.dottedEndRadius;
 		if (typeof stored.tokenGap === 'number') tokenGap = stored.tokenGap;
+		if (typeof stored.showLangMeta === 'boolean') showLangMeta = stored.showLangMeta;
 		if (typeof stored.straightLength === 'number') straightLength = stored.straightLength;
 		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
 		if (typeof stored.curvature === 'number') curvature = stored.curvature;
@@ -1087,6 +1089,7 @@ ${svgString}
 			lineStyle,
 			dottedEndRadius,
 			tokenGap,
+			showLangMeta,
 			straightLength,
 			endpointCorrection,
 			curvature,
@@ -1465,6 +1468,7 @@ ${svgString}
 					{spaceWidth}
 					{letterSpacing}
 					{tokenGap}
+					{showLangMeta}
 					bind:outputMargin
 					{fitDisabled}
 					{loading}
@@ -1533,6 +1537,12 @@ ${svgString}
 						if (displayName === undefined) delete target.displayName;
 						else target.displayName = displayName;
 					}}
+					on:renameMeta={({ detail: { sentence, displayMeta } }) => {
+						const target = sentences[sentence];
+						if (!target) return;
+						if (displayMeta === undefined) delete target.displayMeta;
+						else target.displayMeta = displayMeta;
+					}}
 					on:openRenameLanguage={({ detail: { sentence } }) => {
 						renameLangSentenceIndex = sentence;
 						renameLangOpen = true;
@@ -1575,6 +1585,7 @@ ${svgString}
 			bind:letterSpacing
 			bind:tokenGap
 			bind:palette
+			bind:showLangMeta
 		/>
 	</div>
 

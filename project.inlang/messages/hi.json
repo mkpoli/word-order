@@ -35,6 +35,8 @@
 	"params_gloss_font_size": "टिप्पणी फ़ॉन्ट आकार",
 	"params_space_width": "रिक्ति चौड़ाई",
 	"params_letter_spacing": "अक्षर अंतर",
+	"params_show_lang_meta": "भाषा जानकारी",
+	"params_show_lang_meta_on": "परिवार / टाइपोलॉजी दिखाएँ",
 	"params_token_gap": "टोकन अंतराल",
 	"params_colors": "रंग",
 	"params_palette": "पैलेट",
