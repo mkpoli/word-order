@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { run, createBubbler, stopPropagation } from 'svelte/legacy';
+	import { run } from 'svelte/legacy';
 
-	const bubble = createBubbler();
 	import { createEventDispatcher } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { LL, locale } from '../i18n/i18n-svelte';
@@ -34,7 +33,9 @@
 	let sourceSummary = $derived(sourceLangs.map((l) => getLanguageName(l, $locale)).join(', '));
 
 	// "selected" can hold both known locale codes and ad-hoc custom BCP-47 codes.
-	let selected: SvelteSet<string> = new SvelteSet();
+	// SvelteSet is reactive on its own — mutate it in place (add/delete/clear)
+	// and never reassign, so no $state wrapper and no manual self-assignment.
+	const selected: SvelteSet<string> = new SvelteSet();
 	let initializedFor = $state('');
 	let customCode = $state('');
 
@@ -44,7 +45,8 @@
 			const baseDefaults = [String($locale), ...DEFAULT_TARGETS]
 				.filter((v) => v && !sourceLangSet.has(v))
 				.filter((v) => options.some((o) => o.value === v));
-			selected = new SvelteSet(baseDefaults);
+			selected.clear();
+			for (const v of baseDefaults) selected.add(v);
 			initializedFor = signature;
 			customCode = '';
 		}
@@ -57,7 +59,6 @@
 	function toggle(value: string) {
 		if (selected.has(value)) selected.delete(value);
 		else selected.add(value);
-		selected = selected;
 	}
 
 	function addCustom() {
@@ -65,7 +66,6 @@
 		if (!v) return;
 		if (sourceLangSet.has(v)) return;
 		selected.add(v);
-		selected = selected;
 		customCode = '';
 	}
 
@@ -92,8 +92,9 @@
 <svelte:window {onkeydown} />
 
 {#if open}
-	<div class="backdrop" onclick={() => dispatch('close')} role="presentation">
-		<div class="popover" role="dialog" aria-modal="true" aria-labelledby="translate-popover-title" onclick={stopPropagation(bubble('click'))}>
+	<!-- Close only on a direct backdrop click — see AboutDialog for rationale. -->
+	<div class="backdrop" onclick={(e) => e.target === e.currentTarget && dispatch('close')} role="presentation">
+		<div class="popover" role="dialog" aria-modal="true" aria-labelledby="translate-popover-title">
 			<header>
 				<h2 id="translate-popover-title">
 					<iconify-icon icon="mdi:translate" inline="true"></iconify-icon>

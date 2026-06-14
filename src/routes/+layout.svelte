@@ -109,6 +109,10 @@
 		body {
 			background-color: var(--color-bg);
 			color: var(--color-text);
+			/* Let the browser space CJK against Latin/digits automatically so
+			   translations never hand-author spaces between e.g. 导出 and SVG.
+			   Progressive enhancement — engines without support ignore it. */
+			text-autospace: normal;
 			/* Mirrors of border-soft / shadow that descendants can use when they
 			   need page-theme values even after they've overridden the palette
 			   locally (e.g. the output canvas pins itself to light). */
