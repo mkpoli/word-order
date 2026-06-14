@@ -115,8 +115,7 @@
 	let lineGap = $state(0);
 	let lineWidth = $state(1);
 	let lineStyle: LineStyle = $state('solid');
-	let lineHalo = $state(false);
-	let lineHaloWidth = $state(1.5);
+	let dottedEndRadius = $state(0);
 	let straightLength = $state(0);
 	let endpointCorrection = $state(0);
 	let curvature = $state(1);
@@ -254,8 +253,7 @@
 		if (typeof stored.lineGap === 'number') lineGap = stored.lineGap;
 		if (typeof stored.lineWidth === 'number') lineWidth = stored.lineWidth;
 		if (stored.lineStyle && LINE_STYLES.includes(stored.lineStyle)) lineStyle = stored.lineStyle;
-		if (typeof stored.lineHalo === 'boolean') lineHalo = stored.lineHalo;
-		if (typeof stored.lineHaloWidth === 'number') lineHaloWidth = stored.lineHaloWidth;
+		if (typeof stored.dottedEndRadius === 'number') dottedEndRadius = stored.dottedEndRadius;
 		if (typeof stored.tokenGap === 'number') tokenGap = stored.tokenGap;
 		if (typeof stored.straightLength === 'number') straightLength = stored.straightLength;
 		if (typeof stored.endpointCorrection === 'number') endpointCorrection = stored.endpointCorrection;
@@ -1006,8 +1004,7 @@ ${svgString}
 			lineGap,
 			lineWidth,
 			lineStyle,
-			lineHalo,
-			lineHaloWidth,
+			dottedEndRadius,
 			tokenGap,
 			straightLength,
 			endpointCorrection,
@@ -1338,8 +1335,7 @@ ${svgString}
 					{lineGap}
 					{lineWidth}
 					{lineStyle}
-					{lineHalo}
-					{lineHaloWidth}
+					{dottedEndRadius}
 					{straightLength}
 					{endpointCorrection}
 					{curvature}
@@ -1445,8 +1441,7 @@ ${svgString}
 			bind:lineGap
 			bind:lineWidth
 			bind:lineStyle
-			bind:lineHalo
-			bind:lineHaloWidth
+			bind:dottedEndRadius
 			bind:straightLength
 			bind:endpointCorrection
 			bind:curvature
