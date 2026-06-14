@@ -380,6 +380,23 @@
 		return !!word.match(/^\s+$/u);
 	}
 
+	// Own the contenteditable's text imperatively instead of via a reactive
+	// `{expr}` child. A reactive text node desyncs from contenteditable edits:
+	// when the chip starts empty, typing creates a second browser text node, so
+	// the next reactive update leaves two nodes and the text doubles. The action
+	// keeps a single node and only re-syncs from state when the element isn't
+	// focused and the value genuinely differs — never clobbering live input.
+	function editableText(node: HTMLElement, value: string) {
+		node.textContent = value;
+		return {
+			update(next: string) {
+				if (document.activeElement !== node && node.textContent !== next) {
+					node.textContent = next;
+				}
+			}
+		};
+	}
+
 	function sentenceShowsGloss(sentence: Sentence): boolean {
 		return sentence.showGloss || sentence.lanesAbove > 0 || sentence.lanesBelow > 0 || sentenceHasAnyAnnotation(sentence);
 	}
@@ -887,10 +904,19 @@
 								contenteditable="plaintext-only"
 								spellcheck="false"
 								onblur={(e) => {
-									const value = (e.currentTarget as HTMLElement).innerText.trim();
+									const el = e.currentTarget as HTMLElement;
+									const value = el.innerText.trim();
+									// Normalize the DOM: clearing a contenteditable leaves a stray
+									// <br>, which keeps the chip out of :empty and collapses its
+									// clickable box. Rewriting textContent restores a clean empty
+									// node so an emptied chip stays editable.
+									el.textContent = value;
 									dispatch('renameMeta', { sentence: i, displayMeta: value === '' ? undefined : value });
 								}}
 								onkeydown={(e) => {
+									// Don't commit mid-IME-composition: Enter/Escape there belong
+									// to the candidate window, not to this field.
+									if (e.isComposing) return;
 									if (e.key === 'Enter') {
 										e.preventDefault();
 										(e.currentTarget as HTMLElement).blur();
@@ -898,8 +924,9 @@
 										(e.currentTarget as HTMLElement).innerText = currentMetaText;
 										(e.currentTarget as HTMLElement).blur();
 									}
-								}}>{currentMetaText}</span
-							>
+								}}
+								use:editableText={currentMetaText}
+							></span>
 						{/if}
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
