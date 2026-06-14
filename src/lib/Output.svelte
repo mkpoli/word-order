@@ -586,6 +586,21 @@
 		// fitZoom referenced so a fit-driven layout change (resize / margin
 		// shrink / zoom apply) re-runs drawLines under the new scale.
 		void fitZoom;
+		// `colors` is read inside drawLines but not at the top of this block,
+		// so Svelte's legacy `run` wouldn't track it as a dependency without
+		// this explicit reference. Without it, line-colour previews during an
+		// equivalency drag (#99 / #112) never re-render — the user sees the
+		// OLD colours on the SVG strokes even after the equivalency rows
+		// have shifted to their new arrangement.
+		void colors;
+		// draggingOffset / draggingIndex are referenced here so the line geometry
+		// recomputes on every pointermove while a sentence is being dragged.
+		// drawLines reads each span's getBoundingClientRect, which already
+		// includes the live CSS transform we apply during drag — so triggering
+		// this run on offset updates is enough to keep the connectors glued to
+		// the moving sentence in realtime.
+		void draggingOffset;
+		void draggingIndex;
 		if (mounted && equivalency && !loading) lines = drawLines(word_spans, equivalency, verticalGap, lineGap, straightLength, endpointCorrection);
 	});
 	run(() => {
@@ -793,7 +808,7 @@
 	{/if}
 
 	{#if !loading}
-		{#each sentences as sentence, i}
+		{#each sentences as sentence, i (sentence)}
 			{@const { lang, tokens } = sentence}
 			{#if dropTargetIndex === i && draggingIndex !== i && draggingIndex !== i - 1}
 				<div class="drop-indicator" aria-hidden="true"></div>
