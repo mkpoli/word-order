@@ -1232,6 +1232,7 @@
 	}
 
 	.tag-row {
+		position: relative;
 		display: inline-flex;
 		align-items: baseline;
 		gap: 0.25em;
@@ -1251,7 +1252,8 @@
 	.tag-meta {
 		position: absolute;
 		top: 100%;
-		right: 0;
+		left: 50%;
+		transform: translateX(-50%);
 		margin-top: 0.05em;
 		font-size: 0.62em;
 		font-weight: normal;
@@ -1287,6 +1289,17 @@
 	.tag-meta:focus {
 		outline-color: transparent;
 		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
+	}
+
+	/* Out of flow (override .action's position) so the tag's width — and thus
+	   its centre — tracks the label alone, keeping the chip below and the label
+	   centred on the same x-axis. */
+	.tag-rename.action {
+		position: absolute;
+		left: 100%;
+		top: 50%;
+		transform: translateY(-50%);
+		margin-left: 0.1em;
 	}
 
 	.tag-rename {
