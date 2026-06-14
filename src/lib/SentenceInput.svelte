@@ -3,7 +3,6 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import { getLanguageName } from './lang';
-	import { getLangMeta } from './lang-meta';
 	import { LL, locale } from '$i18n/i18n-svelte';
 	import { tokenizeSentence } from './tokenize';
 	import type { AnnotationPosition, Sentence } from './types';
@@ -19,11 +18,6 @@
 		/** annotationsBelow[laneIndex][tokenIndex] — lane closest to word first. */
 		annotationsBelow?: string[][];
 		glossEnabled?: boolean;
-		/** Master toggle for the linguistic-metadata chip. Lives here in the
-		 * Input fieldset alongside the rest of the language controls so the
-		 * grouping is "everything about this language" instead of being split
-		 * between Input and the Parameters → Text panel. */
-		showLangMeta?: boolean;
 	}
 
 	let {
@@ -32,15 +26,11 @@
 		text = $bindable(''),
 		annotationsAbove = $bindable([]),
 		annotationsBelow = $bindable([]),
-		glossEnabled = $bindable(false),
-		showLangMeta = $bindable(false)
+		glossEnabled = $bindable(false)
 	}: Props = $props();
 
 	let lang = $state('en');
 	let displayName = $state('English');
-	let displayMeta = $state('');
-	let defaultMetaText = $state('');
-	let displayMetaIsCustomised = $state(false);
 
 	let previousLang = 'en';
 
@@ -78,10 +68,6 @@
 			showGloss: boolean;
 		};
 		openTranslate: void;
-		renameMeta: {
-			sentence: number;
-			displayMeta: string | undefined;
-		};
 	}>();
 
 	let empty = $state(false);
@@ -165,27 +151,6 @@
 		displayName = getLanguageName(lang, $locale);
 	});
 
-	// Linguistic-metadata chip: track the auto-generated default + whether the
-	// currently-modified sentence has an override so the input next to the
-	// lang field can italic+accent itself when the user is editing a custom
-	// value. The diagram never gets this styling — that's the whole point of
-	// keeping editing on the input side (see UX memory).
-	run(() => {
-		const m = getLangMeta(lang);
-		// Keep this short — typology + morphology only. Mirrors the chip's
-		// default text in Output (the family chain lives in its title attr).
-		defaultMetaText = m ? `${m.typology} · ${m.morphology}` : '';
-	});
-	run(() => {
-		if (modifying !== -1) {
-			const override = sentences[modifying]?.displayMeta;
-			displayMeta = override ?? '';
-			displayMetaIsCustomised = override !== undefined;
-		} else {
-			displayMeta = '';
-			displayMetaIsCustomised = false;
-		}
-	});
 	run(() => {
 		syncLanes(text);
 	});
@@ -323,50 +288,6 @@
 				{/if}
 			</div>
 		</div>
-		<!-- Linguistic-metadata controls. Both the toggle and the per-sentence
-		     editor live here in the Input fieldset (rather than the Parameters
-		     panel) so all "stuff about this language" is grouped together.
-		     Italic + accent on the customised state appears here only — the
-		     diagram chip stays plain so the exported artifact is identical
-		     for default vs override. -->
-		<div class="meta-row">
-			<label for="show-lang-meta" class="meta-toggle-label">
-				<iconify-icon icon="mdi:information-outline" inline="true"></iconify-icon>
-				{$LL.params.showLangMeta()}
-			</label>
-			<label class="meta-toggle">
-				<input type="checkbox" id="show-lang-meta" bind:checked={showLangMeta} />
-				<span>{$LL.params.showLangMetaOn()}</span>
-			</label>
-			{#if modifying !== -1 && showLangMeta}
-				<!-- Editor appears whenever the toggle is on in modify mode. If
-				     lang-meta has coverage we hint the auto-generated text via
-				     the placeholder; otherwise the user types their own info
-				     from scratch — that's how unknown languages get a chip. -->
-				<input
-					type="text"
-					id="display-meta"
-					class="meta-input"
-					class:customised={displayMetaIsCustomised}
-					bind:value={displayMeta}
-					placeholder={defaultMetaText}
-					aria-label={$LL.params.showLangMeta()}
-					onblur={() => {
-						const value = displayMeta.trim();
-						dispatch('renameMeta', { sentence: modifying, displayMeta: value === '' ? undefined : value });
-					}}
-					onkeydown={(e) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							(e.currentTarget as HTMLInputElement).blur();
-						} else if (e.key === 'Escape') {
-							displayMeta = sentences[modifying]?.displayMeta ?? '';
-							(e.currentTarget as HTMLInputElement).blur();
-						}
-					}}
-				/>
-			{/if}
-		</div>
 		<div class="guidance">
 			<iconify-icon icon="ph:info" width="1.5em" height="1.5em"></iconify-icon>
 			<p>
@@ -417,10 +338,9 @@
 			't t t'
 			'g g g'
 			'l n b'
-			'm m m'
 			'i i i';
 
-		grid-template-rows: 1fr auto auto auto auto;
+		grid-template-rows: 1fr auto auto auto;
 
 		gap: 1em;
 
@@ -428,63 +348,6 @@
 
 		justify-self: stretch;
 		align-items: center;
-	}
-
-	.meta-row {
-		grid-area: m;
-		display: grid;
-		grid-template-columns: minmax(8em, max-content) 1fr;
-		row-gap: 0.4em;
-		column-gap: 0.6em;
-		align-items: center;
-	}
-
-	.meta-toggle-label {
-		font-size: 0.92em;
-		color: var(--color-text-muted);
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35em;
-		justify-self: end;
-	}
-
-	.meta-toggle {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4em;
-		font-size: 0.92em;
-		color: var(--color-text-muted);
-		cursor: pointer;
-		white-space: nowrap;
-	}
-
-	.meta-toggle input[type='checkbox']:disabled {
-		opacity: 0.45;
-	}
-
-	.meta-toggle:has(input:disabled) {
-		opacity: 0.55;
-		cursor: not-allowed;
-	}
-
-	.meta-input {
-		/* Sit in the second column on its own row, lining up under the toggle. */
-		grid-column: 2 / 3;
-		width: 100%;
-		padding: 0.35em 0.6em;
-		background: var(--color-surface);
-		color: var(--color-text);
-		border: 1px solid var(--color-border);
-		border-radius: 0.25em;
-		font-size: 0.92em;
-	}
-
-	/* Italic + accent on the customised state — mirrors the lang-rename
-	   customised affordance. The Output diagram never carries this styling. */
-	.meta-input.customised {
-		font-style: italic;
-		color: var(--color-accent-text);
-		border-color: var(--color-accent);
 	}
 
 	:global(code) {
@@ -796,7 +659,6 @@
 				'n n n'
 				'l l l'
 				'b b b'
-				'm m m'
 				'i i i';
 		}
 
