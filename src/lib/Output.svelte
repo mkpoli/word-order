@@ -349,6 +349,23 @@
 		return !!word.match(/^\s+$/u);
 	}
 
+	// Own the contenteditable's text imperatively instead of via a reactive
+	// `{expr}` child. A reactive text node desyncs from contenteditable edits:
+	// when the field starts empty, typing creates a second browser text node, so
+	// the next reactive update leaves two nodes and the text doubles. The action
+	// keeps a single node and only re-syncs from state when the element isn't
+	// focused and the value genuinely differs — never clobbering live input.
+	function editableText(node: HTMLElement, value: string) {
+		node.textContent = value;
+		return {
+			update(next: string) {
+				if (document.activeElement !== node && node.textContent !== next) {
+					node.textContent = next;
+				}
+			}
+		};
+	}
+
 	function sentenceShowsGloss(sentence: Sentence): boolean {
 		return sentence.showGloss || sentence.lanesAbove > 0 || sentence.lanesBelow > 0 || sentenceHasAnyAnnotation(sentence);
 	}
@@ -832,19 +849,20 @@
 								sel?.addRange(range);
 							}}
 							onblur={(e) => {
-								const next = (e.currentTarget.textContent ?? '').replace(/\s+/g, ' ').trim();
+								const el = e.currentTarget as HTMLElement;
+								const next = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
 								// Empty input OR the default label → clear the override; else store it.
 								const displayName = next === '' || next === defaultLabel ? undefined : next;
-								if (displayName === sentence.displayName) {
-									// No change to the stored override (incl. a redundant one that
-									// already equals the default). Restore the canonical text in
-									// case the browser left stray whitespace behind.
-									e.currentTarget.textContent = displayName ?? defaultLabel;
-									return;
-								}
+								// Normalize the DOM: clearing a contenteditable leaves a stray
+								// <br> (and the browser may keep odd whitespace), which would keep
+								// an emptied tag out of :empty and collapse its clickable box.
+								// Rewriting textContent restores a clean, re-editable node.
+								el.textContent = displayName ?? defaultLabel;
+								if (displayName === sentence.displayName) return;
 								dispatch('renameLanguage', { sentence: i, displayName });
-							}}>{currentLabel}</span
-						>
+							}}
+							use:editableText={currentLabel}
+						></span>
 					</span>
 					<div class="sentence-body" class:with-gloss={sentenceShowsGloss(sentence)} style:transform={getTransform(i, draggingOffset)}>
 						<span class="words" {lang} dir={getLocaleDirection(lang)} style:text-align={alignment} style:letter-spacing={`${letterSpacing}px`}>
