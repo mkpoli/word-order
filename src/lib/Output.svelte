@@ -1016,6 +1016,7 @@
 	   border signals "customised" when displayName differs from the default,
 	   no badge or hint paragraph needed. Empty input on blur reverts. */
 	.tag-text {
+		display: inline-block;
 		cursor: text;
 		border-radius: 0.2em;
 		padding: 0 0.15em;
@@ -1024,6 +1025,19 @@
 		transition:
 			outline-color 120ms ease,
 			background-color 120ms ease;
+	}
+
+	/* When the language has no name (e.g. an empty lang code), currentLabel is
+	   "" and the contenteditable span would collapse to zero size — leaving
+	   nothing to click into. Keep a clickable box: min-width gives horizontal
+	   target, the zero-width no-break space gives the line height. Neither is
+	   part of textContent, so the save/revert logic is unaffected. */
+	.tag-text:empty {
+		min-width: 1.5em;
+	}
+
+	.tag-text:empty::before {
+		content: '\feff';
 	}
 
 	.tag-text:hover {
