@@ -27,6 +27,7 @@
 		letterSpacing?: number;
 		tokenGap?: number;
 		palette?: PaletteId;
+		showLangMeta?: boolean;
 	}
 
 	let {
@@ -47,7 +48,8 @@
 		spaceWidth = $bindable(4),
 		letterSpacing = $bindable(0),
 		tokenGap = $bindable(0),
-		palette = $bindable(DEFAULT_PALETTE)
+		palette = $bindable(DEFAULT_PALETTE),
+		showLangMeta = $bindable(false)
 	}: Props = $props();
 
 	// Five-swatch preview rendered next to the dropdown so users can see what
@@ -258,7 +260,30 @@
 	</div>
 </fieldset>
 
+<fieldset>
+	<legend>
+		<iconify-icon icon="mdi:information-outline" inline="true"></iconify-icon>
+		{$LL.params.showLangMeta()}
+	</legend>
+
+	<label class="meta-toggle">
+		<input type="checkbox" id="show-lang-meta" bind:checked={showLangMeta} />
+		<span>{$LL.params.showLangMetaOn()}</span>
+	</label>
+</fieldset>
+
 <style>
+	.meta-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		font-weight: normal;
+		font-size: 0.92em;
+		color: var(--color-text-muted);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
 	.halo-toggle {
 		display: inline-flex;
 		align-items: center;

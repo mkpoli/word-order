@@ -1556,15 +1556,8 @@ ${svgString}
 		<SentenceInput
 			on:submit={onsubmit}
 			on:openTranslate={() => (translatePopoverOpen = true)}
-			on:renameMeta={({ detail: { sentence, displayMeta } }) => {
-				const target = sentences[sentence];
-				if (!target) return;
-				if (displayMeta === undefined) delete target.displayMeta;
-				else target.displayMeta = displayMeta;
-			}}
 			{modifying}
 			{sentences}
-			bind:showLangMeta
 			bind:text={editingText}
 			bind:annotationsAbove={editingAnnotationsAbove}
 			bind:annotationsBelow={editingAnnotationsBelow}
@@ -1592,6 +1585,7 @@ ${svgString}
 			bind:letterSpacing
 			bind:tokenGap
 			bind:palette
+			bind:showLangMeta
 		/>
 	</div>
 
