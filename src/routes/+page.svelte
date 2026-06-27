@@ -231,7 +231,7 @@
 				history.replaceState(null, '', window.location.pathname + window.location.search);
 			}
 		} else {
-			const doc = loadDoc();
+			const doc = await loadDoc();
 			if (doc) {
 				sentences = doc.sentences;
 				equivalency = doc.equivalency;
