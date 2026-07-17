@@ -1,0 +1,12 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "word-order",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2026-07-01",
+	"compatibility_flags": ["nodejs_als", "nodejs_compat"],
+	"workers_dev": true,
+	"preview_urls": true,
+	"assets": { "binding": "ASSETS", "directory": ".svelte-kit/cloudflare" },
+	"routes": [{ "pattern": "word-order.mkpo.li", "custom_domain": true }],
+	"observability": { "enabled": true }
+}
