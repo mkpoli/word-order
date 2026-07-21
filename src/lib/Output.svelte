@@ -45,9 +45,6 @@
 			sentence: number;
 			displayName: string | undefined;
 		};
-		openRenameLanguage: {
-			sentence: number;
-		};
 		renameMeta: {
 			sentence: number;
 			displayMeta: string | undefined;
@@ -382,7 +379,7 @@
 
 	// Own the contenteditable's text imperatively instead of via a reactive
 	// `{expr}` child. A reactive text node desyncs from contenteditable edits:
-	// when the chip starts empty, typing creates a second browser text node, so
+	// when the field starts empty, typing creates a second browser text node, so
 	// the next reactive update leaves two nodes and the text doubles. The action
 	// keeps a single node and only re-syncs from state when the element isn't
 	// focused and the value genuinely differs — never clobbering live input.
@@ -874,16 +871,45 @@
 						style:justify-self={tagAlignment === 'center' ? 'center' : tagAlignment === 'right' ? 'end' : 'start'}
 					>
 						<span class="tag-row">
-							<span class="tag-text">{currentLabel}</span>
-							<button
-								type="button"
-								class="tag-rename action"
+							<span
+								class="tag-text"
+								contenteditable="true"
+								role="textbox"
+								tabindex="0"
+								spellcheck="false"
 								title={$LL.aria.renameLanguage()}
 								aria-label={$LL.aria.renameLanguage()}
-								onclick={() => dispatch('openRenameLanguage', { sentence: i })}
-							>
-								<iconify-icon icon="mdi:pencil-outline" inline="true"></iconify-icon>
-							</button>
+								onkeydown={(e) => {
+									// Don't commit mid-IME-composition: Enter/Escape there belong
+									// to the candidate window, not to this field.
+									if (e.isComposing) return;
+									if (e.key === 'Enter' || e.key === 'Escape') {
+										e.preventDefault();
+										(e.currentTarget as HTMLElement).blur();
+									}
+								}}
+								onfocus={(e) => {
+									const range = document.createRange();
+									range.selectNodeContents(e.currentTarget as HTMLElement);
+									const sel = window.getSelection();
+									sel?.removeAllRanges();
+									sel?.addRange(range);
+								}}
+								onblur={(e) => {
+									const el = e.currentTarget as HTMLElement;
+									const next = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+									// Empty input OR the default label → clear the override; else store it.
+									const displayName = next === '' || next === defaultLabel ? undefined : next;
+									// Normalize the DOM: clearing a contenteditable leaves a stray
+									// <br> (and the browser may keep odd whitespace), which would keep
+									// an emptied tag out of :empty and collapse its clickable box.
+									// Rewriting textContent restores a clean, re-editable node.
+									el.textContent = displayName ?? defaultLabel;
+									if (displayName === sentence.displayName) return;
+									dispatch('renameLanguage', { sentence: i, displayName });
+								}}
+								use:editableText={currentLabel}
+							></span>
 						</span>
 						{#if showLangMeta}
 							<!-- Inline-editable like the language tag in #126, but never
@@ -1213,17 +1239,10 @@
 		white-space: nowrap;
 	}
 
-	/* The tag itself is a plain, non-interactive label — no italic, dashed
-	   outline, or focus ring. Overrides aren't visually distinguished here
-	   so the final-render diagram looks the same whether or not the label
-	   has been customised; the "customised" marker lives in the rename
-	   dialog instead.
-
-	   `position: relative` is the anchor for the absolute .tag-meta chip
-	   below — keeping the chip out of the layout flow means it doesn't
-	   inflate the grid row height. If it did, every line drawLines emits
-	   would have to traverse the extra chip-height too, visibly stretching
-	   the connector geometry beyond the configured verticalGap. */
+	/* `position: relative` is the anchor for the absolute .tag-meta chip below,
+	   and the column flex stacks the inline-editable tag over the chip without
+	   the chip inflating the grid row height (which would stretch the connector
+	   geometry beyond the configured verticalGap). */
 	.tag {
 		position: relative;
 		display: inline-flex;
@@ -1240,15 +1259,13 @@
 
 	/* The linguistic-metadata chip sits under the language label in a small
 	   muted style — informational, never the eye-catcher. Inline-editable
-	   (contenteditable), but no italic/accent for the customised state: that
-	   styling lives in SentenceInput's meta-row, so the final-render diagram
-	   looks identical whether the chip is auto-generated or a user override.
+	   (contenteditable), but no italic/accent for the customised state so the
+	   final-render diagram looks identical whether the chip is auto-generated
+	   or a user override.
 
-	   Absolute-positioned below the tag-row so the chip doesn't push the
-	   grid row taller (which would silently stretch connector-line geometry
-	   beyond the configured verticalGap). It sits in the column gutter
-	   between this sentence and the next, on the tag's x-axis — connectors
-	   live in the sentence-body column, so the two don't visually collide. */
+	   Absolute-positioned below the tag-row so the chip doesn't push the grid
+	   row taller, and centred on the tag's x-axis so it lines up under the
+	   language label regardless of tagAlignment. */
 	.tag-meta {
 		position: absolute;
 		top: 100%;
@@ -1291,40 +1308,47 @@
 		background: var(--color-surface-raised, rgba(0, 0, 0, 0.04));
 	}
 
-	/* Out of flow (override .action's position) so the tag's width — and thus
-	   its centre — tracks the label alone, keeping the chip below and the label
-	   centred on the same x-axis. */
-	.tag-rename.action {
-		position: absolute;
-		left: 100%;
-		top: 50%;
-		transform: translateY(-50%);
-		margin-left: 0.1em;
-	}
-
-	.tag-rename {
-		appearance: none;
-		background: none;
-		border: none;
-		padding: 0.1em 0.2em;
-		cursor: pointer;
-		color: var(--color-text-faint);
-		font-size: 0.85em;
-		line-height: 1;
+	/* Inline-editable language tag. The hover ring is a quiet affordance; the
+	   focus ring + accent background says "you're editing now". Empty input on
+	   blur reverts to the locale default. */
+	.tag-text {
+		display: inline-block;
+		cursor: text;
 		border-radius: 0.2em;
-		opacity: 0;
-		transition: opacity 120ms ease;
+		padding: 0 0.15em;
+		outline: 1px dashed transparent;
+		outline-offset: 1px;
+		transition:
+			outline-color 120ms ease,
+			background-color 120ms ease;
 	}
 
-	.tag:hover .tag-rename,
-	.tag-rename:focus-visible {
-		opacity: 1;
+	/* When the language has no name (e.g. an empty lang code), currentLabel is
+	   "" and the contenteditable span would collapse to zero size — leaving
+	   nothing to click into. Keep a clickable box: min-width gives horizontal
+	   target, the zero-width no-break space gives the line height. Neither is
+	   part of textContent, so the save/revert logic is unaffected. */
+	.tag-text:empty {
+		min-width: 1.5em;
 	}
 
-	.tag-rename:hover {
-		color: var(--color-accent);
-		background: var(--color-hover);
+	.tag-text:empty::before {
+		content: '\feff';
 	}
+
+	.tag-text:hover {
+		outline-color: var(--color-border);
+	}
+
+	.tag-text:focus {
+		outline: 1px solid var(--color-accent);
+		background: var(--color-surface);
+	}
+
+	/* No .tag-text-customised style here on purpose. The final-render diagram
+	   must look identical whether the label is the locale default or a
+	   user-customised one; the "this is customised" hint belongs in the input
+	   side of the UI, not in the output the user exports. */
 
 	.sentence-body {
 		display: block;
