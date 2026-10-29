@@ -99,8 +99,7 @@
 		border-radius: 999px;
 		background: linear-gradient(135deg, light-dark(#ffe6ef, #3d1a2b), light-dark(#fff0e0, #3a2318));
 		color: var(--sp-ink);
-		font: inherit;
-		font-size: 0.95em;
+		font-size: 1.02em;
 		font-weight: bold;
 		white-space: nowrap;
 		cursor: pointer;

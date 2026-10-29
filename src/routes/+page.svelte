@@ -1239,12 +1239,12 @@ ${svgString}
 		<iconify-icon icon="mdi:information-outline"></iconify-icon>
 		{$LL.menu.about()}
 	</button>
-	<div class="menu-sponsor">
+	<div class="menu-end">
 		<SponsorButton />
-	</div>
-	<div class="menu-locale">
-		<ThemeToggle />
-		<LocaleSelect />
+		<div class="menu-locale">
+			<ThemeToggle />
+			<LocaleSelect />
+		</div>
 	</div>
 </header>
 
@@ -1854,14 +1854,18 @@ ${svgString}
 		background: var(--color-hover);
 	}
 
-	.menu-sponsor {
+	.menu-end {
 		margin-inline-start: auto;
 		display: flex;
+		flex: 0 0 auto;
 		align-items: center;
+		gap: 0.6rem;
+		max-width: 100%;
 	}
 
-	.menu-sponsor + .menu-locale {
+	.menu-end .menu-locale {
 		margin-inline-start: 0;
+		flex: 0 0 18rem;
 	}
 
 	.menu-locale {
@@ -2127,9 +2131,14 @@ ${svgString}
 			padding-top: 0.75rem;
 		}
 
-		.menu-locale {
-			margin-inline-start: auto;
+		.menu-end {
+			flex: 1 1 100%;
+			justify-content: flex-end;
+		}
+
+		.menu-end .menu-locale {
 			flex: 0 1 16rem;
+			min-width: 0;
 			max-width: min(16rem, 100%);
 		}
 	}
