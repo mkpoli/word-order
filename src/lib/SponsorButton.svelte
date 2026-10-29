@@ -94,7 +94,8 @@
 		align-items: center;
 		gap: 0.55rem;
 		min-height: 2.4rem;
-		padding: 0 1rem 0 0.35rem;
+		padding-block: 0;
+		padding-inline: 0.35rem 1rem;
 		border: 1px solid var(--sp-line);
 		border-radius: 999px;
 		background: linear-gradient(135deg, light-dark(#ffe6ef, #3d1a2b), light-dark(#fff0e0, #3a2318));
@@ -134,7 +135,7 @@
 
 	.face-heart {
 		position: absolute;
-		right: -4px;
+		inset-inline-end: -4px;
 		bottom: -3px;
 		width: 12px;
 		height: 12px;
@@ -179,7 +180,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 14px 14px 0 24px;
+		padding-block: 14px 0;
+		padding-inline: 24px 14px;
 	}
 
 	h2 {
@@ -245,7 +247,7 @@
 
 	.heart {
 		position: absolute;
-		right: -2px;
+		inset-inline-end: -2px;
 		bottom: 2px;
 		width: 34px;
 		height: 34px;
@@ -356,7 +358,8 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		padding: 12px 18px 12px 12px;
+		padding-block: 12px;
+		padding-inline: 12px 18px;
 		border-radius: 999px;
 		background: linear-gradient(135deg, #d81b60, #b0124f);
 		color: #fff;
@@ -378,6 +381,10 @@
 	.arrow {
 		flex: none;
 		font-size: 18px;
+	}
+
+	.arrow:dir(rtl) {
+		transform: scaleX(-1);
 	}
 
 	.copy {
