@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "已複製！",
 	"menu_copy_image_unsupported": "瀏覽器無法複製圖片",
 	"menu_copy_image_error": "複製失敗",
-	"params_dotted_end_radius": "圓點半徑"
+	"params_dotted_end_radius": "圓點半徑",
+	"sponsor_label": "贊助",
+	"sponsor_close": "關閉",
+	"sponsor_lead": "Word Order是我出於對語言的熱愛，一個人自費獨立開發維護的。我現在沒有工作，微薄的助教薪水連房租和伙食都快不夠付，有時候甚至快要吃不起飯了……",
+	"sponsor_ask": "拜託幫幫我，讓我能繼續撐下去🥺 哪怕只有1⁠美元，都能讓我今天有飯吃。",
+	"sponsor_how_to": "如何贊助我",
+	"sponsor_step1": "點擊下方的Ko-fi。",
+	"sponsor_step2": "金額隨意，少少的也沒關係。",
+	"sponsor_step3": "使用PayPal或信用卡付款，不需要註冊帳號。",
+	"sponsor_kofi": "單次或每月贊助",
+	"sponsor_company": "企業贊助",
+	"sponsor_company_hint": "我很樂意在網站上放置你的廣告，歡迎來信至mkpoli@mkpo.li。",
+	"sponsor_thanks": "謝謝你願意讀到這裡。有你的支持能讓我填飽肚子，也能讓Word Order繼續長大💗"
 }

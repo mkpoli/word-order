@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "Đã sao chép!",
 	"menu_copy_image_unsupported": "Trình duyệt không thể sao chép hình ảnh",
 	"menu_copy_image_error": "Sao chép thất bại",
-	"params_dotted_end_radius": "Bán kính chấm"
+	"params_dotted_end_radius": "Bán kính chấm",
+	"sponsor_label": "Tài trợ",
+	"sponsor_close": "Đóng",
+	"sponsor_lead": "Mình tự tay làm nên Word Order vì tình yêu với ngôn ngữ, và cũng tự bỏ tiền túi ra để duy trì. Hiện mình không có việc làm, khoản thù lao trợ giảng ít ỏi chẳng đủ trang trải tiền trọ và ăn uống. Có những ngày mình còn chẳng đủ tiền ăn nữa...",
+	"sponsor_ask": "Xin hãy giúp mình đi tiếp nhé 🥺 Dù chỉ 1 đô thôi cũng giúp mình có bữa ăn hôm nay rồi.",
+	"sponsor_how_to": "Cách ủng hộ mình nè",
+	"sponsor_step1": "Bấm vào Ko-fi ở bên dưới.",
+	"sponsor_step2": "Chọn một số tiền tùy tâm, một chút xíu thôi cũng quý lắm rồi.",
+	"sponsor_step3": "Thanh toán qua PayPal hoặc thẻ. Không cần đăng ký tài khoản đâu nè.",
+	"sponsor_kofi": "Một lần hoặc hằng tháng",
+	"sponsor_company": "Tài trợ doanh nghiệp",
+	"sponsor_company_hint": "Mình rất sẵn lòng đặt quảng cáo của bạn trên trang web này. Hãy gửi thư cho mình qua mkpoli@mkpo.li nhé.",
+	"sponsor_thanks": "Cảm ơn bạn rất nhiều vì đã đọc đến tận đây. Sự giúp đỡ của bạn giúp mình được no bụng và giúp Word Order tiếp tục phát triển 💗"
 }

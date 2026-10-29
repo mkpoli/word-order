@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "Copiado!",
 	"menu_copy_image_unsupported": "O navegador não consegue copiar imagens",
 	"menu_copy_image_error": "Falha ao copiar",
-	"params_dotted_end_radius": "Raio do ponto"
+	"params_dotted_end_radius": "Raio do ponto",
+	"sponsor_label": "Apoiar",
+	"sponsor_close": "Fechar",
+	"sponsor_lead": "Eu faço o Word Order sozinha, por puro amor aos idiomas, e pago tudo do meu próprio bolso. Não tenho emprego, e o pouquinho que ganho como monitora não cobre o aluguel e a comida. Tem dias em que mal tenho dinheiro para comer.",
+	"sponsor_ask": "Por favor, me ajude a continuar 🥺 Mesmo um dólar já me ajuda a comer hoje.",
+	"sponsor_how_to": "Como ajudar",
+	"sponsor_step1": "Toque no Ko-fi abaixo.",
+	"sponsor_step2": "Escolha qualquer valor. Pode ser bem pouquinho.",
+	"sponsor_step3": "Pague com PayPal ou cartão. Não precisa se cadastrar.",
+	"sponsor_kofi": "Doação única ou mensal",
+	"sponsor_company": "Patrocínio para empresas",
+	"sponsor_company_hint": "Eu adoraria colocar o seu anúncio aqui no site. Por favor, escreva para mkpoli@mkpo.li.",
+	"sponsor_thanks": "Muito obrigada por ler até aqui. A sua ajuda me mantém alimentada e faz o Word Order continuar crescendo 💗"
 }

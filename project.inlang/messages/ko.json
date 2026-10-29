@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "복사됨!",
 	"menu_copy_image_unsupported": "브라우저가 이미지를 복사할 수 없습니다",
 	"menu_copy_image_error": "복사 실패",
-	"params_dotted_end_radius": "점 반지름"
+	"params_dotted_end_radius": "점 반지름",
+	"sponsor_label": "후원",
+	"sponsor_close": "닫기",
+	"sponsor_lead": "Word Order는 언어를 너무 사랑하는 마음에 사비를 들여 혼자 만들고 운영하고 있어요. 따로 직장은 없고 얼마 안 되는 조교비로는 월세랑 밥값 내기도 벅차답니다. 어떤 날은 끼니조차 챙겨 먹기 힘들 때도 있어요.",
+	"sponsor_ask": "제가 계속해 나갈 수 있게 도와주세요 🥺 단 1달러라도 오늘 밥을 먹는 데 정말 큰 힘이 돼요.",
+	"sponsor_how_to": "도와주시는 방법",
+	"sponsor_step1": "아래 Ko-fi를 눌러주세요.",
+	"sponsor_step2": "원하시는 금액을 골라주세요. 소액이라도 괜찮아요.",
+	"sponsor_step3": "PayPal이나 카드로 결제하시면 돼요. 회원가입은 필요 없어요.",
+	"sponsor_kofi": "1회 또는 매월 후원",
+	"sponsor_company": "기업 후원",
+	"sponsor_company_hint": "이 사이트에 광고를 실어주셔도 좋아요. mkpoli@mkpo.li로 연락 부탁드려요.",
+	"sponsor_thanks": "여기까지 읽어주셔서 정말 감사해요. 보내주신 도움 덕분에 밥도 잘 챙겨 먹고 Word Order도 쑥쑥 키워나갈 수 있어요 💗"
 }

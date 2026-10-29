@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "こぴい した!",
 	"menu_copy_image_unsupported": "ブラウザは がぞうを こぴい できません",
 	"menu_copy_image_error": "こぴいに しっぱい しました",
-	"params_dotted_end_radius": "てんの おおきさ"
+	"params_dotted_end_radius": "てんの おおきさ",
+	"sponsor_label": "おうえん",
+	"sponsor_close": "とじる",
+	"sponsor_lead": "ことばが だいすきで、 ひとりで Word Order を つくって、 かかる おかねも じぶんで はらっています。 おしごとは なくて、 じゅぎょうの おてつだいの すこしの おかねでは、 やちんや ごはんの おかねが たりません。 ごはんを たべるのも やっとの ひが あります。",
+	"sponsor_ask": "これからも つづけられるように、 どうか たすけてください 🥺 1どる でも、 きょうの ごはんが たべられます。",
+	"sponsor_how_to": "おうえんの しかた",
+	"sponsor_step1": "したの Ko-fi を おしてね。",
+	"sponsor_step2": "すきな きんがくを えらんでね。 すこしだけでも うれしいです。",
+	"sponsor_step3": "PayPal か かーどで はらえます。 とうろくは いりません。",
+	"sponsor_kofi": "いっかいだけ、 または まいつき",
+	"sponsor_company": "かいしゃからの おうえん",
+	"sponsor_company_hint": "この さいとに こうこくを のせたいです。 mkpoli@mkpo.li まで めーるを ください。",
+	"sponsor_thanks": "ここまで よんでくれて、 ありがとう。 あなたの おうえんの おかげで、 ごはんが たべられて、 Word Order を もっと そだてていくことが できます 💗"
 }

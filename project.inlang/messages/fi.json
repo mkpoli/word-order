@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "Kopioitu!",
 	"menu_copy_image_unsupported": "Selain ei voi kopioida kuvia",
 	"menu_copy_image_error": "Kopiointi epäonnistui",
-	"params_dotted_end_radius": "Pisteen säde"
+	"params_dotted_end_radius": "Pisteen säde",
+	"sponsor_label": "Tue minua",
+	"sponsor_close": "Sulje",
+	"sponsor_lead": "Teen Word Orderia aivan yksin, puhtaasta rakkaudesta kieliin, ja maksan kaikki kulut omasta pussistani. Minulla ei ole lainkaan työpaikkaa, eikä pieni opetusassistentin palkkani riitä vuokraan ja ruokaan. Joinain päivinä minulla on hädin tuskin varaa edes syödä.",
+	"sponsor_ask": "Autathan minua jaksamaan eteenpäin 🥺 Jo yksikin dollari auttaa minua saamaan ruokaa tänään.",
+	"sponsor_how_to": "Miten voit auttaa",
+	"sponsor_step1": "Napauta alta Ko-fi-painiketta.",
+	"sponsor_step2": "Valitse mikä tahansa summa. Pienikin on oikein hyvä.",
+	"sponsor_step3": "Maksa PayPalilla tai kortilla. Rekisteröitymistä ei tarvita.",
+	"sponsor_kofi": "Kertamaksu tai kuukausittain",
+	"sponsor_company": "Yrityssponsorointi",
+	"sponsor_company_hint": "Laitoin mielelläni mainoksenne tälle sivustolle! Otathan yhteyttä osoitteeseen mkpoli@mkpo.li.",
+	"sponsor_thanks": "Kiitos, että luit tänne asti. Tukesi ansiosta saan ruokaa ja Word Order voi jatkaa kasvamistaan 💗"
 }
