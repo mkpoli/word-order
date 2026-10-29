@@ -28,6 +28,7 @@
 	import Equivalency from '$lib/Equivalency.svelte';
 	import LocaleSelect from '$lib/LocaleSelect.svelte';
 	import ThemeToggle from '$lib/ThemeToggle.svelte';
+	import SponsorButton from '$lib/SponsorButton.svelte';
 	import Output, { type Line } from '../lib/Output.svelte';
 	import Parameters from '$lib/Parameters.svelte';
 	import SentenceInput from '$lib/SentenceInput.svelte';
@@ -1238,6 +1239,9 @@ ${svgString}
 		<iconify-icon icon="mdi:information-outline"></iconify-icon>
 		{$LL.menu.about()}
 	</button>
+	<div class="menu-sponsor">
+		<SponsorButton />
+	</div>
 	<div class="menu-locale">
 		<ThemeToggle />
 		<LocaleSelect />
@@ -1848,6 +1852,16 @@ ${svgString}
 	}
 	.share-load-error .dismiss:hover {
 		background: var(--color-hover);
+	}
+
+	.menu-sponsor {
+		margin-inline-start: auto;
+		display: flex;
+		align-items: center;
+	}
+
+	.menu-sponsor + .menu-locale {
+		margin-inline-start: 0;
 	}
 
 	.menu-locale {

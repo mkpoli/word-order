@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "コピーしました！",
 	"menu_copy_image_unsupported": "ブラウザは画像をコピーできません",
 	"menu_copy_image_error": "コピーに失敗しました",
-	"params_dotted_end_radius": "点の半径"
+	"params_dotted_end_radius": "点の半径",
+	"sponsor_label": "スポンサー",
+	"sponsor_close": "閉じる",
+	"sponsor_lead": "言語が好きで、Word Orderをひとりで作り、費用も自腹でまかなっています。定職はなく、わずかなTAのお給料では家賃や食費すらまかないきれません。日によっては、ご飯を食べるのもやっとです…",
+	"sponsor_ask": "開発を続けられるよう、どうか力を貸してください🥺 たった1⁠ドルでも、今日の私のごはん代として本当に助かります。",
+	"sponsor_how_to": "応援の方法",
+	"sponsor_step1": "下のKo-fiをタップしてください。",
+	"sponsor_step2": "お好きな金額を選んでください。少額でもすごく嬉しいです。",
+	"sponsor_step3": "PayPalまたはカードでお支払いいただけます。会員登録は不要です。",
+	"sponsor_kofi": "1回だけでも、毎月でも",
+	"sponsor_company": "企業スポンサー",
+	"sponsor_company_hint": "このサイトへの広告掲載も大歓迎です。mkpoli@mkpo.liまでぜひご連絡ください。",
+	"sponsor_thanks": "最後まで読んでくださってありがとうございます。温かいご支援のおかげでご飯が食べられ、Word Orderを育てていくことができます💗"
 }

@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "Kopiert!",
 	"menu_copy_image_unsupported": "Browser kann keine Bilder kopieren",
 	"menu_copy_image_error": "Kopieren fehlgeschlagen",
-	"params_dotted_end_radius": "Punktradius"
+	"params_dotted_end_radius": "Punktradius",
+	"sponsor_label": "Unterstützen",
+	"sponsor_close": "Schließen",
+	"sponsor_lead": "Ich entwickle Word Order ganz alleine aus Liebe zu Sprachen und bezahle alles selbst. Ich habe überhaupt keine Arbeit und mein mageres Gehalt als Tutorin reicht nicht für Miete und Essen. An manchen Tagen kann ich mir kaum etwas zu essen leisten.",
+	"sponsor_ask": "Bitte hilf mir, weiterzumachen 🥺 Schon ein einziger Dollar hilft mir, heute etwas zu essen.",
+	"sponsor_how_to": "So kannst du helfen",
+	"sponsor_step1": "Tippe unten auf Ko-fi.",
+	"sponsor_step2": "Wähle einen beliebigen Betrag. Auch ganz wenig ist völlig okay.",
+	"sponsor_step3": "Bezahle mit PayPal oder Karte. Keine Registrierung nötig.",
+	"sponsor_kofi": "Einmalig oder monatlich",
+	"sponsor_company": "Firmen-Sponsoring",
+	"sponsor_company_hint": "Ich würde mich sehr freuen, deine Werbung auf dieser Seite zu platzieren. Schreib mir bitte an mkpoli@mkpo.li.",
+	"sponsor_thanks": "Danke, dass du bis hierhin gelesen hast. Deine Unterstützung sorgt dafür, dass ich etwas zu essen habe und Word Order weiter wachsen kann 💗"
 }

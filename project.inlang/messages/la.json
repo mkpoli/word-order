@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "Exscriptum!",
 	"menu_copy_image_unsupported": "Navigatrum imagines exscribere non potest",
 	"menu_copy_image_error": "Exscribere non licuit",
-	"params_dotted_end_radius": "Radius puncti"
+	"params_dotted_end_radius": "Radius puncti",
+	"sponsor_label": "Patrocinium",
+	"sponsor_close": "Claudere",
+	"sponsor_lead": "Word Order sola facio, puro linguarum amore ducta, sumptusque omnes ipsa de meo fero. Quaestu omnino careo, et exigua adiutricis docendi mercedula nec habitationi nec cibo sufficit. Sunt dies cum vix habeo unde edam.",
+	"sponsor_ask": "Opitulare mihi, amabo te, ut pergere possim 🥺 Vel unus dollarius efficit ut hodie cenem.",
+	"sponsor_how_to": "Quomodo adiuves",
+	"sponsor_step1": "Tange Ko-fi infra.",
+	"sponsor_step2": "Elige quantum vis: vel perpusillum gratum est.",
+	"sponsor_step3": "Solve per PayPal vel chartulam argentariam. Nulla perscriptio necessaria est.",
+	"sponsor_kofi": "Semel vel menstruatim",
+	"sponsor_company": "Patrocinium societatum",
+	"sponsor_company_hint": "Magno cum gaudio praeconium tuum in hoc situ collocabo. Scribe, quaeso, ad mkpoli@mkpo.li.",
+	"sponsor_thanks": "Gratias tibi ago quod usque huc legisti. Auxilio tuo et ipsa alor, et Word Order augeri pergit 💗"
 }

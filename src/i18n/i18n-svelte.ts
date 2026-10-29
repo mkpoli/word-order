@@ -155,6 +155,18 @@ const createLL = () => ({
 		translate: m.menu_translate,
 		examples: m.menu_examples
 	},
+	sponsor: {
+		label: m.sponsor_label,
+		close: m.sponsor_close,
+		lead: m.sponsor_lead,
+		ask: m.sponsor_ask,
+		howTo: m.sponsor_how_to,
+		steps: [m.sponsor_step1, m.sponsor_step2, m.sponsor_step3],
+		kofi: m.sponsor_kofi,
+		company: m.sponsor_company,
+		companyHint: m.sponsor_company_hint,
+		thanks: m.sponsor_thanks
+	},
 	about: {
 		title: m.about_title,
 		close: m.about_close,

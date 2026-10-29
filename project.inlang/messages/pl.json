@@ -169,5 +169,17 @@
 	"menu_copy_image_copied": "Skopiowano!",
 	"menu_copy_image_unsupported": "Przeglądarka nie może kopiować obrazów",
 	"menu_copy_image_error": "Kopiowanie nie powiodło się",
-	"params_dotted_end_radius": "Promień kropki"
+	"params_dotted_end_radius": "Promień kropki",
+	"sponsor_label": "Wesprzyj",
+	"sponsor_close": "Zamknij",
+	"sponsor_lead": "Tworzę Word Order zupełnie sama, z miłości do języków, i opłacam wszystko z własnej kieszeni. Nie mam żadnej pracy, a moja skromna pensja asystentki nie starcza na czynsz i jedzenie. Bywają dni, kiedy ledwo mam za co zjeść.",
+	"sponsor_ask": "Proszę, pomóż mi działać dalej 🥺 Nawet jeden dolar sprawi, że będę miała dzisiaj co zjeść.",
+	"sponsor_how_to": "Jak możesz pomóc",
+	"sponsor_step1": "Kliknij Ko-fi poniżej.",
+	"sponsor_step2": "Wybierz dowolną kwotę. Nawet ta najmniejsza będzie super.",
+	"sponsor_step3": "Zapłać przez PayPal lub kartą. Nie trzeba zakładać konta.",
+	"sponsor_kofi": "Jednorazowo lub co miesiąc",
+	"sponsor_company": "Sponsoring firmowy",
+	"sponsor_company_hint": "Z wielką chęcią umieszczę Twoją reklamę na tej stronie. Napisz do mnie na mkpoli@mkpo.li.",
+	"sponsor_thanks": "Dziękuję za doczytanie aż tutaj. Twoje wsparcie sprawia, że mam co jeść, a Word Order może dalej rosnąć 💗"
 }

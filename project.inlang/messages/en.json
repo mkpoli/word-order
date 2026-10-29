@@ -169,5 +169,17 @@
 	"translate_remove_custom": "Remove",
 	"translate_cancel": "Cancel",
 	"translate_retry": "Retry",
-	"translate_cost_notice": "Uses your {provider} account — cheaper models are usually fine."
+	"translate_cost_notice": "Uses your {provider} account — cheaper models are usually fine.",
+	"sponsor_label": "Sponsor",
+	"sponsor_close": "Close",
+	"sponsor_lead": "I make Word Order on my own, out of love for languages, and I pay for it myself. I don't have a job, and my small TA pay doesn't cover rent and food. Some days I can barely afford to eat.",
+	"sponsor_ask": "Please help me keep going 🥺 Even one dollar helps me eat today.",
+	"sponsor_how_to": "How to help",
+	"sponsor_step1": "Tap Ko-fi below.",
+	"sponsor_step2": "Pick any amount. Small is fine.",
+	"sponsor_step3": "Pay with PayPal or a card. No sign-up needed.",
+	"sponsor_kofi": "One-time or monthly",
+	"sponsor_company": "Company sponsorship",
+	"sponsor_company_hint": "I'd love to put your ad on this site. Please write to mkpoli@mkpo.li.",
+	"sponsor_thanks": "Thank you for reading this far. Your help keeps me fed and keeps Word Order growing 💗"
 }
