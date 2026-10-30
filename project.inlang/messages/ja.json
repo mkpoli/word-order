@@ -172,14 +172,14 @@
 	"params_dotted_end_radius": "点の半径",
 	"sponsor_label": "スポンサー",
 	"sponsor_close": "閉じる",
-	"sponsor_lead": "言語が好きで、Word Orderをひとりで作り、費用も自腹でまかなっています。仕事はなく、わずかなTAのお給料では家賃や食費すらまかないきれません。日によっては、ご飯を食べるのもやっとです…",
-	"sponsor_ask": "開発を続けられるよう、どうか力を貸してください🥺 たった1⁠ドルでも、今日の私のごはん代として本当に助かります。",
-	"sponsor_how_to": "応援の方法",
+	"sponsor_lead": "Word Orderは資金援助を受けず、個人で開発しています。誰でもずっと無料で使えるように、これからも維持していきたいと思っています。",
+	"sponsor_ask": "もしWord Orderがお役に立っていれば、Ko-fiでチップをいただけると、継続して改善していく時間を作ることができます。",
+	"sponsor_how_to": "チップの送り方",
 	"sponsor_step1": "下のKo-fiをタップしてください。",
-	"sponsor_step2": "お好きな金額を選んでください。少額でもすごく嬉しいです。",
+	"sponsor_step2": "1回のみでも毎月でも、お好きな金額を選べます。",
 	"sponsor_step3": "PayPalまたはカードでお支払いいただけます。会員登録は不要です。",
 	"sponsor_kofi": "1回だけでも、毎月でも",
-	"sponsor_company": "企業スポンサー",
-	"sponsor_company_hint": "このサイトへの広告掲載も大歓迎です。mkpoli@mkpo.liまでぜひご連絡ください。",
-	"sponsor_thanks": "最後まで読んでくださってありがとうございます。温かいご支援のおかげでご飯が食べられ、Word Orderを育てていくことができます💗"
+	"sponsor_company": "当サイトへの広告掲載による、企業スポンサーも受け付けています。",
+	"sponsor_company_hint": "mkpoli@mkpo.liまでお気軽にご連絡ください。",
+	"sponsor_thanks": "Word Orderをご利用いただきありがとうございます💗"
 }
