@@ -172,14 +172,14 @@
 	"params_dotted_end_radius": "Nokta yarıçapı",
 	"sponsor_label": "Destek Ol",
 	"sponsor_close": "Kapat",
-	"sponsor_lead": "Word Order'ı dillere olan sevgimle, tek başıma geliştiriyorum ve tüm masraflarını kendi cebimden karşılıyorum. Hiçbir işim yok ve öğretim asistanlığından kazandığım azıcık para kirama ve yemeğime yetmiyor. Bazı günler karnımı bile zor doyuruyorum.",
-	"sponsor_ask": "Lütfen devam edebilmeme yardım et 🥺 Tek bir dolar bile bugün karnımı doyurmama yardımcı olur.",
-	"sponsor_how_to": "Nasıl destek olabilirsin?",
+	"sponsor_lead": "Word Order'ı tek başıma, herhangi bir finansman desteği olmadan geliştiriyorum. Herkes için ücretsiz ve öyle kalmasını istiyorum.",
+	"sponsor_ask": "Word Order işinize yarıyorsa Ko-fi üzerinden vereceğiniz küçük bir destek, onu geliştirmeye devam etmek için zaman ayırmamı sağlar.",
+	"sponsor_how_to": "Nasıl destek olabilirsiniz?",
 	"sponsor_step1": "Aşağıdaki Ko-fi'ye tıkla.",
-	"sponsor_step2": "İstediğin bir miktar seç. Küçücük olsa da fark etmez.",
+	"sponsor_step2": "Dilediğiniz tutarı seçip tek seferlik veya aylık destek olabilirsiniz.",
 	"sponsor_step3": "PayPal veya kart ile öde. Kaydolman gerekmez.",
 	"sponsor_kofi": "Tek seferlik veya aylık",
-	"sponsor_company": "Kurumsal sponsorluk",
-	"sponsor_company_hint": "Bu sitede reklamınıza yer vermeyi çok isterim. Lütfen mkpoli@mkpo.li adresine yazın.",
-	"sponsor_thanks": "Buraya kadar okuduğun için çok teşekkür ederim. Desteğin sayesinde hem karnım doyuyor hem de Word Order büyümeye devam ediyor 💗"
+	"sponsor_company": "Şirketler de bu siteye reklam vererek sponsor olabilir.",
+	"sponsor_company_hint": "mkpoli@mkpo.li adresine yazabilirsiniz.",
+	"sponsor_thanks": "Word Order'ı kullandığınız için teşekkür ederim 💗"
 }

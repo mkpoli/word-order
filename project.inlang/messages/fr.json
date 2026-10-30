@@ -172,14 +172,14 @@
 	"params_dotted_end_radius": "Rayon du point",
 	"sponsor_label": "Soutenir",
 	"sponsor_close": "Fermer",
-	"sponsor_lead": "Je développe Word Order toute seule, par amour des langues, et je finance tout moi-même. Je n'ai pas de travail, et ma petite paie de chargée de TD ne couvre pas le loyer et la nourriture. Certains jours, j'ai à peine de quoi manger.",
-	"sponsor_ask": "S'il vous plaît, aidez-moi à continuer 🥺 Même un seul dollar m'aide à manger aujourd'hui.",
-	"sponsor_how_to": "Comment m'aider",
+	"sponsor_lead": "Je développe Word Order en solo, sans aucun financement. L’application est gratuite pour tout le monde, et j’aimerais qu’elle le reste.",
+	"sponsor_ask": "Si Word Order vous est utile, un petit don sur Ko-fi me permet de consacrer du temps à l’améliorer.",
+	"sponsor_how_to": "Comment faire un don",
 	"sponsor_step1": "Cliquez sur Ko-fi ci-dessous.",
-	"sponsor_step2": "Choisissez le montant de votre choix. Même tout petit, c'est parfait.",
+	"sponsor_step2": "Choisissez le montant qui vous convient, pour un don ponctuel ou mensuel.",
 	"sponsor_step3": "Payez par PayPal ou par carte. Pas besoin d'inscription.",
 	"sponsor_kofi": "Don ponctuel ou mensuel",
-	"sponsor_company": "Sponsoring d'entreprise",
-	"sponsor_company_hint": "Je serais ravie d'afficher votre publicité sur ce site. Écrivez-moi à mkpoli@mkpo.li.",
-	"sponsor_thanks": "Merci d'avoir lu jusqu'ici. Votre aide me permet de me nourrir et fait grandir Word Order 💗"
+	"sponsor_company": "Les entreprises peuvent aussi soutenir le projet en affichant une publicité sur ce site.",
+	"sponsor_company_hint": "Écrivez-moi à mkpoli@mkpo.li.",
+	"sponsor_thanks": "Merci d’utiliser Word Order 💗"
 }

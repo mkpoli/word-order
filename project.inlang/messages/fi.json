@@ -172,14 +172,14 @@
 	"params_dotted_end_radius": "Pisteen säde",
 	"sponsor_label": "Tue minua",
 	"sponsor_close": "Sulje",
-	"sponsor_lead": "Teen Word Orderia aivan yksin, puhtaasta rakkaudesta kieliin, ja maksan kaikki kulut omasta pussistani. Minulla ei ole lainkaan työpaikkaa, eikä pieni opetusassistentin palkkani riitä vuokraan ja ruokaan. Joinain päivinä minulla on hädin tuskin varaa edes syödä.",
-	"sponsor_ask": "Autathan minua jaksamaan eteenpäin 🥺 Jo yksikin dollari auttaa minua saamaan ruokaa tänään.",
-	"sponsor_how_to": "Miten voit auttaa",
+	"sponsor_lead": "Kehitän Word Order -sovellusta yksin ilman ulkopuolista rahoitusta. Se on ilmainen kaikille, ja haluaisin pitää sen sellaisena.",
+	"sponsor_ask": "Jos Word Order -sovelluksesta on sinulle hyötyä, tippi Ko-fi-palvelussa antaa minulle aikaa jatkaa sen kehittämistä.",
+	"sponsor_how_to": "Näin annat tipin",
 	"sponsor_step1": "Napauta alta Ko-fi-painiketta.",
-	"sponsor_step2": "Valitse mikä tahansa summa. Pienikin on oikein hyvä.",
+	"sponsor_step2": "Valitse haluamasi summa ja anna tippi kerran tai kuukausittain.",
 	"sponsor_step3": "Maksa PayPalilla tai kortilla. Rekisteröitymistä ei tarvita.",
 	"sponsor_kofi": "Kertamaksu tai kuukausittain",
-	"sponsor_company": "Yrityssponsorointi",
-	"sponsor_company_hint": "Laitoin mielelläni mainoksenne tälle sivustolle! Otathan yhteyttä osoitteeseen mkpoli@mkpo.li.",
-	"sponsor_thanks": "Kiitos, että luit tänne asti. Tukesi ansiosta saan ruokaa ja Word Order voi jatkaa kasvamistaan 💗"
+	"sponsor_company": "Myös yritykset voivat tukea sovellusta ostamalla mainospaikan tältä sivustolta.",
+	"sponsor_company_hint": "Ota yhteyttä: mkpoli@mkpo.li.",
+	"sponsor_thanks": "Kiitos, että käytät Word Order -sovellusta 💗"
 }
