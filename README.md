@@ -186,6 +186,12 @@ Issues and pull requests are welcome — <https://github.com/mkpoli/word-order/>
 
 Created by [@mkpoli](https://mkpo.li/) — [Twitter](https://twitter.com/mkpoli/) · [GitHub](https://github.com/mkpoli).
 
+## Sponsor
+
+I build Word Order Illustrator on my own, with no funding behind it, and it's free for everyone. If it's useful to you, a tip on [Ko-fi](https://ko-fi.com/mkpoli) gives me time to keep improving it. Companies interested in sponsoring can write to mkpoli@mkpo.li.
+
+[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/mkpoli)
+
 ## License
 
 Source code is released under the [MIT License](LICENSE) © 2022–2026 mkpoli.
