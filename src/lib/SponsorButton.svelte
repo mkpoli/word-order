@@ -3,7 +3,7 @@
 	import 'iconify-icon';
 
 	// The header's Sponsor pill, led by the author's face, and the dialog it opens: her portrait,
-	// why she needs help, then three steps that end at the Ko-fi button.
+	// what a tip pays for, then three steps that end at the Ko-fi button.
 	let open = $state(false);
 	let dialog = $state<HTMLDialogElement>();
 
