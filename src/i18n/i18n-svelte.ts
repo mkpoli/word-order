@@ -163,6 +163,7 @@ const createLL = () => ({
 		howTo: m.sponsor_how_to,
 		steps: [m.sponsor_step1, m.sponsor_step2, m.sponsor_step3],
 		kofi: m.sponsor_kofi,
+		ofuse: m.sponsor_ofuse,
 		company: m.sponsor_company,
 		companyHint: m.sponsor_company_hint,
 		thanks: m.sponsor_thanks

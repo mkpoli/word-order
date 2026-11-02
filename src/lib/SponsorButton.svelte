@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { LL } from '../i18n/i18n-svelte';
+	import { LL, locale } from '../i18n/i18n-svelte';
 	import 'iconify-icon';
 
 	// The header's Sponsor pill, led by the author's face, and the dialog it opens: her portrait,
-	// what a tip pays for, then three steps that end at the Ko-fi button.
+	// what a tip pays for, then three steps that end at the Ko-fi and OFUSE buttons, OFUSE first in
+	// Japanese. Each button carries its service's own mark and colour, unaltered.
 	let open = $state(false);
+	const ofuseFirst = $derived($locale.split('-')[0] === 'ja');
 	let dialog = $state<HTMLDialogElement>();
 
 	$effect(() => {
@@ -37,6 +39,22 @@
 	<span class="label">{$LL.sponsor.label()}</span>
 </button>
 
+{#snippet kofi()}
+	<a class="tip kofi" href="https://ko-fi.com/mkpoli" target="_blank" rel="noreferrer noopener">
+		<img class="mark" src="/brand/kofi-symbol.svg" alt="" width="34" height="27" />
+		<span class="copy"><strong>Ko-fi</strong><small>{$LL.sponsor.kofi()}</small></span>
+		<iconify-icon class="arrow" icon="mdi:arrow-right" aria-hidden="true"></iconify-icon>
+	</a>
+{/snippet}
+
+{#snippet ofuse()}
+	<a class="tip ofuse" href="https://ofuse.me/mkpoli" target="_blank" rel="noreferrer noopener">
+		<img class="mark" src="/brand/ofuse-icon.svg" alt="" width="26" height="28" />
+		<span class="copy"><strong>OFUSE</strong><small>{$LL.sponsor.ofuse()}</small></span>
+		<iconify-icon class="arrow" icon="mdi:arrow-right" aria-hidden="true"></iconify-icon>
+	</a>
+{/snippet}
+
 {#if open}
 	<dialog class="sponsor-dialog" bind:this={dialog} use:portal aria-labelledby="sponsor-title" onclose={() => (open = false)} onclick={outside}>
 		<header>
@@ -64,11 +82,9 @@
 					{#each $LL.sponsor.steps as step, i (i)}<li>{step()}</li>{/each}
 				</ol>
 			</section>
-			<a class="kofi" href="https://ko-fi.com/mkpoli" target="_blank" rel="noreferrer noopener">
-				<span class="mark" aria-hidden="true"><iconify-icon icon="mdi:coffee-outline"></iconify-icon></span>
-				<span class="copy"><strong>Ko-fi</strong><small>{$LL.sponsor.kofi()}</small></span>
-				<iconify-icon class="arrow" icon="mdi:arrow-right" aria-hidden="true"></iconify-icon>
-			</a>
+			<div class="tips">
+				{#if ofuseFirst}{@render ofuse()}{@render kofi()}{:else}{@render kofi()}{@render ofuse()}{/if}
+			</div>
 			<a class="company" href="mailto:mkpoli@mkpo.li?subject=Sponsorship%20on%20word-order.mkpo.li">
 				<iconify-icon icon="mdi:email-outline" aria-hidden="true"></iconify-icon>
 				<span class="copy"><strong>{$LL.sponsor.company()}</strong><small>{$LL.sponsor.companyHint()}</small></span>
@@ -109,7 +125,7 @@
 
 	.sponsor:focus-visible,
 	.dismiss:focus-visible,
-	.kofi:focus-visible,
+	.tip:focus-visible,
 	.company:focus-visible {
 		outline: 2px solid var(--color-accent-text);
 		outline-offset: 2px;
@@ -354,28 +370,45 @@
 		transform: translateY(-1px);
 	}
 
-	.kofi {
+	.tips {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.tip {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		padding-block: 12px;
 		padding-inline: 12px 18px;
 		border-radius: 999px;
-		background: linear-gradient(135deg, #d81b60, #b0124f);
 		color: #fff;
 		text-decoration: none;
-		box-shadow: 0 6px 16px rgb(216 27 96 / 0.32);
+		box-shadow: 0 6px 16px var(--tip-glow);
+	}
+
+	.kofi {
+		--tip-glow: rgb(32 32 32 / 0.28);
+		--tip-glow-hover: rgb(32 32 32 / 0.38);
+		border: 1px solid light-dark(#202020, rgb(255 255 255 / 0.2));
+		background: #202020;
+	}
+
+	/* OFUSE Blue (#2882a7) taken 4% darker, so the white labels reach 4.5:1. */
+	.ofuse {
+		--tip-glow: rgb(38 125 160 / 0.3);
+		--tip-glow-hover: rgb(38 125 160 / 0.42);
+		border: 1px solid #267da0;
+		background: #267da0;
 	}
 
 	.mark {
-		display: grid;
+		display: block;
 		flex: none;
-		place-items: center;
 		width: 38px;
-		height: 38px;
-		border-radius: 50%;
-		background: rgb(255 255 255 / 0.22);
-		font-size: 20px;
+		height: 30px;
+		object-fit: contain;
 	}
 
 	.arrow {
@@ -404,8 +437,12 @@
 		line-height: 1.4;
 	}
 
-	.kofi .copy strong {
+	.tip .copy strong {
 		font-size: 1rem;
+	}
+
+	.tip .copy small {
+		color: #fff;
 	}
 
 	.company {
@@ -478,15 +515,15 @@
 			animation: arrive 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
 		}
 
-		.kofi {
+		.tip {
 			transition:
 				transform 180ms ease,
 				box-shadow 180ms ease;
 		}
 
-		.kofi:hover {
+		.tip:hover {
 			transform: translateY(-1px);
-			box-shadow: 0 8px 22px rgb(216 27 96 / 0.42);
+			box-shadow: 0 8px 22px var(--tip-glow-hover);
 		}
 	}
 
