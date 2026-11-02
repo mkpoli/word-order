@@ -165,6 +165,8 @@ const createLL = () => ({
 		kofi: m.sponsor_kofi,
 		company: m.sponsor_company,
 		companyHint: m.sponsor_company_hint,
+		supporters: m.sponsor_supporters,
+		anonymous: m.sponsor_anonymous,
 		thanks: m.sponsor_thanks
 	},
 	about: {
