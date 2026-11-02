@@ -39,6 +39,10 @@
 	<span class="label">{$LL.sponsor.label()}</span>
 </button>
 
+<svelte:head>
+	<script type="module" src="https://supporters.mkpo.li/roll.js"></script>
+</svelte:head>
+
 {#snippet kofi()}
 	<a class="tip kofi" href="https://ko-fi.com/mkpoli" target="_blank" rel="noreferrer noopener">
 		<img class="mark" src="/brand/kofi-symbol.svg" alt="" width="34" height="27" />
@@ -89,6 +93,7 @@
 				<iconify-icon icon="mdi:email-outline" aria-hidden="true"></iconify-icon>
 				<span class="copy"><strong>{$LL.sponsor.company()}</strong><small>{$LL.sponsor.companyHint()}</small></span>
 			</a>
+			<supporters-roll label={$LL.sponsor.supporters()} anonymous={$LL.sponsor.anonymous()}></supporters-roll>
 			<p class="thanks">{$LL.sponsor.thanks()}</p>
 		</div>
 	</dialog>
@@ -475,6 +480,11 @@
 		line-height: 1.5;
 		color: var(--color-text-muted);
 		text-align: center;
+	}
+
+	supporters-roll {
+		--sp-text: var(--color-text);
+		--sp-muted: var(--color-text-muted);
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
