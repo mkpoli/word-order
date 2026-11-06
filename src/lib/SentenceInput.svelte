@@ -31,6 +31,7 @@
 
 	let lang = $state('en');
 	let displayName = $state('English');
+	let displayNameIsCustomised = $state(false);
 
 	let previousLang = 'en';
 
@@ -148,7 +149,14 @@
 	}
 
 	run(() => {
-		displayName = getLanguageName(lang, $locale);
+		// When editing an existing sentence with a custom displayName override,
+		// show that override (italic + accent) so the user can see *here* —
+		// in the input area — that the label is customised. The final-render
+		// diagram intentionally has no such styling. Falls back to the locale
+		// default name whenever no override is set.
+		const override = modifying !== -1 ? sentences[modifying]?.displayName : undefined;
+		displayName = override ?? getLanguageName(lang, $locale);
+		displayNameIsCustomised = override !== undefined;
 	});
 
 	run(() => {
@@ -274,7 +282,7 @@
 		</details>
 		<div class="buttons">
 			<input type="text" bind:value={lang} id="lang" />
-			<label for="lang">{displayName}</label>
+			<label for="lang" class:customised={displayNameIsCustomised}>{displayName}</label>
 			<div class="primary-actions">
 				<button class="primary" title={submitShortcutHint} onclick={submit}>
 					<iconify-icon icon={modifying === -1 ? 'ic:round-plus' : 'material-symbols:edit-rounded'} width="1.3em" height="1.3em"></iconify-icon>
@@ -564,6 +572,14 @@
 
 	.buttons {
 		display: contents;
+	}
+
+	/* Italic + accent on the lang label tell the user "the displayed name on
+	   the diagram is a custom override, not the locale default". The output
+	   diagram itself never carries this styling (per UX feedback on #126). */
+	label[for='lang'].customised {
+		font-style: italic;
+		color: var(--color-accent-text);
 	}
 
 	.primary-actions {
