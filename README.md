@@ -32,14 +32,14 @@ Paste sentences in any languages, click matching words across rows, and the tool
 
 ## Tech stack
 
-- [SvelteKit](https://kit.svelte.dev/) (Svelte 4) + TypeScript
-- [Vite](https://vitejs.dev/) (Vite 5)
+- [SvelteKit](https://kit.svelte.dev/) (Svelte 5) + TypeScript
+- [Vite](https://vitejs.dev/) (Vite 8)
 - [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) for i18n
 - [`dom-to-svg`](https://github.com/felixfbecker/dom-to-svg) and [`dom-to-image`](https://github.com/tsayen/dom-to-image) for vector and raster export
 - [`@neodrag/svelte`](https://www.neodrag.dev/) for draggable dialogs
 - [`colorjs.io`](https://colorjs.io/) for OKLCH color palette generation
 - [Iconify](https://iconify.design/) for icons
-- Deployed on [Vercel](https://vercel.com/)
+- Deployed on [Cloudflare Workers](https://workers.cloudflare.com/)
 
 ## Related tools
 
@@ -85,7 +85,7 @@ Survey conducted May 2026 from each tool's then-current live build, GitHub repo,
 | Repo created            | 2022-08-23                                                | 2026-04-18                                                                                    | 2026-03-12                                                                      |
 | License                 | MIT                                                       | MIT                                                                                           | MIT (README only — no `LICENSE` file in repo)                                   |
 | GitHub stars (May 2026) | 13                                                        | 1                                                                                             | 5                                                                               |
-| Tech stack              | SvelteKit 2 · Svelte 4 · TS · Vite 5 · Vercel             | SvelteKit · Vite 8 · Docker                                                                   | Static HTML/JS · D3 · no build                                                  |
+| Tech stack              | SvelteKit 2 · Svelte 5 · TS · Vite 8 · Cloudflare         | SvelteKit · Vite 8 · Docker                                                                   | Static HTML/JS · D3 · no build                                                  |
 | Build step required     | ✅ Vite                                                   | ✅ Vite                                                                                       | ❌ static files                                                                 |
 
 #### Alignment authoring
@@ -151,7 +151,8 @@ bun dev
 Other scripts:
 
 ```bash
-bun run build               # production build (Vercel adapter)
+bun run build               # production build (Cloudflare adapter)
+bunx wrangler deploy        # deploy the build to word-order.mkpo.li
 bun run preview             # preview the production build locally
 bun run check               # run paraglide compile, svelte-kit sync, and svelte-check
 bun run lint                # prettier --check + eslint
